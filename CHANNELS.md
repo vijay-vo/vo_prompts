@@ -777,6 +777,20 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CPL-13 · The complaint-failure line was ungated, so it fired after a SUCCESS and opened the fabrication path — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth, and the missing half of CPL-12's gate. **CRC only**; **CC pending**. |
+| **Source** | The turn immediately preceding NUM-03's fabricated number, same call. The agent had **already registered successfully** and spoken a complaint number. The consumer then gave one very long streaming-fragment turn ending *"या मेरे से number provide कराओ उनके"*. The agent's next turn opened *"अभी complaint register नहीं हो पा रही है"* — the technical-failure line — for a registration that had just succeeded, and then followed the failure path's "offer to reach a person" into offering and inventing an office number. |
+| **Root cause — asymmetric gating** | The SUCCESS line carries a hard gate in all ten agents (*"I speak this sentence ONLY on the turn a bpcl_create_complaint call has just returned success"*). The FAILURE line carries **no gate in any of them** — grepped, zero hits. So nothing tied it to an actual failure Result, and the model could enter the failure branch from a turn that contained no Result at all. A request for a phone number plus a long confusing turn was enough. Everything downstream followed correctly from a false premise: the failure path legitimately ends with an offer to reach a person, so once the false failure was asserted the agent went looking for something to offer and invented a number to fill it. |
+| **The fix** | A `FAILURE-LINE GATE` in all ten, symmetric to the success gate: the failure line is spoken ONLY on a turn where a call just returned a FAILURE Result, and frustration, repetition, a number request, a request for a person, or a long unclear turn are named explicitly as **not** Results and not failure states. Two companions: **never contradict a registration already confirmed** — once a success Result was received and a number spoken, that complaint exists for the rest of the call and nothing later turns it back into a failure; and **a request for a phone number is not a complaint failure**, it is answered by the hold-no-number rule, never by the failure line or the failure path's offer. |
+| **Also fixed here** | `bookingEligibleAgent` had been missed by CLS-01 — its failure line still ended *"Then you go to close check"*. My CLS-01 script's file list excluded it for that pass. Corrected in the same edit; coverage re-verified at 10/10 for both rules. |
+| **Files (10)** | Every CRC agent holding `bpcl_create_complaint`. |
+| **CC** | Not ported. |
+
+---
+
 ### CLS-02 · The already-registered reassurance repeated verbatim, carrying no new information each time — CRC only (2026-08-07)
 
 | | |
