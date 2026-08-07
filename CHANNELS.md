@@ -733,6 +733,19 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **Files (10)** | `bookingNonEligibilityAgent`, `bookingEligibleAgent`, `connectionServicesAgent`, `activeDeliveryAgent`, `eligibleDeliveryAgent`, `notEligibleDeliveryAgent`, `postDeliveryAgent`, `genericInfoComplaintAgent`, `paymentAgent`, `subsidyAgent` — every CRC agent holding `bpcl_create_complaint`. |
 | **CC** | Not yet ported. CC carries the identical "then go to close check" phrasing in the identical templates and is exposed to the identical gluing bug. Port before the next CC complaint-path or routing change (§6 rule 4). |
 
+### CLS-02 · The already-registered reassurance repeated verbatim, carrying no new information each time — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth, direct follow-up to CLS-01. **CRC only** per client instruction this session; **CC pending**. |
+| **Source** | Same live CRC transcript as CPL-10/CLS-01. After registering, the agent answered every further push from the consumer with the same fixed sentence — *"आपकी शिकायत पहले ही दर्ज कर ली गई है और हमारी टीम इस पर कार्रवाई कर रही है, वे जल्द ही आपसे संपर्क करेंगे।"* — five times across the call while the consumer kept re-explaining an undelivered cylinder. Client flagged it as "not consumer friendly". |
+| **Why the existing rules did not catch it** | CLS-01 stopped the close question being *glued on*, and the `SAME-ISSUE / DUPLICATE GUARD` correctly stopped a second registration — but both prescribe the **same fixed sentence** as the thing to say instead, with nothing about what to do when the consumer presses a third, fourth and fifth time. The rule that was missing is not about *whether* to re-register; it is about the reply carrying **no new information** on every repeat, which is what the consumer actually hears as a wall. |
+| **Rejected fix** | Proactively offering a `callTransferAgent` transfer after a repeat. Client rejected it: the human team's first action is to register a complaint too, so a transfer relocates the loop rather than ending it. The fix is wording, not escalation. |
+| **The fix** | A `NEVER THE SAME SENTENCE TWICE` block in all ten complaint-capable agents, directly under `ALREADY REGISTERED` (under `SAME-ISSUE / DUPLICATE GUARD` in `bookingEligibleAgent`, which has no `ALREADY REGISTERED` line). Each successive reply must **add something concrete** rather than recycle: **1st** — name the *specific* issue that is registered, not a generic "your complaint"; **2nd** — state what is concretely true and what it means for them (the complaint carries their connection details, nothing further is needed from their side); **3rd and after** — be honest about the limit, saying plainly there is nothing further to add from here while staying on the line, and inventing no new assurance, timeframe, date or person to make the turn sound fuller. Hard rule: never the identical sentence twice in one call; if the only available line is one already used, say a shorter plainer version instead. |
+| **Empathy-ban interaction** | The block explicitly restates the CPL-05 ban (`समझ सकती हूँ`, `माफी चाहूँगी`, `खेद है`, `दुख हुआ`, `चिंता मत कीजिए`) because "acknowledge them better" is exactly the instruction that would otherwise pull a specialist agent into a banned empathy phrase. Acknowledgement here comes from being **specific and honest**, not from an empathy formula. |
+| **Files (10)** | Every CRC agent holding `bpcl_create_complaint` — same list as CLS-01. |
+| **CC** | Not yet ported, same as CLS-01. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
