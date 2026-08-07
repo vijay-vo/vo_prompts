@@ -713,6 +713,28 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CPL-10 · `bookingNonEligibilityAgent` scope/routing/complaint-discipline fixes — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — bug fixes to a single agent, not a policy axis. **CRC only** per client instruction this session (CC work paused). |
+| **Source** | A live CRC transcript (client-reported): a consumer asking "cylinder कब आएगा" got the eligibility-block explanation instead of the refill-status sentence already sitting in `handoffSummary`; a "connection change कर दो" request got the `[GATE BEFORE OFFER]` named-locality fallback ("यह जानकारी मेरे पास नहीं है... App या website...") instead of Step 8's domain hand-off to `routingAgent`; and across one call the agent registered three complaints for what was one "cylinder not received" grievance re-described in shifting terms (no SMS → connection shift → distributor refusing), one of them with a complaint number spoken with no visible tool Result behind it. |
+| **The fix** | Four targeted additions to `bookingNonEligibilityAgent.txt`: (1) `handoffSummary` may carry a refill/delivery-status sentence carried over from the previous agent — answered directly when asked, without routing, since the fact is already held; (2) the named-locality fallback is now explicitly scoped away from connection-change/portability requests, which route via Step 8 instead, and Step 8's domain list now names connection change, distributor change, address/mobile/name update, surrender and portability explicitly; (3) the `SAME-ISSUE / DUPLICATE GUARD` now names the exact "same grievance, shifting description" pattern so a re-explained non-delivery isn't read as three fresh issues; (4) a `HARD STOP CHECK` before any registration-success sentence — can the number be pointed to in an actual Result from this turn, or is it a confident-sounding draft. |
+| **Files (1)** | `bookingNonEligibilityAgent`. |
+| **CC** | Not reviewed this session — client instruction was CRC-only. Worth checking whether the same fallback-collision and duplicate-guard gaps exist in CC's version before its next complaint-path change. |
+
+### CLS-01 · The close question ("क्या कुछ और L P G से related help चाहिए?") was gluing onto complaint success/failure/already-registered lines in the same turn — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth, direct follow-up to CPL-01/CPL-08/CPL-09. **CRC only** per client instruction this session; **CC pending**. |
+| **Source** | Same live CRC transcript as CPL-10: nearly every agent turn that registered, confirmed, or restated a complaint ended with "...हमारी team आपसे संपर्क करेगी। क्या कुछ और L P G से related help चाहिए?" appended in the same breath — including turns where the consumer was mid-sentence, still upset, or actively repeating themselves. `Step 10`'s existing `ANSWERING IS NOT RESOLVING` principle was sound but lived only as a general rule; the concrete SUCCESS/FAILURE/ALREADY-REGISTERED templates each separately said "then go to close check," which the model read as continuing in the same output rather than waiting for a later, genuine stopping point. |
+| **The fix** | Every complaint-capable CRC agent's SUCCESS and FAILURE templates now end with an explicit "this sentence is the entire turn — the close question is never appended to it" instruction instead of "then go to close check." The `ALREADY REGISTERED` / `CALL ONCE` / `SAME-ISSUE` short lines got the same "stop — the close question is never appended to it" ending. Each agent's own close-check section (`Step 10` / `SECTION n: CLOSE CHECK` / `Pre-close` / `BLOCK 10`) also gained a `HARD GATE` sentence naming the same rule as a backstop covering every trigger, not only complaint ones. |
+| **Files (10)** | `bookingNonEligibilityAgent`, `bookingEligibleAgent`, `connectionServicesAgent`, `activeDeliveryAgent`, `eligibleDeliveryAgent`, `notEligibleDeliveryAgent`, `postDeliveryAgent`, `genericInfoComplaintAgent`, `paymentAgent`, `subsidyAgent` — every CRC agent holding `bpcl_create_complaint`. |
+| **CC** | Not yet ported. CC carries the identical "then go to close check" phrasing in the identical templates and is exposed to the identical gluing bug. Port before the next CC complaint-path or routing change (§6 rule 4). |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
