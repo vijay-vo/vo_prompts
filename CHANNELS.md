@@ -733,6 +733,20 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **Files (10)** | `bookingNonEligibilityAgent`, `bookingEligibleAgent`, `connectionServicesAgent`, `activeDeliveryAgent`, `eligibleDeliveryAgent`, `notEligibleDeliveryAgent`, `postDeliveryAgent`, `genericInfoComplaintAgent`, `paymentAgent`, `subsidyAgent` — every CRC agent holding `bpcl_create_complaint`. |
 | **CC** | Not yet ported. CC carries the identical "then go to close check" phrasing in the identical templates and is exposed to the identical gluing bug. Port before the next CC complaint-path or routing change (§6 rule 4). |
 
+### CPL-11 · Code-shaped parameter syntax in the prompt taught the model to *narrate* the complaint tool instead of invoking it — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — a defect in one file. **CRC only**; `bookingNonEligibilityAgent` was the sole agent carrying the pattern. |
+| **Source** | Client diagnosis from the same live transcript. The agent emitted, as spoken text, `(bpcl_create_complaint( feedbackDescription=" Consumer reports that their connection is pending shift…", reason="others"))` — narrating the call rather than invoking it, so nothing registered. |
+| **Root cause** | `bookingNonEligibilityAgent` documented the complaint parameters in **code-assignment form** — `Parameters: feedbackDescription = …` / `reason = …` (lines 272-273) and `Set feedbackDescription to … Set reason to "others"` (line 387). No other CRC agent does this. `postDeliveryAgent`, which does not exhibit the bug, documents the identical parameters in declarative prose (`feedbackDescription is a clear English summary…`). Both files carry byte-identical anti-narration rules (`THE TOOL CALL IS THE ACTION`, `never write a tool name, a parameter, JSON, braces, or any code as spoken text`, `If you catch yourself about to describe, spell out, format, or narrate a tool call rather than invoke it: STOP`) — so **the prohibition was never the missing piece; the prompt was simultaneously demonstrating the exact syntax it forbade**, and the demonstration won. |
+| **The fix** | Both spots rewritten into `postDeliveryAgent`'s declarative prose form. The redundancy is also removed: lines 161-163 (`REASON LIST — YOURS ONLY`) and 255-257 (`PARAMETERS`) already documented the same two parameters in prose, so the code-shaped block was a third, competing copy. |
+| **Deliberately NOT changed** | The `preToolMessage = "धन्यवाद भारत पेट्रोलियम…"` pattern, which appears in **every** CRC agent including `postDeliveryAgent` and `paymentAgent`. It is the same code shape, but it demonstrably does not produce narration — the agents carrying it invoke `callHangup` correctly — and it always names a single fixed literal rather than a value the model must compose. Churning ten files over a pattern with no observed failure is not worth the diff. Revisit only if a `callHangup` narration is ever reported. |
+| **Files (1)** | `bookingNonEligibilityAgent`. |
+| **CC** | Not checked — client instruction was CRC-only. Worth grepping CC's `bookingNonEligibilityAgent` for the same `feedbackDescription =` / `Set reason to` shape before its next complaint-path change. |
+
+---
+
 ### CLS-02 · The already-registered reassurance repeated verbatim, carrying no new information each time — CRC only (2026-08-07)
 
 | | |
