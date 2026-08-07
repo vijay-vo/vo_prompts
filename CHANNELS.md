@@ -807,6 +807,23 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### XFER-02 · A no-transfer variant of `genericInfoComplaintAgent`, with the office number back on the complaint-failure path — CRC only, NOT DEPLOYED (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Escalation. Client asked for a second version of the agent in which no consumer is ever routed to a person. |
+| **Status** | **Variant file, not shipped.** `genericInfoComplaintAgent_noTransfer.txt` sits beside the deployed `genericInfoComplaintAgent.txt`; both now carry a `STATUS:` marker on line 1 (repo rule 6.6). Exactly one of the two can ship — the platform config decides, and nothing in the prompts can enforce it. The deployed file is unchanged apart from its marker. |
+| **What it removes** | The whole `SENIOR TEAM TRANSFER` block and the T1–T4 moments; the `callTransferAgent` anchor line; `callTransferAgent` as a `switchagent` destination (`agentName` is now `routingAgent` and nothing else). A domain hand-off is the only reason it switches at all. |
+| **What replaces it** | `THE COMPLAINT IS THE ESCALATION — THERE IS NO PERSON AT THE END OF THIS CALL`. A request for a person or a callback is answered by registering the complaint and saying the team will make contact; if it is already registered, by CLS-02's `NEVER THE SAME SENTENCE TWICE`, ending in honesty about the limit rather than a new promise. |
+| **The failure path — reverts to CPL-07's outcome** | Client instruction, same session: on a `bpcl_create_complaint` FAILURE the variant gives **`{{crcOfficeNumber}}`** again, as the one real thing left. **Delivery differs from CPL-07 deliberately** — it uses this file's current `LONG NUMBER DELIVERY` (whole number in one go, English digit words, `" - "` between digits, three-piece split only on request), **not** the retired 3-3-4 dictation loop with per-piece check questions, which NUM-03 removed and which the rest of the file now directly contradicts. Guards kept from CPL-07: once per call, no retry, never promise the team will contact them (nothing was registered), never substitute the distributor's number, and no number at all if the variable is absent or brace-wrapped. |
+| **The trap it is written against** | Removing the escape route without naming substitutes is what XFER-01 documented: the model fills the vacuum. The variant bans, explicitly, all five substitutes — claiming to connect/transfer/forward, naming a senior or team who will come on the line, narrating its own limitation as machinery (*"मैं आपकी call transfer नहीं कर सकती"*), inviting an office visit, and ending a registrable problem with *"थोड़ी देर बाद फिर call कीजिए"*. The `BANNED, AND WHAT I SAY INSTEAD` anchor menu is kept in full — it matters more here, not less. |
+| **⚠️ Contradicts XFER-01** | XFER-01 deleted `{{crcOfficeNumber}}` channel-wide and `promptQA` **C5e** now scores *any* spoken number to reach us as a violation, in every agent. If this variant ships, C5e needs a carve-out for its failure path (the shape CPL-07's retired **C5e-FAIL** had) or every correct failure call is flagged. **Not done — the variant is not deployed.** |
+| **⚠️ Platform dependency** | `{{crcOfficeNumber}}` was removed from this agent's injection set by XFER-01. It must be injected again for this file, or the failure path silently degrades to the failure line alone — exactly the calls it was written for. Same open dependency NUM-02/CPL-07 carried. |
+| **Not ported** | The other 12 complaint-capable CRC prompts, `routingAgent`, and `Default` still route to `callTransferAgent`. A `Default` human-request still lands here expecting a transfer downstream and now gets a complaint instead — acceptable, but it means this variant is not a channel policy, only one agent's. |
+| **CC** | Not applicable. CC has `calltransfer` inline and no `crcOffice*` variables. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
