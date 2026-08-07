@@ -489,6 +489,18 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **Files** | `postDeliveryAgent`, `activeDeliveryAgent`, `eligibleDeliveryAgent`, `genericInfoComplaint` (KB entry + Section 7 path, with recurring-quality narrowed to leakage/bad quality), `Default` (MODULE E + the weight FAQ, answer-only — it holds no complaint tool), `promptQA` (C3e, C3h, PART B). |
 | **CC gap** | All four CC files still register directly: `postDeliveryAgent:224`, `eligibleDeliveryAgent:97`, `genericInfoComplaintAgent:246`, plus the `Default` FAQ. Porting is mechanical — the block needs no CC translation, since it names the distributor, not a CRC office. |
 
+### WGT-02 · Underweight verify-first was silently losable to the complaint-follow-up shortcut — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**, direct follow-up to WGT-01. **CRC only**; CC gap from WGT-01 still open, this compounds it. |
+| **Source** | Live CRC transcript (client-reported): consumer opens with *"मैंने अभी दो दिन पहले complaint कराई थी... ढाई किलो gas कम थी"* — in one breath naming both "already complained" and "underweight." Routed `Default → activeDeliveryAgent →` (platform, on backend refill-delivered state) `→ postDeliveryAgent`, which registered a complaint immediately with no weigh-first question at all. |
+| **Not a routing bug** | `Default`'s route was correct — underweight is explicitly a delivery-family topic (STAGE 2B example 7b), and the two-hop `activeDeliveryAgent → postDeliveryAgent` hand-off is the documented platform behavior for a family agent resolved by backend state (agent-workflow.md §11.4), not a leaf-to-leaf violation. `postDeliveryAgent` also had the WGT-01 verify-first KB block in full. |
+| **The actual gap** | Two special-case paths in the same file both claimed this utterance and neither named the other. WGT-01's underweight block already overrides the CPL-04 grievance carve-out (a short refill has a remedy) but said nothing about **PATH 4's "complaint follow-up"** case, added later, which fast-paths straight to registering a fresh complaint for *any* topic once the consumer frames it as "I already complained, nothing happened" — including underweight, where "already complained" says nothing about whether the consumer ever tried the distributor-reweigh remedy the whole WGT-01 block exists to offer. With both paths matching and neither yielding, the model picked PATH 4 and the verify-first question never ran. |
+| **The fix** | Underweight named as an explicit exception on both sides of the conflict, in `postDeliveryAgent` and `genericInfoComplaintAgent` (the only two files with both blocks): the underweight block now states it also overrides PATH 4's shortcut, and PATH 4 now points back to the underweight block for that topic. The verify-first question still runs even when the consumer says a complaint was already filed — UNLESS their own words already answer it in this call (they say outright they already weighed it and the distributor refused/did not replace it), in which case registering directly is correct and unchanged. |
+| **Files (2)** | `postDeliveryAgent`, `genericInfoComplaintAgent`. `activeDeliveryAgent` and `eligibleDeliveryAgent` hold the underweight block but no "complaint follow-up" path, so the conflict does not exist there. |
+| **⚠️ Open** | CC has neither block (WGT-01 gap), so this specific conflict cannot exist there yet — but will need the same two-sided fix the moment WGT-01 is ported. |
+
 ---
 
 ### PER-01 · CRC persona reversed — Vaani is at a regional head office and the distributor IS a third party — CRC only (2026-08-05)
