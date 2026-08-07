@@ -3,8 +3,8 @@
 Production voice-AI prompts for Bharat Petroleum (Bharat Gas) LPG consumer support, in Hindi.
 Two channels, one agent topology, two different escalation policies.
 
-**This repo has no version control.** Until that changes, see "Change discipline" below — it is
-the only thing standing between an edit and an unrecoverable regression.
+**This repo is now under git** (first commit + push 2026-08-07, `origin` = `github.com/vijay-vo/bpcl_prompts`).
+Commit deliberately — see "Change discipline" below.
 
 ---
 
@@ -194,7 +194,9 @@ office-visit escalation and still leak third-party phrasing. Check both separate
 
 ## 6. Change discipline
 
-There is no git here, so these rules do the work version control normally would.
+Git is in place (since 2026-08-07), but these rules still matter — a commit history is only useful
+if commits are deliberate and diffable, and the repo's first ~1.6 MB landed as one unreviewed
+baseline commit with no prior history to diff against.
 
 1. **Before editing a prompt, read the channel's own `CLAUDE.md`.** The escalation and persona
    rules differ, and an edit copied across without translating them ships a policy violation.
@@ -211,13 +213,19 @@ There is no git here, so these rules do the work version control normally would.
 6. **Duplicate prompt files need a status marker.** If two versions of a prompt ever sit side by
    side, annotate which one is deployed before touching either. (The old `getConsumerDetails_v2.txt`
    that prompted this rule is gone — CRC has a single `getConsumerDetails.txt`.)
+7. **Commit at logical boundaries, not at session end.** One commit per intended change (a single
+   agent's fix, a CHANNELS.md ledger entry plus its prompt edits, a §4 shared-truth fix landed in
+   both channels) — not one giant commit per session. Write commit messages that say *why*, the
+   same way this file's history sections do. Never `--amend` a pushed commit, never force-push,
+   never commit `.bak` files (rule 2 still applies with git in place).
 
 ---
 
 ## 7. What is deliberately not here yet
 
-- **Version control.** The largest open risk. 1.6 MB of production prompt text with no history,
-  no diff, no rollback, no attribution.
+- **Commit history.** Git now exists (2026-08-07) but the repo's entire prior state landed as one
+  baseline commit — there is no history behind it to diff against or roll back to. Attribution and
+  rollback only start working from here forward, as commits are made deliberately per rule 6.7.
 - **A drift audit.** ~2,800 differing lines across the 14 shared agents have never been classified
   as intended policy vs. unported fix. [CHANNELS.md](CHANNELS.md) §3 lists what is confirmed so far;
   the rest is unclassified.
