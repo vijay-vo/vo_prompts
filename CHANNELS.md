@@ -762,6 +762,21 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### NUM-03 · A fabricated office number was dictated across three minutes; the note-check question became a verbal tic — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth. **CRC only**; **CC pending**. |
+| **Source** | A live CRC transcript. The agent said *"हमारे senior team member आपकी help कर देंगे — मैं आपको हमारे office का number धीरे-धीरे बताती हूँ"* and then dictated a complete ten-digit number in three pieces over roughly three minutes, asking *"क्या आपने नोट कर लिया?"* after every piece, drifting on the digits under consumer read-back, and finally attaching the same question to a sentence that contained **no digits at all** (*"इस नंबर पर हमारे CRC office की टीम उपलब्ध है। क्या आपने इसे नोट कर लिया?"*). |
+| **Two separate defects** | **(a) The number does not exist.** `{{crcOfficeNumber}}` was deleted channel-wide by XFER-01; every agent carries `I HOLD NO OFFICE PHONE NUMBER, AND NEITHER DOES ANY OTHER AGENT … never invent one`. Grepped: no prompt contains that offer phrasing or any office number. **The agent invented the offer and the digits outright**, against an explicit prohibition — the same failure class as CPL-12's fabricated complaint number, now on a phone number the consumer will actually dial. **(b) The check question was routine, not rare.** `LONG NUMBER DELIVERY`'s repeat protocol mandated *"After each piece you ask ONE short check question and STOP"*, so a single number cost six to eight round trips. |
+| **On whether this is the model's fault** | Partly not, and worth recording. The consumer's turns arrive as **growing streaming fragments** (the same artifact `getConsumerDetails`' `LISTENING WHILE THE CONSUMER SPEAKS` rule already describes) and the agent emitted a filler on nearly every fragment. That noise is ASR/platform, not reasoning. **But the protocol multiplied it**: every mandated round trip is another chance for a fragment to be misread, so a confirm-after-every-piece design converts a noisy channel into a compounding failure. Reducing round trips is a reliability fix, not only a UX one. |
+| **The fix — number delivery** | The repeat protocol is rewritten in all 12 files holding it. Pieces are still three, one per turn, but **no check question follows a piece** — the pause is the writing space, and the consumer's own next reply ("आगे", "फिर से", a read-back, silence) is a better signal that costs no turn. The check question is now **at most once per number**, only after the whole number is delivered, and only if the consumer has gone completely silent; **at most twice in an entire call**; and **never attached to a turn that delivered no digits**, which is named explicitly as a verbal tic rather than a check. |
+| **The fix — fabrication** | A `SOURCE GATE` at the head of `LONG NUMBER DELIVERY` in all 12: before any number is spoken, name where it came from — a tool Result received this turn, or a specific injected variable. If neither can be named, the number was invented and is deleted. It states plainly that **no office number exists anywhere in the data or the instructions**, so a number for the consumer to call *us* can never pass the gate, and that a wrong number sends a real person to a stranger. |
+| **Files (12)** | The ten complaint-capable agents plus `Default` and `newConnectionAgent_onHold` — every CRC file holding `LONG NUMBER DELIVERY`. |
+| **CC** | Not ported. |
+
+---
+
 ### CLS-02 · The already-registered reassurance repeated verbatim, carrying no new information each time — CRC only (2026-08-07)
 
 | | |
