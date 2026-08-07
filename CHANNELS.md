@@ -747,6 +747,21 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CPL-12 · Tool narration recurred in an agent with no code-shaped syntax; the anti-narration rule was abstract and the number gate was in one file — CRC only (2026-08-07)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth, direct follow-up to CPL-11. **CRC only**; **CC pending**. |
+| **Source** | A second live CRC transcript, `genericInfoComplaintAgent`: the registering line was spoken correctly and then the call was typed out after it as text — `bpcl_create_complaint( feedbackDescription=" Consumer reports previous complaint was closed without resolution…", reason="others")` — so nothing registered. The agent then spoke a **fabricated** complaint number, a descending digit run, as if the call had succeeded. |
+| **Why CPL-11's fix did not cover it** | CPL-11 removed code-shaped parameter syntax from `bookingNonEligibilityAgent`, the only file that had it. `genericInfoComplaintAgent` has **none** — its parameters are already in declarative prose, and it carries every anti-narration rule verbatim. So the syntax-in-the-prompt theory explains CPL-11 but **not** this: the model produced the shape with no in-prompt model to copy. The fabricated number was likewise not lifted from any prompt (grepped — no specimen exists in CRC); it came from the model's own priors, which is why it was a familiar-looking run. |
+| **Root cause** | Two gaps. (1) The existing prohibition — *"If I catch myself about to describe, spell out, format, or narrate a tool call rather than invoke it: STOP"* — names the **act** but never the **output shape**, so there is nothing concrete to test a draft against. (2) The `HARD STOP CHECK` gating the spoken complaint number on an actual Result existed in **`bookingNonEligibilityAgent` only** (added under CPL-10); the other nine agents had `ANTI-FABRICATION` prose but no per-turn check, which is what let the invented number through after the failed call. |
+| **The fix** | Both landed in all ten complaint-capable agents. (1) An `OUTPUT-SHAPE SELF-CHECK` appended to `THE TOOL CALL IS THE ACTION`: before speaking, test the draft for a tool name anywhere in it, an opening bracket followed by a parameter word, an equals sign, or a quoted English parameter value — any hit means narration, so delete that text, keep only the Hindi line, and invoke the tool on that same turn. It states plainly that a tool name never appears in anything the consumer hears. (2) The `HARD STOP CHECK` propagated to the remaining nine, extended to name the tell: a number that looks sequential, repeated or familiar rather than arbitrary is itself proof of invention, since a real number arrives only inside a Result. |
+| **Specimen discipline** | The check describes the fabricated-number *shape* and deliberately contains **no literal digit string**. A first draft of this fix embedded two specimen numbers as illustrations; they were removed before commit under TTS-01's rule that a specimen in the prompt becomes a hallucinated one on a call — the same reason every sample address, city and phone number was stripped from these prompts. Do not re-add one here. |
+| **Files (10)** | Every CRC agent holding `bpcl_create_complaint`. |
+| **CC** | Not ported. |
+
+---
+
 ### CLS-02 · The already-registered reassurance repeated verbatim, carrying no new information each time — CRC only (2026-08-07)
 
 | | |
