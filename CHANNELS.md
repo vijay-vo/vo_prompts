@@ -22,7 +22,7 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
-### D-01 · `calltransfer` tool exists only in CC
+### D-01 · `calltransfer` tool exists only in CC — **RETIRED: CRC has it too, in every routing-capable agent (XFER-01, then XFER-03)**
 
 | | |
 |---|---|
@@ -613,7 +613,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### XFER-01 · `callTransferAgent` created; `{{crcOfficeNumber}}` deleted channel-wide — CRC only (2026-08-05)
+### XFER-01 · `callTransferAgent` created; `{{crcOfficeNumber}}` deleted channel-wide — CRC only (2026-08-05) — **transfer mechanism SUPERSEDED by XFER-03 (2026-08-11); the T1–T4 moments and the complaint-first ordering still stand**
 
 | | |
 |---|---|
@@ -824,7 +824,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### NUM-04 · `getConsumerDetails_MobileVersion` is the deployed CRC entry agent; its office number is 12 digits with a country code — CRC only (2026-08-11)
+### NUM-04 · `getConsumerDetails_MobileVersion` is the deployed CRC entry agent; its office number is 12 digits with a country code — CRC only (2026-08-11) — **SUPERSEDED by XFER-03: that file is retired and `getConsumerDetails.txt` ships**
 
 | | |
 |---|---|
@@ -849,7 +849,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### GCD-06 · A five-tool variant of `getConsumerDetails`, fetching each domain separately — CRC only, NOT DEPLOYED (2026-08-11)
+### GCD-06 · A five-tool variant of `getConsumerDetails`, fetching each domain separately — CRC only, NOT DEPLOYED (2026-08-11) — **now the QA-environment tool-testing prompt per XFER-03**
 
 | | |
 |---|---|
@@ -862,6 +862,30 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **⚠️ Open — needs the platform team** | Whether these four tools are actually exposed to this agent, and whether they accept `contactNumber` in the same shape `bpcl_fetch_all_api` does. If a tool is not registered the sequence stalls silently on that turn. Confirm before shipping. |
 | **⚠️ Open — latency** | Five sequential round trips behind one "एक मिनट रुकिए" line. Not measurable from here. If the total wait runs long the consumer will speak into it, which the prompt handles (answer briefly, resume where it left off) but does not make pleasant. Worth timing before this variant is chosen over the deployed one. |
 | **CC** | Not applicable. |
+
+---
+
+### XFER-03 · `callTransferAgent` deleted; every routing-capable agent owns `calltransfer` itself — CRC only (2026-08-11)
+
+| | |
+|---|---|
+| **Axis** | Escalation. **Reverses XFER-01's central mechanism** — the dedicated transfer agent — while keeping everything XFER-01 decided about *when* a transfer is correct. Client instruction. |
+| **Supersedes** | **XFER-01's topology**: the 16th agent, the *"`calltransfer` — NOT AUTHORIZED"* clause in every other prompt, the switch-to-`callTransferAgent` path, the platform's automatic invocation on switch, and the `handoffSummary`-carries-the-hours dependency. XFER-01's **four moments (T1–T4)**, its *never volunteer a transfer*, its *never re-ask someone who already asked*, and its complaint-first ordering are all **unchanged and still binding**. |
+| **Change** | `calltransfer` is now held and invoked by **every agent that could previously switch to `callTransferAgent`**: the ten complaint-capable leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer agent, nothing to switch to, and no extra hop. `prompts/callTransferAgent/` is deleted. |
+| **The transfer turn — one parameter, no spoken text** | `calltransfer` is invoked **exactly like `callHangup`**: the agent generates **no text of its own** on that turn and passes **exactly one parameter**, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"`. Nothing else goes with it — no `agentName`, no `handoffSummary`, no `consumerQuery`, no `forwardingNumber`, no reason. Writing the line as text *as well* makes the consumer hear it twice; that is the specific bug the rule exists to prevent. |
+| **The non-committal switch line is retired** | XFER-01 required a warm, non-committal line (`"जी बिल्कुल, एक मिनट।"`) on the switch turn precisely because the switching agent did not yet know whether the transfer would happen. There is no switch turn any more, so there is no line: the transfer turn is silent apart from the `preToolMessage`. `promptQA` **C5d** is rewritten from *"the switch line must not promise a transfer"* to *"the transfer turn carries no spoken text of her own"*. |
+| **The `transfer` carve-out moves** | *"transfer"* was the one forbidden word `callTransferAgent` alone could say. It is now permitted **only inside that `preToolMessage`**, in every agent that holds the tool, and nowhere else in an agent's own speech. |
+| **Who handles a failed transfer** | The calling agent, in place — the same two-outcome shape `callTransferAgent` had. **Success** → it produces **nothing**: no text, no goodbye, and **no `callHangup`** (the platform closes the call; hanging up there cuts the consumer off from the person they were just connected to). **Not success** — out-of-office-hours, platform failure, busy, no-answer → no tool that turn; it says the team could not be reached, states when they can be reached, and **does not close in the same breath as the bad news**. It waits, keeps answering, and calls `callHangup` only once the consumer accepts. |
+| **Hours now come from the tool Result** | XFER-01 read the window out of `handoffSummary`, which no longer reaches anything on this path. The `calltransfer` **Result** carries the reason and, where there is one, the window; the agent converts it to Hindi words. **If the Result gives no window the agent names none** — *"अभी हमारी senior team से सम्पर्क नहीं हो पा रहा, कृपया कुछ समय बाद call कीजिए।"* Inventing a window would land the consumer on a line nobody answers. **This closes XFER-01's open platform dependency (3)** — nothing needs to write hours into `handoffSummary` any more. |
+| **Still no number to give** | On the failure branch a consumer who asks for a number to call gets *"मेरे पास कोई number नहीं है, मैं सिर्फ़ आपकी call transfer कर सकती हूँ।"* No agent holds an office number; `{{crcOfficeNumber}}` does not exist in this channel. |
+| **One attempt per call, never retried** | Unchanged from XFER-01, but now enforced per agent: `calltransfer` is called at most once in a call, and never a second time on the consumer's insistence. |
+| **Topology exception removed** | XFER-01's recorded exception — *"every leaf may also switch to `callTransferAgent`"* — is gone. The shared-truth rule is restored in full: **every specialist is a leaf whose only `switchagent` target is `routingAgent`**, and no leaf switches to another leaf. Reaching a person is a tool call, not a switch. |
+| **Who still never transfers** | `Default` (routes a human request to `genericInfoComplaintAgent` first, so the issue gets registered) and `emergencyAgent` (a live hazard outranks everything). Both keep an explicit *"`calltransfer` — NOT AUTHORIZED"* clause, reworded so it no longer points at a deleted agent. `genericInfoComplaintAgent_noTransfer` (XFER-02) is unaffected — it holds no transfer by design. |
+| **`getConsumerDetails` deployment flip** | `getConsumerDetails.txt` — rewritten here to call `calltransfer` at C2 of its NO-DATA CLOSING — **is now the deployed file**. `getConsumerDetails_MultiToolVersion.txt` becomes the **QA-environment tool-testing prompt** (GCD-06's five-tool fetch). `getConsumerDetails_MobileVersion.txt` is **retired** (NUM-04's twelve-digit dictation closing goes with it). All three `STATUS:` markers rewritten. |
+| **QA and analysis prompts** | `promptQA`: the data-line and **C1**, **C3c**, **C5d**, **C5h** rewritten off the transfer agent onto the inline tool; C5h is now *"after the `calltransfer` tool returns"* and reads the branch off the Result. `postCallAnalysisFlat`: the three `callTransferAgent` references rewritten; the `callTransferred` field and its `"yes"` = fully-succeeded rule are **unchanged**. |
+| **⚠️ Open — needs the platform team** | **(1)** `calltransfer` must be exposed to all thirteen agents listed above, accepting `preToolMessage` alone — the `forwardingNumber` is now the platform's to supply, not the prompt's. **(2)** The tool's **Result** must reach the calling agent on the next turn, carrying success/failure and, on failure, a reason and — where one exists — the office-hours window; the failure branch is written against it. **(3)** The platform must close the call itself on a **successful** transfer, since the agent deliberately calls no tool there. **(4)** `callTransferAgent` must be de-registered as an agent. |
+| **⚠️ Open — `getConsumerDetails_MultiToolVersion`** | As the QA prompt it still carries the `{{crcOfficeNumber}}` dictation closing, and that variable no longer exists. Its no-data ending needs porting to the `calltransfer` ending before QA can test the shipped flow. Flagged in the file's own `STATUS:` line, not fixed here. |
+| **CC** | Entirely untouched. CC has always had `calltransfer` inline in ten agents; CRC's model is now **closer** to CC's, but not identical — CC passes `consumerQuery` and speaks a warm line via its own `preToolMessage`, and CC's failure path captures a callback slot, which CRC still has no concept of. |
 
 ---
 

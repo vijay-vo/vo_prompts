@@ -14,19 +14,22 @@ translating the two axes below.
 
 ## Axis 1 — Escalation: the complaint comes first, then a transfer. Still no office visit.
 
-> **REVISED 2026-08-05 — see [../CHANNELS.md](../CHANNELS.md) XFER-01.** This channel used to have
-> no transfer at all. It now has one, owned by a single agent.
+> **REVISED 2026-08-11 — see [../CHANNELS.md](../CHANNELS.md) XFER-03.** This channel used to have
+> no transfer at all. XFER-01 gave it one, owned by a single agent. XFER-03 deleted that agent and
+> gave the tool to every routing-capable agent instead. The *when* is unchanged; the *how* is not.
 
-**`calltransfer` exists, and exactly one agent holds it: `callTransferAgent`.** Every other prompt
-in this workspace carries an explicit *"`calltransfer` — NOT AUTHORIZED"* clause. No other agent may
-call it, name it, or write it — they reach it by `switchagent` and nothing else.
+**`calltransfer` is held and invoked by every routing-capable agent**: the ten complaint-capable
+leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer
+agent and nothing to switch to. `Default`, `emergencyAgent` and the no-transfer
+`genericInfoComplaintAgent` variant still carry an explicit *"`calltransfer` — NOT AUTHORIZED"* clause.
 
 **`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `promptQA` on
-2026-08-05. **No agent holds, speaks, dictates, or offers a phone number for the consumer to call
-us.** A request for one gets "I don't have a number to give" plus the transfer path where it applies.
-The consumer's **own distributor's** number (`{{ConsumerDetailsDistMobileNumber1}}`/`2`) is
-unaffected. The variable survives in exactly one place: as the `forwardingNumber` **tool parameter**
-inside `callTransferAgent`, which never speaks it. GCD-03, NUM-02 and CPL-07 are all retired.
+2026-08-05, and XFER-03 removed its last home — the `forwardingNumber` is now the platform's to
+supply, not any prompt's. **No agent holds, speaks, dictates, or offers a phone number for the
+consumer to call us.** A request for one gets "मेरे पास कोई number नहीं है, मैं सिर्फ़ आपकी call
+transfer कर सकती हूँ" — the transfer is the only connection on offer. The consumer's **own
+distributor's** number (`{{ConsumerDetailsDistMobileNumber1}}`/`2`) is unaffected. GCD-03, NUM-02
+and CPL-07 are all retired.
 
 **The complaint still comes first.** A transfer is never the first move. Help → route → register →
 *only then*, if the consumer still wants a person, transfer. Vaani **never volunteers** a transfer;
@@ -44,28 +47,31 @@ she offers one only at the four moments below.
 stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
 it: **T3**, and `getConsumerDetails`' no-data closing.
 
-**The switch line promises nothing.** The switching agent speaks a short, warm, non-committal line —
-`"जी बिल्कुल, एक मिनट।"` — and **never says the call is being transferred**, because it does not yet
-know. `callTransferAgent` speaks `"आपकी कॉल ट्रांसफर की जा रही है"` itself, via `preToolMessage`,
-only when the transfer is going ahead. That agent is the sole holder of the `transfer` carve-out.
+**The transfer turn speaks nothing of its own.** `calltransfer` is invoked exactly the way
+`callHangup` is: the agent generates **no text**, and passes **exactly one parameter** —
+`preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"`. Nothing else goes with it: no `agentName`, no
+`handoffSummary`, no `consumerQuery`, no number. Writing that line as text *as well* makes the
+consumer hear it twice. `transfer` is the one word from the forbidden list that may appear — inside
+that `preToolMessage` and nowhere else in an agent's own speech. The old non-committal switch line
+(`"जी बिल्कुल, एक मिनट।"`) is retired with the switch it belonged to.
 
-> **REVISED 2026-08-06 (client instruction).** `calltransfer` is no longer something
-> `callTransferAgent` decides to attempt or invokes itself. **The platform calls `calltransfer`
-> automatically** — `forwardingNumber: {{crcOfficeNumber}}`, `blindTransfer: false`, that exact
-> `preToolMessage` — the instant any agent switches the call to `callTransferAgent`, before its
-> first turn. `callTransferAgent`'s job is now purely to read that attempt's **Result** and react.
-> See CHANNELS.md XFER-01 for the full revision and the open platform dependency this adds.
+> **REVISED 2026-08-11 (client instruction).** XFER-01's automatic-on-switch model is gone with the
+> agent it belonged to. `calltransfer` is invoked **by the agent the consumer is already speaking
+> to**, on its own turn, with `preToolMessage` as its only parameter. See CHANNELS.md XFER-03 for the
+> full revision and the platform dependencies it replaces.
 
-**`callTransferAgent` has two outcomes and no third**, decided from the automatic attempt's Result,
-not from `handoffSummary`. **Success** → it produces **nothing** — no text, no `callHangup`; the
-platform closes the call, and hanging up there would cut the consumer off from the person they were
-just connected to. **Failure** — out-of-office-hours, a platform-side failure, busy, or no-answer,
-all handled identically — → no tool that turn; it says the team could not be reached, states the
-hours from `handoffSummary` in Hindi words, and **stops**.
-It holds **`callHangup`**, and closing is gated on the consumer: it keeps answering until they
-actually accept ("ठीक है", "समझ गया", "फिर call करूँगा", a goodbye) or the line is dead through two
-waits. It never closes in the same turn as the bad news, and turn count is never a reason to close.
-`calltransfer` runs once per call and is never retried, by the agent or by the platform.
+**The transfer has two outcomes and no third**, decided from the tool's **Result** — never from the
+agent's own spoken line, and an absent or unclear Result is never read as success. **Success** → the
+agent produces **nothing** — no text, no `callHangup`; the platform closes the call, and hanging up
+there would cut the consumer off from the person they were just connected to. **Failure** —
+out-of-office-hours, a platform-side failure, busy, or no-answer, all handled identically — → no tool
+that turn; the agent says the team could not be reached and states when they can be reached, in
+Hindi words, **from what the Result carried and from nowhere else**. If the Result names no window,
+it names none: *"अभी हमारी senior team से सम्पर्क नहीं हो पा रहा, कृपया कुछ समय बाद call कीजिए।"*
+Closing is gated on the consumer: the agent **never closes in the same turn as the bad news**, keeps
+answering until they actually accept ("ठीक है", "समझ गया", "फिर call करूँगा", a goodbye) or the line
+is dead through two waits, and only then calls `callHangup`. Turn count is never a reason to close.
+`calltransfer` runs **once per call** and is never retried.
 
 **Who never transfers:** `Default` (routes human requests to `genericInfoComplaintAgent` first, so
 the issue gets registered) and `emergencyAgent` (a live hazard outranks everything). `routingAgent`
@@ -149,8 +155,8 @@ Never invent a complaint number.
 - **A live gas hazard.** `emergencyAgent` is fully carved out — no complaint, no escalation block,
   no closing, while the hazard is live.
 - **No consumer record.** `getConsumerDetails` still has no complaint tool — with no record there is
-  nothing to attach a complaint to. **It now holds `switchagent`, restricted to `callTransferAgent`
-  and nothing else** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
+  nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
+  all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
   is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
   → on yes, switch; on no, `callHangup`. The three-piece dictation loop is **retired** and the office
   hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
@@ -259,16 +265,17 @@ wrong; the factual naming it was rewritten to is also fine, so nothing needs rev
 
 **Tools:** `switchagent`, `callHangup`, `bpcl_create_complaint`, `validatecontactno`,
 `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
-`bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by
-`callTransferAgent` alone**, forbidden by name in every other prompt (XFER-01).
+`bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
+routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default`,
+`emergencyAgent` and the no-transfer `genericInfoComplaintAgent` variant.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
 **Variables unique to this channel:** `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` — the CRC's own
 identity, distinct from `{{ConsumerDetailsDistributorAddress}}` (the consumer's own distributor).
-**`{{crcOfficeNumber}}` no longer exists in any live prompt** (XFER-01, 2026-08-05): it survives only
-as the `forwardingNumber` tool parameter inside `callTransferAgent`, which never speaks it. A request
+**`{{crcOfficeNumber}}` no longer exists anywhere in this channel** (XFER-01, 2026-08-05; its last
+home, the `forwardingNumber` parameter, went with XFER-03 — the platform supplies it now). A request
 for their **own distributor's** number is still `{{ConsumerDetailsDistMobileNumber1}}`/`2`.
 See Axis 2 above for the priority rule. CC has no equivalent — it has no physical location concept
 at all — so this is CRC-only by design, not drift. Logged in [../CHANNELS.md](../CHANNELS.md).
@@ -276,10 +283,12 @@ at all — so this is CRC-only by design, not drift. Logged in [../CHANNELS.md](
 **Folder naming defect:** this workspace uses `genericInfoComplaint/`; CC uses
 `genericInfoComplaintAgent/`. Canonical is `genericInfoComplaintAgent` (NAME-03).
 
-**`getConsumerDetails` now holds `switchagent`, restricted to `callTransferAgent` only** (XFER-01).
+**`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
+**deployed** entry prompt again — `getConsumerDetails.txt` ships, `getConsumerDetails_MultiToolVersion.txt`
+is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is retired.
 Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
 tell the consumer their record isn't available, offer to connect them to the senior team, and either
-switch to `callTransferAgent` on a yes or `callHangup` on a no. That platform-owned hop into
+call `calltransfer` on a yes or `callHangup` on a no. That platform-owned hop into
 `Default` is still described by no prompt — see the open items below.
 
 **Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
@@ -387,15 +396,17 @@ references back in — see CHANNELS.md ZIP-01.
   They work only if the platform resolves the family name to the right variant from backend state.
   If it does not, a not-eligible consumer lands in `bookingEligibleAgent`, which opens with *"the
   system confirms you can book"* — the exact contradiction to avoid.
-- **XFER-01 open items (platform team):** register `callTransferAgent`; **as of 2026-08-06, the
-  platform (not the agent) must invoke `calltransfer` automatically** with `forwardingNumber:
-  {{crcOfficeNumber}}` the instant a call is switched to `callTransferAgent`, before its first turn,
-  and must surface that attempt's Result (success, or a failure reason — out-of-office-hours,
-  platform failure, busy, no-answer) to the agent on that first turn; write senior-team hours into
-  the `handoffSummary` that reaches it, for the failure-branch line (no prompt can compute this, and
-  without it the failure branch names no window); and `callHangup` — **resolved 2026-08-05** — it
-  holds `callHangup`, used only on the failure branch after the consumer accepts; the platform is
-  expected to close a successful transfer itself.
+- **XFER-03 open items (platform team):** expose `calltransfer` to all thirteen routing-capable
+  agents, accepting `preToolMessage` alone — the `forwardingNumber` is the platform's to supply, not
+  any prompt's; surface that call's **Result** to the calling agent on the next turn, carrying
+  success/failure and, on failure, a reason (out-of-office-hours, platform failure, busy, no-answer)
+  and the office-hours window where one exists — the failure branch is written against it and names
+  no window without it; close the call itself on a **successful** transfer, since the agent
+  deliberately calls no tool there; and de-register `callTransferAgent`, whose prompt is deleted.
+- **`getConsumerDetails_MultiToolVersion` still carries the `{{crcOfficeNumber}}` dictation closing**
+  (NUM-04's twelve-digit flow) while being the QA prompt for a channel where that variable does not
+  exist. Its no-data ending needs porting to `getConsumerDetails.txt`'s `calltransfer` ending before
+  QA can exercise the shipped flow.
 - **`postCallAnalysisHuman.txt` was not touched by XFER-01.** It still carries the pre-transfer
   framing. If it is genuinely the human-agent analyser that is harmless; if it also runs on Vaani
   calls it now needs the same C5 rewrite `promptQA` received. Same unresolved question as the root

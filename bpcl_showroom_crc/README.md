@@ -1,8 +1,8 @@
 # bpcl_showroom_crc (CRC)
 
 The Consumer Relationship Centre channel — Vaani speaks as staff at a **regional head CRC office**
-covering many districts and many distributors. 16 agents (the 15 shared ones plus
-`callTransferAgent`), plus the post-call analysis prompts.
+covering many districts and many distributors. 15 agents — the same topology as CC — plus the
+post-call analysis prompts.
 
 **Read [CLAUDE.md](CLAUDE.md) before editing anything here** — it is the channel contract. The
 shared truth that must stay identical to CC lives in [../CLAUDE.md](../CLAUDE.md).
@@ -10,15 +10,17 @@ shared truth that must stay identical to CC lives in [../CLAUDE.md](../CLAUDE.md
 ## What makes this channel different
 
 - **The complaint comes first, then a transfer.** Help → route → register → *only then*, if the
-  consumer still wants a person, `switchagent` to [`callTransferAgent`](prompts/callTransferAgent/).
-  Vaani never volunteers a transfer. **No office visit is ever offered** as an escalation.
-- **`calltransfer` is held by exactly one agent.** Every other prompt carries an explicit
-  *"`calltransfer` — NOT AUTHORIZED"* clause. Since 2026-08-06 the platform invokes `calltransfer`
-  automatically the instant a call switches to `callTransferAgent`; that agent only reads the
-  attempt's Result and reacts.
-- **No phone number is given out.** `{{crcOfficeNumber}}` was removed from the prompts; it survives
-  only as a tool parameter inside `callTransferAgent`, which never speaks it. The consumer's own
-  distributor's number is unaffected.
+  consumer still wants a person, `calltransfer`. Vaani never volunteers a transfer. **No office
+  visit is ever offered** as an escalation.
+- **Every routing-capable agent holds `calltransfer` and invokes it itself** (CHANNELS.md XFER-03,
+  2026-08-11 — the dedicated `callTransferAgent` was deleted). The transfer turn works exactly like
+  `callHangup`: one parameter, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"`, and **no spoken
+  text of the agent's own**. The agent then reads the tool's Result — success → silence; failure →
+  it says the team could not be reached and stays until the consumer accepts. `Default` and
+  `emergencyAgent` still hold no transfer.
+- **No phone number is given out.** `{{crcOfficeNumber}}` does not exist in this channel. A consumer
+  who asks for one on the failure branch is told there is none. The consumer's own distributor's
+  number is unaffected.
 - **Callbacks are not scheduled.** A complaint is registered and the team makes contact — no time
   captured, no window promised.
 - **Persona.** The CRC is a regional head office, not the consumer's own distributor — the
@@ -53,7 +55,6 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 | [connectionServicesAgent/](prompts/connectionServicesAgent/) | `connectionServicesAgent` — KYC, address, mobile, name, surrender, portability, PNG |
 | [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent` — **deployed file is the `_onHold` variant**; the original apply journey sits beside it, parked |
 | [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all; a no-transfer variant sits beside the deployed file |
-| [callTransferAgent/](prompts/callTransferAgent/) | `callTransferAgent` — **CRC only**, the sole holder of `calltransfer`, terminal |
 | [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript |
 
 Two folders hold a **variant beside the deployed file** (`newConnectionAgent`,
@@ -61,14 +62,15 @@ Two folders hold a **variant beside the deployed file** (`newConnectionAgent`,
 before editing either.
 
 **Topology.** `Default` triages the front of the call. Every specialist is a leaf whose only switch
-target is `routingAgent` — **plus**, in this channel only, `callTransferAgent`, which is terminal
-and switches to nothing. Routing a transfer through `routingAgent` would add a hop and risk losing
-the complaint context. Nothing ever routes back to `Default`.
+target is `routingAgent`. Reaching a person is a `calltransfer` tool call, not a switch, so it adds
+no hop and no destination. Nothing ever routes back to `Default`.
 
 **Rules that apply to every prompt file here**
 
-- **`calltransfer` — NOT AUTHORIZED** in every prompt except `callTransferAgent`. No other agent may
-  call it, name it, or write it.
+- **`calltransfer` is authorized in every routing-capable prompt** — the ten complaint-capable
+  leaves, `newConnectionAgent_onHold`, `routingAgent` and `getConsumerDetails`. `Default`,
+  `emergencyAgent` and the no-transfer `genericInfoComplaintAgent` variant still carry an explicit
+  *"NOT AUTHORIZED"* clause.
 - **No phone number is offered.** A request for one gets "I don't have a number to give", plus the
   transfer path where it applies. The consumer's own distributor's number is unaffected.
 - **The complaint comes first.** Help → route → register → *only then* a transfer, and only if the
@@ -76,8 +78,9 @@ the complaint context. Nothing ever routes back to `Default`.
 - **The tool call is the action, not the sentence.** A spoken line with no tool call on that same
   turn is a failed turn — recover by invoking the tool before anything else on the next turn.
 - **One thing speaks per tool turn.** Hindi line as text, no `preToolMessage` — except `callHangup`.
-- **Switching is invisible.** The switching agent speaks a short non-committal line ("जी बिल्कुल, एक
-  मिनट।") and never says the call is being transferred; only `callTransferAgent` may say that.
+- **Switching is invisible.** A `switchagent` turn speaks an anchor line about what the agent is
+  personally looking at, and never names a team, a department or another agent. The one place
+  "transfer" may be said is the `calltransfer` tool's own `preToolMessage`.
 - **Voice/TTS:** Hindi only, 1–2 sentences per turn, one question per turn. "भारत पेट्रोलियम" in
   full, never "BPCL". Never say टंकी or जोड़. Never speak a raw digit or a `{{variable}}`.
   Complaint numbers use English digit words separated by `" - "`.

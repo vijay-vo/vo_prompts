@@ -15,11 +15,11 @@ Commit deliberately — see "Change discipline" below.
 | What it is | Central contact centre for the whole state | Physical consumer-facing office (CRC) in each major city |
 | Who Vaani is | An agent **of Bharat Petroleum**. The distributor is a third party. | Staff at a **regional head CRC office** covering many districts and many distributors. The distributor is **also a third party** (corrected 2026-08-05) |
 | Language for the distributor | "आपके distributor" — third party | "आपके distributor" — third party too. "हमारे यहाँ" refers to **this CRC only**. Never send them travelling |
-| Escalation to a human | `calltransfer` to a senior team, inline in ten agents | **Register a complaint first**, then — only if the consumer still wants a person — `switchagent` to **`callTransferAgent`**, the sole holder of `calltransfer` (CHANNELS.md **XFER-01**, 2026-08-05). **No office visit** — see ESC-01 |
+| Escalation to a human | `calltransfer` to a senior team, inline in ten agents | **Register a complaint first**, then — only if the consumer still wants a person — **`calltransfer`, invoked by the agent itself** (CHANNELS.md **XFER-03**, 2026-08-11, superseding XFER-01's dedicated transfer agent). **No office visit** — see ESC-01 |
 | Callbacks | **Scheduled** — after a failed `calltransfer` only, Vaani asks for a slot (9am–5pm, within 15 days) and writes it into the complaint; no complaint number is spoken on a callback complaint. All ten complaint-capable agents support this | Not scheduled — a complaint is registered and the team makes contact, with no time captured and no window promised |
 | Extra prompts | `postCallAnalysisFlat.txt` | — |
 
-Both channels run the **same 15-agent topology** (CRC has a 16th, `callTransferAgent` — XFER-01), the same handoff contract, the same LPG domain
+Both channels run the **same 15-agent topology** (CRC's 16th agent, `callTransferAgent`, was deleted by XFER-03), the same handoff contract, the same LPG domain
 facts, and the same Hindi/TTS voice rules. Those are shared truth and must not diverge.
 
 Every intended difference is recorded in [CHANNELS.md](CHANNELS.md). **A difference between the
@@ -101,7 +101,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 | `connectionServicesAgent` | KYC, address, mobile, name, surrender, portability, PNG. |
 | `newConnectionAgent` | New connection / Ujjwala / PMUY. |
 | `genericInfoComplaintAgent` | Catch-all: how-to, equipment faults, behaviour complaints. |
-| `callTransferAgent` | **CRC only.** Owns `callHangup`. `calltransfer` now fires automatically, invoked by the platform the instant a call switches to this agent — it no longer decides to attempt or invokes it itself (2026-08-06, CHANNELS.md XFER-01). It reads that attempt's Result: success → goes silent, the platform closes it; failure (out-of-office-hours, platform failure, busy, or no-answer) → says the team could not be reached, states the hours from `handoffSummary`, and closes only once the consumer accepts. Terminal — switches to nothing. |
+| ~~`callTransferAgent`~~ | **Deleted 2026-08-11 (CHANNELS.md XFER-03).** Every routing-capable CRC agent now holds `calltransfer` and invokes it itself, passing `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"` and nothing else, with no spoken text of its own — then reads the Result: success → silence, the platform closes the call; failure → it says the team could not be reached, gives the window the Result carried, and closes only once the consumer accepts. |
 
 **Known naming defects — do not propagate:**
 - CRC's folder is `genericInfoComplaint/`, CC's is `genericInfoComplaintAgent/`. Canonical is
@@ -119,9 +119,9 @@ Change these in **both** channels or in neither.
 **Topology.** `Default` triages the front of the call. Every specialist is a leaf whose only
 switch target is `routingAgent`. No leaf switches to another leaf. **Nothing ever routes back to
 `Default`.** `routingAgent` never routes to itself or to `Default`.
-**One recorded exception, CRC only (XFER-01):** every leaf may *also* switch to `callTransferAgent`.
-Routing a transfer through `routingAgent` would add a hop and risk losing the complaint context that
-agent depends on. `callTransferAgent` is terminal and switches to nothing.
+XFER-01's recorded exception — every leaf may *also* switch to `callTransferAgent` — was **removed by
+XFER-03 (2026-08-11)** along with the agent itself. Reaching a person is a `calltransfer` tool call
+made by the agent the consumer is already speaking to, not a switch, so the rule above holds in full.
 
 **Handoff contract.** `switchagent` carries `agentName`, `handoffSummary`, `preToolMessage`.
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
@@ -136,9 +136,11 @@ else on the next turn. The agent's own spoken line is never evidence a tool ran;
 (CHANNELS.md CPL-03 for the complaint case, XFER-01 for the generalisation to every tool.)
 
 **The tool-turn rule.** On a tool turn exactly one thing speaks. Write the Hindi line as regular
-**text** and pass **no** `preToolMessage`. The single exception is `callHangup`, which carries the
-exact closing line in `preToolMessage` and generates no text of its own. Doing both makes the
-consumer hear the line twice — that is the bug this rule exists to prevent.
+**text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
+spoken line in `preToolMessage` while generating no text of their own: `callHangup`, which carries
+the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
+`"आपकी कॉल ट्रांसफर की जा रही है"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
+Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent.
 
 **Switching is invisible.** Never reveal that other agents, teams, experts, or systems exist.
 Forbidden on a `switchagent` turn: transfer, connect, specialist, agent, team, department, desk,
@@ -146,9 +148,9 @@ switch, handoff, forward, भेजती, जोड़ती. **A ban list is o
 prompt now also carries a *menu of anchor lines* saying what to speak instead ("ज़रा booking system
 check करती हूँ, एक मिनट।"), because a prompt that only forbids gives the model nothing to reach for
 and it reaches for "मैं आपको हमारे department से connect करती हूँ" (XFER-01).
-Two exceptions, both because the consumer is about to hear a different voice: CC's `calltransfer`,
-and CRC's `callTransferAgent`, which alone may say "आपकी कॉल ट्रांसफर की जा रही है". The agent
-*switching to* it may not — it does not yet know whether the transfer will happen.
+One exception in each channel, because the consumer is about to hear a different voice: the
+`calltransfer` tool's own `preToolMessage`. In CRC that message is "आपकी कॉल ट्रांसफर की जा रही है"
+and it is the **only** thing spoken on that turn — the agent writes no text of its own (XFER-03).
 
 **Emergency overrides everything.** A confirmed gas hazard in any agent at any moment switches to
 `emergencyAgent`, bypassing all gating. While the hazard is live that agent cannot switch, cannot
@@ -232,13 +234,13 @@ baseline commit with no prior history to diff against.
 - **Lint tooling** (`/channel-lint`) and **cross-channel diff** (`/prompt-diff`).
 - **Scenario tests** — golden transcripts (gas leak, overcharge at door, KYC-blocked booking,
   out-of-scope ladder) with expected route and expected closing.
-- - **Platform dependencies for `callTransferAgent`** (CHANNELS.md XFER-01, revised 2026-08-06):
-  registering the agent; **the platform, not the agent, invoking `calltransfer` automatically**
-  (with `forwardingNumber: {{crcOfficeNumber}}`) the instant a call switches to it, before its first
-  turn; surfacing that attempt's Result — success, or a failure reason (out-of-office-hours, platform
-  failure, busy, no-answer) — to the agent on that first turn; writing senior-team hours into the
-  `handoffSummary` that reaches it, for the failure-branch line; and closing the call itself on a
-  **successful** transfer, since the agent deliberately calls no tool at that point.
+- **Platform dependencies for inline `calltransfer`** (CHANNELS.md XFER-03, 2026-08-11):
+  exposing `calltransfer` to all thirteen routing-capable agents, accepting `preToolMessage` alone —
+  the `forwardingNumber` is the platform's to supply; surfacing that call's **Result** to the agent on
+  the next turn, carrying success/failure and, on failure, a reason (out-of-office-hours, platform
+  failure, busy, no-answer) and the office-hours window where one exists; closing the call itself on a
+  **successful** transfer, since the agent deliberately calls no tool at that point; and de-registering
+  `callTransferAgent`.
 
 - **A CRC `CUSTOMER_STATUS_SPEC`.** CRC's [agent-workflow.md](bpcl_showroom_crc/docs/agent-workflow.md)
   §7 links to `customerStatus-spec.md`, which does not exist in that workspace.
