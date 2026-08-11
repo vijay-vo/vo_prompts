@@ -54,12 +54,12 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 | [subsidyAgent/](prompts/subsidyAgent/) | `subsidyAgent` — subsidy / DBTL / PAHAL |
 | [connectionServicesAgent/](prompts/connectionServicesAgent/) | `connectionServicesAgent` — KYC, address, mobile, name, surrender, portability, PNG |
 | [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent` — **deployed file is the `_onHold` variant**; the original apply journey sits beside it, parked |
-| [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all; a no-transfer variant sits beside the deployed file |
+| [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all: how-to, equipment faults, behaviour complaints |
 | [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript |
 
-Two folders hold a **variant beside the deployed file** (`newConnectionAgent`,
-`genericInfoComplaintAgent`). Every file with a twin carries a `STATUS:` marker on line 1 — read it
-before editing either.
+Two folders hold a **variant beside the deployed file** (`newConnectionAgent`, whose original apply
+journey is parked; `getConsumerDetails`, whose QA prompt exercises the individual lookup tools).
+Every file with a twin carries a `STATUS:` marker on line 1 — read it before editing either.
 
 **Topology.** `Default` triages the front of the call. Every specialist is a leaf whose only switch
 target is `routingAgent`. Reaching a person is a `calltransfer` tool call, not a switch, so it adds
@@ -68,9 +68,8 @@ no hop and no destination. Nothing ever routes back to `Default`.
 **Rules that apply to every prompt file here**
 
 - **`calltransfer` is authorized in every routing-capable prompt** — the ten complaint-capable
-  leaves, `newConnectionAgent_onHold`, `routingAgent` and `getConsumerDetails`. `Default`,
-  `emergencyAgent` and the no-transfer `genericInfoComplaintAgent` variant still carry an explicit
-  *"NOT AUTHORIZED"* clause.
+  leaves, `newConnectionAgent_onHold`, `routingAgent` and `getConsumerDetails`. `Default` and
+  `emergencyAgent` still carry an explicit *"NOT AUTHORIZED"* clause.
 - **No phone number is offered.** A request for one gets "I don't have a number to give", plus the
   transfer path where it applies. The consumer's own distributor's number is unaffected.
 - **The complaint comes first.** Help → route → register → *only then* a transfer, and only if the

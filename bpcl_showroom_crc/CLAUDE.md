@@ -20,8 +20,8 @@ translating the two axes below.
 
 **`calltransfer` is held and invoked by every routing-capable agent**: the ten complaint-capable
 leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer
-agent and nothing to switch to. `Default`, `emergencyAgent` and the no-transfer
-`genericInfoComplaintAgent` variant still carry an explicit *"`calltransfer` — NOT AUTHORIZED"* clause.
+agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
+*"`calltransfer` — NOT AUTHORIZED"* clause.
 
 **`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `promptQA` on
 2026-08-05, and XFER-03 removed its last home — the `forwardingNumber` is now the platform's to
@@ -266,8 +266,8 @@ wrong; the factual naming it was rewritten to is also fine, so nothing needs rev
 **Tools:** `switchagent`, `callHangup`, `bpcl_create_complaint`, `validatecontactno`,
 `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
 `bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
-routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default`,
-`emergencyAgent` and the no-transfer `genericInfoComplaintAgent` variant.
+routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default` and
+`emergencyAgent`.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
