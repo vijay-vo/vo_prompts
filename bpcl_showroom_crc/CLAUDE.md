@@ -285,7 +285,8 @@ at all — so this is CRC-only by design, not drift. Logged in [../CHANNELS.md](
 
 **`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
 **deployed** entry prompt again — `getConsumerDetails.txt` ships, `getConsumerDetails_MultiToolVersion.txt`
-is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is retired.
+is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
+(git history only, along with `prompts/callTransferAgent/`).
 Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
 tell the consumer their record isn't available, offer to connect them to the senior team, and either
 call `calltransfer` on a yes or `callHangup` on a no. That platform-owned hop into
