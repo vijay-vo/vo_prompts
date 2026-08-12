@@ -945,6 +945,24 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### RTE-03 · `Default` classifies before it falls back, and probes once before routing a bare request for a person — CRC only, CC pending (2026-08-12)
+
+| | |
+|---|---|
+| **Axis** | Neither — routing. Live calls were landing in `genericInfoComplaintAgent` almost regardless of what the consumer said. |
+| **Two structural causes** | **(1)** `INTERRUPT B` routed *every* human request to `genericInfoComplaintAgent` **on the same turn**, with no attempt to learn what the problem was — a large share of calls by itself. **(2)** `genericInfoComplaintAgent` is defined as *"the unified agent for all generic information and complaints not owned by a dedicated agent"*, so any turn where triage was skipped or the intent was fuzzy landed there safely. A catch-all that accepts anything becomes the path of least resistance. |
+| **The pattern already existed** | `STAGE 2B` is a refill triage that *"uses conversational questions to classify intent"* and is an explicit carve-out from Default's no-questions rule. This row generalises that pattern to the front of the call rather than inventing a mechanism. |
+| **CLASSIFY BEFORE YOU FALL BACK** | New block above the STAGE 3 routing table: before routing anything to the catch-all, Default walks the owner list — booking failure, a problem with an actual delivery, money in any form, subsidy/DBTL, connection services, new connection, hazard — and routes to the first that fits. `genericInfoComplaintAgent` is reachable **only when none fits**. Stated with the reason, since a rule without one erodes: routing an owned query to the catch-all costs the consumer an agent that had their data and their flow, and makes them explain themselves again to get nowhere. |
+| **One probe on a bare request for a person** | If the consumer has already described a problem anywhere in the call, Default does **not** ask — it classifies and routes. If it does not know the issue, it asks exactly **one** question and that question is the whole turn, no tool call. On the next turn it routes on whatever came back. **Never a second question**: if they named nothing placeable or declined ("बस connect करो"), it routes to `genericInfoComplaintAgent` immediately, because pressing twice is the stalling the never-re-ask rule exists to stop. Client's call on the budget of one. |
+| **The constraint this is designed around** | Default must not gather facts — its own rules forbid collecting dates, days elapsed, amounts or quantities before a switch, and `promptQA` **C11** reports exactly that. So the probe is scoped to the **topic** and nothing else: what the problem is, never a date, an amount, a booking number or a complaint number. Default finds out WHO should help; the specialist gathers the case. Without that scoping this row would have built the behaviour C11 flags. |
+| **Distributor details are treated as a symptom** | A request for the distributor's name, address or number gets the same single probe first — it is usually a cylinder that has not come, a booking that failed, or money taken. If a problem is named, it routes to the agent that owns it; only a genuine bare contact-detail request goes to the catch-all. `Default` still holds none of that data (DATA-01, unchanged). |
+| **`routingAgent` deliberately unchanged** | Client's call. Mid-call it usually has a `handoffSummary` and more context, so it misclassifies less, and it is meant to be the silent re-router. It will still send ambiguous queries to the catch-all — a known, accepted gap, not drift. |
+| **QA** | `promptQA` **C19** (an owned query routed to the catch-all — not reportable when the query is genuinely generic or the consumer declined to describe it) and **C20** (a bare request for a person routed or escalated with no probe; a second probe after they answered or declined; asking for specifics on the probe turn, which is already a C11 violation). |
+| **Files (2)** | `Default.txt`, `promptQA.txt`. |
+| **CC** | Not ported. CC's `Default` has the same catch-all pull and the same same-turn escalation route. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
