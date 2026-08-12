@@ -963,6 +963,24 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### RTE-04 · `genericInfoComplaintAgent` answers from `{{customerStatus}}` before it registers; `Default` stops advertising the catch-all — CRC only, CC pending (2026-08-12)
+
+| | |
+|---|---|
+| **Axis** | Neither — routing and complaint discipline. Follows RTE-03, same reported symptom: calls landing in the catch-all, and the catch-all acting on the consumer's sentence without ever looking at its own data. |
+| **Amends CPL-04** | CPL-04's grievance carve-out let a grievance skip the whole `RESOLUTION LADDER` and register directly. Because nearly everything reaching this agent *sounds* like a grievance about something that already happened, the carve-out fired every time and step 2 — *"can I resolve it from my own data?"* — never ran. **The carve-out no longer skips the data.** |
+| **Same defect class as the 2026-08-05 decision** | The `activeDeliveryAgent` case (grievance carve-out vs Check 4, complaint registered on turn one while the backend said delivery was in process) was diagnosed and the fix **declined** as rare. It has now been reported as widespread in a different agent. **Client scoped this fix to `genericInfoComplaintAgent` and `Default` only** — the other nine agents keep the existing carve-out, so the August decision stands where it was made. |
+| **The new order in `genericInfoComplaintAgent`** | Read `{{customerStatus}}` before acting on anything — before a complaint, before a transfer, before answering. Give the **data-backed answer first**, in plain Hindi. Stop, let them respond. Register only if they still want it, if they say the record is wrong, if the record confirms the problem, or if the record holds nothing useful. **The same order applies before a transfer**: never move a consumer to a person on a problem that was never looked up. |
+| **What did NOT change** | Where the record adds nothing, a grievance still registers directly — no stalling, no interrogation, no making them ask twice. The change is that the agent *looks* first, never that it refuses to register. Stated explicitly in the prompt, because the obvious way to over-correct this is to start withholding complaints. |
+| **`Default` stops advertising the catch-all** | RTE-03 made Default check owners first but left `genericInfoComplaintAgent`'s routing entry at six lines of *"Routes:"* — generic booking queries, generic delivery queries, equipment, complaints, escalations. **That list was itself the attractor**: it reads as a match for almost anything. It is now two lines that describe no topics at all — reached only by elimination, with an explicit *NOT this agent, ever* list naming every owned domain. You cannot make an agent unattractive while enumerating everything it accepts. |
+| **The name is the other half, and is out of reach** | "generic" invites everything, but `agentName` must match the platform registry, so renaming is a config change, not a prompt one. Not attempted. |
+| **Deliberately not done** | An owner list inside `genericInfoComplaintAgent` so it bounces misrouted queries — client's call: its existing routing rule stays, and the data instruction carries the weight instead. |
+| **QA** | `promptQA` **C21** — a complaint or transfer on the first turn against a stated problem, with no data-backed answer and no sign the record was read. Not reportable when the record genuinely holds nothing, or when the consumer asked for a complaint outright. |
+| **Files (3)** | `genericInfoComplaintAgent.txt`, `Default.txt`, `promptQA.txt`. |
+| **CC** | Not ported. CC has no `{{customerStatus}}` equivalent in this agent and its own catch-all pull is unexamined. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
