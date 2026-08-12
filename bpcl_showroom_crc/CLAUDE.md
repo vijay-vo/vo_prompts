@@ -423,10 +423,13 @@ references back in — see CHANNELS.md ZIP-01.
   (NUM-04's twelve-digit flow) while being the QA prompt for a channel where that variable does not
   exist. Its no-data ending needs porting to `getConsumerDetails.txt`'s `calltransfer` ending before
   QA can exercise the shipped flow.
-- **`postCallAnalysisHuman.txt` was not touched by XFER-01.** It still carries the pre-transfer
-  framing. If it is genuinely the human-agent analyser that is harmless; if it also runs on Vaani
-  calls it now needs the same C5 rewrite `promptQA` received. Same unresolved question as the root
-  `CLAUDE.md` §2b flags.
+- **`postCallAnalysisHuman.txt` — CONTEXT fixed 2026-08-11, subject framing still open.** Both it and
+  `postCallAnalysisFlat` carried a CONTEXT paragraph saying *"there is no call transfer … no senior
+  team exists to hand the call to live"* and describing the deleted `{{crcOfficeNumber}}` dictation —
+  false since XFER-01 and directly contradicting the calltransfer text elsewhere in the same file.
+  Both now describe the XFER-03 inline transfer. **Still open:** whether this file is genuinely the
+  human-agent analyser, since its CONTEXT names *"the BPCL LPG agent (Vaani)"*. Its empathy
+  checkpoint no longer conflicts with anything — CLS-03 retired the ban.
 - **BAN-01 and CPL-08 are shared-truth fixes currently living in CRC only** (2026-08-05, client-scoped).
   CC carries the identical ban-list gap and the identical `FAILED TURN` clause, and is exposed to both.
   Port them before the next CC complaint-path or routing change. **GCD-05** is CRC-only by nature —

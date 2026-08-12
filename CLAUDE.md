@@ -70,13 +70,15 @@ call; QA judges the agent. Do not run QA first and do not treat either as a subs
 `postCallAnalysisHuman` and `promptQA` — rather than flat counts. Keep both outputs' nested shapes
 stable: anything that consumes them breaks silently when a field is renamed or flattened.
 
-⚠️ **Known inconsistency, needs a decision.** `postCallAnalysisHuman.txt` still describes its subject
-as *"the BPCL LPG agent (Vaani)"* in its own CONTEXT block, and its `SCORING A NEW-CONNECTION HOLD OR
-A ZIP CALL` section scores Vaani-specific behaviour. If it is the **human**-agent analyser, that
-framing is wrong and should be rewritten to name the human agent. If it is in fact also run on Vaani
-calls, then its **Empathy and Acknowledgement** checkpoint conflicts with the specialist-agent
-empathy ban (CHANNELS.md CPL-05) and needs the same carve-out `promptQA` C3j now carries. Resolve
-which before the next monitoring change.
+⚠️ **Known inconsistency, still needs a decision — but half of it is now resolved.**
+`postCallAnalysisHuman.txt` still describes its subject as *"the BPCL LPG agent (Vaani)"* in its own
+CONTEXT block, and its `SCORING A NEW-CONNECTION HOLD OR A ZIP CALL` section scores Vaani-specific
+behaviour. If it is the **human**-agent analyser, that framing is wrong and should be rewritten to
+name the human agent — **that question is still open.** The second half is closed: its **Empathy and
+Acknowledgement** checkpoint used to conflict with the specialist-agent empathy ban, and CHANNELS.md
+**CLS-03 (2026-08-11) retired that ban**, so warmth is now correct behaviour in both analysers and no
+carve-out is needed. Both analysers' CONTEXT blocks were corrected in the same pass — they had said
+*"there is no call transfer … no senior team exists"*, which stopped being true at XFER-01.
 
 ---
 
