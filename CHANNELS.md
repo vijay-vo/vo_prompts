@@ -981,6 +981,24 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CPL-15 · The complaint number is what decides success or failure — two outcomes, never a third — CRC only, CC pending (2026-08-12)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth. Closes the hole CPL-14 left open. |
+| **The report** | Another fabricated registration, from a 13:38 transcript on 12-08-2026 — a delivery-OTP complaint narrated end to end in one turn: *"एक मिनट रुकिए, आपकी शिकायत दर्ज की जा रही है … आपकी शिकायत दर्ज हो गई है। आपका शिकायत नंबर है पाँच - सात - आठ - नौ - दो - एक - चार - तीन - दो - एक।"* Registering line, success line and a ten-digit number in a single breath, in **Hindi** digit words again (NUM-01). |
+| **What CPL-14 already covers** | This exact turn shape. CPL-14 landed at 16:24 the same day and the transcript is from 13:38, so it is **pre-fix evidence**, not a survival of the fix. Its structural test — *the registering line and the number are never in the same turn, and a turn containing both is proof no tool ran* — makes this output impossible. Note the digits here run `5 7 8 9 2 1 4 3 2 1`, no tidy sequence: CPL-14's "neat ascending or descending run" tell would have missed it, and the turn-shape test would not. **The tell is a secondary signal; the structure is the rule.** |
+| **What was genuinely missing** | The prompts had two branches — success → speak the number, failure → the technical-problem line — but never said **what sorts a Result into one or the other**. Success was left as an unstated property of the Result, and nothing covered a Result that comes back looking successful while carrying no readable number: field absent, empty, curly-braced, or a placeholder. The success gate said *"if I cannot point to it there, I do not have one and I speak none"* — correct, and it stops there. It tells the agent what **not** to say and never what to say instead, and a model standing in that gap with a consumer waiting fills it. |
+| **The fix — the number is the test, and there is no third state** | New clause in all ten complaint-capable agents, directly under the CPL-14 clause. **A real number in the Result is SUCCESS; no number is FAILURE** — and "no number" covers every way it can be missing: the tool errored, no Result came back, the field is absent, empty, blank, curly-braced, or a placeholder. It is failure **whatever else the Result says, including the word success**. The two branch labels now name the test rather than an abstract outcome: *On SUCCESS — a real complaint number came back in the Result* / *On FAILURE — no complaint number came back, for any reason*. Nothing new to route to: the failure branch is the existing one, unchanged. |
+| **NO NUMBER MEANS NO REGISTRATION** | Banned explicitly alongside inventing a number: reusing one from earlier in the call or from something the consumer said, reading out a partial one, and — the quieter failure the old wording permitted — **dropping the number but claiming the registration anyway** ("दर्ज हो गई है" with no number, the S M S line, "team संपर्क करेगी"). Speaking none was already required; saying nothing in its place was not. |
+| **Why failure, when a complaint may exist** | It may. Telling the consumer registration hit a problem costs them nothing and is true of everything Vaani can see; handing them a number that does not exist sends them away believing they have a complaint on record, and they discover otherwise only when they try to use it. The failure branch's existing no-retry rule keeps the honest answer from creating a duplicate. |
+| **The `FAILURE-LINE GATE` moved with it** | That gate let the technical-failure line be spoken only against *"a FAILURE Result"*, which under the new test would have locked the agent out of the very branch it is now told to take. It now reads on the same axis — the line is spoken when a call of the agent's own came back **without a number**, an explicit failure or a numberless Result alike. Its own purpose is unchanged: a frustrated consumer, a repeated question or a confusing turn is still not a tool failure. |
+| **QA** | `promptQA` **C22** — provenance, where C17 is turn shape. Every spoken number must match a visible Result digit for digit; report a number matching none, a number reused from earlier in the call, and a registration claimed successful with no number behind it — that last is the same defect as an invented number, not a lesser one. Taking the failure branch is correct behaviour and never reportable. |
+| **Files (11)** | Ten complaint-capable agents, `promptQA`. |
+| **CC** | Not ported. CC's complaint path has the identical two-outcome gap, and CPL-14 is still unported there too. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
