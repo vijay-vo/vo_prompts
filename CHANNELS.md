@@ -928,6 +928,23 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CPL-14 · A complaint and its number were fabricated in a single turn; `calltransfer` capped at one attempt and barred from switching after failure — CRC only, CC pending (2026-08-12)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth, three separate live defects from 12-08-2026 CRC transcripts. |
+| **Defect 1 — the fabricated complaint** | `connectionServicesAgent`, 10:00:20, **one turn**: *"एक मिनट रुकिए, आपकी शिकायत दर्ज कर रही हूँ … आपकी शिकायत दर्ज हो गई है। आपका शिकायत नंबर है आठ - नौ - छह - सात - पांच - चार - तीन - दो - एक - शून्य।"* No tool ran. The whole registration was narrated and the number invented — note the digits run in a near-perfect descending sequence, and they were spoken in **Hindi** digit words, violating NUM-01 as well. |
+| **Why every existing rule missed it** | CPL-03, CPL-11 and CPL-12 all attack the same failure from the same angle — *"speaking the line is not invoking the tool"* — and all of them assume the agent narrates the **registering** step and then stops. None of them said the thing that makes this instance impossible: **a Result cannot arrive on the turn the tool was invoked**, so the success line and the registering line can never share a turn. The prompts described the two turns separately but never stated that they are two. |
+| **The fix — a structural test, not another prohibition** | New clause in all ten complaint-capable agents, directly under `THE TOOL TURN`: the registering line and the complaint number are **never in the same turn, and a turn containing both is proof no tool ran**. THIS turn: registering line + tool call, and nothing else — no number, no "दर्ज हो गई है", no SMS sentence, no "team संपर्क करेगी". NEXT turn, and only against a real Result: the success line. Plus the tell — *digits running in a neat ascending or descending sequence are the giveaway that they were generated rather than read*. |
+| **Defect 2 — the agent wrote the consumer's reply** | `getConsumerDetails`, same day: *"कृपया पुष्टि कीजिए, आपका मोबाइल नंबर seven - zero - one … है? **हाँ, सही है।**"* — it asked for confirmation and then supplied the confirmation itself, then acted on it. The file's `HARD STOP CHECK` already forbade exactly this, naming "a हाँ" specifically, and it was violated anyway. **A rule that specific failing means placement and framing, not wording.** So it moves to the top of the prompt as an identity-level rule — *you invented a consumer who agreed with you, and then acted on it; this is fabricating consent* — with a purely mechanical pre-send test: find the last `?`, delete everything after it. Applied to both `getConsumerDetails` files. |
+| **Defect 3 — a second transfer, and a switch after a failed one** | Live calls showed `calltransfer` attempted more than once, and the agent switching to another agent after a transfer failed. **Both now banned outright in all thirteen transfer-holding agents.** One attempt per call, full stop — once attempted the tool is finished for that call whatever the Result. On a repeat request the agent says she already tried and the team could not be reached, freshly worded, and never pretends to try again. |
+| **Never switch after a failed transfer — the reasoning matters** | `switchagent` is not a recovery. The consumer has just been told they cannot have the person they asked for; handing them to a fresh agent that holds none of the conversation makes them start the entire story over, at the worst possible moment. The agent that attempted the transfer already has everything — it stays, answers what it can from that context, and registers anything registrable it has not already registered. |
+| **QA** | `promptQA` **C17** (a number sharing a turn with the registering line is fabricated — highest severity, plausibility irrelevant) and **C18** (a second `calltransfer` anywhere in a call; any `switchagent` following a failed transfer; staying and continuing to help is correct and never reportable). |
+| **Files (16)** | Ten complaint-capable agents (defect 1), thirteen transfer-holding agents (defect 3), both `getConsumerDetails` files (defect 2), `promptQA`. |
+| **CC** | Not ported. CC's complaint path carries the identical CPL-03 framing and the identical gap, and CC transfers inline from ten agents with no one-attempt cap. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
