@@ -910,6 +910,24 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### PCA-01 · `callResult` gains a fifth value, `callTransferred`, and is decided at the end of the call — CRC only, CC pending (2026-08-11)
+
+| | |
+|---|---|
+| **Axis** | Neither — post-call analysis. **Reverses XFER-01's deliberate no-new-enum-value decision.** Client instruction; client confirms there is no downstream config issue with a fifth value. |
+| **Supersedes** | XFER-01's mapping of a transfer onto the existing four values, and its stated reason (*"no new enum value was added, deliberately, so nothing downstream breaks"*). The `callTransferred` **field** is unchanged and still `"yes"`/`"no"`. |
+| **The new ladder** | `callTransferred` > `complaintRegistered` > `complaintFailed` > `issueResolved` > `unresolved`. A successful transfer **outranks a complaint registered earlier in the same call** — it is the only outcome where the call physically left the agent and ended somewhere else, so it is what the call ended as. |
+| **Decided last, not first** | `callResult` is now explicitly settled **after reading the whole transcript end to end**, never on the first matching event, and never on an outcome that was later undone — a complaint claimed then reported failed is a failure, an answer later contradicted is not an answer, a transfer that did not go through is not a transfer. The `complaintRegistered` field already carried this instruction (*"let the last thing that happened win"*); `callResult` never did, and used a bare priority ranking instead. |
+| **Why the ladder was kept rather than pure last-state-wins** | Literal "whatever happened last" loses the complaint signal: a complaint registered at two minutes, followed by an unrelated question answered cleanly at eight, would score `issueResolved` and the complaint would vanish from the disposition. The ladder is a ranking of **what the call ended as**, applied once, at the end. |
+| **A failed transfer is never `callTransferred`** | The agent still has the call, so it ends however it actually ends — `complaintRegistered` if one was registered earlier, `unresolved` if the customer was left with nothing. Keeps `callResult` and the `callTransferred` field in permanent agreement: one is `"callTransferred"` iff the other is `"yes"`. |
+| **`fcr` on a transferred call is always `"no"`** | Two reasons, both stated in the prompt. First contact resolution excludes calls handed to anyone else, by standard definition. And it is unobservable: the transcript stops at the moment the transfer succeeds, so `"yes"` would assert something the transcript cannot show. The existing *"immediate need was met"* instruction is about an answer versus a complete fix and explicitly does not license `"yes"` here. A failed transfer is `"no"` too. |
+| **`csat` on a transferred call** | Bounded, not fixed — still predicted from observable tone. Default **3**; **4** when the customer stayed cooperative and the transfer came promptly on their first ask; **2**/**1** when they asked repeatedly, were angry, or repeated themselves many times first. **Never 5** — 5 requires a resolved issue, and nothing was resolved on this call. A **failed** transfer caps at **2**, **1** if they were angry. A transfer never raises the score on its own: it is a route, not a resolution. |
+| **`followUpRequired` / `callbackPriority`** | A successful transfer is `"no"` / `"none"` — a human owns the call and nobody needs to call back a customer already speaking to a person — **unless** a complaint from earlier in the call is still open, which makes it `"yes"` / `"medium"`. A failed transfer is at least `"medium"`, `"high"` if they were angry. |
+| **Files** | `postCallAnalysisFlat` only. `promptQA` is unaffected — it judges the agent, not the disposition. **`postCallAnalysisHuman` deliberately NOT given the value**: it has neither the `callTransferred` field nor any transfer mapping, and whether it needs them depends on the unresolved root-`CLAUDE.md` §2b question of whether it also runs on Vaani calls. |
+| **CC** | Not ported. CC's `postCallAnalysisFlat` keeps the four-value enum. CC transfers inline from ten agents and has the same reporting gap, so this is worth porting with the CLS rows. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
