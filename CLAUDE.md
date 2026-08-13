@@ -76,8 +76,15 @@ with no Vaani in them at all. Its CONTEXT, its complaint detection, and its ZIP 
 scoring have all been rewritten accordingly — tool language removed, the agent referred to as they/them,
 and complaint registration judged by **meaning rather than Vaani's scripted phrasing**. It also carries
 four flat root-level scores (`riskEscalationIndex`, `customerEffortScore`, `conversationQualityScore`,
-`overallScore`) that feed a human-QA dashboard, and a ninth `evaluations[]` checkpoint — Interruptions
-and Talk Balance — that only means anything when the agent is a person. **It now diverges from
+`overallScore`) that feed a human-QA dashboard, plus `greeting`, `containment` and `csatScore`
+(renamed from `csat`). Its `evaluations[]` carries **ten** checkpoints, scored out of a fixed
+`qaScore.total` of 10 — two of them exist only because the agent is a person: Interruptions and Talk
+Balance, and Customer Identification and Verification. **Its output is aggregated across hundreds of
+calls onto a manager's dashboard**, so every field has one fixed type and one closed value set, the
+scales are deliberately unlike each other and must never be averaged together (CSAT 1–5, the three QA
+scores 1–10, `qaScore` a fraction out of 10), and an unreadable recording returns `"NA"` for every
+string, `0` for every earned number, empty arrays and `false` booleans — with `overallScore` as the
+single field the dashboard filters unreviewable rows on. **It now diverges from
 `postCallAnalysisFlat` and from CC's copies by design; do not reconcile them.**
 The empathy question closed earlier: its **Empathy and Acknowledgement** checkpoint used to conflict
 with the specialist-agent empathy ban, and CHANNELS.md **CLS-03 (2026-08-11) retired that ban**, so

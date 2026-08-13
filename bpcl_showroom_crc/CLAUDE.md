@@ -426,8 +426,18 @@ references back in — see CHANNELS.md ZIP-01.
 - **`postCallAnalysisHuman.txt` — CLOSED 2026-08-13 (../CHANNELS.md PCA-02).** It is genuinely the
   human-agent analyser: two people talking, no Vaani. Fully rewritten for that subject and given four
   flat root scores for the human-QA dashboard (`riskEscalationIndex`, `customerEffortScore`,
-  `conversationQualityScore`, `overallScore` — all strings, `""` when there is no transcript, no
-  arithmetic anywhere) plus a ninth `evaluations[]` checkpoint. **It deliberately diverges from
+  `conversationQualityScore`, `overallScore` — all strings, no arithmetic anywhere) plus a ninth
+  `evaluations[]` checkpoint, and the root fields `greeting`, `containment` and `csatScore` (renamed
+  from `csat`). **No transcript → `"NA"` for every string in the payload, `0` for every number,
+  empty arrays, `false` for the five `riskObservations` booleans, and its own fixed sentence in
+  `notes`** — revised 2026-08-13, superseding the original `""`-for-four-fields rule. **The two
+  denominators are constants and never move** (`qaScore.total` 10, `csatAnalysis.maxScore` 5), on
+  no-transcript rows included — only the earned numbers go to 0. **`overallScore` is the
+  reviewability gate the dashboard filters on** — there is no `analysisStatus` field, so unreviewable
+  rows are dropped before anything aggregates. Scales stay native and are never averaged across each
+  other: CSAT 1–5, the three QA scores 1–10, `qaScore` a fraction out of 10 rather than a third
+  scale. `evaluations[]` now carries **ten** checkpoints — the tenth is Customer Identification and
+  Verification. **It deliberately diverges from
   `postCallAnalysisFlat` and from CC — do not reconcile.** Note it also records staff latitude that
   Vaani does not have (a number, an office visit, a price, a callback are not risks for a person);
   that is scoped to this analyser and changes no live prompt. The earlier CONTEXT fix (2026-08-11,
