@@ -423,13 +423,15 @@ references back in — see CHANNELS.md ZIP-01.
   (NUM-04's twelve-digit flow) while being the QA prompt for a channel where that variable does not
   exist. Its no-data ending needs porting to `getConsumerDetails.txt`'s `calltransfer` ending before
   QA can exercise the shipped flow.
-- **`postCallAnalysisHuman.txt` — CONTEXT fixed 2026-08-11, subject framing still open.** Both it and
-  `postCallAnalysisFlat` carried a CONTEXT paragraph saying *"there is no call transfer … no senior
-  team exists to hand the call to live"* and describing the deleted `{{crcOfficeNumber}}` dictation —
-  false since XFER-01 and directly contradicting the calltransfer text elsewhere in the same file.
-  Both now describe the XFER-03 inline transfer. **Still open:** whether this file is genuinely the
-  human-agent analyser, since its CONTEXT names *"the BPCL LPG agent (Vaani)"*. Its empathy
-  checkpoint no longer conflicts with anything — CLS-03 retired the ban.
+- **`postCallAnalysisHuman.txt` — CLOSED 2026-08-13 (../CHANNELS.md PCA-02).** It is genuinely the
+  human-agent analyser: two people talking, no Vaani. Fully rewritten for that subject and given four
+  flat root scores for the human-QA dashboard (`riskEscalationIndex`, `customerEffortScore`,
+  `conversationQualityScore`, `overallScore` — all strings, `""` when there is no transcript, no
+  arithmetic anywhere) plus a ninth `evaluations[]` checkpoint. **It deliberately diverges from
+  `postCallAnalysisFlat` and from CC — do not reconcile.** Note it also records staff latitude that
+  Vaani does not have (a number, an office visit, a price, a callback are not risks for a person);
+  that is scoped to this analyser and changes no live prompt. The earlier CONTEXT fix (2026-08-11,
+  the false *"there is no call transfer"* paragraph) is superseded by this rewrite.
 - **BAN-01 and CPL-08 are shared-truth fixes currently living in CRC only** (2026-08-05, client-scoped).
   CC carries the identical ban-list gap and the identical `FAILED TURN` clause, and is exposed to both.
   Port them before the next CC complaint-path or routing change. **GCD-05** is CRC-only by nature —

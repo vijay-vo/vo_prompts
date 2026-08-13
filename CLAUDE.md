@@ -70,15 +70,20 @@ call; QA judges the agent. Do not run QA first and do not treat either as a subs
 `postCallAnalysisHuman` and `promptQA` — rather than flat counts. Keep both outputs' nested shapes
 stable: anything that consumes them breaks silently when a field is renamed or flattened.
 
-⚠️ **Known inconsistency, still needs a decision — but half of it is now resolved.**
-`postCallAnalysisHuman.txt` still describes its subject as *"the BPCL LPG agent (Vaani)"* in its own
-CONTEXT block, and its `SCORING A NEW-CONNECTION HOLD OR A ZIP CALL` section scores Vaani-specific
-behaviour. If it is the **human**-agent analyser, that framing is wrong and should be rewritten to
-name the human agent — **that question is still open.** The second half is closed: its **Empathy and
-Acknowledgement** checkpoint used to conflict with the specialist-agent empathy ban, and CHANNELS.md
-**CLS-03 (2026-08-11) retired that ban**, so warmth is now correct behaviour in both analysers and no
-carve-out is needed. Both analysers' CONTEXT blocks were corrected in the same pass — they had said
-*"there is no call transfer … no senior team exists"*, which stopped being true at XFER-01.
+✅ **The subject-framing question is closed (2026-08-13, CHANNELS.md PCA-02).** `postCallAnalysisHuman.txt`
+is genuinely the human-agent analyser: its transcripts are a **CRC staff member talking to a customer**,
+with no Vaani in them at all. Its CONTEXT, its complaint detection, and its ZIP / new-connection-hold
+scoring have all been rewritten accordingly — tool language removed, the agent referred to as they/them,
+and complaint registration judged by **meaning rather than Vaani's scripted phrasing**. It also carries
+four flat root-level scores (`riskEscalationIndex`, `customerEffortScore`, `conversationQualityScore`,
+`overallScore`) that feed a human-QA dashboard, and a ninth `evaluations[]` checkpoint — Interruptions
+and Talk Balance — that only means anything when the agent is a person. **It now diverges from
+`postCallAnalysisFlat` and from CC's copies by design; do not reconcile them.**
+The empathy question closed earlier: its **Empathy and Acknowledgement** checkpoint used to conflict
+with the specialist-agent empathy ban, and CHANNELS.md **CLS-03 (2026-08-11) retired that ban**, so
+warmth is correct behaviour in both analysers and no carve-out is needed. Both analysers' CONTEXT
+blocks were corrected in that same pass — they had said *"there is no call transfer … no senior team
+exists"*, which stopped being true at XFER-01.
 
 ---
 
