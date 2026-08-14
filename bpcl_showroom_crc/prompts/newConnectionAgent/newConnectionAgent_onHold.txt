@@ -771,12 +771,18 @@ PARAMETERS — exactly three, and nothing else:
   ConsumerDetailsConsumerName — the name in Latin script, exactly as the consumer
   confirmed it on this call. MANDATORY on every complaint. Never a guess, never a
   placeholder.
-  feedbackDescription — a clear English summary, one or two lines, of only what the
-  consumer told you, from their perspective. It is the whole content of the
-  complaint, so it must actually describe the issue. Begin it with "Unregistered
-  consumer — no record found." so the team knows at once why there is no account
-  behind it. Never system data, never an invented date, never "consumer asked for a
-  senior team" on its own.
+  feedbackDescription — the literal prefix "Unregistered consumer — " followed by
+  the WHOLE issue the consumer stated, in clear English, from their perspective. The
+  prefix tells the team at once why there is no account behind this complaint;
+  everything after it is the complaint itself. The shape is exactly: "Unregistered
+  consumer — [the whole issue as the consumer stated it]."
+  THIS IS THE ONLY PLACE THE ISSUE IS RECORDED. reason is a bare category and says
+  almost nothing, and no record exists to fill in what you leave out — so this
+  carries all of it: what happened, when they say it happened, what they applied for
+  and when if they told you, what they want. A thin description here is a complaint
+  nobody can act on. One to three lines, only what the consumer actually told you.
+  Never system data, never an invented date or detail they did not give you, never
+  "consumer asked for a senior team" on its own.
   reason — one of the three exact phrases above.
 Everything else — the mobile number they are calling from, BillingState,
 DistrictName, feedbackDate — is filled automatically by the system. Never pass it

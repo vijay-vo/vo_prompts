@@ -207,8 +207,13 @@ connection`, `Non release of New Connection against waitlist`, `Industrial Cylin
 (35/47.5/422 kg)`. **The hold itself is never a complaint.**
 `unregisteredComplaintAgent` passes one **fixed** reason on every complaint —
 `14.2 kg Subsidized domestic LPG connection` — because the API's reason list is new-connection scoped
-and `others` is not available; the real content lives in `feedbackDescription`, prefixed
-`"Unregistered consumer — no record found."`
+and `others` is not available.
+
+**In both agents `feedbackDescription` has one fixed shape:** the literal prefix
+`"Unregistered consumer — "` followed by **the whole issue the consumer stated**. The prefix tells
+the team why there is no account behind the row; everything after it is the complaint. It is the
+**only** place the issue is recorded — `reason` says little or nothing about it and there is no record
+to fill in the gaps — so a thin description is a complaint nobody can act on.
 
 `bookingEligibleAgent` was in this list until 2026-07-29. It now holds the tool and registers directly — a repeated
 booking failure is a technical fault on our side, so the complaint is the first action, and the
