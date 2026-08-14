@@ -19,9 +19,9 @@ translating the two axes below.
 > gave the tool to every routing-capable agent instead. The *when* is unchanged; the *how* is not.
 
 **`calltransfer` is held and invoked by every routing-capable agent**: the ten complaint-capable
-leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer
-agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
-*"`calltransfer` — NOT AUTHORIZED"* clause.
+leaves, `newConnectionAgent_onHold`, `routingAgent`, `getConsumerDetails`, and — since UNREG-01 —
+`unregisteredComplaintAgent`. There is no transfer agent and nothing to switch to. `Default` and
+`emergencyAgent` still carry an explicit *"`calltransfer` — NOT AUTHORIZED"* clause.
 
 **`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `promptQA` on
 2026-08-05, and XFER-03 removed its last home — the `forwardingNumber` is now the platform's to
@@ -169,22 +169,46 @@ Never invent a complaint number.
 - **A truly out-of-scope query** stays with `routingAgent`'s hangup ladder. No complaint.
 - **A live gas hazard.** `emergencyAgent` is fully carved out — no complaint, no escalation block,
   no closing, while the hazard is live.
-- **No consumer record.** `getConsumerDetails` still has no complaint tool — with no record there is
-  nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
-  all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
-  is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
-  → on yes, switch; on no, `callHangup`. The three-piece dictation loop is **retired** and the office
+- **No consumer record — REVISED 2026-08-14, see [../CHANNELS.md](../CHANNELS.md) UNREG-01.** A
+  complaint *can* now be registered for an unidentified consumer: `bpcl_create_complaint` accepts
+  `ConsumerDetailsConsumerName`, so it is filed against a **name plus the calling number** rather than
+  an account. `getConsumerDetails` itself still holds **no** complaint tool and **no `switchagent`** —
+  it captures a number, fetches, and then **stops speaking whatever the fetch returned**. On an empty
+  result the **platform** moves the call to `unregisteredComplaintAgent`; that hop is not an agent's
+  to make and the agent never announces it. `calltransfer` and `callHangup` survive there for one case
+  only, the **REFUSAL CLOSING**: the consumer refused a number twice or has none, so no fetch ever ran
+  and nothing else can pick the call up. The three-piece dictation loop is **retired** and the office
   hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
 
 ### Who can register, and the one routing hop
 
-Ten agents hold `bpcl_create_complaint` and register in place. Three do not, and **never get it**:
+**Twelve** agents hold `bpcl_create_complaint` and register in place: the ten complaint-capable
+leaves, plus `newConnectionAgent_onHold` and `unregisteredComplaintAgent` since UNREG-01
+(2026-08-14). Three do not, and **never get it**:
 
 - `Default` — triage only. Its STAGE 0 escalation interrupts route via **STAGE 3** to
   `genericInfoComplaintAgent`, exactly as INTERRUPT A already routes a hazard to `emergencyAgent`.
-- `newConnectionAgent` — escalates via `newConnectionAgent → routingAgent → genericInfoComplaintAgent`.
-  Leaf-to-leaf switching is forbidden, so `routingAgent` is the only legal path.
-- `getConsumerDetails` — see above; it cannot escalate at all.
+- `routingAgent` — a silent re-router; it routes or it runs the hangup ladder.
+- `getConsumerDetails` — see above; it captures a number and fetches, and nothing else.
+
+**The two newest holders both talk to consumers we hold no record of**, so both carry the same extra
+step and the same deliberate divergence from `COMPLAINT PROTOCOL — STANDARD`: the complaint is
+**offered**, and the offer and the name request are **one turn** —
+`"जी, मैं आपकी शिकायत दर्ज कर देती हूँ — आपका नाम बताइए?"`. Giving the name **is** the agreement.
+The name is read back **once** in Devanagari, the first affirmative locks it, and it is passed as
+`ConsumerDetailsConsumerName` in **Latin script**. It is mandatory, never guessed, never a
+placeholder — and a refusal to give it is **not** a reason to transfer. The canonical protocol
+registers a clear grievance directly with no confirmation turn; these two ask first, because with no
+record nothing on our side proves the person exists. That is intended — see UNREG-01, do not
+reconcile it back to the standard.
+
+`newConnectionAgent_onHold`'s tool is **narrowly scoped** to three reasons — `Status of new
+connection`, `Non release of New Connection against waitlist`, `Industrial Cylinder
+(35/47.5/422 kg)`. **The hold itself is never a complaint.**
+`unregisteredComplaintAgent` passes one **fixed** reason on every complaint —
+`14.2 kg Subsidized domestic LPG connection` — because the API's reason list is new-connection scoped
+and `others` is not available; the real content lives in `feedbackDescription`, prefixed
+`"Unregistered consumer — no record found."`
 
 `bookingEligibleAgent` was in this list until 2026-07-29. It now holds the tool and registers directly — a repeated
 booking failure is a technical fault on our side, so the complaint is the first action, and the
@@ -278,6 +302,11 @@ wrong; the factual naming it was rewritten to is also fine, so nothing needs rev
 
 ## Channel-specific inventory
 
+**Prompt count: 16.** Fifteen agents plus `unregisteredComplaintAgent`, added 2026-08-14 (UNREG-01).
+It is the only CRC agent with **no `switchagent` at all** — with no consumer record there is nowhere
+to send the call, so it handles gas hazards inline and carries the new-connection hold, Mini and ZIP
+itself.
+
 **Tools:** `switchagent`, `callHangup`, `bpcl_create_complaint`, `validatecontactno`,
 `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
 `bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
@@ -298,14 +327,15 @@ at all — so this is CRC-only by design, not drift. Logged in [../CHANNELS.md](
 **Folder naming defect:** this workspace uses `genericInfoComplaint/`; CC uses
 `genericInfoComplaintAgent/`. Canonical is `genericInfoComplaintAgent` (NAME-03).
 
-**`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
+**`getConsumerDetails` holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
 **deployed** entry prompt again — `getConsumerDetails.txt` ships, `getConsumerDetails_MultiToolVersion.txt`
 is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
 (git history only, along with `prompts/callTransferAgent/`).
-Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
-tell the consumer their record isn't available, offer to connect them to the senior team, and either
-call `calltransfer` on a yes or `callHangup` on a no. That platform-owned hop into
-`Default` is still described by no prompt — see the open items below.
+Its exits, as of UNREG-01 (2026-08-14): **data found → stop speaking**, the platform resumes the call
+into a specialist; **no data → also stop speaking, and call no tool**, the platform moves the call to
+`unregisteredComplaintAgent`. Both platform-owned hops are described by no prompt — see the open items
+below. The **only** ending it owns is the REFUSAL CLOSING, reached when the consumer never gives a
+number at all: offer to connect them to the senior team, `calltransfer` on a yes, `callHangup` on a no.
 
 **Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
 §11 lists known gaps, and they are worth reading before any routing change.
@@ -328,10 +358,18 @@ reopening date, no stated reason. Full policy in [../CHANNELS.md](../CHANNELS.md
 ⚠️ **The platform must point at the `_onHold` file.** The old filename was kept, so this is a
 config change nothing in the prompts can enforce. If it was missed, the full apply flow is live.
 
-**This agent does not escalate on the hold topic** — a deliberate exception to Axis 1. A prospective
-consumer has no record, so there is nothing to attach a complaint to, and no complaint could reopen
-connections. It holds the consumer itself: restate calmly, offer Mini once, close. Never promise a
-person, a callback, a complaint, or an office visit. A genuinely different problem still routes.
+**This agent does not escalate ON THE HOLD TOPIC** — a deliberate exception to Axis 1, and it stands.
+No complaint reopens new connections, so filing one against *"I want a connection and you are saying
+no"* hands the consumer a number that can never be answered. On the hold it holds the consumer itself:
+restate calmly, offer Mini and ZIP once, close. Never promise a callback or an office visit.
+
+> **NARROWED 2026-08-14 — see [../CHANNELS.md](../CHANNELS.md) UNREG-01.** The other half of the old
+> reasoning — *"a prospective consumer has no record, so there is nothing to attach a complaint to"* —
+> is no longer true. `bpcl_create_complaint` takes a name, and this agent now holds it for **exactly
+> three** things: `Status of new connection`, `Non release of New Connection against waitlist`,
+> `Industrial Cylinder (35/47.5/422 kg)`. Everything else in the client's reason list is something
+> §13 already answers, so it stays an answer, not a complaint. `§8-APPLIED` now **registers** rather
+> than sending an already-applied caller to their distributor.
 
 **Not affected, and must never get the hold message:** commercial connections, Bharat Gas Mini,
 second/additional cylinder, portability, and the city-shift Transfer Voucher path (so
@@ -405,8 +443,20 @@ references back in — see CHANNELS.md ZIP-01.
   confirms it stays gone.
 - **DOC-01** — [agent-workflow.md](docs/agent-workflow.md) §7 links to `customerStatus-spec.md`,
   which does not exist in this workspace. CC has `CUSTOMER_STATUS_SPEC.md`; CRC has no counterpart.
+- **UNREG-01 open items (platform team), 2026-08-14** — nothing in the prompts can trigger any of
+  these: register `unregisteredComplaintAgent`; **switch the call to it on an empty
+  `bpcl_fetch_all_api` result** (`getConsumerDetails` deliberately calls no tool there); pass
+  `{{handoffSummary}}` on that switch; expose `bpcl_create_complaint` to it and to
+  `newConnectionAgent_onHold` accepting `ConsumerDetailsConsumerName`, auto-filling the calling
+  number, `BillingState`, `DistrictName` and `feedbackDate`; expose `calltransfer` and `callHangup`
+  to the new agent; and confirm the four reason phrases are accepted verbatim.
+- **UNREG-01 — `promptQA` and `postCallAnalysisFlat` are not updated.** Neither knows
+  `unregisteredComplaintAgent` exists, and `promptQA` still assumes `getConsumerDetails`' no-data path
+  ends in a transfer or a hangup. Needs a follow-up pass before QA scoring is trusted on these calls.
 - **The undocumented `getConsumerDetails` → `Default` hop** (agent-workflow.md §11.3) — works only
-  if the platform owns that transition. Worth confirming with the platform team.
+  if the platform owns that transition. Worth confirming with the platform team. The **same question
+  now applies twice over**: since UNREG-01 the no-data branch is a second platform-owned hop, into
+  `unregisteredComplaintAgent`.
 - **Four prompts unreachable by name** (§11.4): `bookingNonEligibilityAgent`, `postDeliveryAgent`,
   `eligibleDeliveryAgent`, `notEligibleDeliveryAgent` are never a `switchagent` target anywhere.
   They work only if the platform resolves the family name to the right variant from backend state.

@@ -16,11 +16,15 @@ Commit deliberately — see "Change discipline" below.
 | Who Vaani is | An agent **of Bharat Petroleum**. The distributor is a third party. | Staff at a **regional head CRC office** covering many districts and many distributors. The distributor is **also a third party** (corrected 2026-08-05) |
 | Language for the distributor | "आपके distributor" — third party | "आपके distributor" — third party too. "हमारे यहाँ" refers to **this CRC only**. Never send them travelling |
 | Escalation to a human | `calltransfer` to a senior team, inline in ten agents | **Register a complaint first**, then — only if the consumer still wants a person — **`calltransfer`, invoked by the agent itself** (CHANNELS.md **XFER-03**, 2026-08-11, superseding XFER-01's dedicated transfer agent). **No office visit** — see ESC-01 |
+| Unidentified consumers | `getConsumerDetails` offers a transfer, then hangs up | **A complaint can be registered against their name** (CHANNELS.md **UNREG-01**, 2026-08-14). `getConsumerDetails` stops speaking on an empty fetch and the platform moves the call to `unregisteredComplaintAgent` |
 | Callbacks | **Scheduled** — after a failed `calltransfer` only, Vaani asks for a slot (9am–5pm, within 15 days) and writes it into the complaint; no complaint number is spoken on a callback complaint. All ten complaint-capable agents support this | Not scheduled — a complaint is registered and the team makes contact, with no time captured and no window promised |
 | Extra prompts | `postCallAnalysisFlat.txt` | — |
 
-Both channels run the **same 15-agent topology** (CRC's 16th agent, `callTransferAgent`, was deleted by XFER-03), the same handoff contract, the same LPG domain
-facts, and the same Hindi/TTS voice rules. Those are shared truth and must not diverge.
+Both channels share a **15-agent core topology** (CRC's old 16th agent, `callTransferAgent`, was
+deleted by XFER-03), the same handoff contract, the same LPG domain facts, and the same Hindi/TTS
+voice rules. Those are shared truth and must not diverge. **CRC has one agent beyond the shared core:
+`unregisteredComplaintAgent`, added 2026-08-14 (CHANNELS.md UNREG-01)** — an intended difference, not
+drift, and CC has no counterpart.
 
 Every intended difference is recorded in [CHANNELS.md](CHANNELS.md). **A difference between the
 two channels that is not in that ledger is a drift bug, by definition.** That rule is the whole
@@ -115,6 +119,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 | `connectionServicesAgent` | KYC, address, mobile, name, surrender, portability, PNG. |
 | `newConnectionAgent` | New connection / Ujjwala / PMUY. |
 | `genericInfoComplaintAgent` | Catch-all: how-to, equipment faults, behaviour complaints. |
+| `unregisteredComplaintAgent` | **CRC only, added 2026-08-14 (CHANNELS.md UNREG-01).** The consumer we hold no record of. Full general-LPG knowledge base, answers first, and registers a complaint against their **name** when the answer needs a record. Holds **no `switchagent` at all** — gas hazards inline, the new-connection hold and Mini/ZIP carried in-agent. Entered by the **platform** on an empty `bpcl_fetch_all_api`, never by a `switchagent`. |
 | ~~`callTransferAgent`~~ | **Deleted 2026-08-11 (CHANNELS.md XFER-03).** Every routing-capable CRC agent now holds `calltransfer` and invokes it itself, passing `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"` and nothing else, with no spoken text of its own — then reads the Result: success → silence, the platform closes the call; failure → it says the team could not be reached, gives the window the Result carried, and closes only once the consumer accepts. |
 
 **Known naming defects — do not propagate:**
@@ -183,7 +188,7 @@ money in Hindi words with "रुपये". Never a double form — never "ए�
 backend are **DD-MM-YYYY, day first**; `{{system.current_date}}` is YYYY-MM-DD, year first.
 Visible curly braces in a value = no data; treat as absent, never speak it.
 
-**Complaint discipline.** Every agent holding `bpcl_create_complaint` carries the same `COMPLAINT PROTOCOL — STANDARD` block (CHANNELS.md CPL-01). A complaint is the **last** option, not the first: the `RESOLUTION LADDER` runs before any registration — understand the query, resolve it if the answer is yours, route it if it is another domain's, and only then register. The one carve-out is a **grievance about something that already happened** (cylinder not delivered, test not performed, staff behaviour, money taken), where nothing said undoes it and the complaint *is* the resolution — those register directly and are never slowed down. Confirmation is **only for what is new and consequential**; what the consumer said plainly is never re-confirmed, and when the issue is clear the one-line summary rides inside the registering line itself rather than costing a turn. **Speaking the registering line is not registering** — the agent invokes the tool on that same turn, and a line spoken with no tool call is a failed turn that must be recovered on the next one (CHANNELS.md CPL-03/CPL-04/CPL-05; CRC only so far). Never claim registration
+**Complaint discipline.** Every agent holding `bpcl_create_complaint` carries the same `COMPLAINT PROTOCOL — STANDARD` block (CHANNELS.md CPL-01). **One scoped exception, CRC only:** `unregisteredComplaintAgent` and `newConnectionAgent_onHold` talk to consumers we hold no record of, so they **offer** the complaint and take the consumer's **name** in the same turn (`"जी, मैं आपकी शिकायत दर्ज कर देती हूँ — आपका नाम बताइए?"`), read it back once in Devanagari and pass it as `ConsumerDetailsConsumerName` in Latin script. Deliberate divergence — CHANNELS.md UNREG-01. A complaint is the **last** option, not the first: the `RESOLUTION LADDER` runs before any registration — understand the query, resolve it if the answer is yours, route it if it is another domain's, and only then register. The one carve-out is a **grievance about something that already happened** (cylinder not delivered, test not performed, staff behaviour, money taken), where nothing said undoes it and the complaint *is* the resolution — those register directly and are never slowed down. Confirmation is **only for what is new and consequential**; what the consumer said plainly is never re-confirmed, and when the issue is clear the one-line summary rides inside the registering line itself rather than costing a turn. **Speaking the registering line is not registering** — the agent invokes the tool on that same turn, and a line spoken with no tool call is a failed turn that must be recovered on the next one (CHANNELS.md CPL-03/CPL-04/CPL-05; CRC only so far). Never claim registration
 before the tool returns success. One call per complaint, never retry on failure, max 2 per call.
 Never invent a complaint number. On success the number is spoken digit by digit — **Hindi words in CC,
 English digit words with `" - "` in CRC since CHANNELS.md NUM-01** — and
@@ -255,6 +260,14 @@ baseline commit with no prior history to diff against.
   failure, busy, no-answer) and the office-hours window where one exists; closing the call itself on a
   **successful** transfer, since the agent deliberately calls no tool at that point; and de-registering
   `callTransferAgent`.
+
+- **Platform dependencies for `unregisteredComplaintAgent`** (CHANNELS.md UNREG-01, 2026-08-14):
+  registering the agent; **switching the call to it on an empty `bpcl_fetch_all_api` result**, since
+  `getConsumerDetails` deliberately calls no tool there; passing `{{handoffSummary}}` on that switch;
+  exposing `bpcl_create_complaint` to it and to `newConnectionAgent_onHold` with the new
+  `ConsumerDetailsConsumerName` parameter; and exposing `calltransfer` and `callHangup` to it.
+  **Also outstanding:** `promptQA` and `postCallAnalysisFlat` know nothing about the new agent or the
+  new complaint path.
 
 - **A CRC `CUSTOMER_STATUS_SPEC`.** CRC's [agent-workflow.md](bpcl_showroom_crc/docs/agent-workflow.md)
   §7 links to `customerStatus-spec.md`, which does not exist in that workspace.
