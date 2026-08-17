@@ -910,6 +910,25 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### XFER-04 · The transfer offer outlived the attempt — `getConsumerDetails` re-offered a connect after its own transfer failed (2026-08-17)
+
+| | |
+|---|---|
+| **Axis** | Axis 1 — escalation. **CRC only**; CC's failure path captures a callback slot and behaves differently, so this does not port as written. |
+| **Amends** | **XFER-03's** once-per-call rule, which turned out to constrain only half of what needed constraining. |
+| **What the live call did** | `getConsumerDetails` found no record, offered the connect, transferred on a yes, and the transfer failed. It then read the whole failure line back verbatim a second time when the consumer complained about being talked over, appended a close-check question it does not own, and — when the consumer moved on and asked about a delivery date — **offered the transfer again**: *"हमारी senior team आपकी सहायता कर सकती है — क्या मैं आपकी कॉल उन तक ट्रांसफर कर दूँ?"* |
+| **Why the existing rule did not catch it** | Every agent forbade **calling** `calltransfer` twice. Only the ten complaint-capable leaves also forbade **asking** twice (*"I ASK THIS ONCE PER CALL. Having asked, I do not raise it again on later turns."*). `getConsumerDetails` had no such clause — and it is the one agent for which the connect offer is the **only** answer it has to any question, since it holds no data, no complaint tool and no phone number. A new query therefore routed straight back into the offer, by design rather than by accident. |
+| **The rule now** | **The offer dies with the attempt.** Once `calltransfer` has been attempted, the C1 connect question is spent for the rest of the call — not in the same words, not softened, not as a different route to a person, not for a different reason, and **not because the consumer raised something new**. Offering a connect that can no longer be made asks the consumer to say yes to something that cannot happen, and forces a second refusal. |
+| **A new question is not a new reason** | Explicit, because this is the shape the loop took: after a failed transfer the consumer usually drops it and asks something else. The answer is that Vaani has no record and the team could not be reached just now, freshly worded, with a request to call back later — never the connect question again. |
+| **Two smaller defects from the same call** | **(1)** The failure line was read back **verbatim** on the next turn, window and all; it is now say-it-once, then acknowledge briefly and answer what was actually said. **(2)** `getConsumerDetails` asked *"क्या मैं आपकी कोई और सहायता कर सकती हूँ?"* — it holds **no close-check question** at all, and asking one only invites a query it will have to refuse. Its ending is C4. |
+| **`newConnectionAgent_onHold` brought to parity** | It carried the bare *"ONE ATTEMPT PER CALL"* line with no guidance on what to say when asked again — the one gap `routingAgent` had already closed. It now carries the same tell-them-the-truth answer and the same new-question-is-not-a-new-reason clause. It never *offers* a transfer, so the offer half does not apply to it. |
+| **Not touched** | The ten leaves already carry the ask-once rule and were left alone. `routingAgent` never offers on its own initiative and already handles the ask-again case. |
+| **QA side** | `promptQA` **C5i** now scores the **re-offer** as a violation in its own right, independent of whether a second tool call followed — including when a brand-new query prompted it — plus the verbatim re-read of the failure line. |
+| **⚠️ Unverified, worth checking with the platform team** | The failure line in that call named *सोमवार से शुक्रवार, सुबह दस बजे से शाम छः बजे*. Every prompt forbids speaking office hours from memory and requires the window to come from the tool's **Result** — and that window does not match this channel's documented hours (all weekdays, 9am–7pm). Either the Result carried it, in which case the two sources disagree, or the model invented it, which is a separate and more serious defect. Not fixable from the prompts without knowing which. |
+| **Files touched (5)** | `getConsumerDetails`, `newConnectionAgent_onHold`, `promptQA`, plus this ledger — and `unregisteredComplaintAgent`, which exists on the UNREG-01 branch only and took the same offer-dies clause there. |
+
+---
+
 ### CLS-03 · The close question fired on eleven consecutive turns, and the empathy ban left nothing to say instead — CRC only, CC pending (2026-08-11)
 
 | | |
