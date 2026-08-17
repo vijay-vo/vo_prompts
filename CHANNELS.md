@@ -1119,6 +1119,23 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CPL-10 · The registering line spoken in the completed past — narration instead of registration — CRC only, CC pending (2026-08-17)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**, a direct follow-up to CPL-03 and CPL-09. Landed in **CRC only**; CC carries the same gap. |
+| **Source** | Two live `genericInfoComplaintAgent` transcripts (client-reported, 16-08-2026). One: registering line → a content-free **"Uhh..."** turn → complaint number spoken in **Hindi digit words**, against NUM-01's English-digit default. The other: *"आपकी शिकायत **दर्ज हो चुकी है** ... — एक मिनट रुकिए।"* spoken on the turn `bpcl_create_complaint` was being invoked — the consumer is told the complaint **already exists** before any Result. |
+| **Root cause — a second, weaker procedure competing with Tool 1** | `genericInfoComplaintAgent` §8, `postDeliveryAgent` §7 and `eligibleDeliveryAgent`'s equivalent each carried a `COMPLAINT REGISTRATION FLOW` section that restated registration in two sentences — *"When the consumer confirms … I call `bpcl_create_complaint` immediately"* and *"**After registering, on success** I read the complaint number …"*. That pair says nothing about speaking the registering line as text, nothing about `preToolMessage`, and collapses the two turns into one continuous action — directly against Tool 1's `THE REGISTERING LINE AND THE COMPLAINT NUMBER ARE NEVER IN THE SAME TURN`. The model executes the section it is standing in, not the tool block hundreds of lines above. `activeDeliveryAgent` has **no such section**, which is why it never drifted — the "reference" agents were only accidentally correct. |
+| **The Hindi-digit tell** | The same §8 sentence's own template read `[complaint Number digit by digit in Hindi]` while its prose said *"(English digit words by default)"* — an unported **CC** leftover (CC keeps Hindi words by design, NUM-01). The live call followed the template, which is how we know §8 and not Tool 1 was driving the turn. Present in three CRC files; all three fixed. CC's copies are correct as they stand and were not touched. |
+| **Fix 1 — TENSE GATE (all ten complaint-capable agents)** | The registering line is **in-progress only**: `"दर्ज कर रही हूँ"` / `"दर्ज की जा रही है"`, never `"दर्ज हो चुकी है"` / `"दर्ज हो गई है"` / `"register हो गई है"`. A completed-sounding line is false at the moment it is spoken, and it is the shape of a turn that **narrates** the registration instead of performing it — once the sentence sounds finished, the tool stops being called. It also traps the agent: on a tool failure she has already promised something that never happened. Sits directly under `FAILED TURN` / `REGISTER LINE IS TERMINAL FOR THE TURN`. |
+| **Fix 2 — NO FILLER TURN (same ten)** | `"umm"`, `"uhh"`, a throat-clear, or a re-spoken hold line in the gap while the Result comes back is banned — a filler turn there is the **audible signature of a turn that had no tool call behind it** (the same tell CPL-09 and GCD-05 each observed independently). If the consumer speaks while waiting, answer what they said; never re-speak the registering line. |
+| **Fix 3 — the competing section rewritten (three agents)** | `genericInfoComplaintAgent` §8 is now an explicit **TURN ONE / TURN TWO** procedure that states Tool 1 wins on any conflict, spells out line-as-text + no `preToolMessage` + terminal line + tense gate + no filler, and routes a missing Result into Tool 1's `RECOVERY`. `postDeliveryAgent` and `eligibleDeliveryAgent` get the compact form of the same. |
+| **Files (11)** | The ten complaint-capable CRC agents, plus this ledger. |
+| **Not changed** | Whether the delivery-irregularity complaint on that call should have been `genericInfoComplaintAgent`'s at all — RTE-02's GATE A hands back a booking that exists whose cylinder never came. Not re-examined here. |
+| **⚠️ Open** | **CC unported** (§6 rule 4): CC's `genericInfoComplaintAgent`, `postDeliveryAgent` and `eligibleDeliveryAgent` carry the same two-sentence section and the same collapse risk, and no CC agent has the tense gate or the filler ban. Port before the next CC complaint-path change, alongside BAN-01, CPL-08 and CPL-09. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
