@@ -340,6 +340,17 @@ second/additional cylinder, portability, and the city-shift Transfer Voucher pat
 **CC is deliberately behind on this** — client decision. It is a recorded gap, not a design
 difference. See NC-01.
 
+> ⚠️ **Also amended by CHANNELS.md ZIP-03 (2026-08-17)**, the KB refresh against the business team's
+> reviewed FAQ: ZIP is **domestic-only** (the commercial 10-cylinder limit is deleted everywhere);
+> every lookup leads with the **Hello BPCL App** — "Bharatgas for Home" → "Explore Bharatgas
+> Products" → PIN code — and falls back to `commercial-lpg.in` only for a consumer not comfortable
+> with the app, one route or the other, never both; **IVRS is no longer a ZIP booking channel** and
+> there is **no cash on delivery** — payment completes before the cylinder is handed over; the limit
+> is 2 a month **and 2 at a time**, the at-a-time figure only if asked; ID proof is **Aadhaar, PAN,
+> DL, Ration Card or Passport** (Voter ID and the "any Government-issued ID" catch-all dropped); the
+> cylinder carries the **ISI mark**; **anyone may apply**. The FAQ's "instant new connection" wording
+> was **deliberately not adopted** — ZIP stays a product, not a connection.
+
 > ⚠️ **The ZIP section below is superseded by CHANNELS.md ZIP-02 (2026-08-05).** ZIP is now a
 > **product, not a connection**; it is **offered together with Mini** at three moments (the
 > new-connection hold, the extra-refill block, a non-eligible booking) rather than answered-only;

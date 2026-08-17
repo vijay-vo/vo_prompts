@@ -538,6 +538,27 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **Files touched (15)** | `Default`, `routingAgent`, `newConnectionAgent_onHold`, the four delivery agents, both booking agents, `paymentAgent`, `subsidyAgent`, `connectionServicesAgent`, `genericInfoComplaintAgent`, `promptQA`, plus this ledger. |
 | **Still unknown** | The exact refill price, warranty and damage cover, and which cities ZIP has reached. Only these three keep the soft-unknown line; the rest of ZIP-01's deflection list is retired, and deflecting a ZIP question Vaani now holds is itself a miss. |
 
+### ZIP-03 · Lite ZIP KB refreshed against the business team's reviewed FAQ — CRC only (2026-08-17)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. **CRC only**; CC deliberately behind, in step with NC-01, ZIP-01, ZIP-02, QA-02, PCA-01 and RFL-01. |
+| **Source** | *HelloBPCL — LPG FAQ, Bharatgas Lite ZIP v2, post business team review* (Z.1–Z.16). Amends **ZIP-02's** "facts now held", "availability" and "payment splits" rows; everything ZIP-02 said about routing, when ZIP is offered, the never-against-a-complaint carve-out, add-vs-switch, and the four-hour standard is **unchanged**. |
+| **ZIP is domestic-only — commercial references deleted** | Client-confirmed in this round, closing the FAQ's own open item. The **commercial 10-cylinder limit is gone** from every prompt and from both analysers, and no ZIP answer references a commercial customer. `w - w - w - dot - commercial - l - p - g - dot - in` **stays** — it is the site that carries the price table, not a statement about who may buy. |
+| **The app comes first, the website is the fallback** | Every ZIP lookup — availability, cylinder price, refill price — now leads with the **Hello BPCL App** and encourages the consumer to download it: **"Bharatgas for Home" → "Explore Bharatgas Products" → PIN code**. The website walk is offered **only** where the consumer is not comfortable with the app, and **one route or the other, never both in the same breath**. **Only that one URL** is ever given for a ZIP refill price — no mixing in `mylpg.in` or the भारत पेट्रोलियम site. |
+| **IVRS is removed as a ZIP booking channel** | Booking is the **app or the distributor**, nothing else. The IVRS cash-on-delivery split goes with it. This is a ZIP-only removal — IVRS remains a valid booking channel for the regular 14.2 kg refill everywhere it already appears. |
+| **Advance payment** | Payment is **completed before the cylinder is handed over**: app → paid online, in advance; distributor → paid when the refill is taken. **There is no cash on delivery on a ZIP.** Supersedes ZIP-02's three-way payment split. |
+| **Cylinder limit** | Domestic **2 a month** (unchanged) **and 2 held at a time** — the at-a-time figure is spoken **only if the consumer asks**, so the common answer stays one number long. |
+| **ID proof** | Now **Aadhaar, PAN, Driving Licence, Ration Card, or Passport**. Ration Card added per the FAQ; **Voter ID dropped** per client instruction, and the *"or any Government-issued ID"* catch-all dropped with it — keeping it would have re-admitted the Voter ID that was just removed. Aadhaar is kept, against the FAQ's own list, on client instruction. |
+| **Two facts added** | The cylinder carries the **ISI certification mark**, so no extra equipment or setup is needed; and **anyone may apply — there is no eligibility condition.** |
+| **Cylinder price hedged** | ₹2,700 + 18% GST is unchanged, but the price **can differ a little by area** and the consumer can check theirs on the app by PIN code. |
+| **"Instant new connection" NOT adopted** | The reviewed FAQ's Z.1/Z.2 reintroduce *"instant new connection"* wording. **Deliberately not ported** — ZIP-02's product-not-a-connection reframe is what drives the routing, and re-admitting that phrase would quietly undo it. Flagged back to BA. |
+| **`paymentAgent` self-contradiction fixed** | Its `ZIP AND MONEY` line still claimed Vaani holds no ZIP payment methods, advance-payment requirement, or refund terms — a ZIP-01 leftover that this change would have made a live contradiction, since the same file now states all three. Rewritten to say what she **does** hold; the exact refill price stays the one money gap. |
+| **Files touched (16)** | `Default`, `newConnectionAgent_onHold`, `unregisteredComplaintAgent`, the four delivery agents, both booking agents, `paymentAgent`, `subsidyAgent`, `connectionServicesAgent`, `genericInfoComplaintAgent`, `promptQA`, `postCallAnalysisHuman`, plus this ledger. `routingAgent` and `postCallAnalysisFlat` hold no ZIP facts and were not touched. |
+| **QA side** | `promptQA`'s allowed-facts block carries every changed fact, or it would report the new correct answers as invented — and it now knows the app navigation is **required** behaviour and not an office-visit escalation. `postCallAnalysisHuman` §3.5's held-facts list is updated in step. |
+| **Still unknown, unchanged** | The exact refill price, warranty and damage cover, and which cities ZIP has reached. The soft-unknown line stays fenced to ZIP. |
+| **Open with BA** | Whether the FAQ's ID list is exhaustive or illustrative (it drops Aadhaar, which we kept); and the Z.1/Z.2 "instant new connection" wording above. Neither blocks this change. |
+
 ### RFL-01 · Extra refill on an existing connection is temporarily blocked — ~~Mini is the only alternative~~ **Mini AND ZIP, superseded by ZIP-02 (2026-08-05)**
 
 | | |
