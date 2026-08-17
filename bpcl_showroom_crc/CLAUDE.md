@@ -457,6 +457,14 @@ references back in — see CHANNELS.md ZIP-01.
   CC carries the identical ban-list gap and the identical `FAILED TURN` clause, and is exposed to both.
   Port them before the next CC complaint-path or routing change. **GCD-05** is CRC-only by nature —
   CC has no `crcOffice*` pair to confuse with the distributor's.
+- **OTP-01 (landed 2026-08-17, CC pending)** — the delivery O T P is **correct process, never a
+  grievance**: it reaches the consumer by SMS on their registered mobile number and the delivery
+  person hands the cylinder over only after receiving it. No CRC agent registers or routes a
+  complaint because it was asked for; the explanation *is* the resolution. Registering starts only
+  where the consumer **gave** the O T P and the refill still did not arrive — and then for the
+  non-delivery, never for the O T P. It is also the one carve-out to the PII "never share an O T P"
+  rule: shared at the door, with the delivery person, and nowhere else. Thirteen files; see
+  [../CHANNELS.md](../CHANNELS.md) **OTP-01**. Port to CC before the next CC delivery-path change.
 - **NAME-01, NAME-02, NAME-04** in [../CHANNELS.md](../CHANNELS.md) §3 apply here too.
 
 ---
