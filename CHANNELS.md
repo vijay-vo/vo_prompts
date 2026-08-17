@@ -1106,6 +1106,19 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### KYC-01 · eKYC is always recommended, whatever the "Latest eKYC" date says — CRC only (2026-08-17)
+
+| | |
+|---|---|
+| **Axis** | Neither — a **domain-policy** instruction, client-given, scoped to CRC `connectionServicesAgent`. CC is **not** changed: it keeps the date-as-fact-only behaviour until the client says otherwise. |
+| **Source** | Client instruction, 2026-08-17: *"In CRC connectionServices always recommend consumer to complete their eKYC. Even if the Latest eKYC date is present. Just reference it as this is your last eKYC date and you should do your eKYC."* |
+| **The change** | §7's eKYC-date rules previously let a populated `Latest eKYC` date **close** the topic — the worked example was *"आपकी eKYC ... पूरी हो गई थी"*, which reads as "nothing more is needed". Now the date is spoken **only as when their last eKYC was** (*"आपकी last eKYC [date] को हुई थी"*) and every eKYC turn ends with the recommendation to get it done, followed by the C5 route (KYC form, P O I, P O A — online or the distributor). |
+| **What did NOT change** | The **never-compute-validity** rule (§7) stands unaltered. Recommending eKYC is explicitly **not** a verdict that the existing one expired, lapsed, or is overdue — no arithmetic against the nine-month domain fact, no deadline, no due date. If the consumer asks whether theirs is still valid, that detail is still "not available with me", and the recommendation stands beside that answer rather than answering it. The date-format rule (§9 Rule 4, YYYY-MM-DD read day-first, time never spoken digit by digit) is untouched. |
+| **Files (2)** | `bpcl_showroom_crc/prompts/connectionServicesAgent/connectionServicesAgent.txt` (§7 eKYC bullets + C5), and this ledger. |
+| **⚠️ Open** | Whether the standing recommendation should also fire from the other CRC agents that mention KYC (`genericInfoComplaintAgent`, the delivery family's KYC-block path) — not instructed, deliberately not done. And whether CC should follow; §6 rule 4 asks the question, the client answer is CRC-only for now. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
