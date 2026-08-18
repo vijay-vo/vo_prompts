@@ -295,6 +295,16 @@ for their **own distributor's** number is still `{{ConsumerDetailsDistMobileNumb
 See Axis 2 above for the priority rule. CC has no equivalent — it has no physical location concept
 at all — so this is CRC-only by design, not drift. Logged in [../CHANNELS.md](../CHANNELS.md).
 
+`{{crcHolidayList}}` joined them 2026-08-18 (CHANNELS.md **HOL-01**): the Bharat Petroleum holidays
+falling on working days in the **next thirty days**, as plain sentences naming occasion, weekday and
+date. Unlike the office pair it describes **both** offices — a BPCL holiday closes this CRC and the
+consumer's distributor alike — so it is the one office fact exempt from distributor ↔ CRC
+non-substitution. Nothing outside the thirty-day window may be answered: absence from the list is
+*"मेरे पास यह जानकारी नहीं है"*, **never** "the office will be open", and never a date worked out
+from festival-calendar knowledge. Held by `Default` and `genericInfoComplaintAgent` only — the query
+is ~0.01% of calls and `routingAgent` already carries a mid-call general-information question to the
+latter.
+
 **Folder naming defect:** this workspace uses `genericInfoComplaint/`; CC uses
 `genericInfoComplaintAgent/`. Canonical is `genericInfoComplaintAgent` (NAME-03).
 

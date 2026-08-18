@@ -1187,6 +1187,22 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### HOL-01 · `{{crcHolidayList}}` — the office holiday calendar, CRC only (2026-08-18)
+
+| | |
+|---|---|
+| **Axis** | Neither — a **new CRC-only runtime variable**. CC receives no equivalent, so a CC prompt without it is intended, not an unported fix. |
+| **Source** | Client, 2026-08-18. A new variable arrives on CRC calls carrying the Bharat Petroleum holidays falling on working days over the **next thirty days**. |
+| **The shape** | Plain sentences, one per holiday, each naming the occasion, the weekday and the date — e.g. `"<occasion> holiday on <weekday> <date> <month> <year>, …"`. Not a structured list; the prompts describe the shape and explicitly mark any example occasions as illustrative, so the model never treats a sample date as data. |
+| **Whose holiday it is** | **Both offices.** It is a Bharat Petroleum holiday, not this CRC's private calendar, so the same value answers "will the office be open" for **this CRC and the consumer's own distributor alike**. This is the one office fact exempt from `genericInfoComplaintAgent`'s DISTRIBUTOR ↔ CRC NON-SUBSTITUTION rule, and that exemption is stated inline where the rule lives, so the two do not read as contradicting each other. |
+| **Absence is "I don't know", never "we're open"** | The list covers thirty days. A festival further out, a date outside the window, or an occasion the list does not name → *"जी, इसकी जानकारी अभी मेरे पास नहीं है।"* The agent never derives a holiday from its own festival-calendar knowledge, never estimates a date, and — the trap this rule exists for — **never inverts absence into the opposite answer** by telling the consumer the office will be open that day. Not being in the list is evidence of nothing. Empty / `null` / brace-wrapped is broken data and gets the same answer, never *"कोई छुट्टी नहीं है"*. |
+| **Delivery** | Occasion plus date, day-first, in Hindi words — never raw digits, never the year-first `{{system.current_date}}` form; year dropped unless asked. One festival asked, one festival answered: the whole list is never read out and a holiday nobody asked about is never volunteered. A holiday question is **information** — nothing is registered for it. |
+| **Placement — two agents, not fifteen** | `Default` (owns inline general FAQ, where the question lands at the front of the call) and `genericInfoComplaintAgent` (the catch-all leaf, and already `routingAgent`'s target for a general-information question raised mid-call). The query is ~0.01% of calls; the existing route already carries the tail case from any leaf, and fifteen copies of one fact is fifteen places to drift. |
+| **Files (3)** | `Default/Default.txt` (RUNTIME VARIABLES, beside the office-timing line), `genericInfoComplaintAgent/genericInfoComplaintAgent.txt` (SECTION 3 DATA I HAVE, beside the office-timing line), plus this ledger entry. |
+| **⚠️ Open** | Whether the variable ever carries a **half-day** or a distributor-only local closure — today's prompts treat every entry as a full closure of both offices. `promptQA` has no check for a fabricated or inverted holiday answer yet. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
