@@ -479,6 +479,19 @@ references back in — see CHANNELS.md ZIP-01.
   transfer-failure notice arrived under `customer:`) — it is event evidence for `containment` and
   `callResult`, never speech, never quoted, and it sets no language or sentiment. And **ASR partials
   are not repetitions**, which `customerEffortScore` would otherwise have counted on nearly every call.
+  **Extended to the other two analysers 2026-08-19 ([../CHANNELS.md](../CHANNELS.md) PCA-05).** All three
+  CRC post-call prompts read the same platform transcript, so `promptQA` and `postCallAnalysisFlat` now
+  carry the transcript-format block too — and `postCallAnalysisFlat` also takes PCA-03's
+  `customerSentiment` rewrite, having carried the identical collapsing definition. **`agentTone` is
+  deliberately NOT ported to either**: Vaani's tone comes from her prompt, not the call, so the column
+  would score the prompt. **The IVR block is optional on every channel**, and Vaani's fixed first line
+  (*"नमस्ते, मेरा नाम वाणी है…"*) is the boundary between recording and agent. **PCA sees no tool calls
+  and no tool results** — no rule may assume otherwise; `callTransferred` is judged from the spoken
+  transfer line alone, which is sound because that line is `calltransfer`'s own `preToolMessage`.
+  Two defects fixed in the same pass: `promptQA`'s PART C still said *"THERE IS NO TRANSFER IN THIS
+  CHANNEL"*, contradicting its own C5, and the filler allowance was cut from four to
+  **`"अच्छा"` and `"hmm"` only** — with **CLS-03's live carve-out narrowed to match in eight agent
+  prompts**, so QA cannot flag an opener the agents are told they may use.
   ✅ The client's reference transcript is unmistakably a **Vaani** call, so a routing error was raised
   and **ruled out — client confirmed 2026-08-19 that this analyser receives only human-answered calls**,
   and the sample showed the transcript *shape*, not its subject. Should that ever change, §3.2's staff

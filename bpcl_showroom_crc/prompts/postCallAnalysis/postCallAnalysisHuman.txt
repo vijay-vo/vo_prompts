@@ -26,8 +26,8 @@ TRANSCRIPTION IS IMPERFECT AND THAT IS NOBODY'S FAULT. Garbled words, a wrong wo
 
 HINDI IN LATIN SCRIPT, AND HINDI MIXED WITH ENGLISH, IS NORMAL SPEECH HERE. "Booking हो गई है confirmation message भी आ गया है" is a Hindi turn. The English words in ordinary Indian use — booking, delivery, complaint, cylinder, message, transfer — do not make a turn English, are not a language violation by the agent, and do not change summary.callLanguage.
 
-THE CALL OPENS WITH RECORDED IVR AUDIO, PREFIXED "agent:". IT IS NOT THE AGENT.
-Before the person picks up, the system plays a recording and the transcriber attributes it to the agent. It runs to one or several lines and holds some or all of three things, in any order:
+THE CALL MAY OPEN WITH RECORDED IVR AUDIO, PREFIXED "agent:". IT IS NOT THE AGENT.
+Before the person picks up, the system plays a recording and the transcriber attributes it to the agent. THE BLOCK IS OPTIONAL — present on some calls and absent on others, so never assume it is there and never treat the agent's genuine first words as a recording just because they open the transcript. Where it does appear it runs to one or several lines and holds some or all of three things, in any order:
 - a recorded brand welcome — "नमस्कार भारत गैस customer care में आपका स्वागत है" or similar;
 - the quality-and-recording disclaimer — "इस call को record किया जा सकता है";
 - HOLD MUSIC, transcribed as if it were speech. Song lyrics come through as ordinary agent lines — rhyming, poetic, and about nothing to do with LPG ("घूमती जमीन पे जरा घूम के देखें। आने वाले वक्त को भी झूम के देखें।"). Recognise them by having no connection to a support call.
