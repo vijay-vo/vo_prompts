@@ -80,12 +80,15 @@ four flat root-level scores (`riskEscalationIndex`, `customerEffortScore`, `conv
 (renamed from `csat`). Its `evaluations[]` carries **ten** checkpoints, scored out of a fixed
 `qaScore.total` of 10 — two of them exist only because the agent is a person: Interruptions and Talk
 Balance, and Customer Identification and Verification. **`customerSentiment` was rewritten and
-`agentSentiment` added on 2026-08-19 (CHANNELS.md PCA-03)** — sentiment had collapsed into
+`agentTone` added on 2026-08-19 (CHANNELS.md PCA-03)** — sentiment had collapsed into
 neutral/negative on nearly every call, so it is now decided by a five-signal read of the **middle and
 closing** turns and a first-match ladder that puts `neutral` *below* `positive`; both sentiment fields
-are exempt from the *uncertainty resolves downward* rule, and `agentSentiment` records the agent's
-**tone** (`empathetic`/`professional`/`flat`/`impatient`/`rude`) beside `conversationQualityScore`'s
-judgement of their **conduct**, moving no score of its own. **Its output is aggregated across hundreds of
+are exempt from the *uncertainty resolves downward* rule, and `agentTone` records the agent's
+**tone** (`empathetic`/`professional`/`robotic`/`impatient`/`rude`) beside `conversationQualityScore`'s
+judgement of their **conduct**, moving no score of its own. **It is `agentTone` and not
+`agentSentiment` on purpose** — "sentiment" names the positive/neutral/negative *scale* and would
+imply it shares one with `customerSentiment`; "behaviour" would name *actions*, which is
+`conversationQualityScore`'s job. Do not rename it to either. **Its output is aggregated across hundreds of
 calls onto a manager's dashboard**, so every field has one fixed type and one closed value set, the
 scales are deliberately unlike each other and must never be averaged together (CSAT 1–5, the three QA
 scores 1–10, `qaScore` a fraction out of 10), and an unreadable recording returns `"NA"` for every

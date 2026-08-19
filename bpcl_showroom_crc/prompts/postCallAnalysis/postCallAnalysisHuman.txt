@@ -47,7 +47,7 @@ NEVER FABRICATE A VALUE OF ANY KIND. Not a name, a consumer number, a complaint 
 QUOTES MUST BE VERBATIM. outcomeEvidence and every quoted fragment must appear in the transcript exactly as you write it. Never tidy the grammar, never translate a Hindi line and present it as a quote, never merge two turns into one. If no line fits, write the short factual summary the field allows instead.
 EVERY ADVERSE JUDGEMENT NEEDS A MOMENT. A FAIL, a true riskObservation, a "yes" on riskEscalationIndex, a negativeMoment or an improvementArea must each trace to something the transcript actually shows, and the reason you write must name it. Never mark a call down on a feeling about its tone.
 UNCERTAINTY RESOLVES DOWNWARD, NEVER UPWARD. Unsure whether something happened, it did not: the checkpoint passes, the flag stays false, the complaint was not registered. Unsure what a value was: it is "NA". Never resolve doubt into an assertion.
-CARVE-OUT — customerSentiment AND agentSentiment ARE EXEMPT FROM THAT RULE. It governs facts: a date, a number, an event that either occurred or did not. Sentiment is a judgement about how people behaved, and applying a downward default to it drives every call into "neutral" or "negative" and destroys the field. Both are decided by their own ladders in section 6 and by nothing here. A customer who cooperated and closed politely is "positive" on the evidence of having done so — the absence of effusive thanks is not missing evidence. An agent with no adverse moment in the transcript is "professional", which is the healthy value, not a downgrade.
+CARVE-OUT — customerSentiment AND agentTone ARE EXEMPT FROM THAT RULE. It governs facts: a date, a number, an event that either occurred or did not. Sentiment is a judgement about how people behaved, and applying a downward default to it drives every call into "neutral" or "negative" and destroys the field. Both are decided by their own ladders in section 6 and by nothing here. A customer who cooperated and closed politely is "positive" on the evidence of having done so — the absence of effusive thanks is not missing evidence. An agent with no adverse moment in the transcript is "professional", which is the healthy value, not a downgrade.
 ANSWER ONLY WITH THE STRUCTURE IN SECTION 5. Every key present, no key invented, no key dropped, nothing outside the JSON — no markdown fence, no preamble, no commentary. Never copy a placeholder, a type hint or an example out of this prompt into your answer.
 
 5. OUTPUT STRUCTURE
@@ -59,7 +59,7 @@ Two values below are real and fixed — "total": 10 and "maxScore": 5 — and yo
   "issue": <2 to 5 word label>,
   "departmentArea": <one domain value>,
   "customerSentiment": <"positive" "neutral" "negative" or "angry">,
-  "agentSentiment": <"empathetic" "professional" "flat" "impatient" or "rude">,
+  "agentTone": <"empathetic" "professional" "robotic" "impatient" or "rude">,
   "outcomeEvidence": <verbatim quote, max 20 words>,
   "emergencyFlag": <"yes" or "no">,
   "followUpRequired": <"yes" or "no">,
@@ -180,7 +180,7 @@ Two values below are real and fixed — "total": 10 and "maxScore": 5 — and yo
 
 5.3 NO TRANSCRIPT
 If the transcript is empty, or holds no agent turns at all — only the customer, only noise, or nothing — then nothing can be judged. Return the full structure with every key present, filled like this:
-- Every string is "NA". Every one, including the four dashboard fields, customerSentiment and agentSentiment, every "result", every "reason" and every string inside the nested objects. "NA" overrides a closed value set here: it is the one call on which the two sentiment fields step outside their own lists, and agentSentiment is never "professional" on a call that had no agent turns to judge.
+- Every string is "NA". Every one, including the four dashboard fields, customerSentiment and agentTone, every "result", every "reason" and every string inside the nested objects. "NA" overrides a closed value set here: it is the one call on which the two sentiment fields step outside their own lists, and agentTone is never "professional" on a call that had no agent turns to judge.
 - Every earned number is 0: passedCriteria, failedCriteria, qaScore earned, qaScore percentage, csatAnalysis score.
 - The two denominators keep their fixed values: total 10, maxScore 5.
 - Every array is empty, evaluations included. Do not emit ten "NA" checkpoints.
@@ -244,8 +244,8 @@ STEP 2 — read down and STOP AT THE FIRST ROW THAT MATCHES. The order is the ru
 
 Section 4's "uncertainty resolves downward" DOES NOT GOVERN THIS FIELD. Sentiment is a judgement about behaviour, and an absence of effusive thanks is not an absence of evidence.
 
-agentSentiment — "empathetic" | "professional" | "flat" | "impatient" | "rude"
-HOW THE AGENT SOUNDED — their manner, not their competence and not the outcome. conversationQualityScore (7.3) already judges what the agent DID; this field judges only how they came across, so that a manager can find the cold calls and the sharp ones that a process score hides.
+agentTone — "empathetic" | "professional" | "robotic" | "impatient" | "rude"
+HOW THE AGENT SOUNDED — their manner, not their competence and not the outcome. conversationQualityScore (7.3) already judges what the agent DID; this field judges only how they came across, so that a manager can find the disengaged calls and the sharp ones that a process score hides.
 Weight the middle and the end exactly as customerSentiment does: the manner they held once the call was underway, never one clipped opening line.
 STEP 1 — was there hostility or impatience? If so, stop here.
 - "rude" — dismissive, argued with the customer, blamed them for the problem, mocked them, raised their voice, or refused to hear them out.
@@ -253,9 +253,9 @@ STEP 1 — was there hostility or impatience? If so, stop here.
 STEP 2 — otherwise, judge how engaged they were.
 - "empathetic" — warm and patient as well as correct: acknowledged in their own words what the customer was dealing with, gave them room, stayed steady with a difficult or repetitive caller.
 - "professional" — correct, courteous and businesslike, without particular warmth. THIS IS THE HEALTHY DEFAULT AND CARRIES NO CRITICISM. Most competent calls land here.
-- "flat" — mechanical and disengaged: bare minimum words, no acknowledgement at all, reciting information at someone clearly struggling, leaving the customer to carry the conversation. It needs evidence of disengagement — never pick it merely because no warmth was shown, which is "professional".
-"rude", "impatient" and "flat" ARE ADVERSE JUDGEMENTS and section 4 binds: each must trace to a moment the transcript actually shows, and where none does the value is "professional". Never mark an agent down for the flavour of their Hindi, for brevity alone, or because the customer disliked an answer that could not have been different.
-IT NEVER MOVES A SCORE. agentSentiment is descriptive and drives nothing — it never on its own raises riskEscalationIndex, fails a checkpoint, or changes conversationQualityScore or overallScore. Its whole value is in sitting BESIDE those numbers: an agent who scores well and sounds flat, or scores poorly and sounds kind, is exactly what a manager needs to see.
+- "robotic" — mechanical and disengaged: bare minimum words, no acknowledgement at all, reading information out as though from a script, reciting it at someone who was clearly struggling, leaving the customer to carry the conversation. It needs evidence of disengagement — never pick it merely because no warmth was shown, which is "professional".
+"rude", "impatient" and "robotic" ARE ADVERSE JUDGEMENTS and section 4 binds: each must trace to a moment the transcript actually shows, and where none does the value is "professional". Never mark an agent down for the flavour of their Hindi, for brevity alone, or because the customer disliked an answer that could not have been different.
+IT NEVER MOVES A SCORE. agentTone is descriptive and drives nothing — it never on its own raises riskEscalationIndex, fails a checkpoint, or changes conversationQualityScore or overallScore. Its whole value is in sitting BESIDE those numbers: an agent who scores well and sounds robotic, or scores poorly and sounds kind, is exactly what a manager needs to see.
 
 outcomeEvidence — max 20 words
 A verbatim quote from the transcript justifying callResult or fcr. If no single line fits, write a 5 to 10 word factual summary of the final resolution instead — but never present a paraphrase as a quote.
@@ -325,7 +325,7 @@ DO NOT CALCULATE ANYTHING HERE. No averaging, no weighting, no arithmetic. Where
 3. The agent committed to something nobody can deliver (3.2).
 4. A conduct or compliance problem — rudeness, arguing, repeatedly talking over the customer, ending the call on them, sharing something they should not have.
 5. The customer clearly needed escalating — a complaint registered, or the call passed to a senior — and the agent did neither.
-6. The customer was angry or hostile AND the agent did not deal with it: they left still angry, still unheard, or with nothing. Anger the agent absorbed calmly and resolved is not a risk. It does not make customerSentiment "angry" either — a customer who arrived angry and left settled is judged on where they ended (section 6), and what records the agent's handling of it is agentSentiment and notes.
+6. The customer was angry or hostile AND the agent did not deal with it: they left still angry, still unheard, or with nothing. Anger the agent absorbed calmly and resolved is not a risk. It does not make customerSentiment "angry" either — a customer who arrived angry and left settled is judged on where they ended (section 6), and what records the agent's handling of it is agentTone and notes.
 7. A complaint was attempted and failed, so the customer left with nothing.
 WHAT IS NOT A RISK: an escalation that happened correctly, which is the process working (3.1); a registered complaint, which is a correct outcome here; a customer disappointed by a true answer they did not want; and everything in 3.2 that staff are permitted to do.
 
@@ -438,8 +438,8 @@ recommendedCoachingPriority — "High" where riskEscalationIndex is "yes" or ove
 11. BEFORE YOU ANSWER
 Read the whole transcript before deciding anything — several rules turn on what was said last.
 Check that nothing contradicts anything else: issueType equals departmentArea, csatAnalysis score equals csatScore, its sentiment equals customerSentiment, bookingDate equals bookingDateMentioned, passedCriteria and failedCriteria match the evaluations array and sum to ten, overallVerdict follows that array, resolutionStatus follows fcr, greeting agrees with checkpoint 1, and checkpoint 10 agrees with dimension 8.
-Two checks on the sentiment pair. agentSentiment "rude" or "impatient" cannot sit beside checkpoint 10 PASS and dimension 8 rated good — one of them is wrong, so re-read the transcript and fix whichever the evidence does not support. And customerSentiment must agree in direction with csatScore: "positive" does not sit with a csatScore of "1" or "2", and "angry" does not sit with a "4" or "5".
-No such check binds agentSentiment to any score. An agent who conducted the call correctly and sounded flat is a real and useful row; leave the disagreement standing.
+Two checks on the sentiment pair. agentTone "rude" or "impatient" cannot sit beside checkpoint 10 PASS and dimension 8 rated good — one of them is wrong, so re-read the transcript and fix whichever the evidence does not support. And customerSentiment must agree in direction with csatScore: "positive" does not sit with a csatScore of "1" or "2", and "angry" does not sit with a "4" or "5".
+No such check binds agentTone to any score. An agent who conducted the call correctly and sounded robotic is a real and useful row; leave the disagreement standing.
 Check every value is inside its allowed list, every score is a string, every number inside the nested objects is a number, and the booleans are booleans.
 Check that nothing in the output is absent from the transcript — no invented name, number, date, amount or reason. Anything you cannot evidence is "NA", false, or an empty array.
 Return only the JSON object. No markdown, no fences, no commentary, no text before or after it.

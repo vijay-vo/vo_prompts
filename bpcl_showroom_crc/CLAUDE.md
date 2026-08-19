@@ -465,8 +465,8 @@ references back in — see CHANNELS.md ZIP-01.
   its name, position and four values (client decision: **no `start`/`trend` split — one field, decided
   better**) and is now a procedure: what it is **not**, a **middle-and-end weighting** rule, five
   signals, and a first-match ladder `angry → negative → positive → neutral` with `neutral` explicitly
-  the *narrow* bucket rather than the default. New root field **`agentSentiment`**
-  (`empathetic`/`professional`/`flat`/`impatient`/`rude`) records the agent's **tone**, where
+  the *narrow* bucket rather than the default. New root field **`agentTone`**
+  (`empathetic`/`professional`/`robotic`/`impatient`/`rude`) records the agent's **tone**, where
   `conversationQualityScore` records their **conduct** — it moves no score and fails no checkpoint, and
   `conversationQualityScore` keeps all eight dimensions. Both sentiment fields are **exempt from the
   downward-uncertainty rule** and both return `"NA"` on a no-transcript row.
