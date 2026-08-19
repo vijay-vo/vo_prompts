@@ -466,7 +466,7 @@ references back in — see CHANNELS.md ZIP-01.
   better**) and is now a procedure: what it is **not**, a **middle-and-end weighting** rule, five
   signals, and a first-match ladder `angry → negative → positive → neutral` with `neutral` explicitly
   the *narrow* bucket rather than the default. New root field **`agentTone`**
-  (`empathetic`/`professional`/`robotic`/`impatient`/`rude`) records the agent's **tone**, where
+  (`empathetic`/`professional`/`flat`/`impatient`/`rude`) records the agent's **tone**, where
   `conversationQualityScore` records their **conduct** — it moves no score and fails no checkpoint, and
   `conversationQualityScore` keeps all eight dimensions. Both sentiment fields are **exempt from the
   downward-uncertainty rule** and both return `"NA"` on a no-transcript row.
@@ -479,9 +479,10 @@ references back in — see CHANNELS.md ZIP-01.
   transfer-failure notice arrived under `customer:`) — it is event evidence for `containment` and
   `callResult`, never speech, never quoted, and it sets no language or sentiment. And **ASR partials
   are not repetitions**, which `customerEffortScore` would otherwise have counted on nearly every call.
-  ⚠️ **Open:** the client's reference transcript is unmistakably a **Vaani** call. If AI calls do reach
-  this analyser, §3.2's staff latitude would wrongly exonerate her — confirm the routing with the
-  platform team.
+  ✅ The client's reference transcript is unmistakably a **Vaani** call, so a routing error was raised
+  and **ruled out — client confirmed 2026-08-19 that this analyser receives only human-answered calls**,
+  and the sample showed the transcript *shape*, not its subject. Should that ever change, §3.2's staff
+  latitude would wrongly exonerate Vaani, for whom each of those allowances is an ESC-01 violation.
   **It deliberately diverges from
   `postCallAnalysisFlat` and from CC — do not reconcile.** Note it also records staff latitude that
   Vaani does not have (a number, an office visit, a price, a callback are not risks for a person);

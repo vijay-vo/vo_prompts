@@ -84,7 +84,7 @@ Balance, and Customer Identification and Verification. **`customerSentiment` was
 neutral/negative on nearly every call, so it is now decided by a five-signal read of the **middle and
 closing** turns and a first-match ladder that puts `neutral` *below* `positive`; both sentiment fields
 are exempt from the *uncertainty resolves downward* rule, and `agentTone` records the agent's
-**tone** (`empathetic`/`professional`/`robotic`/`impatient`/`rude`) beside `conversationQualityScore`'s
+**tone** (`empathetic`/`professional`/`flat`/`impatient`/`rude`) beside `conversationQualityScore`'s
 judgement of their **conduct**, moving no score of its own. **It is `agentTone` and not
 `agentSentiment` on purpose** — "sentiment" names the positive/neutral/negative *scale* and would
 imply it shares one with `customerSentiment`; "behaviour" would name *actions*, which is
