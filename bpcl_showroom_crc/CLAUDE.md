@@ -470,6 +470,18 @@ references back in — see CHANNELS.md ZIP-01.
   `conversationQualityScore` records their **conduct** — it moves no score and fails no checkpoint, and
   `conversationQualityScore` keeps all eight dimensions. Both sentiment fields are **exempt from the
   downward-uncertainty rule** and both return `"NA"` on a no-transcript row.
+  **Section 1.1 added 2026-08-19 ([../CHANNELS.md](../CHANNELS.md) PCA-04)** — the prompt now describes
+  its own input. Transcripts arrive as `agent:` / `customer:` prefixed lines, and three artefacts in
+  them were about to be scored as behaviour. **The recorded IVR preamble is prefixed `agent:` and names
+  भारत गैस**, so `greeting`, checkpoint 1 and dimension 1 would have passed on *every* call — they are
+  now judged on the agent's first real turn *after* that block, and hold-music lyrics transcribed as
+  agent speech are ignored entirely. **System and tool text also carries a speaker prefix** (a
+  transfer-failure notice arrived under `customer:`) — it is event evidence for `containment` and
+  `callResult`, never speech, never quoted, and it sets no language or sentiment. And **ASR partials
+  are not repetitions**, which `customerEffortScore` would otherwise have counted on nearly every call.
+  ⚠️ **Open:** the client's reference transcript is unmistakably a **Vaani** call. If AI calls do reach
+  this analyser, §3.2's staff latitude would wrongly exonerate her — confirm the routing with the
+  platform team.
   **It deliberately diverges from
   `postCallAnalysisFlat` and from CC — do not reconcile.** Note it also records staff latitude that
   Vaani does not have (a number, an office visit, a price, a callback are not risks for a person);
