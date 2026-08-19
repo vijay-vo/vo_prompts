@@ -94,7 +94,7 @@ Two values below are real and fixed — "total": 10 and "maxScore": 5 — and yo
   "issue": <2 to 5 word label>,
   "departmentArea": <one domain value>,
   "customerSentiment": <"positive" "neutral" "negative" or "angry">,
-  "agentTone": <"empathetic" "professional" "flat" "impatient" or "rude">,
+  "agentTone": <"empathetic" "professional" "impatient" or "rude">,
   "outcomeEvidence": <verbatim quote, max 20 words>,
   "emergencyFlag": <"yes" or "no">,
   "followUpRequired": <"yes" or "no">,
@@ -280,18 +280,20 @@ STEP 2 — read down and STOP AT THE FIRST ROW THAT MATCHES. The order is the ru
 
 Section 4's "uncertainty resolves downward" DOES NOT GOVERN THIS FIELD. Sentiment is a judgement about behaviour, and an absence of effusive thanks is not an absence of evidence.
 
-agentTone — "empathetic" | "professional" | "flat" | "impatient" | "rude"
-HOW THE AGENT SOUNDED — their manner, not their competence and not the outcome. conversationQualityScore (7.3) already judges what the agent DID; this field judges only how they came across, so that a manager can find the disengaged calls and the sharp ones that a process score hides.
+agentTone — "empathetic" | "professional" | "impatient" | "rude"
+HOW THE AGENT SOUNDED — their manner, not their competence and not the outcome. conversationQualityScore (7.3) already judges what the agent DID; this field judges only how they came across, so that a manager can find the sharp calls and the cold ones that a process score hides.
 Weight the middle and the end exactly as customerSentiment does: the manner they held once the call was underway, never one clipped opening line.
-STEP 1 — was there hostility or impatience? If so, stop here.
-- "rude" — dismissive, argued with the customer, blamed them for the problem, mocked them, raised their voice, or refused to hear them out.
-- "impatient" — audibly rushed or irritated: cut the customer off, hurried them along, was short with a repeated question, pushed to end the call before the customer was finished.
-STEP 2 — otherwise, judge how engaged they were.
-- "empathetic" — warm and patient as well as correct: acknowledged in their own words what the customer was dealing with, gave them room, stayed steady with a difficult or repetitive caller.
-- "professional" — correct, courteous and businesslike, without particular warmth. THIS IS THE HEALTHY DEFAULT AND CARRIES NO CRITICISM. Most competent calls land here.
-- "flat" — mechanical and disengaged: bare minimum words, no acknowledgement at all, reading information out as though from a script, reciting it at someone who was clearly struggling, leaving the customer to carry the conversation. It needs evidence of disengagement — never pick it merely because no warmth was shown, which is "professional".
-"rude", "impatient" and "flat" ARE ADVERSE JUDGEMENTS and section 4 binds: each must trace to a moment the transcript actually shows, and where none does the value is "professional". Never mark an agent down for the flavour of their Hindi, for brevity alone, or because the customer disliked an answer that could not have been different.
-IT NEVER MOVES A SCORE. agentTone is descriptive and drives nothing — it never on its own raises riskEscalationIndex, fails a checkpoint, or changes conversationQualityScore or overallScore. Its whole value is in sitting BESIDE those numbers: an agent who scores well and sounds flat, or scores poorly and sounds kind, is exactly what a manager needs to see.
+
+THESE ARE FOUR RUNGS OF ONE LADDER, NOT FOUR SEPARATE TRAITS. "professional" is the baseline and the other three are defined against it, so no call can qualify for two at once. In particular, an agent who was BOTH warm AND correct is not a choice between two values — warmth on top of correctness IS "empathetic", and that is the answer.
+Read down and STOP AT THE FIRST ROW THAT MATCHES. Adverse rows come first, exactly as in customerSentiment: an otherwise warm agent who rushed the customer is "impatient", because that is the part worth seeing.
+1. "rude" — hostility towards the customer: dismissive, argued with them, blamed them for the problem, mocked them, raised their voice, or refused to hear them out.
+2. "impatient" — no hostility, but audibly rushed or irritated: cut the customer off, hurried them along, was short with a question they had already answered, pushed to end the call before the customer had finished. This is the ordinary failure of a busy day and the most coachable thing in this field.
+3. "empathetic" — professional AND warm: acknowledged in their own words what the customer was dealing with, gave them room, stayed steady with a difficult or repetitive caller.
+4. "professional" — correct, courteous and businesslike. THIS IS THE HEALTHY DEFAULT AND CARRIES NO CRITICISM. Most competent calls land here, and so does an agent who did everything right without any particular warmth.
+
+THE COLD CALL IS "professional" WITHOUT "empathetic", AND NEEDS NO VALUE OF ITS OWN. An agent who worked through the call correctly, in the bare minimum of words, acknowledging nothing, is "professional" here — dimension 7 of conversationQualityScore is where the missing warmth gets recorded, and a manager finds that cohort by reading the two together. So never stretch "impatient" or "rude" to cover mere coldness, and never withhold "professional" as though it were a mild criticism.
+"rude" AND "impatient" ARE ADVERSE JUDGEMENTS and section 4 binds: each must trace to a moment the transcript actually shows, and where none does the value is "professional". Never mark an agent down for the flavour of their Hindi, for brevity alone, or because the customer disliked an answer that could not have been different.
+IT NEVER MOVES A SCORE. agentTone is descriptive and drives nothing — it never on its own raises riskEscalationIndex, fails a checkpoint, or changes conversationQualityScore or overallScore. Its whole value is in sitting BESIDE those numbers: an agent who scores well and acknowledged nothing, or scores poorly and sounds kind, is exactly what a manager needs to see.
 
 outcomeEvidence — max 20 words
 A verbatim quote from the transcript justifying callResult or fcr. If no single line fits, write a 5 to 10 word factual summary of the final resolution instead — but never present a paraphrase as a quote.
@@ -475,7 +477,7 @@ recommendedCoachingPriority — "High" where riskEscalationIndex is "yes" or ove
 Read the whole transcript before deciding anything — several rules turn on what was said last.
 Check that nothing contradicts anything else: issueType equals departmentArea, csatAnalysis score equals csatScore, its sentiment equals customerSentiment, bookingDate equals bookingDateMentioned, passedCriteria and failedCriteria match the evaluations array and sum to ten, overallVerdict follows that array, resolutionStatus follows fcr, greeting agrees with checkpoint 1, and checkpoint 10 agrees with dimension 8.
 Two checks on the sentiment pair. agentTone "rude" or "impatient" cannot sit beside checkpoint 10 PASS and dimension 8 rated good — one of them is wrong, so re-read the transcript and fix whichever the evidence does not support. And customerSentiment must agree in direction with csatScore: "positive" does not sit with a csatScore of "1" or "2", and "angry" does not sit with a "4" or "5".
-No such check binds agentTone to any score. An agent who conducted the call correctly and sounded flat is a real and useful row; leave the disagreement standing.
+No such check binds agentTone to any score. An agent who conducted the call correctly and acknowledged nothing is a real and useful row; leave the disagreement standing.
 Check every value is inside its allowed list, every score is a string, every number inside the nested objects is a number, and the booleans are booleans.
 Check that nothing in the output is absent from the transcript — no invented name, number, date, amount or reason. Anything you cannot evidence is "NA", false, or an empty array.
 Return only the JSON object. No markdown, no fences, no commentary, no text before or after it.
