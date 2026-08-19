@@ -6,25 +6,25 @@ Per root [CLAUDE.md](../../CLAUDE.md) §6.6, this records which of them is deplo
 | File | Status | What it does |
 |---|---|---|
 | `postCallAnalysis.txt` | **DEPLOYED** | Call metrics (15 flat fields) + the nested ADVANCED QA ANALYSIS block (overallVerdict, qaScore, csatAnalysis, summary, callDataCapture, behaviorOverview, riskObservations, evaluations, conversationInsights, coachingFeedback). |
-| `promptQA.txt` | **DEPLOYED** (separate run) | Prompt-defect review. Emits `issues` + `unhandledRequests` only. Needs the runtime data block (`{{customerStatus}}`, distributor and CRC variables) injected. |
-| `postCallAnalysis_withPromptQA.txt` | **CANDIDATE — not deployed** | `postCallAnalysis.txt` with the ADVANCED QA ANALYSIS section (and its nested output objects) replaced by the promptQA rule set. Output = 15 flat fields + `issues` + `unhandledRequests`. Original wording kept verbatim for easy review. |
+| `vaaniQA.txt` | **DEPLOYED** (separate run) | Prompt-defect review. Emits `issues` + `unhandledRequests` only. Needs the runtime data block (`{{customerStatus}}`, distributor and CRC variables) injected. |
+| `postCallAnalysis_withPromptQA.txt` | **CANDIDATE — not deployed** | `postCallAnalysis.txt` with the ADVANCED QA ANALYSIS section (and its nested output objects) replaced by the vaaniQA rule set. Output = 15 flat fields + `issues` + `unhandledRequests`. Original wording kept verbatim for easy review. |
 | `postCallAnalysis_promptQA_merged.txt` | **CANDIDATE — not deployed** | Same field set, rewritten as one coherent prompt: single input/context block, two explicitly separated jobs, deduped headers. |
 
-Both candidates **require the promptQA runtime variables to be injected into the post-call run**.
+Both candidates **require the vaaniQA runtime variables to be injected into the post-call run**.
 `postCallAnalysis.txt` today receives only the transcript, `{{system.current_date}}` and
 `{{system.current_time}}`. If the data block arrives unfilled, the D-rules and A13 silently stop
 detecting anything and every call reports clean.
 
-## Rendering — why promptQA does not display
+## Rendering — why vaaniQA does not display
 
 `postCallAnalysis` has a fixed shape: every key exists on every call, so a renderer can bind a
-template to a known path. `promptQA` is two variable-length arrays and no scalar keys at all, so a
+template to a known path. `vaaniQA` is two variable-length arrays and no scalar keys at all, so a
 generic renderer prints only the cardinality (`14 items`, `2 items`). The proposed fix is a fixed
-scalar header on promptQA (`reviewResult`, `reviewReason`, `issueCount`, `unhandledCount`,
+scalar header on vaaniQA (`reviewResult`, `reviewReason`, `issueCount`, `unhandledCount`,
 `topArea`, `severity`), an `issueCountByArea` object carrying all 14 area keys including zeros, and
 `id` / `title` / `severity` on every array element, with areas in camelCase.
 
-**Partly applied, 2026-07-31, in both channels' `promptQA.txt`.** The first four scalars now ship:
+**Partly applied, 2026-07-31, in both channels' `vaaniQA.txt`.** The first four scalars now ship:
 `reviewResult` (`issuesFound` / `clean` / `notReviewed` / `partialReview`), `reviewReason`,
 `issueCount`, `unhandledCount`. A clean call now says so explicitly instead of being an empty array,
 and a call with no usable transcript returns `notReviewed` rather than looking clean. `partialReview`

@@ -23,7 +23,7 @@ leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. T
 agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
 *"`calltransfer` — NOT AUTHORIZED"* clause.
 
-**`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `promptQA` on
+**`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `vaaniQA` on
 2026-08-05, and XFER-03 removed its last home — the `forwardingNumber` is now the platform's to
 supply, not any prompt's. **No agent holds, speaks, dictates, or offers a phone number for the
 consumer to call us.** A request for one gets "मेरे पास कोई number नहीं है, मैं सिर्फ़ आपकी call
@@ -213,7 +213,7 @@ complaint — it is a data question, not a problem.
 > consumer's own distributor office. **"अपने distributor से पूछ लीजिए" is correct and expected.**
 > She remains an insider of भारत पेट्रोलियम itself. Escalation (Axis 1) is untouched: pointing to a
 > distributor means a **phone enquiry**, never a journey, and an unresolved problem is still a
-> registered complaint. `promptQA` **C8 is retired**; C7 now says the third-party framing is correct.
+> registered complaint. `vaaniQA` **C8 is retired**; C7 now says the third-party framing is correct.
 > Hotplate purchase and KYC submission now point at the consumer's **own distributor**, not this CRC.
 
 Vaani works at a Bharat Gas / Bharat Petroleum Consumer Relationship Centre (CRC), identified by
@@ -307,6 +307,13 @@ latter.
 
 **Folder naming defect:** this workspace uses `genericInfoComplaint/`; CC uses
 `genericInfoComplaintAgent/`. Canonical is `genericInfoComplaintAgent` (NAME-03).
+
+**The Vaani QA reviewer is `vaaniQA.txt` here, `promptQA.txt` in CC** — renamed 2026-08-19 because the
+file reviews **Vaani**, not prompts, and sits beside `postCallAnalysisHuman.txt`, which reviews the
+human agent. Intended, recorded as [../CHANNELS.md](../CHANNELS.md) **NAME-05**; rename CC's copy when
+CC is next opened. Every `promptQA` reference in ledger rows dated before that day means this file.
+⚠️ **Nothing in the prompts points at the filename, so the platform's post-call config must be
+repointed** — if that is missed, CRC's QA analyser silently stops running.
 
 **`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
 **deployed** entry prompt again — `getConsumerDetails.txt` ships, `getConsumerDetails_MultiToolVersion.txt`
@@ -480,7 +487,7 @@ references back in — see CHANNELS.md ZIP-01.
   `callResult`, never speech, never quoted, and it sets no language or sentiment. And **ASR partials
   are not repetitions**, which `customerEffortScore` would otherwise have counted on nearly every call.
   **Extended to the other two analysers 2026-08-19 ([../CHANNELS.md](../CHANNELS.md) PCA-05).** All three
-  CRC post-call prompts read the same platform transcript, so `promptQA` and `postCallAnalysisFlat` now
+  CRC post-call prompts read the same platform transcript, so `vaaniQA` and `postCallAnalysisFlat` now
   carry the transcript-format block too — and `postCallAnalysisFlat` also takes PCA-03's
   `customerSentiment` rewrite, having carried the identical collapsing definition. **`agentTone` is
   deliberately NOT ported to either**: Vaani's tone comes from her prompt, not the call, so the column
@@ -488,7 +495,7 @@ references back in — see CHANNELS.md ZIP-01.
   (*"नमस्ते, मेरा नाम वाणी है…"*) is the boundary between recording and agent. **PCA sees no tool calls
   and no tool results** — no rule may assume otherwise; `callTransferred` is judged from the spoken
   transfer line alone, which is sound because that line is `calltransfer`'s own `preToolMessage`.
-  Two defects fixed in the same pass: `promptQA`'s PART C still said *"THERE IS NO TRANSFER IN THIS
+  Two defects fixed in the same pass: `vaaniQA`'s PART C still said *"THERE IS NO TRANSFER IN THIS
   CHANNEL"*, contradicting its own C5, and the filler allowance was cut from four to
   **`"अच्छा"` and `"hmm"` only** — with **CLS-03's live carve-out narrowed to match in eight agent
   prompts**, so QA cannot flag an opener the agents are told they may use.

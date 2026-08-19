@@ -55,11 +55,11 @@ the transcript. **Which ones run depends on who took the call.**
 
 | Who answered | What runs, in order |
 |---|---|
-| **Vaani (AI agent)** | `postCallAnalysisFlat.txt` **first**, then `promptQA.txt` |
+| **Vaani (AI agent)** | `postCallAnalysisFlat.txt` **first**, then `vaaniQA.txt` |
 | **A human agent** | `postCallAnalysisHuman.txt` |
 
 **On an AI call the order matters.** `postCallAnalysisFlat` produces the flat structured summary of
-what the call was about — intent, outcome, disposition. `promptQA` then reviews the same transcript
+what the call was about — intent, outcome, disposition. `vaaniQA` then reviews the same transcript
 for **rule violations by Vaani** and returns the issue/unhandled-request JSON. Flat describes the
 call; QA judges the agent. Do not run QA first and do not treat either as a substitute for the other.
 
@@ -67,7 +67,7 @@ call; QA judges the agent. Do not run QA first and do not treat either as a subs
 (checkpoint PASS/FAIL, `conversationInsights`). It is not part of the AI-call path.
 
 **Monitoring for Vaani reads the nested JSON** — the structured checkpoint and insight objects out of
-`postCallAnalysisHuman` and `promptQA` — rather than flat counts. Keep both outputs' nested shapes
+`postCallAnalysisHuman` and `vaaniQA` — rather than flat counts. Keep both outputs' nested shapes
 stable: anything that consumes them breaks silently when a field is renamed or flattened.
 
 ✅ **The subject-framing question is closed (2026-08-13, CHANNELS.md PCA-02).** `postCallAnalysisHuman.txt`
@@ -133,6 +133,9 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 - `deliveryGenericAgent` and `refillSupportAgent` are named as routing targets in several prompts.
   **Neither exists.** Any `switchagent` to them dead-ends.
 - `bookingEligibleAgent.txt` is titled "(NON-ELIGIBILITY BLOCKER CASE)" but contains the eligible flow.
+- The Vaani QA reviewer is **`vaaniQA.txt` in CRC** (renamed 2026-08-19) and still **`promptQA.txt` in CC**.
+  Intended, not drift — recorded as **NAME-05** in [CHANNELS.md](CHANNELS.md). Same prompt, two names;
+  when reading older ledger rows, `promptQA` before that date means this file in either channel.
 
 ---
 
