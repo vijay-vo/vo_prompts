@@ -49,7 +49,7 @@ it: **T3**, and `getConsumerDetails`' no-data closing.
 
 **The transfer turn speaks nothing of its own.** `calltransfer` is invoked exactly the way
 `callHangup` is: the agent generates **no text**, and passes **exactly one parameter** —
-`preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"`. Nothing else goes with it: no `agentName`, no
+`preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`. Nothing else goes with it: no `agentName`, no
 `handoffSummary`, no `consumerQuery`, no number. Writing that line as text *as well* makes the
 consumer hear it twice. `transfer` is the one word from the forbidden list that may appear — inside
 that `preToolMessage` and nowhere else in an agent's own speech. The old non-committal switch line
@@ -71,7 +71,7 @@ it names none: *"अभी हमारी senior team से सम्पर्
 Closing is gated on the consumer: the agent **never closes in the same turn as the bad news**, keeps
 answering until they actually accept ("ठीक है", "समझ गया", "फिर call करूँगा", a goodbye) or the line
 is dead through two waits, and only then calls `callHangup`. Turn count is never a reason to close.
-`calltransfer` runs **once per call** and is never retried.
+`calltransfer` runs **once per call** and is never retried. That once is **per call, not per agent — it survives a `switchagent`** (CHANNELS.md **XFER-05**): before invoking it, an agent reads back through the whole call for a transfer line or Result, including turns from before it became active. The *offer* dies with the attempt too — once a transfer has been attempted, a later complaint failure gets the failure line and no second T3 question — and with the complaint tool down and the transfer spent there is nothing left, so the agent says so once and closes rather than circling on *"कुछ समय बाद call कीजिए"*. **`bpcl_create_complaint`'s failure is call-scoped in the same way** (CPL-20): a fresh agent is not a fresh attempt.
 
 **Who never transfers:** `Default` (routes human requests to `genericInfoComplaintAgent` first, so
 the issue gets registered) and `emergencyAgent` (a live hazard outranks everything). `routingAgent`
