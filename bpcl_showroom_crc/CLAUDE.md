@@ -458,7 +458,19 @@ references back in — see CHANNELS.md ZIP-01.
   rows are dropped before anything aggregates. Scales stay native and are never averaged across each
   other: CSAT 1–5, the three QA scores 1–10, `qaScore` a fraction out of 10 rather than a third
   scale. `evaluations[]` now carries **ten** checkpoints — the tenth is Customer Identification and
-  Verification. **It deliberately diverges from
+  Verification.
+  **Amended 2026-08-19 by [../CHANNELS.md](../CHANNELS.md) PCA-03:** `customerSentiment` was
+  collapsing into `"neutral"`/`"negative"` on nearly every call — topic bleed, an unreachable
+  `"positive"`, and the *uncertainty resolves downward* rule leaking onto a judgement field. It keeps
+  its name, position and four values (client decision: **no `start`/`trend` split — one field, decided
+  better**) and is now a procedure: what it is **not**, a **middle-and-end weighting** rule, five
+  signals, and a first-match ladder `angry → negative → positive → neutral` with `neutral` explicitly
+  the *narrow* bucket rather than the default. New root field **`agentSentiment`**
+  (`empathetic`/`professional`/`flat`/`impatient`/`rude`) records the agent's **tone**, where
+  `conversationQualityScore` records their **conduct** — it moves no score and fails no checkpoint, and
+  `conversationQualityScore` keeps all eight dimensions. Both sentiment fields are **exempt from the
+  downward-uncertainty rule** and both return `"NA"` on a no-transcript row.
+  **It deliberately diverges from
   `postCallAnalysisFlat` and from CC — do not reconcile.** Note it also records staff latitude that
   Vaani does not have (a number, an office visit, a price, a callback are not risks for a person);
   that is scoped to this analyser and changes no live prompt. The earlier CONTEXT fix (2026-08-11,
