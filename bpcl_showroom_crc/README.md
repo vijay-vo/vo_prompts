@@ -14,7 +14,7 @@ shared truth that must stay identical to CC lives in [../CLAUDE.md](../CLAUDE.md
   visit is ever offered** as an escalation.
 - **Every routing-capable agent holds `calltransfer` and invokes it itself** (CHANNELS.md XFER-03,
   2026-08-11 — the dedicated `callTransferAgent` was deleted). The transfer turn works exactly like
-  `callHangup`: one parameter, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"`, and **no spoken
+  `callHangup`: one parameter, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`, and **no spoken
   text of the agent's own**. The agent then reads the tool's Result — success → silence; failure →
   it says the team could not be reached and stays until the consumer accepts. `Default` and
   `emergencyAgent` still hold no transfer.

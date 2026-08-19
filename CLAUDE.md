@@ -115,7 +115,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 | `connectionServicesAgent` | KYC, address, mobile, name, surrender, portability, PNG. |
 | `newConnectionAgent` | New connection / Ujjwala / PMUY. |
 | `genericInfoComplaintAgent` | Catch-all: how-to, equipment faults, behaviour complaints. |
-| ~~`callTransferAgent`~~ | **Deleted 2026-08-11 (CHANNELS.md XFER-03).** Every routing-capable CRC agent now holds `calltransfer` and invokes it itself, passing `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है"` and nothing else, with no spoken text of its own — then reads the Result: success → silence, the platform closes the call; failure → it says the team could not be reached, gives the window the Result carried, and closes only once the consumer accepts. |
+| ~~`callTransferAgent`~~ | **Deleted 2026-08-11 (CHANNELS.md XFER-03).** Every routing-capable CRC agent now holds `calltransfer` and invokes it itself, passing `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"` and nothing else, with no spoken text of its own — then reads the Result: success → silence, the platform closes the call; failure → it says the team could not be reached, gives the window the Result carried, and closes only once the consumer accepts. |
 
 **Known naming defects — do not propagate:**
 - CRC's folder is `genericInfoComplaint/`, CC's is `genericInfoComplaintAgent/`. Canonical is
@@ -153,7 +153,7 @@ else on the next turn. The agent's own spoken line is never evidence a tool ran;
 **text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
 spoken line in `preToolMessage` while generating no text of their own: `callHangup`, which carries
 the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
-`"आपकी कॉल ट्रांसफर की जा रही है"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
+`"आपकी कॉल ट्रांसफर की जा रही है।"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
 Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent.
 
 **Switching is invisible.** Never reveal that other agents, teams, experts, or systems exist.
@@ -163,7 +163,7 @@ prompt now also carries a *menu of anchor lines* saying what to speak instead ("
 check करती हूँ, एक मिनट।"), because a prompt that only forbids gives the model nothing to reach for
 and it reaches for "मैं आपको हमारे department से connect करती हूँ" (XFER-01).
 One exception in each channel, because the consumer is about to hear a different voice: the
-`calltransfer` tool's own `preToolMessage`. In CRC that message is "आपकी कॉल ट्रांसफर की जा रही है"
+`calltransfer` tool's own `preToolMessage`. In CRC that message is "आपकी कॉल ट्रांसफर की जा रही है।"
 and it is the **only** thing spoken on that turn — the agent writes no text of its own (XFER-03).
 
 **Emergency overrides everything.** A confirmed gas hazard in any agent at any moment switches to
