@@ -1371,6 +1371,42 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### GCD-09 · `getConsumerDetails` read a rejected mobile number back and called it wrong in the same breath — CRC only, CC pending (2026-08-21)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth (number capture). Amends GCD-08's confirmation-trigger fix, which only covered the success Result. |
+| **What the live call did** | `validatecontactno` returned `invalid_mobile_number` (12 digits captured against a 10-digit expectation). The agent's next turn read the rejected digits back in the STEP 3 confirmation template *and* declared them wrong in the same output: *"कृपया पुष्टि कीजिए, आपका मोबाइल नंबर nine - zero - … - one है?क्षमा कीजिए, यह मोबाइल नंबर गलत है। कृपया अपना १० अंकों का registered मोबाइल नंबर सही से बताइये।"* Three clauses — a confirmation question, a rejection, a re-ask — stacked in one turn, on a number that was never valid to begin with. |
+| **Why it happened** | The prompt had a `PARTIAL NUMBER BEHAVIOR` section for an incomplete number, but nothing at all for a *rejected* one. STEP 3's trigger was worded around "a complete, successful number," which an invalid Result technically satisfies (it is complete, just wrong) if the model isn't told otherwise — so it fell through into the confirmation template with no separate handling. |
+| **The rule now** | New `INVALID NUMBER BEHAVIOR` section: an `invalid_mobile_number` / `not_10_digits` Result is never the STEP 3 trigger. The agent speaks the "no" alone, in one short line ("यह नंबर सही नहीं लग रहा, कृपया दोबारा बताइए।"), and stops — no digit read-back, no confirmation template, no stacked re-explanation. STEP 3's trigger definition now explicitly excludes partial and invalid Results. |
+| **Files touched (2)** | CRC `getConsumerDetails/getConsumerDetails.txt`, plus this ledger. CC's `getConsumerDetails.txt` has the identical gap (confirmed by grep) and is unfixed — port before the next CC number-capture change. |
+
+---
+
+### RTE-05 · `connectionServicesAgent` answered a delivery-status question with distributor details instead of routing it — CRC only (2026-08-21)
+
+| | |
+|---|---|
+| **Axis** | Neither — a domain-boundary leak. §14's router already sent booking/delivery questions to `routingAgent`; this is the same live call, not a new rule. |
+| **What the live call did** | After registering an unrelated complaint, the consumer asked where their already-booked cylinder would reach them. The agent treated it as a C12 distributor-lookup and read out the distributor's name, address and phone number — proactively repeating the number three times, including one clearly wrong readback — instead of switching to `routingAgent` for what was, in substance, a delivery-status question. |
+| **Why it happened** | §1's own framing — *"assume the query belongs to you unless proven otherwise… helping is your default"* — has no scope limit in the prompt, so it read as license to answer anything reachable from injected data, including a question that only sounded like a location question because it was wrapped in "distributor का number दे दीजिए ताकि पूछ सकूँ." |
+| **The rule now** | The default-helping bias is now scoped explicitly to C1–C12 topics. A carve-out spells out that booking, delivery, payment, subsidy and new-connection questions are never assumed as this agent's, however they're phrased — including a delivery-status ask wrapped in a request for the distributor's number — and a matching note sits at the C12 module boundary itself, where the agent actually reached for the wrong tool. |
+| **Files touched (2)** | CRC `connectionServicesAgent/connectionServicesAgent.txt`, plus this ledger. |
+
+---
+
+### NUM-06 · The distributor's number and the complaint number need different dictation defaults, and one shared rule was giving both the same one — CRC only (2026-08-21)
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth (TTS/number delivery), amending NUM-01/NUM-03's `LONG NUMBER DELIVERY` block, which treated every long number the same way. |
+| **What the live call did** | The same call from GCD-09/RTE-05 showed `connectionServicesAgent` reading the ten-digit distributor number in one continuous Hindi-word breath, losing track partway, restarting, and mishearing a piece back (पांच दो चार vs पांच दो सात) before landing it — the exact failure mode a ten-digit number invites when it isn't broken up. |
+| **First pass, then a correction** | The first fix made *every* long number — complaint number included — pieced from the first turn. The client's instruction on review: the complaint number is short, unlike a ten-digit mobile-shaped number, so it should stay whole-in-one-turn by default, same as before; only the **distributor's number** (and the SMS/missed-call/WhatsApp numbers, which are also ten-digit-shaped) needed the piece-by-piece-always fix. |
+| **The rule now, in the ten complaint-capable agents' `LONG NUMBER DELIVERY` block** | The distributor's contact number and the SMS/missed-call/WhatsApp numbers are delivered in three pieces (3-3-4, ten digits, no country code) from the very first turn, always — piece, then STOP, no question attached, no final "क्या आपने पूरा नंबर नोट कर लिया?" round-up once the pieces are done. The complaint number is the one named exception: spoken whole, in one turn, the first time, exactly as before — it switches into the same three-piece pattern only once the consumer asks to repeat it, slow down, or note it down. `connectionServicesAgent`'s own distributor-number rule (§9 Rule 2) and its C12 `TURN 1` examples were restructured so the number is never folded into the same sentence as the name/address/timing. `vaaniQA.txt` (C5f/C5g) was rewritten to score both defaults as correct rather than flagging either as a violation. |
+| **Files touched (14)** | The ten complaint-capable leaves, `Default` and `newConnectionAgent_onHold` (piece-default only — neither holds a complaint number), `postCallAnalysis/vaaniQA.txt`, plus this ledger. CC was not touched — its `LONG NUMBER DELIVERY` block carries the same undifferentiated rule and should be ported on the same terms before the next CC number-delivery change. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
