@@ -1,6 +1,7 @@
 # bpcl_contact_center (CC) — channel contract
 
-Central Bharat Petroleum contact centre for the whole state.
+Bharat Petroleum's **national head office** contact centre, Mumbai — serving LPG consumers
+across India, in whatever Indian language they speak.
 
 Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth that must stay identical to
 CRC. This file holds **only what is specific to this channel.**
@@ -11,19 +12,30 @@ the two axes below.
 
 ---
 
-## Axis 1 — Escalation: `calltransfer` is available here
+## Axis 1 — Escalation: `calltransfer`, held by every routing-capable agent
 
-Vaani can hand the consumer to a human senior team.
+Vaani can hand the consumer to a human senior team. **Rewritten 2026-08-27** — the old text on
+this page claimed transfer was a `Default` STAGE 0 interrupt only. That was never true of the
+prompts, and is doubly untrue now.
 
-**Tool:** `calltransfer`
-**Target:** `sip:1001@21112728532045680.zt.plivo.com` — a parameter only, never spoken
-**`contactNumber`:** `{{jNationalNumber}}` — never spoken unless the consumer explicitly asks
+**Tool:** `calltransfer`, held and invoked by the agent the consumer is already speaking to.
+There is no transfer agent and nothing to switch to.
 
-**When it fires — `Default` STAGE 0 interrupts only:**
-- **B** — the consumer explicitly asks for a human, person, senior, or agent
-- **C** — the consumer explicitly asks for a language other than Hindi
-- **D** — a non-LPG Bharat Petroleum product (petrol, diesel, lubricants, SmartFleet, fuel cards,
-  PNG as a product, aviation fuel, industrial fuel)
+**Parameters:** `preToolMessage` and **nothing else** (CHANNELS.md XFER-06). The platform supplies
+the forwarding target itself. The old `forwardingNumber` SIP string, `contactNumber`,
+`consumerLanguage` and `consumerQuery` are gone from every prompt.
+
+**Speech on a transfer turn.** The agent writes **NO text of its own**. The `preToolMessage`
+carries the whole spoken line and is the only thing the consumer hears — exactly how `callHangup`
+works. Writing the line as text *as well* is the double-speak bug this rule exists to prevent.
+Naming the team is permitted inside that `preToolMessage` only, because the consumer is about to
+hear a different voice. On `switchagent`, naming it is still forbidden.
+
+**A complaint comes first.** A consumer asking for a human gets their issue **registered** first,
+and is transferred only if they still want a person afterwards. Same as CRC.
+
+**One attempt per CALL — never a second.** The spent attempt belongs to the call, not the agent:
+it survives a `switchagent`, as does a failed `bpcl_create_complaint` (XFER-05, CPL-20).
 
 **When it must not fire:**
 - Never blind, never to route a clear LPG topic — that is `switchagent`'s job.
@@ -32,36 +44,54 @@ Vaani can hand the consumer to a human senior team.
 - Never offered for "better help" after a query has been answered or routed.
 - A हाँ/जी/बिल्कुल confirming some other factual question is **not** a human request.
 
-**Speech on a transfer turn.** `calltransfer` takes **no** `preToolMessage` — write the warm line
-as text: *"बिल्कुल, मैं आपको हमारी team से बात करवाती हूँ।"* Naming the team **is allowed here** —
-this is the one exception to the invisible-switching rule, because the consumer is about to hear a
-different voice. On `switchagent`, naming it is still forbidden.
+**On failure**, the agent speaks the failure line and the window the Result carried. **There are
+no callbacks in this channel** — retired 2026-08-27 (CHANNELS.md CB-01).
 
-**On failure the call ends.** Do not offer a callback after a failed transfer.
+## Axis 1b — Language
+
+**Any Indian language the consumer speaks** (CHANNELS.md MULT-01). CC is no longer Hindi-only, so
+a request for another language is **not** a transfer trigger — Vaani simply answers in it.
+
+## Axis 1c — The head office address
+
+Fixed KB wording in 13 agents, **not a variable**. CC has no equivalent of `{{crcOfficeCity}}` /
+`{{crcOfficeAddress}}`.
+- "Where are you calling from?" → **"Bharat Petroleum, Mumbai Headquarters office"**
+- Asked for the address itself → Bharat Bhavan, Four and six Currimbhoy Road, Ballard Estate,
+  Mumbai. Pin code only on request, then digit by digit.
+- **Address only — no phone number.** The "I hold no number, you get a transfer" rule stands.
+- **Never offered as somewhere to travel to.** Callers are nationwide; a trip to Mumbai solves
+  nothing.
+- `emergencyAgent` does not carry this block, matching CRC.
+
 
 ## Axis 2 — Persona: Bharat Petroleum central, distributor is a third party
 
-Vaani is a voice agent **for Bharat Petroleum**, not an employee of the distributor.
+Vaani is a voice agent **for Bharat Petroleum**, speaking from the **national head office**
+in Mumbai, not an employee of the distributor.
 
 - ✅ "आपके distributor", "अपने distributor से संपर्क कीजिए" — correct here
 - ❌ Insider phrasing — "हमारे यहाँ", "हमारा office", "आप हमारे पास आ सकते हैं". That is CRC's
   voice. It currently appears 0 times in this workspace; keep it that way.
-- "senior team" is a real, reachable destination here (125 references) — not a figure of speech.
+- "senior team" is a real, reachable destination here (159 references) — not a figure of speech.
 
 ---
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callHangup`, **`calltransfer`**, `bpcl_create_complaint`,
+**Tools:** `switchagent`, `callHangup`, **`calltransfer`** (`preToolMessage` only),
+`bpcl_create_complaint`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**Prompts unique to this channel:** `postCallAnalysis/postCallAnalysis.txt` and
-`postCallAnalysisFlat.txt`. No CRC counterpart; whether that is intended is unconfirmed
-([../CHANNELS.md](../CHANNELS.md) D-04).
+**Prompts unique to this channel:** `postCallAnalysis/postCallAnalysis.txt` only —
+`postCallAnalysisFlat.txt` now has a CRC twin and was derived from it (2026-08-27).
+⚠️ `postCallAnalysis.txt` was **deliberately left untouched** by the CC-port pass and still scores
+scheduled callbacks, which no longer exist in this channel (CB-01). Confirm whether it is still
+deployed before trusting its output.
 
 **Docs:** [ORCHESTRATION.md](docs/ORCHESTRATION.md) is the live routing spec — the Switch Gate
 design, `(topic, consumerPayload) → agentName`. It is **spec-only and not yet applied to the
@@ -74,10 +104,9 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 
 ## Open items specific to CC
 
-- **The `getConsumerDetails` blocker** ([ORCHESTRATION.md](docs/ORCHESTRATION.md) §5): the recovery
-  loop cannot close. The prompt says in three places (lines 4, 11, 114) *"you never hand off to
-  another agent"* and has **no `switchagent` tool** — its only exits are a transfer or a hangup.
-  It needs `switchagent` plus a `{{pendingAgent}}` variable.
+- ~~**The `getConsumerDetails` blocker**~~ — **CLOSED 2026-08-27.** The agent was derived from
+  its CRC twin and now holds `switchagent`, so the recovery loop has a real exit. The old text
+  ("you never hand off to another agent", no `switchagent` tool) is gone with the old file.
 - **Urban/rural field name unknown** (§7). Until supplied, the 25/45-day booking gap cannot be
   computed and the gate defaults everyone to 25 days.
 - **Refill limits are out of scope for phase 1** (§6). A consumer who has hit the 2/month or
@@ -94,5 +123,18 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 2. Ask: is this change **shared truth** or **CC policy**? Shared truth lands in CRC too, this
    session. CC policy gets a row in [../CHANNELS.md](../CHANNELS.md).
 3. If you are porting from CRC, translate the axes: an office-visit block becomes a `calltransfer`
-   block only if it is a genuine STAGE 0 interrupt — otherwise it stays inline. Insider phrasing
+   block only where escalation is genuinely warranted — otherwise it stays inline. Insider phrasing
    becomes third-party phrasing.
+
+---
+
+## Open platform dependencies (created by the CC-port pass, 2026-08-27)
+
+1. **`calltransfer` must resolve its own forwarding target.** Every CC prompt now passes
+   `preToolMessage` alone. If the CC platform does not supply the SIP target the way CRC's does,
+   **every transfer in this channel fails silently** — the prompts will be correct and the calls
+   will still drop. Test one transfer before wide deployment.
+2. **`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**
+   It came across with the derivation and is a CRC-branded variable. If CC does not inject it, the
+   prompts see curly braces, treat the value as absent, and fall back to "I cannot confirm that
+   holiday" — safe, but degraded. Decide whether CC gets a holiday calendar and under what name.

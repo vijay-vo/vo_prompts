@@ -660,7 +660,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **⚠️ Open — needs the platform team** | **(1) REVISED 2026-08-06** — `callTransferAgent` must be registered as a real agent, and the platform (not the agent) must invoke `calltransfer` automatically, with the required parameters, the instant a call is switched to `callTransferAgent` and before its first turn — the agent no longer holds a decision-to-attempt step. **(2)** `{{crcOfficeNumber}}` must be injected as the `forwardingNumber` on that automatic call; it is the one place the variable still lives, and NUM-02's original injection question was never confirmed. **(3)** Something must write senior-team hours into the `handoffSummary` that reaches `callTransferAgent`, for the failure-branch line — availability itself no longer needs to be predicted in `handoffSummary`, since the agent now reads it off the automatic attempt's Result, but hours still have no other source. **(4) RESOLVED 2026-08-05** — `callTransferAgent` now holds `callHangup`. The platform is expected to close the call itself on a **successful** transfer (the agent deliberately calls no tool there); `callHangup` is used only on the failure branch, after the consumer accepts. **(5) NEW 2026-08-06** — the platform must surface the automatic `calltransfer` attempt's Result to `callTransferAgent` on its first turn, including a reason (out-of-office-hours / platform failure / busy / no-answer) — without it the agent cannot distinguish success from failure. |
 | **CC** | Entirely untouched. CC already had `calltransfer` inline in ten agents plus its callback-slot capture on failure; none of that changes, and the two channels' transfer models remain different — CC transfers from inside each agent, CRC transfers through a dedicated one. |
 
-### BAN-01 · The invisible-switching ban list was English-only; the model speaks Hindi — CRC only, CC pending (2026-08-05)
+### BAN-01 · The invisible-switching ban list was English-only; the model speaks Hindi — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-05)
 
 | | |
 |---|---|
@@ -671,7 +671,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **Files (13)** | `Default`, `routingAgent`, the ten specialist agents, and `vaaniQA` C8 (so the analyser detects the Hindi forms too). |
 | **CC** | **Not yet ported.** CC's lists are the same shape with the same gap. Port with CPL-08. |
 
-### CPL-08 · The registering line is terminal for its turn — CRC only, CC pending (2026-08-05)
+### CPL-08 · The registering line is terminal for its turn — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-05)
 
 | | |
 |---|---|
@@ -708,7 +708,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### DATA-03 · `{{ConsumerDetailsConsumerNumber}}` / `{{ConsumerDetailsConsumerAddress}}` propagated to the remaining specialist agents — CRC only, CC pending (2026-08-06)
+### DATA-03 · `{{ConsumerDetailsConsumerNumber}}` / `{{ConsumerDetailsConsumerAddress}}` propagated to the remaining specialist agents — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-06)
 
 | | |
 |---|---|
@@ -723,7 +723,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither — **shared truth**, direct follow-up to CPL-03. Landed in **CRC only** this session; **CC pending**, same as CPL-08. |
+| **Axis** | Neither — **shared truth**, direct follow-up to CPL-03. Landed in **CRC only** this session; **ported to CC 2026-08-27 (CC-PORT-01)**, as was CPL-08. |
 | **Source** | A live CRC transcript (client-reported): `genericInfoComplaintAgent` spoke *"ज़रा बुकिंग की जानकारी देखती हूँ।"* three turns in a row and never invoked `switchagent`. `Default`'s own presence-check line ("क्या आप अभी भी लाइन पर है?") fired between attempts — the platform's silence prompt, not Vaani choosing to re-ask — so the consumer answered the same content three times before the switch to `routingAgent → activeDeliveryAgent` finally fired. The consumer experienced roughly a minute of the call going nowhere. |
 | **Root cause** | CPL-03's `RECOVERY` clause was real but lived only as prose inside the **tool-documentation section** (Section 5), a few hundred lines from the actual per-turn decision procedure (Section 7's numbered `Check 1…N`). On the turn after a stalled switch, the model re-entered Section 7 at Check 1 and re-classified the turn from scratch — nothing in the ordered checklist itself said "you may be mid-recovery, check that first." The model's own spoken line was never compared against what it had already said, so a second, near-identical "देखती हूँ" line went out with no tool call behind it either. This is exactly the "Model-capability caveat" CPL-03 flagged as unverified — confirmed here as a live failure, and the fix is structural, not a rewording. |
 | **The fix** | A **Check 0 / Step 1B / Block 1B / TOOL RECOVERY** clause added as the FIRST item of the per-turn ordered procedure itself (not the tool section) in every agent that has one: if the previous turn spoke a switch- or registration-implying line and no Result has come back, invoke the tool now, before anything else, using the parameters already held — never re-speak the line, never re-ask the consumer, never re-classify from scratch. Each also names **THE TELL**: a about-to-be-spoken line repeating, in substance, a line already spoken earlier in the call with no Result in between is itself the signal that recovery is needed. Also names the specific failure mode observed live: a presence-check ("क्या आप अभी भी लाइन पर हैं") landing mid-stall is the platform waiting on a missing tool call, not silence to be soothed — recovery routes into the tool call, not into a reassurance line. |
@@ -748,7 +748,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither — shared truth, direct follow-up to CPL-01/CPL-08/CPL-09. **CRC only** per client instruction this session; **CC pending**. |
+| **Axis** | Neither — shared truth, direct follow-up to CPL-01/CPL-08/CPL-09. **CRC only** at the time; **ported to CC 2026-08-27 (CC-PORT-01)**. |
 | **Source** | Same live CRC transcript as CPL-10: nearly every agent turn that registered, confirmed, or restated a complaint ended with "...हमारी team आपसे संपर्क करेगी। क्या कुछ और L P G से related help चाहिए?" appended in the same breath — including turns where the consumer was mid-sentence, still upset, or actively repeating themselves. `Step 10`'s existing `ANSWERING IS NOT RESOLVING` principle was sound but lived only as a general rule; the concrete SUCCESS/FAILURE/ALREADY-REGISTERED templates each separately said "then go to close check," which the model read as continuing in the same output rather than waiting for a later, genuine stopping point. |
 | **The fix** | Every complaint-capable CRC agent's SUCCESS and FAILURE templates now end with an explicit "this sentence is the entire turn — the close question is never appended to it" instruction instead of "then go to close check." The `ALREADY REGISTERED` / `CALL ONCE` / `SAME-ISSUE` short lines got the same "stop — the close question is never appended to it" ending. Each agent's own close-check section (`Step 10` / `SECTION n: CLOSE CHECK` / `Pre-close` / `BLOCK 10`) also gained a `HARD GATE` sentence naming the same rule as a backstop covering every trigger, not only complaint ones. |
 | **Files (10)** | `bookingNonEligibilityAgent`, `bookingEligibleAgent`, `connectionServicesAgent`, `activeDeliveryAgent`, `eligibleDeliveryAgent`, `notEligibleDeliveryAgent`, `postDeliveryAgent`, `genericInfoComplaintAgent`, `paymentAgent`, `subsidyAgent` — every CRC agent holding `bpcl_create_complaint`. |
@@ -772,7 +772,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither — shared truth, direct follow-up to CPL-11. **CRC only**; **CC pending**. |
+| **Axis** | Neither — shared truth, direct follow-up to CPL-11. **CRC only** at the time; **ported to CC 2026-08-27 (CC-PORT-01)**. |
 | **Source** | A second live CRC transcript, `genericInfoComplaintAgent`: the registering line was spoken correctly and then the call was typed out after it as text — `bpcl_create_complaint( feedbackDescription=" Consumer reports previous complaint was closed without resolution…", reason="others")` — so nothing registered. The agent then spoke a **fabricated** complaint number, a descending digit run, as if the call had succeeded. |
 | **Why CPL-11's fix did not cover it** | CPL-11 removed code-shaped parameter syntax from `bookingNonEligibilityAgent`, the only file that had it. `genericInfoComplaintAgent` has **none** — its parameters are already in declarative prose, and it carries every anti-narration rule verbatim. So the syntax-in-the-prompt theory explains CPL-11 but **not** this: the model produced the shape with no in-prompt model to copy. The fabricated number was likewise not lifted from any prompt (grepped — no specimen exists in CRC); it came from the model's own priors, which is why it was a familiar-looking run. |
 | **Root cause** | Two gaps. (1) The existing prohibition — *"If I catch myself about to describe, spell out, format, or narrate a tool call rather than invoke it: STOP"* — names the **act** but never the **output shape**, so there is nothing concrete to test a draft against. (2) The `HARD STOP CHECK` gating the spoken complaint number on an actual Result existed in **`bookingNonEligibilityAgent` only** (added under CPL-10); the other nine agents had `ANTI-FABRICATION` prose but no per-turn check, which is what let the invented number through after the failed call. |
@@ -787,7 +787,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither — shared truth. **CRC only**; **CC pending**. |
+| **Axis** | Neither — shared truth. **CRC only** at the time; **ported to CC 2026-08-27 (CC-PORT-01)**. |
 | **Source** | A live CRC transcript. The agent said *"हमारे senior team member आपकी help कर देंगे — मैं आपको हमारे office का number धीरे-धीरे बताती हूँ"* and then dictated a complete ten-digit number in three pieces over roughly three minutes, asking *"क्या आपने नोट कर लिया?"* after every piece, drifting on the digits under consumer read-back, and finally attaching the same question to a sentence that contained **no digits at all** (*"इस नंबर पर हमारे CRC office की टीम उपलब्ध है। क्या आपने इसे नोट कर लिया?"*). |
 | **Two separate defects** | **(a) The number does not exist.** `{{crcOfficeNumber}}` was deleted channel-wide by XFER-01; every agent carries `I HOLD NO OFFICE PHONE NUMBER, AND NEITHER DOES ANY OTHER AGENT … never invent one`. Grepped: no prompt contains that offer phrasing or any office number. **The agent invented the offer and the digits outright**, against an explicit prohibition — the same failure class as CPL-12's fabricated complaint number, now on a phone number the consumer will actually dial. **(b) The check question was routine, not rare.** `LONG NUMBER DELIVERY`'s repeat protocol mandated *"After each piece you ask ONE short check question and STOP"*, so a single number cost six to eight round trips. |
 | **On whether this is the model's fault** | Partly not, and worth recording. The consumer's turns arrive as **growing streaming fragments** (the same artifact `getConsumerDetails`' `LISTENING WHILE THE CONSUMER SPEAKS` rule already describes) and the agent emitted a filler on nearly every fragment. That noise is ASR/platform, not reasoning. **But the protocol multiplied it**: every mandated round trip is another chance for a fragment to be misread, so a confirm-after-every-piece design converts a noisy channel into a compounding failure. Reducing round trips is a reliability fix, not only a UX one. |
@@ -802,7 +802,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither — shared truth, and the missing half of CPL-12's gate. **CRC only**; **CC pending**. |
+| **Axis** | Neither — shared truth, and the missing half of CPL-12's gate. **CRC only** at the time; **ported to CC 2026-08-27 (CC-PORT-01)**. |
 | **Source** | The turn immediately preceding NUM-03's fabricated number, same call. The agent had **already registered successfully** and spoken a complaint number. The consumer then gave one very long streaming-fragment turn ending *"या मेरे से number provide कराओ उनके"*. The agent's next turn opened *"अभी complaint register नहीं हो पा रही है"* — the technical-failure line — for a registration that had just succeeded, and then followed the failure path's "offer to reach a person" into offering and inventing an office number. |
 | **Root cause — asymmetric gating** | The SUCCESS line carries a hard gate in all ten agents (*"I speak this sentence ONLY on the turn a bpcl_create_complaint call has just returned success"*). The FAILURE line carries **no gate in any of them** — grepped, zero hits. So nothing tied it to an actual failure Result, and the model could enter the failure branch from a turn that contained no Result at all. A request for a phone number plus a long confusing turn was enough. Everything downstream followed correctly from a false premise: the failure path legitimately ends with an offer to reach a person, so once the false failure was asserted the agent went looking for something to offer and invented a number to fill it. |
 | **The fix** | A `FAILURE-LINE GATE` in all ten, symmetric to the success gate: the failure line is spoken ONLY on a turn where a call just returned a FAILURE Result, and frustration, repetition, a number request, a request for a person, or a long unclear turn are named explicitly as **not** Results and not failure states. Two companions: **never contradict a registration already confirmed** — once a success Result was received and a number spoken, that complaint exists for the rest of the call and nothing later turns it back into a failure; and **a request for a phone number is not a complaint failure**, it is answered by the hold-no-number rule, never by the failure line or the failure path's offer. |
@@ -816,7 +816,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither — shared truth, direct follow-up to CLS-01. **CRC only** per client instruction this session; **CC pending**. |
+| **Axis** | Neither — shared truth, direct follow-up to CLS-01. **CRC only** at the time; **ported to CC 2026-08-27 (CC-PORT-01)**. |
 | **Source** | Same live CRC transcript as CPL-10/CLS-01. After registering, the agent answered every further push from the consumer with the same fixed sentence — *"आपकी शिकायत पहले ही दर्ज कर ली गई है और हमारी टीम इस पर कार्रवाई कर रही है, वे जल्द ही आपसे संपर्क करेंगे।"* — five times across the call while the consumer kept re-explaining an undelivered cylinder. Client flagged it as "not consumer friendly". |
 | **Why the existing rules did not catch it** | CLS-01 stopped the close question being *glued on*, and the `SAME-ISSUE / DUPLICATE GUARD` correctly stopped a second registration — but both prescribe the **same fixed sentence** as the thing to say instead, with nothing about what to do when the consumer presses a third, fourth and fifth time. The rule that was missing is not about *whether* to re-register; it is about the reply carrying **no new information** on every repeat, which is what the consumer actually hears as a wall. |
 | **Rejected fix** | Proactively offering a `callTransferAgent` transfer after a repeat. Client rejected it: the human team's first action is to register a complaint too, so a transfer relocates the loop rather than ending it. The fix is wording, not escalation. |
@@ -949,11 +949,11 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CLS-03 · The close question fired on eleven consecutive turns, and the empathy ban left nothing to say instead — CRC only, CC pending (2026-08-11)
+### CLS-03 · The close question fired on eleven consecutive turns, and the empathy ban left nothing to say instead — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-11)
 
 | | |
 |---|---|
-| **Axis** | Neither — shared truth. **CRC only** per client instruction this session; **CC pending**, same as CLS-01 and CLS-02. |
+| **Axis** | Neither — shared truth. **CRC only** per client instruction this session; **ported to CC 2026-08-27 (CC-PORT-01)**, as were CLS-01 and CLS-02. |
 | **Source** | Live CRC transcript, 11-08-2026 12:04–12:11. Consumer's cylinder undelivered since Thursday; complaint registered correctly at 12:05:59, second complaint at 12:08:05. Over the next six minutes Vaani asked *"क्या कुछ और L P G से related help चाहिए?"* **eleven times** — 12:05:59, 12:06:17, 12:06:36, 12:07:05, 12:07:20, 12:07:31, 12:08:19, 12:08:32, 12:10:04, 12:10:45, 12:11:19 — at a man who was still describing his problem on every one of them. |
 | **Why CLS-01's HARD GATE did not catch it** | CLS-01 already forbids the close question in the same turn as anything else, and most agents already carry that gate verbatim. It failed because the **positive** condition sitting three lines below it said a topic is fully resolved *"or a complaint is registered and the number shared"*. The number was spoken at 12:05:59, so by the prompt's own definition the topic was resolved in that instant and the close question was legal from the next turn onward. **A ban and a permission that contradict each other resolve in favour of the permission.** |
 | **The fix — the gate is the consumer's last turn** | That clause is deleted from all four "fully resolved when" definitions. A topic is now resolved only when **the consumer's own most recent turn carried nothing further** — no question, no new fact, no fresh grievance. An acknowledgement or wind-down ("ठीक है", "अच्छा", "ok", "समझ गया", a thank-you, a goodbye) is what qualifies. Everything else means answer it, stop, wait. **A turn in which the agent answers something ends with a full stop, never with this question.** Stated as a `WHEN THE CLOSE QUESTION IS ALLOWED` block under the existing `ANSWERING IS NOT RESOLVING` paragraph in all twelve agents that hold a close question. |
@@ -970,7 +970,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### PCA-01 · `callResult` gains a fifth value, `callTransferred`, and is decided at the end of the call — CRC only, CC pending (2026-08-11)
+### PCA-01 · `callResult` gains a fifth value, `callTransferred`, and is decided at the end of the call — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-11)
 
 | | |
 |---|---|
@@ -988,7 +988,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-14 · A complaint and its number were fabricated in a single turn; `calltransfer` capped at one attempt and barred from switching after failure — CRC only, CC pending (2026-08-12)
+### CPL-14 · A complaint and its number were fabricated in a single turn; `calltransfer` capped at one attempt and barred from switching after failure — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-12)
 
 | | |
 |---|---|
@@ -1005,7 +1005,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### RTE-03 · `Default` classifies before it falls back, and probes once before routing a bare request for a person — CRC only, CC pending (2026-08-12)
+### RTE-03 · `Default` classifies before it falls back, and probes once before routing a bare request for a person — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-12)
 
 | | |
 |---|---|
@@ -1023,7 +1023,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### RTE-04 · `genericInfoComplaintAgent` answers from `{{customerStatus}}` before it registers; `Default` stops advertising the catch-all — CRC only, CC pending (2026-08-12)
+### RTE-04 · `genericInfoComplaintAgent` answers from `{{customerStatus}}` before it registers; `Default` stops advertising the catch-all — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-12)
 
 | | |
 |---|---|
@@ -1041,7 +1041,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-15 · The complaint number is what decides success or failure — two outcomes, never a third — CRC only, CC pending (2026-08-12)
+### CPL-15 · The complaint number is what decides success or failure — two outcomes, never a third — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-12)
 
 | | |
 |---|---|
@@ -1059,7 +1059,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### TOOL-01 · Named tool blockers in every prompt; nobody but `getConsumerDetails` fetches or asks who the consumer is — CRC only, CC pending (2026-08-12)
+### TOOL-01 · Named tool blockers in every prompt; nobody but `getConsumerDetails` fetches or asks who the consumer is — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-12)
 
 | | |
 |---|---|
@@ -1119,7 +1119,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-19 · The registering sentence becomes a fixed tool parameter — `bpcl_create_complaint` gets a `preToolMessage` — CRC only, CC pending (2026-08-18)
+### CPL-19 · The registering sentence becomes a fixed tool parameter — `bpcl_create_complaint` gets a `preToolMessage` — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-18)
 
 | | |
 |---|---|
@@ -1145,7 +1145,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-16 · The registering line spoken in the completed past — narration instead of registration — CRC only, CC pending (2026-08-17)
+### CPL-16 · The registering line spoken in the completed past — narration instead of registration — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-17)
 
 | | |
 |---|---|
@@ -1162,7 +1162,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-17 · The second registration gets typed out instead of invoked — CRC only, CC pending (2026-08-18)
+### CPL-17 · The second registration gets typed out instead of invoked — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-18)
 
 | | |
 |---|---|
@@ -1177,7 +1177,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-18 · "Complaint" is an action word, not an intent — the unclassified escalation handoff — CRC only, CC pending (2026-08-18)
+### CPL-18 · "Complaint" is an action word, not an intent — the unclassified escalation handoff — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-18)
 
 | | |
 |---|---|
@@ -1196,7 +1196,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### OTP-01 · The delivery O T P is correct process, not a grievance — CRC only, CC pending (2026-08-17)
+### OTP-01 · The delivery O T P is correct process, not a grievance — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-17)
 
 | | |
 |---|---|
@@ -1256,7 +1256,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### CPL-20 · The complaint tool's failure did not survive a switch either — CRC only, CC pending (2026-08-19)
+### CPL-20 · The complaint tool's failure did not survive a switch either — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-19)
 
 | | |
 |---|---|
@@ -1342,7 +1342,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 | | |
 |---|---|
-| **Axis** | Neither. **CRC only by client instruction** — CC is explicitly not to be touched in this pass, unlike the usual "CC pending". |
+| **Axis** | Neither. **CRC only by client instruction** — CC was explicitly not to be touched in that pass. **CC caught up 2026-08-27 (CC-PORT-01).** |
 | **Why it followed PCA-04** | Section 1.1 landed in `postCallAnalysisHuman` only, but **all three CRC post-call prompts read the same platform transcript**, so all three were exposed to the same artefacts. Client direction: guide Vaani's analysers too. |
 | **🚨 `vaaniQA` contradicted itself about transfers** | PART C opened with *"THERE IS NO TRANSFER IN THIS CHANNEL… There is no senior desk and no one to hand the call to live."* — pre-XFER-01 text that survived both XFER-01 and XFER-03, while **lines 45, 47, 138 and the whole of C5 in the same file correctly describe the transfer**. A reviewer following the stale line would report every correct transfer as a violation. Rewritten to complaint-first / transfer-second, naming XFER-03 and pointing at C5. Found while checking what `calltransfer` needed, not by looking for it. |
 | **`calltransfer` needed nothing** | Proposed and withdrawn. `postCallAnalysisFlat` already judges `callTransferred` **entirely from spoken evidence** — the transfer line `"आपकी कॉल ट्रांसफर की जा रही है।"` with nothing following it is success, the line followed by the team-unavailable explanation is failure, no line is no attempt. That is correct **because the line is `calltransfer`'s own `preToolMessage`, so it exists only if the tool ran**. An earlier suggestion to teach the analysers how tool Results appear was **wrong and dropped — client confirms PCA sees no tool calls and no tool results**, and no rule may assume otherwise. |
@@ -1371,7 +1371,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
-### GCD-09 · `getConsumerDetails` read a rejected mobile number back and called it wrong in the same breath — CRC only, CC pending (2026-08-21)
+### GCD-09 · `getConsumerDetails` read a rejected mobile number back and called it wrong in the same breath — CRC only → **ported to CC 2026-08-27, see CC-PORT-01** (2026-08-21)
 
 | | |
 |---|---|
@@ -1404,6 +1404,103 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **First pass, then a correction** | The first fix made *every* long number — complaint number included — pieced from the first turn. The client's instruction on review: the complaint number is short, unlike a ten-digit mobile-shaped number, so it should stay whole-in-one-turn by default, same as before; only the **distributor's number** (and the SMS/missed-call/WhatsApp numbers, which are also ten-digit-shaped) needed the piece-by-piece-always fix. |
 | **The rule now, in the ten complaint-capable agents' `LONG NUMBER DELIVERY` block** | The distributor's contact number and the SMS/missed-call/WhatsApp numbers are delivered in three pieces (3-3-4, ten digits, no country code) from the very first turn, always — piece, then STOP, no question attached, no final "क्या आपने पूरा नंबर नोट कर लिया?" round-up once the pieces are done. The complaint number is the one named exception: spoken whole, in one turn, the first time, exactly as before — it switches into the same three-piece pattern only once the consumer asks to repeat it, slow down, or note it down. `connectionServicesAgent`'s own distributor-number rule (§9 Rule 2) and its C12 `TURN 1` examples were restructured so the number is never folded into the same sentence as the name/address/timing. `vaaniQA.txt` (C5f/C5g) was rewritten to score both defaults as correct rather than flagging either as a violation. |
 | **Files touched (14)** | The ten complaint-capable leaves, `Default` and `newConnectionAgent_onHold` (piece-default only — neither holds a complaint number), `postCallAnalysis/vaaniQA.txt`, plus this ledger. CC was not touched — its `LONG NUMBER DELIVERY` block carries the same undifferentiated rule and should be ported on the same terms before the next CC number-delivery change. |
+
+---
+
+### CC-PORT-01 · CC derived wholesale from CRC; the two channels are back in sync — CC only (2026-08-27)
+
+CC had fallen ~6 weeks and ~35 ledger rows behind CRC, at roughly a third the file size. Every row
+below marked "CRC only → **ported to CC 2026-08-27, see CC-PORT-01**" was owed to CC, and the backlog was growing faster than it was
+being paid down. Rather than replay each row into CC's smaller files, **each CC prompt was derived
+from its CRC twin** and the two channel axes translated. One commit, 17 files.
+
+| | |
+|---|---|
+| **What CC gained** | MULT-01 (multilingual), CPL-04 RESOLUTION LADDER, NUM-01/03/05/06 LONG NUMBER DELIVERY, TOOL-01 named tool blockers, CPL-08/11/12/13/14/15/16/17/18/19/20, CLS-01/02/03, RTE-01..05, BNE-01, DST-01, WGT-01/02, KYC-01, OTP-01, GCD-09, DATA-03, BAN-01, PCA-01, PCA-05. **All "CC pending" markers above are now discharged.** |
+| **Source of record** | CRC at commit `49be311`. `newConnectionAgent` derives from CRC's live `newConnectionAgent_onHold.txt`; CRC's 2088-line `newConnectionAgent.txt` is the stale pre-hold, pre-multilingual version and was **not** used. |
+| **Verification** | Zero CRC residue in any CC prompt. Marker parity with the CRC sources exact (TOOL BLOCKER / ONE ATTEMPT PER CALL / SURVIVES A SWITCH / `bpcl_create_complaint` counts all match). `routingAgent` the only `switchagent` target; no dead agent names; no live callback offer. |
+| **Closed as a side effect** | CC's oldest open blocker — `getConsumerDetails` had no `switchagent`, so its recovery loop could not close. The derived file holds it. |
+| **Still divergent by design** | Persona (D-03): CC speaks as the national head office, CRC as a regional CRC. Address (see XFER-06 / ADDR-01). `postCallAnalysis.txt` remains CC-only and untouched. `promptQA` keeps its CC name (NAME-05). |
+
+---
+
+### MULT-01 · Both channels speak any Indian language, never scripted Hindi — both channels (CRC 2026-08-2x, CC 2026-08-27)
+
+The multilingual rewrite landed across all 15 CRC agents over a run of commits and **was never
+given a ledger row** — the single largest change in the repo's history, invisible to this file.
+Recorded now, and extended to CC by CC-PORT-01.
+
+| | |
+|---|---|
+| **The rule** | `LANGUAGE — ONE RULE` in all 15 agents of both channels. Vaani answers in whatever Indian language the consumer speaks. Hindi is no longer the scripted default; spoken lines are described by their **beats**, composed in the consumer's language, rather than given as fixed Hindi strings. |
+| **Knock-on in CC** | A request for a language other than Hindi used to be a `calltransfer` trigger in CC (old Axis 1, trigger C). **It is not any more** — Vaani simply answers in that language. |
+| **Shared truth** | Root CLAUDE.md §4 previously read "Hindi only". Corrected 2026-08-27. |
+
+---
+
+### CB-01 · Scheduled callbacks retired from CC — CC only (2026-08-27)
+
+CC alone had a callback: after a **failed** `calltransfer`, Vaani asked for a slot (9am–5pm, within
+15 days) and wrote it into a complaint, speaking no complaint number. CRC never had one.
+
+| | |
+|---|---|
+| **Decision** | Client, 2026-08-27: drop it. CC now matches CRC — a failed transfer ends with the failure line and whatever window the Result carried. |
+| **Why it mattered structurally** | Deriving CC from CRC would have silently deleted the feature anyway. Retiring it deliberately means the derived files carry CRC's *refusals* ("there is no callback in this channel") rather than an accidental gap. |
+| **Consequences** | ESC-02's "CC's callback complaint stays silent" carve-out is moot. Root CLAUDE.md's callback row and §4 complaint-discipline exception updated. `postCallAnalysisFlat` and `promptQA` no longer score callbacks. |
+| **NOT cleaned** | `postCallAnalysis.txt` (CC-only, untouched by scope decision) still scores callbacks. Flagged in CC's CLAUDE.md. |
+
+---
+
+### XFER-06 · CC's `calltransfer` takes `preToolMessage` and nothing else — CC only (2026-08-27)
+
+CC's prompts passed four parameters — `forwardingNumber` (a hardcoded SIP string),
+`contactNumber: {{jNationalNumber}}`, `consumerLanguage`, `consumerQuery` — and carried a **live
+contradiction**: RULE 5 said `calltransfer` takes no `preToolMessage` and the agent writes the line
+as text, while Condition 2 said the agent writes nothing because "its preToolMessage speaks". The
+consumer heard the transfer line twice, or heard silence.
+
+| | |
+|---|---|
+| **Fix** | CC adopts CRC's XFER-03 shape exactly: `preToolMessage` is the only parameter, and the agent generates **no spoken text of its own** on that turn. |
+| **Also adopted** | One attempt per CALL (CPL-14); the spent attempt and a failed complaint both survive a `switchagent` (XFER-05, CPL-20); a consumer asking for a person gets a **complaint registered first** and a transfer only if they still want one (ESC-01's ordering, now shared). |
+| **⚠️ PLATFORM DEPENDENCY** | The CC platform must resolve the forwarding target itself, as CRC's does. Client confirmed 2026-08-27. If that is wrong, **every CC transfer fails silently** — the prompt is correct and the call still drops. Test one transfer before wide deployment. |
+
+---
+
+### ADDR-01 · CC's head office is fixed KB wording, not a variable — CC only (2026-08-27)
+
+CRC holds `{{crcOfficeCity}}` / `{{crcOfficeAddress}}`, injected per call. **CC has no equivalent
+variable and will not get one** — the head office is a single fixed place, so it is authored text.
+
+| | |
+|---|---|
+| **The wording** | Self-location → "Bharat Petroleum, Mumbai Headquarters office". Address on request → Bharat Bhavan, Four and six Currimbhoy Road, Ballard Estate, Mumbai. Pin code dropped unless asked, then digit by digit. "Four and six" is already the spoken form and is never re-rendered. |
+| **Address only — no phone number** | The "I hold no number for this office; what a consumer who wants a person gets is a transfer" rule is kept and strengthened. Naming a real, findable head office makes callers ask for its number, and that rule is what stands between us and a fabricated one. |
+| **Never a destination** | Callers are nationwide; a trip to Mumbai solves nothing. The CRC ban on offering the office as a resolution is kept verbatim. |
+| **Speaking rules split** | Chunk-with-pauses applies to **both** addresses. The raw-backend clean-up (ALL CAPS, abbreviations, stray punctuation, pin) applies **only** to `{{ConsumerDetailsDistributorAddress}}` — the head office wording is authored and already speakable. |
+| **Two-address non-substitution retained** | CC still has two address sets, so CRC's rule against speaking one under the other's label survives, retargeted as DISTRIBUTOR ↔ HEAD OFFICE. |
+| **Scope** | 13 agents. `emergencyAgent` carries the persona but **not** the address block, matching CRC — a hazard call must never detour into self-location. `routingAgent` is silent and needs none. |
+
+---
+
+### NC-02 · CC is no longer behind on the new-connection knowledge base — CC only (2026-08-27)
+
+**Supersedes NC-01 and ZIP-01/02/03's "CC deliberately behind" status.** Client confirmed
+2026-08-27 that the 14.2 kg hold is live nationally. CC's `newConnectionAgent` derives from CRC's
+`newConnectionAgent_onHold.txt` and now carries the 14.2 kg ON HOLD notice, the 5 kg Mini and Lite
+ZIP. ⚠️ Highest-consequence change in the pass: it alters what a national contact centre tells the
+public about new connections. A one-line revert in the derived file if the business pushes back.
+
+---
+
+### CPL-07 · **SUPERSEDED** — a failed complaint ends with an offer to reach a person, not a number
+
+CPL-07 (2026-08-04) had the failure path end with the CRC office number, dictated. **XFER-01 then
+XFER-03 removed `{{crcOfficeNumber}}` from every live CRC agent**, and the current behaviour in
+both channels is: apologise, speak the technical-failure line, then **offer to connect to the
+senior team and call `calltransfer` on a yes**. CRC explicitly holds no number to give. Recorded
+2026-08-27 because the stale row was still being read as current.
 
 ---
 

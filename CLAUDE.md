@@ -12,11 +12,11 @@ Commit deliberately — see "Change discipline" below.
 
 | | `bpcl_contact_center` (CC) | `bpcl_showroom_crc` (CRC) |
 |---|---|---|
-| What it is | Central contact centre for the whole state | Physical consumer-facing office (CRC) in each major city |
+| What it is | Bharat Petroleum's **national head office** contact centre, Mumbai | Physical consumer-facing office (CRC) in each major city |
 | Who Vaani is | An agent **of Bharat Petroleum**. The distributor is a third party. | Staff at a **regional head CRC office** covering many districts and many distributors. The distributor is **also a third party** (corrected 2026-08-05) |
 | Language for the distributor | "आपके distributor" — third party | "आपके distributor" — third party too. "हमारे यहाँ" refers to **this CRC only**. Never send them travelling |
 | Escalation to a human | `calltransfer` to a senior team, inline in ten agents | **Register a complaint first**, then — only if the consumer still wants a person — **`calltransfer`, invoked by the agent itself** (CHANNELS.md **XFER-03**, 2026-08-11, superseding XFER-01's dedicated transfer agent). **No office visit** — see ESC-01 |
-| Callbacks | **Scheduled** — after a failed `calltransfer` only, Vaani asks for a slot (9am–5pm, within 15 days) and writes it into the complaint; no complaint number is spoken on a callback complaint. All ten complaint-capable agents support this | Not scheduled — a complaint is registered and the team makes contact, with no time captured and no window promised |
+| Callbacks | **None** — retired 2026-08-27 (CHANNELS.md CB-01). CC now matches CRC: a failed transfer ends with the failure line and the window the Result carried | Not scheduled — a complaint is registered and the team makes contact, with no time captured and no window promised |
 | Extra prompts | `postCallAnalysisFlat.txt` | — |
 
 Both channels run the **same 15-agent topology** (CRC's 16th agent, `callTransferAgent`, was deleted by XFER-03), the same handoff contract, the same LPG domain
@@ -188,7 +188,7 @@ ask once. Helpline 1906, always digit by digit.
 window 3–7 working days · payment settlement 3 working days · hotplate ₹1,500–4,000 · 5 kg Bharat
 Gas Mini has no gap and no limit · office hours all weekdays 9am–7pm.
 
-**Voice and TTS rules.** Hindi only, 1–2 sentences per turn, one question per turn (FAQs 2–3
+**Voice and TTS rules.** **Any Indian language the consumer speaks** — never scripted Hindi (CHANNELS.md MULT-01); 1–2 sentences per turn, one question per turn (FAQs 2–3
 sentences). Brand always "भारत पेट्रोलियम" in full, never "BPCL" — the sole exception is the app
 name "Hello B P C L App". Never say **टंकी**. Never say **जोड़** (TTS mispronounces it) — use
 "connect". Never speak a raw digit, a `{{variable}}`, or a placeholder. Numbers digit by digit;
@@ -200,8 +200,8 @@ Visible curly braces in a value = no data; treat as absent, never speak it.
 before the tool returns success. One call per complaint, never retry on failure, max 2 per call.
 Never invent a complaint number. On success the number is spoken digit by digit — **Hindi words in CC,
 English digit words with `" - "` in CRC since CHANNELS.md NUM-01** — and
-the consumer is told it will also arrive by SMS — the sole exception is CC's callback complaint,
-which confirms the callback slot instead and speaks no number.
+the consumer is told it will also arrive by SMS. CC's callback carve-out is gone with the callback
+itself (CB-01).
 
 ---
 
@@ -210,7 +210,7 @@ which confirms the callback slot instead and speaks no number.
 Only two axes. Everything in §4 stays identical.
 
 **Axis 1 — Escalation.** How Vaani responds when the consumer wants a human, a language other than
-Hindi, a non-LPG product, or a callback; and what the terminal fallback is when a flow cannot be
+Hindi, or a non-LPG product; and what the terminal fallback is when a flow cannot be
 resolved. CC transfers. CRC invites an office visit.
 
 **Axis 2 — Persona positioning.** Whether Vaani speaks as Bharat Petroleum central (distributor is
@@ -233,8 +233,7 @@ baseline commit with no prior history to diff against.
    this repo.
 3. **Never blind-copy a block between channels.** Port the *intent*, translate the escalation and
    the persona framing. A `calltransfer` block has no valid CRC translation — it becomes a
-   COMPLAINT ESCALATION block (CHANNELS.md ESC-01), and a CC callback block loses its time capture
-   entirely.
+   COMPLAINT ESCALATION block (CHANNELS.md ESC-01). CC has no callback block any more (CB-01).
 4. **A fix to shared truth (§4) lands in both channels in the same session**, or the ledger records
    why it did not.
 5. **New intended difference → add a row to [CHANNELS.md](CHANNELS.md) in the same edit.** An
@@ -255,19 +254,31 @@ baseline commit with no prior history to diff against.
 - **Commit history.** Git now exists (2026-08-07) but the repo's entire prior state landed as one
   baseline commit — there is no history behind it to diff against or roll back to. Attribution and
   rollback only start working from here forward, as commits are made deliberately per rule 6.7.
-- **A drift audit.** ~2,800 differing lines across the 14 shared agents have never been classified
-  as intended policy vs. unported fix. [CHANNELS.md](CHANNELS.md) §3 lists what is confirmed so far;
-  the rest is unclassified.
+- ~~**A drift audit.**~~ **Largely moot since 2026-08-27 (CHANNELS.md CC-PORT-01).** The ~2,800
+  unclassified differing lines existed because CC had fallen ~6 weeks behind CRC. Every CC prompt is
+  now *derived from* its CRC twin, so the two channels differ only where the translation deliberately
+  made them differ — persona (D-03), the head office address (ADDR-01), and `postCallAnalysis.txt`.
+  What remains worth auditing is whether that translation missed anything, which is a far smaller job
+  than classifying free-form drift.
 - **Lint tooling** (`/channel-lint`) and **cross-channel diff** (`/prompt-diff`).
 - **Scenario tests** — golden transcripts (gas leak, overcharge at door, KYC-blocked booking,
   out-of-scope ladder) with expected route and expected closing.
-- **Platform dependencies for inline `calltransfer`** (CHANNELS.md XFER-03, 2026-08-11):
-  exposing `calltransfer` to all thirteen routing-capable agents, accepting `preToolMessage` alone —
-  the `forwardingNumber` is the platform's to supply; surfacing that call's **Result** to the agent on
-  the next turn, carrying success/failure and, on failure, a reason (out-of-office-hours, platform
-  failure, busy, no-answer) and the office-hours window where one exists; closing the call itself on a
-  **successful** transfer, since the agent deliberately calls no tool at that point; and de-registering
-  `callTransferAgent`.
+- **Platform dependencies for inline `calltransfer`** (CHANNELS.md XFER-03, 2026-08-11; **now in
+  BOTH channels** per XFER-06, 2026-08-27): exposing `calltransfer` to all thirteen routing-capable
+  agents, accepting `preToolMessage` alone — the `forwardingNumber` is the platform's to supply;
+  surfacing that call's **Result** to the agent on the next turn, carrying success/failure and, on
+  failure, a reason (out-of-office-hours, platform failure, busy, no-answer) and the office-hours
+  window where one exists; closing the call itself on a **successful** transfer, since the agent
+  deliberately calls no tool at that point; and de-registering `callTransferAgent`.
+  **⚠️ CC has not been tested against this.** CC's prompts were stripped to `preToolMessage`-only on
+  the client's confirmation that its platform supplies the target. If that is wrong, every CC transfer
+  fails silently — correct prompt, dropped call. Test one transfer before wide deployment.
+- **`{{crcHolidayList}}` in CC.** Came across with the derivation and is still CRC-branded, named in
+  CC's `Default.txt` and `genericInfoComplaintAgent.txt`. If CC does not inject it the prompts see
+  curly braces, treat it as absent, and say they cannot confirm the holiday — safe but degraded.
+  Decide whether CC gets a holiday calendar, and under what name.
+- **CC's `postCallAnalysis.txt`.** Left untouched by the CC-port pass and still scores scheduled
+  callbacks, which no longer exist in CC (CB-01). Confirm whether it is still deployed.
 
 - **A CRC `CUSTOMER_STATUS_SPEC`.** CRC's [agent-workflow.md](bpcl_showroom_crc/docs/agent-workflow.md)
   §7 links to `customerStatus-spec.md`, which does not exist in that workspace.
