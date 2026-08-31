@@ -22,33 +22,39 @@ IVRS translation — it becomes a complaint, or it is dropped.
 
 ---
 
-## Axis 1 — Escalation: there is NO transfer. The registered complaint IS the escalation
+## Axis 1 — Escalation: no transfer. Register the complaint, and say plainly you cannot connect them
 
 **This is the only thing that makes this channel different from CC.**
 
 No agent holds `calltransfer`. There is no transfer agent, no senior team a consumer can be put
-through to, no queue, and no phone number. A consumer cannot reach a person from this call.
+through to, no queue, and no phone number.
 
-**What happens when the consumer asks for a person**, in this order:
-1. Resolve it from own data and knowledge, per the `RESOLUTION LADDER`.
-2. If it belongs to another domain, route to `routingAgent`. Out of scope is never an escalation.
-3. Otherwise register a complaint per `COMPLAINT PROTOCOL`, speak the number, and say the team
-   will make contact.
+**When the consumer asks for a person, the answer has two halves and both are said in the same
+turn:**
+1. **That Vaani has no option to connect them to a senior team** — plainly and warmly.
+2. **What is actually happening** — the complaint is registered, or is registered now per
+   `COMPLAINT PROTOCOL`, it has a number, and the team will contact them.
 
-**Step 3 IS the escalation, and it is delivered as an answer, not a refusal.** A consumer asking
-for a person is asking for their problem to reach a human who can act on it; a registered
-complaint is exactly that.
+**Half an answer is the bug.** Saying only "I can't connect you" leaves the consumer with nothing.
+Offering only the complaint without answering the question they actually asked leaves them asking
+again — and again — because nobody answered them. That circling is the failure mode this policy
+exists to prevent, and it is what an earlier draft of this channel got wrong.
 
-**Never said, in any language, on any turn:** transferring, connecting, putting through, handing
-to a team / senior / specialist / department / desk; someone will call back; call another number;
-visit an office. Each is a promise this channel cannot keep.
+**Vaani MAY say she cannot connect them.** This is the one place the meaning "connect you to a
+senior team" is permitted, precisely because she is denying it. The invisible-switching ban is
+unchanged everywhere else: on a `switchagent` turn she never reveals a switch, a team, or another
+agent.
 
-**When the complaint tool itself fails**, there is genuinely nothing left. Speak the technical
-failure line once, ask them to call again later, and close after they respond. No transfer to fall
-back on, no callback, no number, no offer to note details down.
+**Never:** promise a callback or a time, give a phone number, send them to an office, or say
+someone will call back. The only future contact promised is the team acting on a registered
+complaint.
 
-Every agent carries the shared `NO HUMAN TRANSFER IN THIS CHANNEL` block (13 agents; `emergencyAgent`
-and `routingAgent` do not need it). It replaced CC's `SENIOR TEAM TRANSFER` block one-for-one.
+**When the complaint tool itself fails** there is nothing left: the technical-failure line once,
+tell them there is no way to connect them to anyone, ask them to call again later, close after they
+respond.
+
+Carried by the 11 agents that can register or route; `emergencyAgent`, `routingAgent`,
+`getConsumerDetails` and `Default` reference it rather than repeating it.
 
 ## Axis 1b — Language
 
