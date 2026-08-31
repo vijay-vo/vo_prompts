@@ -1,7 +1,7 @@
 # BPCL Vaani — Prompt Repository
 
-Production voice-AI prompts for Bharat Petroleum (Bharat Gas) LPG consumer support, in Hindi.
-Two channels, one agent topology, two different escalation policies.
+Production voice-AI prompts for Bharat Petroleum (Bharat Gas) LPG consumer support, in any Indian
+language the consumer speaks. **Three channels**, one agent topology, three escalation policies.
 
 **This repo is now under git** (first commit + push 2026-08-07, `origin` = `github.com/vijay-vo/bpcl_prompts`).
 Commit deliberately — see "Change discipline" below.
@@ -39,6 +39,10 @@ bpcl_showroom_crc/
   CLAUDE.md              channel contract
   prompts/<agent>/*.txt
   docs/                  agent-workflow.md
+bpcl_ivrs_support/       copy of CC with NO human transfer (CHANNELS.md IVRS-01)
+  CLAUDE.md              channel contract
+  prompts/<agent>/*.txt
+  docs/
 CHANNELS.md              the divergence ledger — every intended CC/CRC difference
 CLAUDE.md                this file
 ```

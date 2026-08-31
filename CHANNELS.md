@@ -1,5 +1,8 @@
 # CHANNELS.md — the divergence ledger
 
+**Three channels since 2026-08-31:** `bpcl_contact_center` (CC), `bpcl_showroom_crc` (CRC), and
+`bpcl_ivrs_support` (IVRS — a copy of CC with no human transfer; see IVRS-01).
+
 Every **intended** difference between `bpcl_contact_center` (CC) and `bpcl_showroom_crc` (CRC).
 
 > **The rule:** a difference between the two channels that is not recorded here is a drift bug.
@@ -1501,6 +1504,25 @@ XFER-03 removed `{{crcOfficeNumber}}` from every live CRC agent**, and the curre
 both channels is: apologise, speak the technical-failure line, then **offer to connect to the
 senior team and call `calltransfer` on a yes**. CRC explicitly holds no number to give. Recorded
 2026-08-27 because the stale row was still being read as current.
+
+---
+
+### IVRS-01 · `bpcl_ivrs_support` — a third channel, identical to CC except that it has no human transfer (2026-08-31)
+
+Created as a **copy of `bpcl_contact_center`** at commit `5e3f7d2`, with exactly one policy
+difference. The repo now has **three** channels, not two.
+
+| | |
+|---|---|
+| **The one difference** | **No `calltransfer`, anywhere.** No agent holds the tool, there is no senior team a consumer can be put through to, no queue and no phone number. A consumer cannot reach a person from an IVRS call. |
+| **What replaced it** | CC's `SENIOR TEAM TRANSFER` block was swapped one-for-one, in all 11 agents that carried it, for **`NO HUMAN TRANSFER IN THIS CHANNEL — THE REGISTERED COMPLAINT IS THE ESCALATION`**. The precedent is ESC-01: this is what CRC did before transfer existed. |
+| **Why it was replaced, not deleted** | `calltransfer` was the terminal fallback at four moments (T1–T4). Deleting it would have left an agent with nothing to offer at exactly the moments a consumer is most insistent — and an agent with nothing to offer invents phone numbers and promises callbacks. The replacement names what to do instead. |
+| **The complaint-failure path** | In CC it ends with an offer to reach a person. Here **it ends** — the technical-failure line once, a request to call again later, and the close after the consumer responds. No transfer, no callback, no number, no offer to note details down. |
+| **Post-call** | `postCallAnalysisFlat` **drops the `callTransferred` field entirely** and drops `"callTransferred"` from `callResult`'s allowed values — a field that can only ever be `"no"` is noise, and the ladder collapses to `complaintRegistered > complaintFailed > issueResolved > unresolved`. ⚠️ **This is a deliberate schema divergence from CC**; anything aggregating both channels must handle the missing field. `promptQA` loses checkpoints C5a/b/c/d/h/i/j and C18 (all transfer mechanics) for a single C5 that reports **any** promise of a handover as a violation, and C1's three transfer carve-outs are gone. |
+| **Everything else is identical to CC** | 15-agent topology, handoff contract, LPG domain facts, multilingual rule (MULT-01), head office address (ADDR-01), complaint discipline, no callbacks (CB-01). **A difference from CC other than the transfer is a drift bug.** |
+| **Porting rule** | A fix landing in CC lands here in the same session, unless it touches escalation. A CC block that offers or implies a human handover has no valid IVRS translation — it becomes a complaint, or it is dropped. |
+| **⚠️ Platform** | `calltransfer` must be **de-registered for IVRS**, so a model that hallucinates the tool name cannot invoke anything. The prompts forbid it by name; the platform should make it impossible. |
+| **Verified** | Zero live `calltransfer` references (only the named prohibitions the TOOL-01 pattern requires); no `SENIOR TEAM TRANSFER`, no `callTransferred`, no dangling T1–T4 or C5x references; `bpcl_create_complaint` intact in 16 files; `LANGUAGE — ONE RULE` intact in 15; `routingAgent` the only `switchagent` target. |
 
 ---
 
