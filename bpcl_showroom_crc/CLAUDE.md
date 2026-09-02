@@ -98,8 +98,8 @@ outcome. Registering a complaint and telling them the team will call is.
    nothing — the tool runs only because the agent invoked it. A registering line spoken with **no**
    tool call is a **failed turn**: nothing exists, and the next turn invokes the tool before anything
    else and speaks no number. The agent's own spoken line is never evidence the tool ran; only a
-   Result is (CHANNELS.md CPL-03). `feedbackDescription` is the consumer's real problem in English —
-   never "consumer asked for a senior team" alone. `reason` is the exact matching phrase from **that
+   Result is (CHANNELS.md CPL-03). `complaintSummary` is the consumer's real problem in English —
+   never "consumer asked for a senior team" alone. `complaintReason` is the exact matching phrase from **that
    agent's own scoped reason list**, or `others` when nothing matches — never invented (CPL-05).
 5. **On success** speak the complaint number **digit by digit in English digit words with `" - "`**
    (NUM-01; Hindi digit words only on consumer preference — CC still uses Hindi words), say it will also
