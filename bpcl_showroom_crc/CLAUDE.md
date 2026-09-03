@@ -101,6 +101,9 @@ outcome. Registering a complaint and telling them the team will call is.
    Result is (CHANNELS.md CPL-03). `complaintSummary` is the consumer's real problem in English —
    never "consumer asked for a senior team" alone. `complaintReason` is the exact matching phrase from **that
    agent's own scoped reason list**, or `others` when nothing matches — never invented (CPL-05).
+   Those two are the **whole** call: the parameter set is closed by rule, so any other key —
+   `caseId`, `caseNumber`, consumer id, mobile number — is the platform's, whether or not the
+   prompt names it, and a Result field is an output that never goes back in as an input (PARAM-01).
 5. **On success** speak the complaint number **digit by digit in English digit words with `" - "`**
    (NUM-01; Hindi digit words only on consumer preference — CC still uses Hindi words), say it will also
    arrive by SMS, then say the team will make contact. No timeframe is ever promised.
