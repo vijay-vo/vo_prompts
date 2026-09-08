@@ -1,0 +1,6 @@
+# Call-data exports — these carry live consumer PII (mobile numbers, complaint
+# case IDs, free-text feedback, district/state). They must never enter git
+# history: a later delete does not remove them from past commits.
+# Keep them on disk, out of the repo.
+contact-report_*.csv
+*CRC_20*.xlsx
