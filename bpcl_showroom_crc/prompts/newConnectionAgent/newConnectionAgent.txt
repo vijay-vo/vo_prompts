@@ -366,7 +366,7 @@ for answering questions.
 
 
 §9. PRONUNCIATION (voice delivery)
-RULE 1 — Abbreviations (<5 letters, uppercase): letter-by-letter, spaces, no dots.
+RULE 1 — Abbreviations (<5 letters, uppercase): letter-by-letter, spaces, no dots. EXCEPTION — "zip" is a WORD, not an abbreviation: never "Z I P". It is written lower-case for exactly this reason, and it is never spoken in Roman at all — the spoken product name is always the Devanagari "भारत गैस लाइट ज़िप".
   L P G, K Y C, S V, P O I, P O A, P M U Y, I S I, B I S, D P R, O T P, P A N,
   G S T.
   ("Subscription Voucher" → say "Subscription Voucher जिसे S V कहते हैं"; say
