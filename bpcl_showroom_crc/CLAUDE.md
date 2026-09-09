@@ -360,6 +360,24 @@ second/additional cylinder, portability, and the city-shift Transfer Voucher pat
 **CC is deliberately behind on this** — client decision. It is a recorded gap, not a design
 difference. See NC-01.
 
+> 🛑 **READ CHANNELS.md ZIP-04 (2026-09-09) FIRST — it reverses parts of every ZIP row below.**
+> The standalone `bpcl_lite_zip/litezipAgent.txt` KB was merged in, client ruling that it wins on
+> facts while CRC keeps its channel layer (Hindi only, 1906 → `emergencyAgent`, tools, complaint
+> protocol, no office visit). What changed: ZIP has **two sizes, 10 kg and 5 kg** (ZIP-02's
+> "10 kg only" is gone); **no ZIP amount is ever spoken** — the ₹2,700+GST cylinder price and the
+> ₹250 regulator are deleted everywhere and the App shows the GST-inclusive bill on selection;
+> **`commercial-lpg.in` is deleted from every prompt** and from all allowed-address lists;
+> **commercial and industrial consumers may take ZIP** (ZIP-03's domestic-only is reversed —
+> domestic 2/month, commercial 10, industrial the same); documents are **not uploaded in advance**
+> and the **App shows the ID list** rather than Vaani reciting one; **"the connection comes
+> immediately" and the App's "New Connection" label are now sayable — wording only**, with the
+> routing and the hold-exemption untouched. Added: the **11-step App walkthrough in every
+> ZIP-bearing agent**, the **Refill-vs-New-Connection fork** (assume New Connection until the
+> consumer says they have an empty cylinder to exchange), the **regulator as a New-Connection-only
+> Add On**, the **order number + distributor details + SMS OTP** after payment, the **after-6pm →
+> next-day 8am–8pm** rule beside the unchanged four-hour standard, and the **three dead ends**
+> (area, stock, no smartphone). Unknowns are down to two: warranty/damage cover and which cities.
+
 > ⚠️ **Also amended by CHANNELS.md ZIP-03 (2026-08-17)**, the KB refresh against the business team's
 > reviewed FAQ: ZIP is **domestic-only** (the commercial 10-cylinder limit is deleted everywhere);
 > every lookup leads with the **Hello BPCL App** — "Bharatgas for Home" → "Explore Bharatgas
