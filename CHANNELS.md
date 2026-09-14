@@ -138,6 +138,20 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### TOOL-07 · No `preToolMessage` anywhere in CRC — the transfer is the call alone, the hangup line is text, the fetch is the call alone — CRC only (excl. `Default`), CC pending (2026-09-14)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. Same 15 CRC prompts as TOOL-06, plus `vaaniQA`, `postCallAnalysisFlat`, both `CLAUDE.md` files. **Supersedes TOOL-06's `preToolMessage` shape for `calltransfer` and `callhangup`.** **CC not ported.** |
+| **Source** | Two calls on 14-09-2026 after TOOL-06. 13:51 — the transfer line spoken with **no `calltransfer` in the raw model output** (client-confirmed), then *"संपर्क नहीं हो पा रहा"* and *"मैंने पहले ही प्रयास किया था"* with no Result; the closing line heard twice — the raw output held **`callhangup` with the line as text *and* as `preToolMessage`** (client-confirmed). 14:01 — every tool fired, but the fetch line *"जी, एक मिनट रुकिए…"* was heard twice (`getConsumerDetailsLive`), the transfer line twice (text, then `preToolMessage`), and the closing line twice again. The complaint, called with no text, was clean in both. |
+| **Diagnosis** | While a sentence sits anywhere in the prompt, this model speaks it — instead of the call (transfer, 13:51) or beside the `preToolMessage` that already carries it (hangup, both calls). A call with no text never doubled. `getConsumerDetailsLive`'s STEP 5 asked for two outputs in a row — speech, then the fetch — which cannot happen without a consumer turn between them, so the model merged them and the line came back when the Result arrived. |
+| **Client decision, 14-09-2026** | (1) **`calltransfer` works exactly like the complaint tool**: the prompt says only to call it and speak from its Result — nothing about text or `preToolMessage`, and the transfer sentence is deleted everywhere, including the rule that let the word *transfer* live inside it. (2) **`callhangup`**: the closing line as the agent's **own text**, the call on that same turn, **no `preToolMessage`** — the call ends, so the line cannot be repeated; a goodbye with no call is recovered by calling `callhangup` without saying it again. (3) **`bpcl_fetch_all_api`** — in `getConsumerDetailsLive`, `getConsumerDetails` and `MultiToolVersion` — **works like the complaint tool**: the call alone, the *"एक मिनट रुकिए"* line deleted, the Result decides the next step. (4) The platform's transfer-failure message and the delivery agent's permission question were left out of scope. |
+| **Analysers** | `vaaniQA` C5d: no announcement is correct; an announcement of her own, or a busy/unavailable message with no platform failure message before it, is a violation. C18 and C26 key on the platform failure message instead of a transfer sentence. `postCallAnalysisFlat` `callTransferred`: *yes* when the consumer asked for a person and the call left the agent's hands with no failure message — no longer the spoken line. |
+| **Docs** | CRC `CLAUDE.md` now records `getConsumerDetailsLive.txt` as the deployed entry prompt (it said `getConsumerDetails.txt`). |
+| **⚠️ Open** | The consumer hears no transfer announcement, by design. **CC not ported.** |
+
+---
+
 ### D-01 · `calltransfer` tool exists only in CC — **RETIRED: CRC has it too, in every routing-capable agent (XFER-01, then XFER-03)**
 
 | | |

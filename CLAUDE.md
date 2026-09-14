@@ -125,7 +125,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 | `connectionServicesAgent` | KYC, address, mobile, name, surrender, portability, PNG. |
 | `newConnectionAgent` | New connection / Ujjwala / PMUY. |
 | `genericInfoComplaintAgent` | Catch-all: how-to, equipment faults, behaviour complaints. |
-| ~~`callTransferAgent`~~ | **Deleted 2026-08-11 (CHANNELS.md XFER-03).** Every routing-capable CRC agent now holds `calltransfer` and invokes it itself, passing `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"` and nothing else, with no spoken text of its own — then reads the Result: success → silence, the platform closes the call; failure → it says the team could not be reached, gives the window the Result carried, and closes only once the consumer accepts. |
+| ~~`callTransferAgent`~~ | **Deleted 2026-08-11 (CHANNELS.md XFER-03).** Every routing-capable CRC agent now holds `calltransfer` and invokes it itself, with no spoken text of its own and, since CHANNELS.md TOOL-07, no `preToolMessage` either — then reads the Result: success → silence, the platform closes the call; failure → it says the team could not be reached, gives the window the Result carried, and closes only once the consumer accepts. |
 
 **Known naming defects — do not propagate:**
 - CRC's folder is `genericInfoComplaint/`, CC's is `genericInfoComplaintAgent/`. Canonical is
@@ -154,14 +154,10 @@ made by the agent the consumer is already speaking to, not a switch, so the rule
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
 
-**The tool call is the action.** The platform never invokes a tool on the agent's behalf; only a Result proves a tool ran. **In CRC (CHANNELS.md TOOL-06, 2026-09-14) the tools that act are not announced:** `bpcl_create_complaint` is called with no text at all and the agent speaks from its Result; `calltransfer` and `callhangup` carry their only line in `preToolMessage`; `switchagent` alone keeps a spoken line as text. Recovery is state-based — a tool the agent had decided to use with no Result behind it never ran and is invoked on the next turn, and an outcome with no Result behind it is never spoken. CC still carries the older line-plus-call contract (CPL-03, XFER-01).
+**The tool call is the action.** The platform never invokes a tool on the agent's behalf; only a Result proves a tool ran. **In CRC (CHANNELS.md TOOL-06, 2026-09-14) the tools that act are not announced:** `bpcl_create_complaint` is called with no text at all and the agent speaks from its Result; since TOOL-07 `calltransfer` is the call alone too, and `callhangup` and `switchagent` keep their spoken line as text on the same turn as the call — no CRC tool takes a `preToolMessage`. Recovery is state-based — a tool the agent had decided to use with no Result behind it never ran and is invoked on the next turn, and an outcome with no Result behind it is never spoken. CC still carries the older line-plus-call contract (CPL-03, XFER-01).
 
 **The tool-turn rule.** On a tool turn exactly one thing speaks. Write the Hindi line as regular
-**text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
-spoken line in `preToolMessage` while generating no text of their own: `callhangup`, which carries
-the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
-`"आपकी कॉल ट्रांसफर की जा रही है।"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
-Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent. In CRC `bpcl_create_complaint` is a third case: nothing speaks on its turn at all, and the agent speaks from its Result (CHANNELS.md TOOL-06).
+**text** and pass **no** `preToolMessage`. In CC two tools are the exception and carry their whole spoken line in `preToolMessage` with no text of their own — `callhangup` and `calltransfer` (XFER-03); doing both makes the consumer hear the line twice. **In CRC no tool takes a `preToolMessage` (CHANNELS.md TOOL-06, TOOL-07):** `bpcl_create_complaint` and `calltransfer` are the call alone and the agent speaks from the Result; `callhangup` carries the closing line as text with the call on the same turn; `switchagent` keeps its short line as text.
 
 **Switching is invisible.** Never reveal that other agents, teams, experts, or systems exist.
 Forbidden on a `switchagent` turn: transfer, connect, specialist, agent, team, department, desk,
@@ -169,9 +165,7 @@ switch, handoff, forward, भेजती, जोड़ती. **A ban list is o
 prompt now also carries a *menu of anchor lines* saying what to speak instead ("ज़रा booking system
 check करती हूँ, एक मिनट।"), because a prompt that only forbids gives the model nothing to reach for
 and it reaches for "मैं आपको हमारे department से connect करती हूँ" (XFER-01).
-One exception in each channel, because the consumer is about to hear a different voice: the
-`calltransfer` tool's own `preToolMessage`. In CRC that message is "आपकी कॉल ट्रांसफर की जा रही है।"
-and it is the **only** thing spoken on that turn — the agent writes no text of its own (XFER-03).
+One exception in CC, because the consumer is about to hear a different voice: the `calltransfer` tool's own `preToolMessage`. CRC no longer announces a transfer at all (CHANNELS.md TOOL-07).
 
 **Emergency overrides everything.** A confirmed gas hazard in any agent at any moment switches to
 `emergencyAgent`, bypassing all gating. While the hazard is live that agent cannot switch, cannot

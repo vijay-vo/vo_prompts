@@ -47,6 +47,8 @@ she offers one only at the four moments below.
 stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
 it: **T3**, and `getConsumerDetails`' no-data closing.
 
+> **REVISED 2026-09-14 — CHANNELS.md TOOL-07.** `calltransfer` is now called with **no `preToolMessage` and no text** — there is no transfer announcement at all. `callhangup` carries the closing line as the agent's **own text**, with the call on the same turn. The next paragraph describes the superseded XFER-03 shape.
+
 **The transfer turn speaks nothing of its own.** `calltransfer` is invoked exactly the way
 `callhangup` is: the agent generates **no text**, and passes **exactly one parameter** —
 `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`. Nothing else goes with it: no `agentName`, no
@@ -317,7 +319,7 @@ CC is next opened. Every `promptQA` reference in ledger rows dated before that d
 repointed** — if that is missed, CRC's QA analyser silently stops running.
 
 **`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
-**deployed** entry prompt again — `getConsumerDetails.txt` ships, `getConsumerDetails_MultiToolVersion.txt`
+**deployed** entry prompt again — `getConsumerDetailsLive.txt` ships (corrected 2026-09-14, TOOL-07; `getConsumerDetails.txt` is kept in step with it), `getConsumerDetails_MultiToolVersion.txt`
 is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
 (git history only, along with `prompts/callTransferAgent/`).
 Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
@@ -512,8 +514,7 @@ references back in — see CHANNELS.md ZIP-01.
   deliberately NOT ported to either**: Vaani's tone comes from her prompt, not the call, so the column
   would score the prompt. **The IVR block is optional on every channel**, and Vaani's fixed first line
   (*"नमस्ते, मेरा नाम वाणी है…"*) is the boundary between recording and agent. **PCA sees no tool calls
-  and no tool results** — no rule may assume otherwise; `callTransferred` is judged from the spoken
-  transfer line alone, which is sound because that line is `calltransfer`'s own `preToolMessage`.
+  and no tool results** — no rule may assume otherwise; `callTransferred` is judged from what follows the consumer's request — a platform message that the transfer did not connect, or the call leaving the agent's hands (TOOL-07: there is no spoken transfer line any more).
   Two defects fixed in the same pass: `vaaniQA`'s PART C still said *"THERE IS NO TRANSFER IN THIS
   CHANNEL"*, contradicting its own C5, and the filler allowance was cut from four to
   **`"अच्छा"` and `"hmm"` only** — with **CLS-03's live carve-out narrowed to match in eight agent
