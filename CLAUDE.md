@@ -154,20 +154,14 @@ made by the agent the consumer is already speaking to, not a switch, so the rule
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
 
-**The tool call is the action, not the sentence.** The platform never invokes a tool on the agent's
-behalf. Speaking a registering line registers nothing; speaking a "ज़रा details देखती हूँ" line
-switches nothing. A spoken line with **no tool call on that same turn is a failed turn** — this is
-true of `bpcl_create_complaint`, of `switchagent`, and of every other tool. Recovery: if the
-transcript shows a line implying a tool ran and no Result came back, invoke the tool before anything
-else on the next turn. The agent's own spoken line is never evidence a tool ran; only a Result is.
-(CHANNELS.md CPL-03 for the complaint case, XFER-01 for the generalisation to every tool.)
+**The tool call is the action.** The platform never invokes a tool on the agent's behalf; only a Result proves a tool ran. **In CRC (CHANNELS.md TOOL-06, 2026-09-14) the tools that act are not announced:** `bpcl_create_complaint` is called with no text at all and the agent speaks from its Result; `calltransfer` and `callHangup` carry their only line in `preToolMessage`; `switchagent` alone keeps a spoken line as text. Recovery is state-based — a tool the agent had decided to use with no Result behind it never ran and is invoked on the next turn, and an outcome with no Result behind it is never spoken. CC still carries the older line-plus-call contract (CPL-03, XFER-01).
 
 **The tool-turn rule.** On a tool turn exactly one thing speaks. Write the Hindi line as regular
 **text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
 spoken line in `preToolMessage` while generating no text of their own: `callHangup`, which carries
 the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
 `"आपकी कॉल ट्रांसफर की जा रही है।"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
-Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent.
+Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent. In CRC `bpcl_create_complaint` is a third case: nothing speaks on its turn at all, and the agent speaks from its Result (CHANNELS.md TOOL-06).
 
 **Switching is invisible.** Never reveal that other agents, teams, experts, or systems exist.
 Forbidden on a `switchagent` turn: transfer, connect, specialist, agent, team, department, desk,
@@ -196,7 +190,7 @@ money in Hindi words with "रुपये". Never a double form — never "ए�
 backend are **DD-MM-YYYY, day first**; `{{system.current_date}}` is YYYY-MM-DD, year first.
 Visible curly braces in a value = no data; treat as absent, never speak it.
 
-**Complaint discipline.** Every agent holding `bpcl_create_complaint` carries the same `COMPLAINT PROTOCOL — STANDARD` block (CHANNELS.md CPL-01). The agent passes **exactly two** parameters — `complaintSummary` and `complaintReason` (renamed from `feedbackDescription`/`reason`, CHANNELS.md PARAM-01) — and the set is closed **by rule**: any other key is the platform's, whether or not the prompt names it, and a field that comes back in a Result is an output that never goes back in as an input. A complaint is the **last** option, not the first: the `RESOLUTION LADDER` runs before any registration — understand the query, resolve it if the answer is yours, route it if it is another domain's, and only then register. The one carve-out is a **grievance about something that already happened** (cylinder not delivered, test not performed, staff behaviour, money taken), where nothing said undoes it and the complaint *is* the resolution — those register directly and are never slowed down. Confirmation is **only for what is new and consequential**; what the consumer said plainly is never re-confirmed, and when the issue is clear the one-line summary rides inside the registering line itself rather than costing a turn. **Speaking the registering line is not registering** — the agent invokes the tool on that same turn, and a line spoken with no tool call is a failed turn that must be recovered on the next one (CHANNELS.md CPL-03/CPL-04/CPL-05; CRC only so far). Never claim registration
+**Complaint discipline.** Every agent holding `bpcl_create_complaint` carries the same `COMPLAINT PROTOCOL — STANDARD` block (CHANNELS.md CPL-01). The agent passes **exactly two** parameters — `complaintSummary` and `complaintReason` (renamed from `feedbackDescription`/`reason`, CHANNELS.md PARAM-01) — and the set is closed **by rule**: any other key is the platform's, whether or not the prompt names it, and a field that comes back in a Result is an output that never goes back in as an input. A complaint is the **last** option, not the first: the `RESOLUTION LADDER` runs before any registration — understand the query, resolve it if the answer is yours, route it if it is another domain's, and only then register. The one carve-out is a **grievance about something that already happened** (cylinder not delivered, test not performed, staff behaviour, money taken), where nothing said undoes it and the complaint *is* the resolution — those register directly and are never slowed down. Confirmation is **only for what is new and consequential**; what the consumer said plainly is never re-confirmed, and when the issue is clear it goes straight into `complaintSummary` rather than costing a turn. **Registering is the tool call** — in CRC the call carries no spoken line at all and the agent speaks only from its Result (CHANNELS.md TOOL-06); CC still pairs a registering line with the call on one turn (CPL-03/CPL-04/CPL-05). Never claim registration
 before the tool returns success. One call per complaint, never retry on failure, max 2 per call.
 Never invent a complaint number. On success the number is spoken digit by digit — **Hindi words in CC,
 English digit words with `" - "` in CRC since CHANNELS.md NUM-01** — and
