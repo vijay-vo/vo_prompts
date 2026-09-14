@@ -52,7 +52,7 @@ Vaani is a voice agent **for Bharat Petroleum**, not an employee of the distribu
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callHangup`, **`calltransfer`**, `bpcl_create_complaint`,
+**Tools:** `switchagent`, `callhangup`, **`calltransfer`**, `bpcl_create_complaint`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 

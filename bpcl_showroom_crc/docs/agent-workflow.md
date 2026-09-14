@@ -16,7 +16,7 @@ graph TD
     REG -->|Yes| DEF
 
     GCD -->|fetch OK — platform resumes| DEF[Default<br/>greet · triage · FAQ · route]
-    GCD -->|no data / refusal| HANG([callHangup])
+    GCD -->|no data / refusal| HANG([callhangup])
 
     DEF --> EMG[emergencyAgent]
     DEF --> BOOK[bookingEligibleAgent]
@@ -87,7 +87,7 @@ The caller's number decides the entry point.
 3. Confirm the number back **exactly once**. Any affirmative locks it.
 4. `bpcl_fetch_all_api` with that confirmed number — **the only place in the whole system this tool is legitimately called.**
 5. **Data found** → job done, stop speaking. The platform resumes the call into `Default`.
-   **No data / refusal / no registered number** → tell the consumer their record isn't available, ask them to contact their Bharat Gas distributor (share *no* distributor details — there are none), then `callHangup`.
+   **No data / refusal / no registered number** → tell the consumer their record isn't available, ask them to contact their Bharat Gas distributor (share *no* distributor details — there are none), then `callhangup`.
 
 > ⚠️ `getConsumerDetails` has **no `switchagent` tool.** The hop into `Default` is not a prompt-level switch — it is owned by the platform. This is the one transition in the system that no prompt describes.
 
@@ -163,7 +163,7 @@ Every specialist's escape hatch. It is **invisible**: the previous agent already
 
 1. Attempt 1 — "मैं इस विषय में सहायता नहीं कर सकती।" + ask for their LPG issue.
 2. Attempt 2 — *different phrasing* + ask again.
-3. Attempt 3 — ask once more → speak the exact closing line → `callHangup`.
+3. Attempt 3 — ask once more → speak the exact closing line → `callhangup`.
 
 A valid LPG intent at **any** point aborts the ladder and routes silently.
 
@@ -204,7 +204,7 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 
 ## 8. Tools — who can call what
 
-| Agent | switchagent | callHangup | complaint tool | data lookup |
+| Agent | switchagent | callhangup | complaint tool | data lookup |
 |---|:---:|:---:|:---:|:---:|
 | `getConsumerDetails` | — | ✅ | — | `validatecontactno` + `bpcl_fetch_all_api` |
 | `Default` | ✅ | — | — | ❌ blocked |
@@ -259,7 +259,7 @@ Putting a sentence in `preToolMessage` **and** generating text makes the consume
 
 The spoken line must sound like Vaani is personally checking something — "ज़रा booking system check करती हूँ, एक मिनट।" It must never reveal the switch. **Forbidden words:** transfer, connect, specialist, agent, team, switch, handoff, forward, भेजती, जोड़ती.
 
-**One exception:** `getConsumerDetails` inverts this. `validatecontactno` takes **no** `preToolMessage` (Vaani speaks); `bpcl_fetch_all_api` and `callHangup` carry the real sentence **in** `preToolMessage` (Vaani stays silent).
+**One exception:** `getConsumerDetails` inverts this. `validatecontactno` takes **no** `preToolMessage` (Vaani speaks); `bpcl_fetch_all_api` and `callhangup` carry the real sentence **in** `preToolMessage` (Vaani stays silent).
 
 ---
 

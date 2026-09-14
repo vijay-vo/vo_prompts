@@ -38,9 +38,9 @@ ACCEPT -- Yes --> XFER["Senior Team"]
 
 ACCEPT -- No --> EXIT1["Inform consumer:<br/>Unable to help without consumer data.<br/>Please contact your nearest Bharat Petroleum distributor."]
 
-EXIT1 --> END1(["callHangup"])
+EXIT1 --> END1(["callhangup"])
 
-XFER --> END2(["callHangup"])
+XFER --> END2(["callhangup"])
 
 end
 
@@ -179,7 +179,7 @@ LEAF -->|"New Intent"| RA["routingAgent"]
 
 RA --> TOPIC
 
-LEAF -->|"Conversation Complete"| END(["callHangup"])
+LEAF -->|"Conversation Complete"| END(["callhangup"])
 
 %%========================
 %% COLORS

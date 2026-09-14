@@ -88,10 +88,10 @@
                                                           │                                                                  │ Inform consumer:                                                                                   │
                                                           ▼                                                                  │ Unable to help without consumer details. Please contact nearest Bharat Petroleum distributor.     │
                                                  ┌────────────────┐                                                         └─────────────────────────────────────────────────────────────────────────────────────────────────────┘
-                                                 │ callHangup()   │                                                                            │
+                                                 │ callhangup()   │                                                                            │
                                                  └────────────────┘                                                                            ▼
                                                                                                                                     ┌────────────────┐
-                                                                                                                                    │ callHangup()   │
+                                                                                                                                    │ callhangup()   │
                                                                                                                                     └────────────────┘
 ```
 
@@ -291,7 +291,7 @@ Consumer asks another question?
 No         Yes
  │          │
  ▼          ▼
-callHangup()   routingAgent
+callhangup()   routingAgent
                     │
                     ▼
              Detect new intent
@@ -356,5 +356,5 @@ callHangup()   routingAgent
 Conversation Completed
         │
         ▼
-callHangup()
+callhangup()
 ```

@@ -154,11 +154,11 @@ made by the agent the consumer is already speaking to, not a switch, so the rule
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
 
-**The tool call is the action.** The platform never invokes a tool on the agent's behalf; only a Result proves a tool ran. **In CRC (CHANNELS.md TOOL-06, 2026-09-14) the tools that act are not announced:** `bpcl_create_complaint` is called with no text at all and the agent speaks from its Result; `calltransfer` and `callHangup` carry their only line in `preToolMessage`; `switchagent` alone keeps a spoken line as text. Recovery is state-based — a tool the agent had decided to use with no Result behind it never ran and is invoked on the next turn, and an outcome with no Result behind it is never spoken. CC still carries the older line-plus-call contract (CPL-03, XFER-01).
+**The tool call is the action.** The platform never invokes a tool on the agent's behalf; only a Result proves a tool ran. **In CRC (CHANNELS.md TOOL-06, 2026-09-14) the tools that act are not announced:** `bpcl_create_complaint` is called with no text at all and the agent speaks from its Result; `calltransfer` and `callhangup` carry their only line in `preToolMessage`; `switchagent` alone keeps a spoken line as text. Recovery is state-based — a tool the agent had decided to use with no Result behind it never ran and is invoked on the next turn, and an outcome with no Result behind it is never spoken. CC still carries the older line-plus-call contract (CPL-03, XFER-01).
 
 **The tool-turn rule.** On a tool turn exactly one thing speaks. Write the Hindi line as regular
 **text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
-spoken line in `preToolMessage` while generating no text of their own: `callHangup`, which carries
+spoken line in `preToolMessage` while generating no text of their own: `callhangup`, which carries
 the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
 `"आपकी कॉल ट्रांसफर की जा रही है।"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
 Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent. In CRC `bpcl_create_complaint` is a third case: nothing speaks on its turn at all, and the agent speaks from its Result (CHANNELS.md TOOL-06).
