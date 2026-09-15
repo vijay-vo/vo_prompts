@@ -152,6 +152,30 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### BNE-02 · `bookingNonEligibilityAgent` told a consumer with an open order that her connection was inactive — CRC only, CC pending (2026-09-14)
+
+| | |
+|---|---|
+| **Axis** | Neither — a verdict-handling defect. Extends BNE-01. |
+| **Source** | Live CRC call, 14-09-2026 12:36 (before TOOL-06/07). `handoffSummary` carried a booking on 12-09-2026, *"Customer is not eligible for booking"* with **no blocker named**, and *"Refill Order received Successfully, refill will be delivered to you shortly."* Vaani said *"आपका connection अभी inactive दिख रहा है"*, announced a complaint it never made (impossible anyway for an inactive connection, ESC-04), offered an unrequested transfer, and repeated "inactive" on a later turn. |
+| **Diagnosis** | The prompt's world had six blockers and no "order already open" reason — the most common real one. Step 2 required the first turn to explain a blocker and offered only those six templates; the blocker gate said not to name an unwritten blocker but gave nothing to say instead; the refill-status sentence was defined as "not an eligibility fact"; and the missing-reason fallback still pointed to an office (ESC-01 leftover). With no permitted output, the model chose a template. |
+| **The rule now** | Opening picked in order: a named blocker → its template; no blocker + an order on its way → **OPEN ORDER** (booking done, refill coming shortly, so no new booking — no complaint, no timeframe, no next-booking date); neither → **NO REASON STATED** (booking not allowed, reason not visible, no blocker named). A blocker is spoken only when the verdict literally states it. The office line in the missing-data rule is gone. |
+| **Files touched (2)** | CRC `bookingAgent/bookingNonEligibilityAgent.txt`, plus this ledger. CC's copy has the same six-blocker model and is unfixed. |
+
+---
+
+### DEL-03 · `postDeliveryAgent` spent turns pretending to check, then called a record it held unavailable — CRC only, CC pending (2026-09-14)
+
+| | |
+|---|---|
+| **Axis** | Neither — handoff-data discipline. |
+| **Source** | Live CRC call, 14-09-2026 10:48 (before TOOL-06/07). `handoffSummary` intent *"delivery not received"*, record *"delivered on 01-07-2026"*. Vaani spoke two checking turns (*"डिलीवरी डिटेल्स देखती हूँ"*, *"स्टेटस चेक कर रही हूँ, एक मिनट"*), then said the delivery record did not show when it was delivered, then registered. Registering was correct (PATH 1); the checking and the "unavailable" claim were not. |
+| **Diagnosis** | The prompt said once, near the top, not to imply checking — but nothing held that on the turn, and PATH 1 never said to register on the first turn when the intent already carried the grievance, so the model filled the gap with checking theatre and an invented "not available". |
+| **The rule now** | **No checking turns ever** outside a `switchagent` line — every turn states the record, asks the one needed question, or calls the tool. A detail `handoffSummary` states is never called unavailable, and CASE B excludes it. When the intent already carries a directly-registrable grievance, the first turn is the `bpcl_create_complaint` call itself. The date-order question (a delivery dated before the booking) was deliberately left out of scope by the client. |
+| **Files touched (2)** | CRC `deliveryAgent/postDeliveryAgent.txt`, plus this ledger. The other three CRC delivery agents and CC were not touched, by client scope. |
+
+---
+
 ### D-01 · `calltransfer` tool exists only in CC — **RETIRED: CRC has it too, in every routing-capable agent (XFER-01, then XFER-03)**
 
 | | |
