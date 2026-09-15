@@ -47,7 +47,7 @@ she offers one only at the four moments below.
 stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
 it: **T3**, and `getConsumerDetails`' no-data closing.
 
-> **REVISED 2026-09-14 — CHANNELS.md TOOL-07.** `calltransfer` is now called with **no `preToolMessage` and no text** — there is no transfer announcement at all. `callhangup` carries the closing line as the agent's **own text**, with the call on the same turn. The next paragraph describes the superseded XFER-03 shape.
+> **REVISED 2026-09-14 — CHANNELS.md TOOL-07.** `calltransfer` is now called with **no `preToolMessage` and no text** — there is no transfer announcement at all. `callhangup` carries the closing line as the agent's **own text**, with the call on the same turn; if a `callhangup` Result comes back, the agent produces no text (TOOL-08, 2026-09-15). No agent ever speaks a tool name — a complaint is only "complaint" or "शिकायत" (TOOL-08). The next paragraph describes the superseded XFER-03 shape.
 
 **The transfer turn speaks nothing of its own.** `calltransfer` is invoked exactly the way
 `callhangup` is: the agent generates **no text**, and passes **exactly one parameter** —

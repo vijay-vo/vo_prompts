@@ -152,6 +152,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### TOOL-08 · Tool names are never spoken, and a `callhangup` Result gets no text — CRC only, CC pending (2026-09-15)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. All 15 deployed CRC agents, plus `getConsumerDetails.txt` (kept in step with `getConsumerDetailsLive`). Extends TOOL-07; does not change its tool shapes. **CC not ported.** |
+| **Source** | Two CRC calls on 14-09-2026, **after TOOL-07 was live**. 17:47 and 18:26 — Vaani said *"आपकी शिकायत दर्ज करने के लिए मैं अभी bpcl_create_complaint कॉल कर रही हूँ"*, both times on the complaint turn (at 17:47 once with no call behind it, then again with the call, which returned a real number). Both calls then ended with the closing line heard **twice** in one agent entry (17:48, 18:27), although the prompt had it as text + `callhangup` with no `preToolMessage`. |
+| **Diagnosis** | (1) The only guard was a ban — *"never write a tool name as spoken text"* — while the prompts say *"to register a complaint I call bpcl_create_complaint"* many times. With no sentence of her own on the tool turn, she spoke that instruction in Hindi. The ban gave her nothing to say instead. (2) The transcript merges text before a call and text after its Result into one entry (the 18:26 complaint entry shows it). The doubled goodbye has the same shape: line, call, Result, line again. Nothing in the prompts said what to do when a `callhangup` Result comes back, and `getConsumerDetailsLive` said outright that nothing could come after it. |
+| **The rule now** | (1) Beside every existing ban: tool names and the words tool/API/function are internal labels. A complaint is spoken of only as **"complaint"** or **"शिकायत"**. The act of using a tool is never narrated, whether before, beside or after the call. Only the outcome is spoken, and only from the Result. (2) In every agent holding `callhangup`: if its Result comes back, the goodbye has already been heard, so **no text and no tool**. The closing line itself is unchanged: text plus `callhangup` on the same turn. |
+| **⚠️ Open** | (2) assumes the platform hands a turn back after `callhangup`. The transcript shape supports that but does not prove it. If the goodbye still doubles, the next suspect is the platform speaking the text again on hangup. `vaaniQA` has no check yet for a spoken tool name or a doubled closing line. **CC not ported.** |
+
+---
+
 ### BNE-02 · `bookingNonEligibilityAgent` told a consumer with an open order that her connection was inactive — CRC only, CC pending (2026-09-14)
 
 | | |
