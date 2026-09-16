@@ -247,16 +247,18 @@ A plain English label for what the call was about. Lowercase except proper nouns
 This is a readable label, not a grouping key — departmentArea is the closed list a dashboard groups by — so write the most natural words for this call rather than reaching for a phrase you have used before.
 Examples: "cylinder delivery was late", "subsidy not received", "how to book refill", "payment failed during booking", "address change request", "delivery boy rude behavior", "new connection on hold", "wants Lite zip connection", "already applied awaiting connection"
 
-departmentArea — one of: "emergency" | "refill" | "delivery" | "subsidy" | "connection" | "newConnection" | "payment" | "other"
+departmentArea — one of: "emergency" | "booking" | "delivery" | "subsidy" | "connection" | "newConnection" | "payment" | "other"
 Which LPG domain the call primarily belonged to. If it touched several, pick the PRIMARY one.
-- emergency — gas leak, fire, cylinder blast
-- refill — booking, refill limits, BAS auto-booking, cancellation, how to book, booking methods, refill status
-- delivery — delivery status, late or missing delivery, tracking, the 48-hour window, marked delivered but not received, door delivery
+IDENTIFICATION RULE: Before assigning a value, first identify the customer's CORE CONCERN — what they actually called about. Do not classify by the first word they said. Read the full call, determine what the customer wanted or complained about, and then map it to the domain below. If a customer mentions both booking and delivery, classify by whichever is the actual problem — a customer who already has a booking and is asking why the cylinder has not arrived is a "delivery" call, not a "booking" call.
+- emergency — gas leak, fire, cylinder blast, any immediate safety hazard
+- booking — placing a new refill booking, how to book, booking methods, BAS auto-booking, refill limits and eligibility, unable to book, booking cancellation — the customer's concern is about the ACT of placing or managing a refill order, and no booking exists yet or the booking itself is the issue
+- delivery — everything that happens AFTER a booking is placed — delivery status check, late delivery, cylinder not received after booking, marked delivered but not received, delivery tracking, 48-hour delivery window, door delivery, refill status enquiry when a booking already exists. If the customer has already booked and is asking where their cylinder is or why it has not come, this is ALWAYS "delivery", not "booking".
 - subsidy — DBTL, subsidy status or eligibility, subsidy not received, bank linkage, opting out
 - connection — address change, mobile update, name change, KYC, blocked connection, reactivation, portability, surrender, second cylinder, PNG blocking, consumer number enquiry
 - newConnection — new connection, Ujjwala/PMUY, onboarding, registration, documents, charges. A call told the connection is on hold is still newConnection: the hold is the answer to a new-connection query, not a separate domain. So is a customer asking about an application they already submitted. For zip, map by what they wanted — wanting to GET a zip is newConnection, as is a pure "zip क्या है" awareness question, while a problem with a zip they already hold maps to that problem's domain ("delivery" for a late express delivery, "payment" for money).
 - payment — payment failure, double charge, refund, cash memo, overcharging, cash demanded despite online payment, payment options
-- other — non-LPG, competitor, or genuinely unclassifiable. Use it only then.
+- other — truly non-LPG query, competitor query, completely unrelated to LPG products or services. Do NOT use "other" because the call touched multiple domains or the domain was unclear — in that case identify the PRIMARY concern and use that domain.
+If the call touches multiple domains, identify the PRIMARY one using the tiebreaker: delivery > booking > payment > subsidy > connection > newConnection. Return "other" only if the call has nothing to do with LPG products or services.
 
 customerSentiment — "positive" | "neutral" | "negative" | "angry"
 How the customer BEHAVED TOWARDS THE CALL, decided by working through the steps below rather than from an overall impression. This is the field misread most often, so do not answer it from a feeling about the call.

@@ -52,18 +52,19 @@ Rules:
 Examples: "cylinder delivery was late", "subsidy not received", "how to book refill", "payment failed during booking", "new connection process inquiry", "address change request", "delivery boy rude behavior", "cylinder weight was less", "refill booking successful", "senior team contact requested"
 
 departmentArea
-Allowed values: "emergency" | "refill" | "delivery" | "subsidy" | "connection" | "newConnection" | "payment" | "other"
+Allowed values: "emergency" | "booking" | "delivery" | "subsidy" | "connection" | "newConnection" | "payment" | "other"
 Identify which LPG domain the call primarily belonged to, based on the main topic discussed.
+IDENTIFICATION RULE: Before assigning a value, first identify the customer's CORE CONCERN — what they actually called about. Do not classify by the first word they said. Read the full call, determine what the customer wanted or complained about, and then map it to the domain below. If a customer mentions both booking and delivery, classify by whichever is the actual problem — a customer who already has a booking and is asking why the cylinder has not arrived is a "delivery" call, not a "booking" call.
 Domain mapping:
-- "emergency": gas leakage, emergency, cylinder blast, fire
-- "refill": booking, refill limits, BAS auto-booking, cancellation, how to book, booking methods, refill status
-- "delivery": delivery status, late delivery, not delivered, delivery tracking, 48-hour delivery window, marked delivered but not received, door delivery
+- "emergency": gas leakage, emergency, cylinder blast, fire, any immediate safety hazard
+- "booking": placing a new refill booking, how to book, booking methods, BAS auto-booking, refill limits and eligibility, unable to book, booking cancellation — the customer's concern is about the ACT of placing or managing a refill order, and no booking exists yet or the booking itself is the issue
+- "delivery": everything that happens AFTER a booking is placed — delivery status check, late delivery, cylinder not received after booking, marked delivered but not received, delivery tracking, 48-hour delivery window, door delivery, refill status enquiry when a booking already exists. If the customer has already booked and is asking where their cylinder is or why it has not come, this is ALWAYS "delivery", not "booking".
 - "subsidy": DBTL, subsidy status, subsidy not received, bank account linkage for subsidy, subsidy eligibility, opt out of subsidy
 - "connection": address change, mobile number update, name change, KYC, blocked connection, reactivation, portability, surrender, second cylinder, PNG blocking/unblocking, consumer number inquiry
 - "newConnection": new LPG connection, Ujjwala/PMUY, onboarding, registration, documents required, charges for new connection
 - "payment": payment failure, double charge, refund, cash memo, overcharging, cash demanded despite online payment, payment options
-- "other": non-LPG query, competitor query, mixed/unclear domain, truly unrelated
-If the call touches multiple domains, identify the PRIMARY one. Return "other" only if the call is clearly non-LPG or impossible to classify.
+- "other": truly non-LPG query, competitor query, completely unrelated to LPG products or services. Do NOT use "other" because the call touched multiple domains or the domain was unclear — in that case identify the PRIMARY concern and use that domain.
+If the call touches multiple domains, identify the PRIMARY one using the tiebreaker: delivery > booking > payment > subsidy > connection > newConnection. Return "other" only if the call has nothing to do with LPG products or services.
 
 customerSentiment
 Allowed values: "positive", "neutral", "negative", "angry".
