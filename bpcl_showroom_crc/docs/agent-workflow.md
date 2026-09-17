@@ -223,15 +223,15 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 | `paymentAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
 | `subsidyAgent` | ✅ | ✅ | `bpcl_create_complaint` | ❌ blocked |
 | `connectionServicesAgent` | ✅ | ✅ | `bpcl_create_complaint` | ❌ blocked |
-| `newConnectionAgent` (`_onHold`) | ✅ | ✅ | `bpcl_create_complaint` *(on request only)* | `fetch_pincode_data` |
+| `newConnectionAgent` (`_onHold`) | ✅ | ✅ | `bpcl_create_complaint` *(on request only)* | `get_pincode_data` |
 | `genericInfoComplaintAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `unregisteredComplaintAgent` | ❌ **none** | ✅ | `bpcl_create_complaint` | `fetch_pincode_data` |
+| `unregisteredComplaintAgent` | ❌ **none** | ✅ | `bpcl_create_complaint` | `get_pincode_data` |
 
 Notes worth knowing:
 
 - **`bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else.** Every other prompt that mentions it does so in an explicit *tool blocker* forbidding the call — their data is pre-injected.
 - **Neither `Default` nor `emergencyAgent` can end a call.** Hangup is a leaf/`routingAgent` privilege.
-- **Twelve agents hold `bpcl_create_complaint`** and register in place — the ten leaves, `newConnectionAgent_onHold` (only when the consumer asks, CHANNELS.md NC-02), and `unregisteredComplaintAgent` (UNREG-01/UNREG-02). Those last two share one flow: name, PIN code, `fetch_pincode_data`, district confirmed aloud, then three parameters. Two never get it: `Default` (triage only — it escalates via STAGE 3 to `genericInfoComplaintAgent`) and `getConsumerDetails` (it captures and fetches; the complaint belongs to the agent the platform hands the call to).
+- **Twelve agents hold `bpcl_create_complaint`** and register in place — the ten leaves, `newConnectionAgent_onHold` (only when the consumer asks, CHANNELS.md NC-02), and `unregisteredComplaintAgent` (UNREG-01/UNREG-02). Those last two share one flow: name, PIN code, `get_pincode_data`, district confirmed aloud, then three parameters. Two never get it: `Default` (triage only — it escalates via STAGE 3 to `genericInfoComplaintAgent`) and `getConsumerDetails` (it captures and fetches; the complaint belongs to the agent the platform hands the call to).
 - **`unregisteredComplaintAgent` holds no `switchagent` at all** — unique in this channel. The platform switches *into* it and the consumer stays for the rest of the call, so a gas hazard is handled inline rather than routed to `emergencyAgent`.
 - **`bookingEligibleAgent` registers its own complaints** as of 2026-07-29 (CHANNELS.md CPL-02). A booking that failed across two or more methods is a technical fault on our side, so the complaint is the **first** action; the distributor's phone number is only ever offered afterwards, as a convenience for a consumer who still wants to book today.
 
@@ -265,7 +265,7 @@ Putting a sentence in `preToolMessage` **and** generating text makes the consume
 
 The spoken line must sound like Vaani is personally checking something — "ज़रा booking system check करती हूँ, एक मिनट।" It must never reveal the switch. **Forbidden words:** transfer, connect, specialist, agent, team, switch, handoff, forward, भेजती, जोड़ती.
 
-> ⚠️ **Superseded 2026-09-14 by CHANNELS.md TOOL-07/TOOL-08.** **No CRC tool takes a `preToolMessage` any more.** `bpcl_create_complaint`, `calltransfer`, `bpcl_fetch_all_api` and `fetch_pincode_data` are the **call alone** — no spoken text at all, and the agent speaks only from the Result. `callhangup` carries the closing line as the agent's **own text** on the same turn as the call, and produces nothing if its Result comes back. `switchagent` keeps its short line as text. Tool names are never spoken in any language.
+> ⚠️ **Superseded 2026-09-14 by CHANNELS.md TOOL-07/TOOL-08.** **No CRC tool takes a `preToolMessage` any more.** `bpcl_create_complaint`, `calltransfer`, `bpcl_fetch_all_api` and `get_pincode_data` are the **call alone** — no spoken text at all, and the agent speaks only from the Result. `callhangup` carries the closing line as the agent's **own text** on the same turn as the call, and produces nothing if its Result comes back. `switchagent` keeps its short line as text. Tool names are never spoken in any language.
 
 ---
 

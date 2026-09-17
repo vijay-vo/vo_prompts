@@ -299,7 +299,7 @@ routing-capable agent and invoked by it directly** (XFER-03); forbidden by name 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**`fetch_pincode_data`** (UNREG-02, 2026-09-16; NC-02, 2026-09-17) is callable by
+**`get_pincode_data`** (UNREG-02, 2026-09-16; NC-02, 2026-09-17) is callable by
 **`unregisteredComplaintAgent` and `newConnectionAgent_onHold`, and nothing else**. It turns a consumer-given six-digit PIN code into the **state and district** the
 platform attaches to that agent's complaint. It is **not** a consumer lookup and is never presented
 as one — it returns nothing about the person. The call alone, no spoken text, at most **twice** per
@@ -371,7 +371,7 @@ config change nothing in the prompts can enforce. If it was missed, the full app
 2026-09-17, ../CHANNELS.md **NC-02**, superseding the old *"does not escalate on the hold topic"* rule.
 It still holds the consumer itself on the hold — restate calmly, offer Mini and ZIP once — and it
 **never offers, suggests or hints at a complaint**. When the consumer explicitly asks, `_onHold` §16B runs
-the same flow as `unregisteredComplaintAgent`: name → read back once → PIN code → `fetch_pincode_data`
+the same flow as `unregisteredComplaintAgent`: name → read back once → PIN code → `get_pincode_data`
 (`Pincode`) → district confirmed aloud → `bpcl_create_complaint` with `ConsumerDetailsConsumerName`,
 `complaintSummary`, `complaintReason`. **No confirmed district, no complaint.** `complaintReason` is
 chosen by the issue from nine new-connection phrases, with no `others`. A complaint still cannot reopen
