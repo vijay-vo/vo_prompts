@@ -172,16 +172,26 @@ Never invent a complaint number.
 - **A truly out-of-scope query** stays with `routingAgent`'s hangup ladder. No complaint.
 - **A live gas hazard.** `emergencyAgent` is fully carved out — no complaint, no escalation block,
   no closing, while the hazard is live.
-- **No consumer record.** `getConsumerDetails` still has no complaint tool — with no record there is
-  nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
-  all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
-  is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
-  → on yes, switch; on no, `callhangup`. The three-piece dictation loop is **retired** and the office
-  hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
+- **No consumer record.** `getConsumerDetails` still has no complaint tool and no `switchagent` at all
+  (never `routingAgent`, never `Default`, never a specialist). **Revised 2026-09-16 — ../CHANNELS.md
+  UNREG-02:** it now runs `bpcl_fetch_all_api` **at most twice** — one empty result buys one second
+  chance at a different registered number — and after the second empty result it **stops speaking and
+  calls no tool**. The platform reads that empty result and switches to `unregisteredComplaintAgent`,
+  which holds the complaint tool it does not. The old connect-offer ending survives on exactly one
+  path, **NO NUMBER GIVEN**: the consumer refused twice, has no registered number, or an incomplete
+  Result survived one repair. No fetch ever completed there, so there is no empty result for the
+  platform to read and nothing else can pick the consumer up — that path keeps `calltransfer` and
+  `callhangup` unchanged. An empty fetch is the platform's to act on; an absent fetch is the agent's.
 
 ### Who can register, and the one routing hop
 
-Ten agents hold `bpcl_create_complaint` and register in place. Three do not, and **never get it**:
+**Eleven** agents hold `bpcl_create_complaint` and register in place — the ten below plus
+`unregisteredComplaintAgent` (UNREG-01), which is the one that does **not** carry the canonical
+`COMPLAINT PROTOCOL — STANDARD` shape. It diverges in three recorded ways: it passes **three**
+parameters (adding `ConsumerDetailsConsumerName` — the only carve-out from PARAM-01 in either
+channel), its `complaintReason` is the **fixed constant** `14.2 kg Subsidized domestic LPG
+connection` on every complaint, and registering is gated on a **confirmed PIN-code district** that it
+may never register without. Three agents do not hold the tool, and **never get it**:
 
 - `Default` — triage only. Its STAGE 0 escalation interrupts route via **STAGE 3** to
   `genericInfoComplaintAgent`, exactly as INTERRUPT A already routes a hazard to `emergencyAgent`.
@@ -290,6 +300,12 @@ routing-capable agent and invoked by it directly** (XFER-03); forbidden by name 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
+**`fetch_pincode_data`** (UNREG-02, 2026-09-16) is callable by **`unregisteredComplaintAgent` and
+nothing else**. It turns a consumer-given six-digit PIN code into the **state and district** the
+platform attaches to that agent's complaint. It is **not** a consumer lookup and is never presented
+as one — it returns nothing about the person. The call alone, no spoken text, at most **twice** per
+call, and only ever as part of registering.
+
 **Variables unique to this channel:** `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` — the CRC's own
 identity, distinct from `{{ConsumerDetailsDistributorAddress}}` (the consumer's own distributor).
 **`{{crcOfficeNumber}}` no longer exists anywhere in this channel** (XFER-01, 2026-08-05; its last
@@ -322,12 +338,16 @@ repointed** — if that is missed, CRC's QA analyser silently stops running.
 **deployed** entry prompt again — `getConsumerDetailsLive.txt` ships (corrected 2026-09-14, TOOL-07; `getConsumerDetails.txt` is kept in step with it), `getConsumerDetails_MultiToolVersion.txt`
 is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
 (git history only, along with `prompts/callTransferAgent/`).
-Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
-tell the consumer their record isn't available, offer to connect them to the senior team, and either
-call `calltransfer` on a yes or `callhangup` on a no. That platform-owned hop into
-`Default` is still described by no prompt — see the open items below.
+Its exits are (revised 2026-09-16, ../CHANNELS.md **UNREG-02**): data found → stop speaking, the
+platform resumes the call into `Default`; **two empty fetches** → stop speaking and call **no tool**,
+and the platform switches to `unregisteredComplaintAgent`; **no number ever given** → offer the
+connect and either call `calltransfer` on a yes or `callhangup` on a no. Both platform-owned hops —
+into `Default` and into `unregisteredComplaintAgent` — are described by no prompt; see the open items
+below. **`getConsumerDetails-unreg.txt` was deleted** in that pass: it forked the older
+`getConsumerDetails.txt` architecture rather than the deployed `Live` one, so shipping it would have
+reverted the `Next`-field design and the `validatedContactNumber` parameter.
 
-**Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
+**Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map, now **16 prompts**.
 §11 lists known gaps, and they are worth reading before any routing change.
 
 ---

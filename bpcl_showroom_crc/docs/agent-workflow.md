@@ -1,7 +1,7 @@
 # Vaani — Agent Workflow & Navigation Map
 
 **System:** Bharat Petroleum (Bharat Gas) LPG voice assistant
-**Scope:** All 15 prompts in [prompts/](../prompts/) — entry points, routing topology, tools, handoff contract
+**Scope:** All 16 prompts in [prompts/](../prompts/) — entry points, routing topology, tools, handoff contract
 **Persona:** One voice throughout. The consumer believes they are talking to a single person — "Vaani", an employee of *their own* Bharat Gas distributor office. Agent switching is invisible and must never be revealed.
 
 ---
@@ -16,7 +16,8 @@ graph TD
     REG -->|Yes| DEF
 
     GCD -->|fetch OK — platform resumes| DEF[Default<br/>greet · triage · FAQ · route]
-    GCD -->|no data / refusal| HANG([callhangup])
+    GCD -->|two empty fetches — platform switches| UNREG[unregisteredComplaintAgent<br/>KB · complaint · transfer]
+    GCD -->|no number ever given| HANG([callhangup])
 
     DEF --> EMG[emergencyAgent]
     DEF --> BOOK[bookingEligibleAgent]
@@ -71,6 +72,7 @@ graph TD
 | 13 | `connectionServicesAgent` | [connectionServicesAgent.txt](../prompts/connectionServicesAgent/connectionServicesAgent.txt) | KYC, address/name/mobile change, portability, surrender, cylinder return. |
 | 14 | `newConnectionAgent` | [newConnectionAgent.txt](../prompts/newConnectionAgent/newConnectionAgent.txt) | New connection, Ujjwala/PMUY, documents, onboarding. |
 | 15 | `genericInfoComplaintAgent` | [genericInfoComplaint.txt](../prompts/genericInfoComplaint/genericInfoComplaint.txt) | Catch-all: booking/delivery how-to, equipment faults, behaviour complaints. |
+| 16 | `unregisteredComplaintAgent` | [unregisteredComplaintAgent.txt](../prompts/unregisteredComplaintAgent/unregisteredComplaintAgent.txt) | Consumer we hold no record of, after two empty fetches. Answers from its own KB, registers a complaint gated on a PIN-code district confirmation. **No `switchagent`** — the consumer stays for the rest of the call. |
 
 ---
 
@@ -87,9 +89,11 @@ The caller's number decides the entry point.
 3. Confirm the number back **exactly once**. Any affirmative locks it.
 4. `bpcl_fetch_all_api` with that confirmed number — **the only place in the whole system this tool is legitimately called.**
 5. **Data found** → job done, stop speaking. The platform resumes the call into `Default`.
-   **No data / refusal / no registered number** → tell the consumer their record isn't available, ask them to contact their Bharat Gas distributor (share *no* distributor details — there are none), then `callhangup`.
+   **First empty fetch** → one second chance: ask once for a different registered number and run the loop again. There is never a third.
+   **Second empty fetch** → job done, stop speaking, call **no tool**. The platform reads that empty result and switches to `unregisteredComplaintAgent`.
+   **No number ever given** (refused twice, or no registered number) → the one ending the agent owns: offer the connect, then `calltransfer` on a yes or `callhangup` on a no. No fetch ran, so there is no empty result for the platform to act on.
 
-> ⚠️ `getConsumerDetails` has **no `switchagent` tool.** The hop into `Default` is not a prompt-level switch — it is owned by the platform. This is the one transition in the system that no prompt describes.
+> ⚠️ `getConsumerDetails` has **no `switchagent` tool.** *Both* onward hops — into `Default` on success and into `unregisteredComplaintAgent` on two empty fetches — are owned by the platform, not by any prompt. These are the transitions in the system that no prompt describes (CHANNELS.md UNREG-01/UNREG-02).
 
 ---
 
@@ -221,12 +225,14 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 | `connectionServicesAgent` | ✅ | ✅ | `bpcl_create_complaint` | ❌ blocked |
 | `newConnectionAgent` | ✅ | ✅ | — | ❌ blocked |
 | `genericInfoComplaintAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
+| `unregisteredComplaintAgent` | ❌ **none** | ✅ | `bpcl_create_complaint` | `fetch_pincode_data` |
 
 Notes worth knowing:
 
 - **`bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else.** Every other prompt that mentions it does so in an explicit *tool blocker* forbidding the call — their data is pre-injected.
 - **Neither `Default` nor `emergencyAgent` can end a call.** Hangup is a leaf/`routingAgent` privilege.
-- **Ten agents hold `bpcl_create_complaint`** and register in place. Three never get it: `Default` (triage only — it escalates via STAGE 3 to `genericInfoComplaintAgent`), `newConnectionAgent` (escalates `→ routingAgent → genericInfoComplaintAgent`, since leaf-to-leaf switching is forbidden), and `getConsumerDetails` (no record exists yet, so there is nothing to attach a complaint to).
+- **Eleven agents hold `bpcl_create_complaint`** and register in place — the ten leaves plus `unregisteredComplaintAgent`, whose complaint is gated on a PIN-code district confirmation (CHANNELS.md UNREG-01/UNREG-02). Three never get it: `Default` (triage only — it escalates via STAGE 3 to `genericInfoComplaintAgent`), `newConnectionAgent` (escalates `→ routingAgent → genericInfoComplaintAgent`, since leaf-to-leaf switching is forbidden), and `getConsumerDetails` (it captures and fetches; the complaint belongs to the agent the platform hands the call to).
+- **`unregisteredComplaintAgent` holds no `switchagent` at all** — unique in this channel. The platform switches *into* it and the consumer stays for the rest of the call, so a gas hazard is handled inline rather than routed to `emergencyAgent`.
 - **`bookingEligibleAgent` registers its own complaints** as of 2026-07-29 (CHANNELS.md CPL-02). A booking that failed across two or more methods is a technical fault on our side, so the complaint is the **first** action; the distributor's phone number is only ever offered afterwards, as a convenience for a consumer who still wants to book today.
 
 ### Complaint discipline (shared across every agent that has the tool)
@@ -259,7 +265,7 @@ Putting a sentence in `preToolMessage` **and** generating text makes the consume
 
 The spoken line must sound like Vaani is personally checking something — "ज़रा booking system check करती हूँ, एक मिनट।" It must never reveal the switch. **Forbidden words:** transfer, connect, specialist, agent, team, switch, handoff, forward, भेजती, जोड़ती.
 
-**One exception:** `getConsumerDetails` inverts this. `validatecontactno` takes **no** `preToolMessage` (Vaani speaks); `bpcl_fetch_all_api` and `callhangup` carry the real sentence **in** `preToolMessage` (Vaani stays silent).
+> ⚠️ **Superseded 2026-09-14 by CHANNELS.md TOOL-07/TOOL-08.** **No CRC tool takes a `preToolMessage` any more.** `bpcl_create_complaint`, `calltransfer`, `bpcl_fetch_all_api` and `fetch_pincode_data` are the **call alone** — no spoken text at all, and the agent speaks only from the Result. `callhangup` carries the closing line as the agent's **own text** on the same turn as the call, and produces nothing if its Result comes back. `switchagent` keeps its short line as text. Tool names are never spoken in any language.
 
 ---
 
