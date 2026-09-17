@@ -1655,6 +1655,23 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### NC-02 · `newConnectionAgent_onHold` registers a complaint — only when the consumer asks, through the unregistered-consumer flow, with a nine-phrase reason list — CRC only (2026-09-17)
+
+| | |
+|---|---|
+| **Axis** | Escalation. Client instruction. **CRC only; CC does not port** — CC's `newConnectionAgent` is deliberately behind on the hold (NC-01) and has no `_onHold` file. **Supersedes** the CRC `CLAUDE.md` rule that this agent *"does not escalate on the hold topic"* and holds no complaint tool. |
+| **Why now** | That rule rested on *"a prospective consumer has no record, so there is nothing to attach a complaint to."* UNREG-01 removed that premise: a complaint can be filed against a **confirmed name** plus a **confirmed PIN-code district**, with no account behind it. The client applied the same mechanism here. |
+| **Inform first — the complaint is the consumer's to ask for** | The agent's job is still the hold, Mini and ZIP, commercial, and §8-APPLIED. It **never offers, suggests or hints at** a complaint, and disappointment, repetition or anger about the hold is not a request. It registers **only** when the consumer explicitly asks (*"complaint कर दीजिए"*, *"शिकायत दर्ज करो"*) — and then it neither argues them out of it nor asks them to confirm the request back. A bare *"complaint करनी है"* gets one open question so the issue is understood before anything is filed. This is deliberately **not** `COMPLAINT PROTOCOL — STANDARD`, which registers grievances directly. |
+| **Same flow as `unregisteredComplaintAgent`** | New `_onHold` §16B: name (the request is the agreement) → name read back once in Devanagari → **PIN code** → `fetch_pincode_data` with **`Pincode`**, the call alone → district confirmed aloud from that Result → `bpcl_create_complaint`, the call alone. **No confirmed district, no complaint** — absolute. The PIN code and complaint number are spoken whole, in English digit words with `" - "`, never numerals; §9's *"you register no complaints"* line and its pieces-from-the-start rule were corrected to carve both out. |
+| **Three parameters** | `ConsumerDetailsConsumerName`, `complaintSummary` (the channel-standard one complete English sentence, name not included), `complaintReason`. `_onHold` is now the **second and last** agent holding the PARAM-01 carve-out; root and CRC `CLAUDE.md` record it as exactly these two. |
+| **`complaintReason` is chosen by the issue, from nine phrases, with no `others`** | `Bharatgas Mini New Connection Enquiry` · `Process for taking New Connection` · `Process to book the new connection through Website` · `Status of new connection` · `Non release of New Connection against waitlist` · `10 kg Bharatgas Lite Zip cylinder` · `14.2 kg Subsidized domestic LPG connection` · `19 kg commercial connection` · `Industrial Cylinder (35/47.5/422 kg)`. Each carries a one-line "use when" in the prompt, and the more specific phrase wins when two fit. `14.2 kg Subsidized domestic LPG connection` is the fallback for a domestic / Ujjwala matter, including a complaint about the hold itself — unlike `unregisteredComplaintAgent`, where that phrase is a fixed constant. |
+| **The hold is unchanged** | Registering reopens nothing and is never implied to. DO NOT GUIDE still stands — the two *Process …* reasons are complaint categories, not permission to explain an application. No reopening date, no reason, no office route. |
+| **Result handling** | Success → the number whole, SMS line, *"हमारी team आपसे संपर्क करेगी"*, and nothing else on that turn. Failure (no number, for any reason) → the failure line, then one transfer offer only if `calltransfer` is not already spent in the call (XFER-05) — the single exception to *"never offer a transfer"* in §16A. One call per complaint, at most two per call, call-scoped failure (CPL-20), same-issue guard reusing the confirmed name and district. |
+| **Files** | `newConnectionAgent_onHold.txt` (§1, §3 tools and blocker, §8-APPLIED, §9, §12 steps 2a/2b, new §16B, §16A, §16, §19), both `CLAUDE.md` files, `agent-workflow.md`, this ledger. **`newConnectionAgent.txt` (parked) deliberately untouched**, per client instruction. |
+| **⚠️ Open — platform team** | Expose `bpcl_create_complaint` (accepting `ConsumerDetailsConsumerName`) and `fetch_pincode_data` (`Pincode` → district and state) to `newConnectionAgent_onHold`, and confirm the nine reason phrases are accepted verbatim. `vaaniQA` and `postCallAnalysisFlat` do not yet know this agent can register; a follow-up pass is needed before QA scoring is trusted on these calls. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.

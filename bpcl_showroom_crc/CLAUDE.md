@@ -185,18 +185,17 @@ Never invent a complaint number.
 
 ### Who can register, and the one routing hop
 
-**Eleven** agents hold `bpcl_create_complaint` and register in place — the ten below plus
+**Twelve** agents hold `bpcl_create_complaint` and register in place — the ten below, `newConnectionAgent_onHold`
+(NC-02, on the consumer's request only — same name / PIN-code / district flow and three parameters as the next one), plus
 `unregisteredComplaintAgent` (UNREG-01), which is the one that does **not** carry the canonical
 `COMPLAINT PROTOCOL — STANDARD` shape. It diverges in three recorded ways: it passes **three**
-parameters (adding `ConsumerDetailsConsumerName` — the only carve-out from PARAM-01 in either
-channel), its `complaintReason` is the **fixed constant** `14.2 kg Subsidized domestic LPG
+parameters (adding `ConsumerDetailsConsumerName` — the carve-out from PARAM-01 it shares only with
+`newConnectionAgent_onHold`), its `complaintReason` is the **fixed constant** `14.2 kg Subsidized domestic LPG
 connection` on every complaint, and registering is gated on a **confirmed PIN-code district** that it
-may never register without. Three agents do not hold the tool, and **never get it**:
+may never register without. Two agents do not hold the tool, and **never get it**:
 
 - `Default` — triage only. Its STAGE 0 escalation interrupts route via **STAGE 3** to
   `genericInfoComplaintAgent`, exactly as INTERRUPT A already routes a hazard to `emergencyAgent`.
-- `newConnectionAgent` — escalates via `newConnectionAgent → routingAgent → genericInfoComplaintAgent`.
-  Leaf-to-leaf switching is forbidden, so `routingAgent` is the only legal path.
 - `getConsumerDetails` — see above; it cannot escalate at all.
 
 `bookingEligibleAgent` was in this list until 2026-07-29. It now holds the tool and registers directly — a repeated
@@ -300,8 +299,8 @@ routing-capable agent and invoked by it directly** (XFER-03); forbidden by name 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**`fetch_pincode_data`** (UNREG-02, 2026-09-16) is callable by **`unregisteredComplaintAgent` and
-nothing else**. It turns a consumer-given six-digit PIN code into the **state and district** the
+**`fetch_pincode_data`** (UNREG-02, 2026-09-16; NC-02, 2026-09-17) is callable by
+**`unregisteredComplaintAgent` and `newConnectionAgent_onHold`, and nothing else**. It turns a consumer-given six-digit PIN code into the **state and district** the
 platform attaches to that agent's complaint. It is **not** a consumer lookup and is never presented
 as one — it returns nothing about the person. The call alone, no spoken text, at most **twice** per
 call, and only ever as part of registering.
@@ -368,10 +367,16 @@ reopening date, no stated reason. Full policy in [../CHANNELS.md](../CHANNELS.md
 ⚠️ **The platform must point at the `_onHold` file.** The old filename was kept, so this is a
 config change nothing in the prompts can enforce. If it was missed, the full apply flow is live.
 
-**This agent does not escalate on the hold topic** — a deliberate exception to Axis 1. A prospective
-consumer has no record, so there is nothing to attach a complaint to, and no complaint could reopen
-connections. It holds the consumer itself: restate calmly, offer Mini once, close. Never promise a
-person, a callback, a complaint, or an office visit. A genuinely different problem still routes.
+**This agent informs first and registers a complaint only when the consumer asks for one** — revised
+2026-09-17, ../CHANNELS.md **NC-02**, superseding the old *"does not escalate on the hold topic"* rule.
+It still holds the consumer itself on the hold — restate calmly, offer Mini and ZIP once — and it
+**never offers, suggests or hints at a complaint**. When the consumer explicitly asks, `_onHold` §16B runs
+the same flow as `unregisteredComplaintAgent`: name → read back once → PIN code → `fetch_pincode_data`
+(`Pincode`) → district confirmed aloud → `bpcl_create_complaint` with `ConsumerDetailsConsumerName`,
+`complaintSummary`, `complaintReason`. **No confirmed district, no complaint.** `complaintReason` is
+chosen by the issue from nine new-connection phrases, with no `others`. A complaint still cannot reopen
+connections and is never implied to. Never promise a callback or an office visit. A genuinely different
+problem still routes. **The parked `newConnectionAgent.txt` was not touched.**
 
 **Not affected, and must never get the hold message:** commercial connections, Bharat Gas Mini,
 second/additional cylinder, portability, and the city-shift Transfer Voucher path (so
