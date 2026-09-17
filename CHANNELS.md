@@ -176,6 +176,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### TTS-03 · `connectionServicesAgent` spelled the consumer's name and the distributor's name and address letter by letter — CRC only, CC pending (2026-09-17)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth** (TTS). `connectionServicesAgent` in full; the spelling rule also sits under the TTS-SAFE block in the eleven other CRC agents that hold one. **CC not ported.** |
+| **Source** | CRC call 16-09-2026 18:02. First line *"K A L K A T E P R A B H A V A T I V I L A S जी"* (the full stored name, surname first, spelled). C12 then gave the distributor as *"G O D E Y A G A S S E R V I C E"* at *"P L O T N O A M दो / दो R O A D N O दो दो W A G L E E S T A T E …"*, with the pin code included and not asked for. |
+| **Diagnosis** | (1) §9 RULE 1 said *"Abbreviations (<5 letters, uppercase): letter-by-letter"* and RULE 6 said *"abbreviations are expanded or spelled letter by letter"*. The backend sends everything in capitals, so every word looked like an uppercase abbreviation, and nothing said a name or place is never spelled. (2) The prompt contradicted itself on the name. Lines 14 and 170 said the name was already used and must not be spoken, while §7 and NAME HANDLING said this agent speaks it first. *"First name only"* also had no answer for a surname-first, three-word stored name. |
+| **The rule now** | **NO NAME AND NO ADDRESS IS EVER SPELLED OUT.** Capitals never make a word an abbreviation. Letter-by-letter is only for the named abbreviations and for a two-or-three-letter non-word code inside an address. Names, agencies, roads, estates, areas and cities become Devanagari words (NO → नंबर, RD → रोड, 2/2 → दो बटा दो). A self-check catches any run of spaced Latin capitals, and a part that can't be spoken as words is left out. RULE 1 and RULE 6 are narrowed to match. The two stale "name already used" lines now agree with NAME HANDLING: one word, the given name, in Devanagari, on the first response only, and no name at all if the given name is unclear. |
+| **⚠️ Open** | The same call read the distributor's number in English digit words all at once, while §9 RULE 2 asks for Hindi words in three pieces (see NUM-06); not changed here. **CC not ported.** |
+
+---
+
 ### TOOL-08 · Tool names are never spoken, and a `callhangup` Result gets no text — CRC only, CC pending (2026-09-15)
 
 | | |
