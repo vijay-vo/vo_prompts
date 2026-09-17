@@ -104,9 +104,8 @@ outcome. Registering a complaint and telling them the team will call is.
    Those two are the **whole** call: the parameter set is closed by rule, so any other key —
    `caseId`, `caseNumber`, consumer id, mobile number — is the platform's, whether or not the
    prompt names it, and a Result field is an output that never goes back in as an input (PARAM-01).
-5. **On success** speak the complaint number **digit by digit in English digit words with `" - "`**
-   (NUM-01; Hindi digit words only on consumer preference — CC still uses Hindi words), say it will also
-   arrive by SMS, then say the team will make contact. No timeframe is ever promised.
+5. **Do what the tool's message says** (CPL-22) — a complaint number in it is spoken digit by digit in English
+   digit words with `" - "` (NUM-01). No timeframe is ever promised.
 6. Go to close check.
 
 **A complaint is the last option, not the first.** Every complaint-capable agent runs the
@@ -136,20 +135,23 @@ further — no question, no new fact, no fresh grievance. A registered complaint
 resolved. **If they never wind down, the question is never asked**: there is no turn cap and no
 forced close, and a call that never reaches it is correct.
 
-**Standard success line** (identical in all ten complaint-capable agents):
-`"आपकी complaint register हो गई है। आपका complaint number है [digit by digit]. यह number आपको SMS पर भी send किया जाएगा। हमारी team आपसे संपर्क करेगी।"`
+> **REVISED 2026-09-17 — CHANNELS.md CPL-22.** There are **no fixed complaint lines any more** — no
+> success line, no already-registered line, no failure line. The tool returns only a **message**
+> (no `caseId`/`caseNumber`) that says what happened and what to tell the consumer, e.g.
+> *"Complaint registration successful. Share Complaint Number: … with the consumer and mention that an
+> SMS confirmation will be sent."* or *"Complaint registration failed. Inform the consumer the complaint
+> could not be registered and offer to transfer the call."* Every complaint agent carries one identical
+> `COMPLAINT TOOL — THE WHOLE PROCEDURE` block: **call** (nothing said before or with it) → **read the
+> message** → **do what it says, in natural Hindi, never reading its English aloud** → no message means
+> nothing is registered, so call. Once per issue; never again after a failure on the call; never more
+> than two calls. A failure message's transfer offer is T3. **Do not re-add example Hindi lines for any
+> complaint outcome** — they were what the model copied instead of calling the tool.
 
 **No callback time is ever captured.** CC asks the consumer for a callback slot and writes it into
 the complaint; CRC does not. We register and say the team will call — nothing is scheduled.
 
 **Complaint already registered this call?** Never register a second one for the same issue, and
-never treat a later "senior से बात कराओ" as a new complaint. Say:
-`"आपकी complaint register हो गई है, हमारी team आपको call करेगी।"` and go to close check.
-
-**On `bpcl_create_complaint` failure** — never retry, and never fall back to "register a complaint"
-(the tool is what just failed). Say exactly:
-`"माफ़ कीजिए! अभी complaint register करने में तकनीकी समस्या आ रही है। कृपया थोड़ी देर बाद call कीजिए।"`
-Never invent a complaint number.
+never treat a later "senior से बात कराओ" as a new complaint — answer from the tool's earlier message.
 
 ### What triggers it
 

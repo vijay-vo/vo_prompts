@@ -152,7 +152,19 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
-### CPL-21 · Vaani claimed complaints she never registered — her own spoken line was being read as proof — CRC only, CC pending (2026-09-17)
+### CPL-22 · The complaint flow is rebuilt: call the tool, then do what its message says — every scripted complaint line deleted — CRC only, CC pending (2026-09-17)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. All ten complaint-capable CRC agents, plus `vaaniQA`. **Supersedes CPL-21** (removed the same day) and replaces the complaint-outcome parts of CPL-03, CPL-08 and TOOL-06. **CC not ported.** |
+| **Source** | CPL-21's two calls (16-09-2026, 17:48 and 18:11): complaints claimed with no tool call, one with an invented number. Client direction on 2026-09-17: the fix belongs in the prompt, not in a platform guard. |
+| **Diagnosis** | The prompts taught agents to **talk about** complaints and barely taught the **call**. Each agent had 9,000–14,700 words in complaint paragraphs, about 3,000 of them on failure alone. It had 10–14 ready-to-say "registered" sentences. The instruction to call the tool appeared 3–7 times. "When to register" was split across many sections, some saying to ask first. Every fix since TOOL-03 added more bans on top. With a ready-made "आपकी complaint register हो गई है" in front of it, the model said it instead of calling. |
+| **The rule now** | **The platform's tool returns only a message** (no `caseId`/`caseNumber`) that says what happened and what to do. For example, *"Complaint registration successful. Share Complaint Number: … with the consumer and mention that an SMS confirmation will be sent."*, or on failure, *"…could not be registered and offer to transfer the call."* One identical block, `COMPLAINT TOOL — THE WHOLE PROCEDURE`, replaces the COMPLAINT PROTOCOL — STANDARD block. It says: (1) **call** the tool with nothing said before or with it; (2) **read the message**, the only source of truth; (3) **do what it says** in natural Hindi, never reading its English aloud, and speak a number only if it is in the message, digit by digit; (4) **no message, no complaint**: call the tool. Then: once per issue, no call after a failure, at most two calls, one open question if the problem isn't clear yet. `complaintSummary` and `complaintReason` definitions and the reason lists are unchanged. **Deleted everywhere:** the success line, the already-registered line, the failure line, the pressing-again ladder and the PARAPHRASE carve-out, the success/failure/duplicate paragraphs, ANTI-FABRICATION, HARD STOP CHECK, and the CPL-21 guard. Also deleted: the two-turn sections in the delivery and generic agents, Step-4 "speak the number" lines, knowledge-base registration scripts, the "ask whether to register" lines in `eligibleDeliveryAgent` and `paymentAgent`, and the Hindi narration examples in the TOOL-08 ban (all 16 files). T3 now reads: offer the transfer because the failure message says so, ask once, call on yes, don't re-offer on no. `vaaniQA` C3c, C3d and C22 no longer demand fixed sentences. |
+| **⚠️ Open** | **Platform dependency:** the tool must return that guidance message on both success and failure. The failure text is not final yet. The block still works if it changes, but a message with no clear success or failure wording would leave the agent guessing. **CC not ported.** Replay the 17:48 and 18:11 calls before shipping. |
+
+---
+
+### CPL-21 · ~~SUPERSEDED same day by CPL-22~~ · Vaani claimed complaints she never registered — her own spoken line was being read as proof — CRC only, CC pending (2026-09-17)
 
 | | |
 |---|---|
