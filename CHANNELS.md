@@ -152,6 +152,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### CPL-23 · The English instructions were still scripting the complaint turn, and a general new-connection question was answered from the zip walkthrough — CRC only, CC pending (2026-09-18)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. The ten complaint-capable CRC agents. Extends CPL-22. **CC not ported.** |
+| **Source** | `activeDeliveryAgent`, 18-09-2026 11:30, after CPL-22 was live. (1) *"…चूँकि मेरे पास अभी delivery की कोई निश्चित तारीख उपलब्ध नहीं है, इसलिए मैं आपकी शिकायत दर्ज कर देती हूँ ताकि हमारी टीम इस पर तुरंत कार्रवाई कर सके और आपसे संपर्क करे।"*, then *"आपकी शिकायत दर्ज कर दी गई है और हमारी टीम जल्द ही आपसे संपर्क करेगी।"*, with no tool call and no number. (2) *"gas connection मिल रहा है?"*: Vaani confirmed the topic and spoke the new-connection switch line, then **answered it herself in the same turn** from the zip App walkthrough ("Bharatgas for Home → Explore Bharatgas Products → register/login"), then offered a distributor visit. |
+| **Diagnosis** | (1) CPL-22 removed the Hindi scripts, but **the English instructions were the same script**. Line 386 read *"acknowledge it, say the exact delivery date is not available with me right now, and register the complaint … so our team can follow it up and make contact"*. The 11:30:09 turn is that line translated clause by clause. Across the ten agents there were **~110** such clauses: *"register a complaint and tell them our team will make contact"* (36), *"so our team can …"* (40), *"I offer to register"* (24), and about 20 *"say X / reassure them, then register"* pairings. Each put speech, and a promise, on the same turn as the complaint. (2) The zip walkthrough says *"I WALK THEM THROUGH IT MYSELF AND DO NOT ROUTE IT"*, and its step 7 says *"New Connection चुनिए"*. A general new-connection question matched it, and that overrode the domain router. The switchagent rule never said the switch line is the whole turn. |
+| **The rule now** | (1) Every *"tell them our team will make contact"* and *"so our team can …"* clause is deleted. Every *"offer to register"* is now *register per COMPLAINT TOOL*, and it is conditional ("if they want it looked into") wherever a spoken answer came first. Every *"say / reassure … then register"* is reversed: **the call goes alone, and the reassurance or explanation comes on the next turn, with the tool's message**. The COMPLAINT TOOL block gains **THE REGISTERING TURN IS THE CALL AND NOTHING ELSE**: no acknowledgement, apology, reason, "इसलिए", team or contact on that turn. (2) The zip walkthrough opens with a gate: it is only for a consumer who named zip themselves. A general new-connection, Ujjwala or P M U Y question is another domain and goes to routingAgent. (3) The switchagent line is **the whole of the text on that turn**; answering after it means no switch happened. |
+| **⚠️ Open** | **CC not ported.** |
+
+---
+
 ### CPL-22 · The complaint flow is rebuilt: call the tool, then do what its message says — every scripted complaint line deleted — CRC only, CC pending (2026-09-17)
 
 | | |
