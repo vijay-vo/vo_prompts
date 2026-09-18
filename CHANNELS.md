@@ -951,6 +951,7 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 | **Files touched (5)** | `getConsumerDetails`, `newConnectionAgent_onHold`, `vaaniQA`, plus this ledger — and `unregisteredComplaintAgent`, which exists on the UNREG-01 branch only and took the same offer-dies clause there. |
 
 | UNREG-03 | 2026-09-18 | CRC | The deployed unregistered caller topology is `getConsumerDetailsLive` → platform-owned result handling. It validates and fetches at most two different consumer-provided registered numbers. A successful fetch resumes the normal identified-consumer flow; a second no-data Result silently activates `unregisteredComplaintAgent`. `getConsumerDetailsLive` never calls `switchagent`; `getConsumerDetails-unreg` is only a legacy alias, not a second stage. | `bpcl_showroom_crc/prompts/getConsumerDetails/getConsumerDetailsLive.txt`, `getConsumerDetails-unreg.txt`, `unregisteredComplaintAgent/unregisteredComplaintAgent.txt`, CRC contract |
+| UNREG-04 | 2026-09-18 | CC, IVRS | CC and IVRS use the same platform-owned two-number no-data topology: `getConsumerDetails` fetches at most two different consumer-confirmed registered numbers, then silently yields to `unregisteredComplaintAgent`. Two refusals also yield to that agent. The CC agent can transfer only after a successful complaint if the consumer still asks for a person; IVRS has no transfer and registers the known issue instead. | CC and IVRS `getConsumerDetails` and `unregisteredComplaintAgent` prompts |
 
 ---
 
