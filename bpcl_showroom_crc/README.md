@@ -14,7 +14,7 @@ shared truth that must stay identical to CC lives in [../CLAUDE.md](../CLAUDE.md
   visit is ever offered** as an escalation.
 - **Every routing-capable agent holds `calltransfer` and invokes it itself** (CHANNELS.md XFER-03,
   2026-08-11 — the dedicated `callTransferAgent` was deleted). The transfer turn works exactly like
-  `callHangup`: one parameter, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`, and **no spoken
+  `callhangup`: one parameter, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`, and **no spoken
   text of the agent's own**. The agent then reads the tool's Result — success → silence; failure →
   it says the team could not be reached and stays until the consumer accepts. `Default` and
   `emergencyAgent` still hold no transfer.
@@ -76,11 +76,11 @@ no hop and no destination. Nothing ever routes back to `Default`.
   consumer still wants a person. Grievances about something that already happened register directly.
 - **The tool call is the action, not the sentence.** A spoken line with no tool call on that same
   turn is a failed turn — recover by invoking the tool before anything else on the next turn.
-- **One thing speaks per tool turn.** Hindi line as text, no `preToolMessage` — except `callHangup`.
+- **One thing speaks per tool turn.** Hindi line as text, no `preToolMessage` — except `callhangup`.
 - **Switching is invisible.** A `switchagent` turn speaks an anchor line about what the agent is
   personally looking at, and never names a team, a department or another agent. The one place
   "transfer" may be said is the `calltransfer` tool's own `preToolMessage`.
-- **Voice/TTS:** Hindi only, 1–2 sentences per turn, one question per turn. "भारत पेट्रोलियम" in
+- **Voice/TTS:** Consumer's Indian language, 1–2 sentences per turn, one question per turn. "भारत पेट्रोलियम" in
   full, never "BPCL". Never say टंकी or जोड़. Never speak a raw digit or a `{{variable}}`.
   Complaint numbers use English digit words separated by `" - "`.
 - `bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else — every other prompt

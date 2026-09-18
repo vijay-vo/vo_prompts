@@ -168,7 +168,7 @@ else on the next turn. The agent's own spoken line is never evidence a tool ran;
 
 **The tool-turn rule.** On a tool turn exactly one thing speaks. Write the Hindi line as regular
 **text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
-spoken line in `preToolMessage` while generating no text of their own: `callHangup`, which carries
+spoken line in `preToolMessage` while generating no text of their own: `callhangup`, which carries
 the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
 `"आपकी कॉल ट्रांसफर की जा रही है।"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
 Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent.

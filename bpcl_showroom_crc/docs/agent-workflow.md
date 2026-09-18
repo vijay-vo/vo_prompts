@@ -16,7 +16,7 @@ graph TD
     REG -->|Yes| DEF
 
     GCD -->|fetch OK — platform resumes| DEF[Default<br/>greet · triage · FAQ · route]
-    GCD -->|no data / refusal| HANG([callHangup])
+    GCD -->|no data / refusal| HANG([callhangup])
 
     DEF --> EMG[emergencyAgent]
     DEF --> BOOK[bookingEligibleAgent]
@@ -87,7 +87,7 @@ The caller's number decides the entry point.
 3. Confirm the number back **exactly once**. Any affirmative locks it.
 4. `bpcl_fetch_all_api` with that confirmed number — **the only place in the whole system this tool is legitimately called.**
 5. **Data found** → job done, stop speaking. The platform resumes the call into `Default`.
-   **No data / refusal / no registered number** → tell the consumer their record isn't available, ask them to contact their Bharat Gas distributor (share *no* distributor details — there are none), then `callHangup`.
+   **No data / refusal / no registered number** → tell the consumer their record isn't available, ask them to contact their Bharat Gas distributor (share *no* distributor details — there are none), then `callhangup`.
 
 > ⚠️ `getConsumerDetails` has **no `switchagent` tool.** The hop into `Default` is not a prompt-level switch — it is owned by the platform. This is the one transition in the system that no prompt describes.
 
@@ -103,7 +103,7 @@ The caller's number decides the entry point.
 |---|---|---|
 | **A** | **Gas hazard** — leak, smell, fire, hissing, explosion, spark, smoke | → `emergencyAgent` immediately. The words "emergency"/"urgent" *alone* are not a hazard — ask once: "क्या सिलेंडर से गैस लीक हो रहा है?" |
 | **B** | Human / agent / specialist requested | **Switch via STAGE 3** to `genericInfoComplaintAgent` — `Default` holds no complaint tool, so it routes for the complaint to be registered there. Silent; the consumer never learns of it. |
-| **C** | Language other than Hindi requested | **Inline, one line only** — "मैं सिर्फ़ Hindi में मदद कर सकती हूँ।", and keep replying in Hindi. Escalates like B only if the consumer repeats it on the very next turn. |
+| **C** | Another Indian language requested | **Inline** — continue in that Indian language. It is never an escalation trigger. |
 | **D** | Non-LPG Bharat Petroleum product (petrol, diesel, lubricants…) | **Inline, one line only** — "मैं सिर्फ़ LPG से जुड़े सवालों में मदद कर सकती हूँ।" Never merged with the C line. Escalates like B only on insistence. |
 | **E** | Callback requested | **Switch via STAGE 3**, same as B. No callback is ever scheduled — the complaint is what reaches the team. |
 
@@ -163,7 +163,7 @@ Every specialist's escape hatch. It is **invisible**: the previous agent already
 
 1. Attempt 1 — "मैं इस विषय में सहायता नहीं कर सकती।" + ask for their LPG issue.
 2. Attempt 2 — *different phrasing* + ask again.
-3. Attempt 3 — ask once more → speak the exact closing line → `callHangup`.
+3. Attempt 3 — ask once more → speak the exact closing line → `callhangup`.
 
 A valid LPG intent at **any** point aborts the ladder and routes silently.
 
@@ -204,7 +204,7 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 
 ## 8. Tools — who can call what
 
-| Agent | switchagent | callHangup | complaint tool | data lookup |
+| Agent | switchagent | callhangup | complaint tool | data lookup |
 |---|:---:|:---:|:---:|:---:|
 | `getConsumerDetails` | — | ✅ | — | `validatecontactno` + `bpcl_fetch_all_api` |
 | `Default` | ✅ | — | — | ❌ blocked |
@@ -259,7 +259,7 @@ Putting a sentence in `preToolMessage` **and** generating text makes the consume
 
 The spoken line must sound like Vaani is personally checking something — "ज़रा booking system check करती हूँ, एक मिनट।" It must never reveal the switch. **Forbidden words:** transfer, connect, specialist, agent, team, switch, handoff, forward, भेजती, जोड़ती.
 
-**One exception:** `getConsumerDetails` inverts this. `validatecontactno` takes **no** `preToolMessage` (Vaani speaks); `bpcl_fetch_all_api` and `callHangup` carry the real sentence **in** `preToolMessage` (Vaani stays silent).
+**One exception:** `getConsumerDetails` inverts this. `validatecontactno` takes **no** `preToolMessage` (Vaani speaks); `bpcl_fetch_all_api` and `callhangup` carry the real sentence **in** `preToolMessage` (Vaani stays silent).
 
 ---
 
@@ -269,7 +269,7 @@ The spoken line must sound like Vaani is personally checking something — "ज�
 - **Vaani works *at* the consumer's own distributor office.** Insider language — "हमारा office", "हमारे यहाँ" — never "आपके distributor" as if it were a third party.
 - **The complaint comes first; a transfer only after it. No callbacks, no office-visit escalation.** A request for a human or a callback first becomes a **registered complaint**, with the number read back digit by digit and "हमारी team आपसे संपर्क करेगी" — no timeframe promised, no slot captured. **Only if the consumer still wants a person after that** does the agent call `calltransfer` itself, passing `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"` as its only parameter and speaking no text of its own (CHANNELS.md XFER-03, 2026-08-11 — there is no `callTransferAgent` and nothing to switch to). A non-Hindi or non-LPG request gets one separate inline line each, and becomes a complaint only if repeated on the very next turn.
 - **Brand is always "Bharat Petroleum" in full.** Never "BPCL".
-- Hindi only, 1–2 sentences per turn, one question per turn. FAQs 2–3 sentences.
+- Consumer's Indian language, 1–2 sentences per turn, one question per turn. FAQs 2–3 sentences.
 - Never speak a raw digit, a `{{variable}}`, or a placeholder. Numbers go digit by digit; dates in `{{customerStatus}}` are **day-first** (`03-07-2026` = 3 July).
 - Never say **"टंकी"**. Never say **"जोड़"** (TTS mispronounces it) — use "connect".
 - Curly braces still visible in a variable = **no data**. Treat as absent; never speak it.

@@ -171,7 +171,7 @@ Stage B with       ┌────┴─────┐
 pendingIntent    accepts   declines
    │                │          │
    ▼          calltransfer  "Contact your distributor"
-Leaf agent,                    callHangup
+Leaf agent,                    callhangup
 chosen from real data
 ```
 
@@ -316,7 +316,7 @@ The *words* "emergency" or "urgent" are not a hazard. A late delivery is not a g
 
 ## 10. Who may end the call
 
-| Agent | `callHangup`? | Condition |
+| Agent | `callhangup`? | Condition |
 |---|---|---|
 | `Default` | **Never** | It has no closing sequence |
 | `emergencyAgent` | **Never** | Not while a hazard is live |

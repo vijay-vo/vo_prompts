@@ -26,7 +26,7 @@ the forwarding target itself. The old `forwardingNumber` SIP string, `contactNum
 `consumerLanguage` and `consumerQuery` are gone from every prompt.
 
 **Speech on a transfer turn.** The agent writes **NO text of its own**. The `preToolMessage`
-carries the whole spoken line and is the only thing the consumer hears — exactly how `callHangup`
+carries the whole spoken line and is the only thing the consumer hears — exactly how `callhangup`
 works. Writing the line as text *as well* is the double-speak bug this rule exists to prevent.
 Naming the team is permitted inside that `preToolMessage` only, because the consumer is about to
 hear a different voice. On `switchagent`, naming it is still forbidden.
@@ -79,7 +79,7 @@ in Mumbai, not an employee of the distributor.
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callHangup`, **`calltransfer`** (`preToolMessage` only),
+**Tools:** `switchagent`, `callhangup`, **`calltransfer`** (`preToolMessage` only),
 `bpcl_create_complaint`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.

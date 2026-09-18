@@ -1,0 +1,7 @@
+DEPLOYED IDENTIFICATION FLOW
+
+Use `getConsumerDetailsLive.txt` for all unregistered-number capture. It accepts at most two consumer-provided registered mobile numbers, calls bpcl_fetch_all_api for each confirmed number, and produces no speech after either fetch Result.
+
+If the second fetch has no consumer data, the platform automatically activates `unregisteredComplaintAgent`. Do not call switchagent, calltransfer, callhangup, bpcl_create_complaint, or any other tool to make that transition. Do not announce that the consumer was not found, apologise, close the call, or offer an escalation: the next agent owns the conversation.
+
+This file is retained only for deployments still configured with this legacy filename. Its content is `getConsumerDetailsLive.txt`; do not deploy both prompts as separate stages.

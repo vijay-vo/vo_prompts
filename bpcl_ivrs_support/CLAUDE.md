@@ -82,7 +82,7 @@ in Mumbai, not an employee of the distributor.
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callHangup`, `bpcl_create_complaint`,
+**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 

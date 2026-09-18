@@ -14,6 +14,8 @@ translating the two axes below.
 
 ## Axis 1 — Escalation: the complaint comes first, then a transfer. Still no office visit.
 
+**CRC tool-result model (TOOL-06/07).** `bpcl_create_complaint` and `calltransfer` are silent action turns with no text or `preToolMessage`. A complaint call passes only `complaintSummary` and `complaintReason`; its Result alone determines success, number and spoken outcome. `callhangup` carries its closing line in `preToolMessage` and gets no speech after its Result. `switchagent` remains the sole tool turn with natural agent text. This is CRC-specific and must not be copied into CC or IVRS.
+
 > **REVISED 2026-08-11 — see [../CHANNELS.md](../CHANNELS.md) XFER-03.** This channel used to have
 > no transfer at all. XFER-01 gave it one, owned by a single agent. XFER-03 deleted that agent and
 > gave the tool to every routing-capable agent instead. The *when* is unchanged; the *how* is not.
@@ -48,7 +50,7 @@ stalling. The confirming question belongs in exactly two places, both where Vaan
 it: **T3**, and `getConsumerDetails`' no-data closing.
 
 **The transfer turn speaks nothing of its own.** `calltransfer` is invoked exactly the way
-`callHangup` is: the agent generates **no text**, and passes **exactly one parameter** —
+`callhangup` is: the agent generates **no text**, and passes **exactly one parameter** —
 `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`. Nothing else goes with it: no `agentName`, no
 `handoffSummary`, no `consumerQuery`, no number. Writing that line as text *as well* makes the
 consumer hear it twice. `transfer` is the one word from the forbidden list that may appear — inside
@@ -62,7 +64,7 @@ that `preToolMessage` and nowhere else in an agent's own speech. The old non-com
 
 **The transfer has two outcomes and no third**, decided from the tool's **Result** — never from the
 agent's own spoken line, and an absent or unclear Result is never read as success. **Success** → the
-agent produces **nothing** — no text, no `callHangup`; the platform closes the call, and hanging up
+agent produces **nothing** — no text, no `callhangup`; the platform closes the call, and hanging up
 there would cut the consumer off from the person they were just connected to. **Failure** —
 out-of-office-hours, a platform-side failure, busy, or no-answer, all handled identically — → no tool
 that turn; the agent says the team could not be reached and states when they can be reached, in
@@ -70,7 +72,7 @@ Hindi words, **from what the Result carried and from nowhere else**. If the Resu
 it names none: *"अभी हमारी senior team से सम्पर्क नहीं हो पा रहा, कृपया कुछ समय बाद call कीजिए।"*
 Closing is gated on the consumer: the agent **never closes in the same turn as the bad news**, keeps
 answering until they actually accept ("ठीक है", "समझ गया", "फिर call करूँगा", a goodbye) or the line
-is dead through two waits, and only then calls `callHangup`. Turn count is never a reason to close.
+is dead through two waits, and only then calls `callhangup`. Turn count is never a reason to close.
 `calltransfer` runs **once per call** and is never retried. That once is **per call, not per agent — it survives a `switchagent`** (CHANNELS.md **XFER-05**): before invoking it, an agent reads back through the whole call for a transfer line or Result, including turns from before it became active. The *offer* dies with the attempt too — once a transfer has been attempted, a later complaint failure gets the failure line and no second T3 question — and with the complaint tool down and the transfer spent there is nothing left, so the agent says so once and closes rather than circling on *"कुछ समय बाद call कीजिए"*. **`bpcl_create_complaint`'s failure is call-scoped in the same way** (CPL-20): a fresh agent is not a fresh attempt.
 
 **Who never transfers:** `Default` (routes human requests to `genericInfoComplaintAgent` first, so
@@ -154,13 +156,10 @@ Never invent a complaint number.
 - **Terminal fallback** — a flow cannot be resolved, or the data Vaani needs is genuinely missing.
   The old "यह जानकारी मेरे पास नहीं है, आप office आ सकते हैं" ending is retired: it becomes a
   complaint.
-- **Non-Hindi and non-LPG, on insistence only.** Answer once inline, with the two lines kept
-  **separate** — never merged:
-  - language → `"मैं सिर्फ़ Hindi में मदद कर सकती हूँ।"` (and keep replying in Hindi)
-  - non-LPG product → `"मैं सिर्फ़ LPG से जुड़े सवालों में मदद कर सकती हूँ।"`
-
-  If the consumer repeats the same request on the very next turn, that is insistence — register a
-  complaint so the team can help.
+- **Language and non-LPG.** Any Indian language request is handled inline by speaking that language;
+  it is never a complaint or transfer trigger. For a non-LPG product, say once in the consumer's
+  language that Vaani can help only with LPG. If the consumer repeats that non-LPG request on the
+  very next turn, that is insistence and may be registered.
 
 ### What does NOT become a complaint
 
@@ -173,7 +172,7 @@ Never invent a complaint number.
   nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
   all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
   is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
-  → on yes, switch; on no, `callHangup`. The three-piece dictation loop is **retired** and the office
+  → on yes, switch; on no, `callhangup`. The three-piece dictation loop is **retired** and the office
   hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
 
 ### Who can register, and the one routing hop
@@ -278,7 +277,7 @@ wrong; the factual naming it was rewritten to is also fine, so nothing needs rev
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callHangup`, `bpcl_create_complaint`, `validatecontactno`,
+**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `validatecontactno`,
 `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
 `bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
 routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default` and
@@ -321,8 +320,16 @@ is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion
 (git history only, along with `prompts/callTransferAgent/`).
 Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
 tell the consumer their record isn't available, offer to connect them to the senior team, and either
-call `calltransfer` on a yes or `callHangup` on a no. That platform-owned hop into
+call `calltransfer` on a yes or `callhangup` on a no. That platform-owned hop into
 `Default` is still described by no prompt — see the open items below.
+
+**Unregistered live flow (UNREG-03, 2026-09-18).** `getConsumerDetailsLive.txt` is the deployed
+number-capture prompt for an unregistered caller. It may call `bpcl_fetch_all_api` for at most two
+different consumer-provided, confirmed registered numbers and does not call `switchagent`. On data
+found it stops and the platform resumes the identified-consumer flow. On a second no-data Result it
+also stops: the platform automatically activates `unregisteredComplaintAgent`, which handles the
+unidentified consumer in place. `getConsumerDetails-unreg.txt` is a legacy deployment alias for the
+same flow, not a second stage.
 
 **Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
 §11 lists known gaps, and they are worth reading before any routing change.
