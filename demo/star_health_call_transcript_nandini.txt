@@ -1,0 +1,74 @@
+STAR HEALTH INSURANCE — SAMPLE CALL RECORDING SCRIPT
+Agent: Nandini (Female) | Branch: HAS INSURANCE (Step 2B → 6B) | Outcome: Escalated to senior team (no live transfer)
+Customer: Mr. Verma
+────────────────────────────────────────────────────
+
+[STEP 1 — OPENING]
+Nandini: Good afternoon, Mr. Verma. This is Nandini, calling on behalf of Star Health Insurance. I hope I'm not catching you at a bad time?
+
+Customer: Nahi nahi, bolo, thoda busy hoon but bol sakte ho.
+
+Nandini: Bas do minute lungi, sir. Main sirf ye jaanna chahti thi — kya aapke paas currently koi health insurance hai, chahe office se ho ya khud liya hua?
+
+Customer: Haan hai, company ki group policy hai.
+
+[STEP 2B]
+Nandini: Ye sunkar accha laga, sir.
+
+[STEP 3B — LIGHT PROFILING]
+Nandini: Bas samajhne ke liye poochna chahungi — aapki current policy mainly hospitalization cover karti hai, ya usme critical illness ya daily hospital cash jaise benefits bhi included hain?
+
+Customer: Bas hospitalization hi cover hota hai, aur wo bhi company chhodne ke baad khatam ho jayega.
+
+Nandini: Samajh sakti hoon. Aur ek aakhri sawal — agar kabhi koi badi medical situation aa jaaye, to lagta hai aapka current sum insured kaafi hoga?
+
+Customer: Honestly, kabhi socha nahi. Shayad kaafi na ho.
+
+[STEP 4B — ADD-ON PITCH: CRITICAL ILLNESS MULTIPAY]
+Nandini: Yahi ek cheez hai jo zyada log miss kar dete hain, sir. Aapki hospitalization policy bills to cover kar degi, lekin ek major critical illness sirf medical bills tak limited nahi rehti.
+
+Nandini: Isliye critical illness cover ek tarah se income replacement ka kaam karta hai — ek fixed lump-sum amount milta hai, chahe hospitalization ho ya na ho, aur wo loan EMI, ghar ka kharcha, ya bachchon ki school fees, kisi ke liye bhi use ho sakta hai. Jaise ki aajkal ek simple dengue hospitalization ka bill hi डेढ़ लाख tak pahunch jaata hai — waise waqt mein ye lump-sum kaafi kaam aata hai.
+
+Customer: Nahi yaar, abhi interest nahi hai mujhe. Company wali policy hi kaafi hai.
+
+[OBJECTION HANDLING — 1st attempt, per script's single-retry rule]
+Nandini: Samajh sakti hoon, Mr. Verma. Bas ek aakhri baat — ye cover office policy replace karne ke liye nahi, balki achanak aane wale bade medical expense se aapki savings ko protect karne ke liye hai. Kya main aapko thoda aur detail share kar sakti hoon, sirf samajhne ke liye?
+
+Customer: Achha theek hai, bolo. Waise ye batao — agar main policy lu, to uspe loan bhi milta hai kya?
+
+[OUT-OF-SCOPE HANDLING — redirect and return to script]
+Nandini: Ye main sirf Star Health ki health insurance plans ke baare mein hi assist kar sakti hoon, sir. Loan waghera ke baare mein hamare expert hi behtar bata payenge. Chaliye, main jo bata rahi thi wahi se continue karti hoon.
+
+Customer: Theek hai, bolo.
+
+[STEP 5B — SUPER SURPLUS, SECONDARY ENHANCEMENT]
+Nandini: Isske saath, bahut se customers Super Surplus top-up bhi lete hain. Kaafi logon ko lagta hai unki base policy kaafi hai, lekin actual mein medical costs aksar usse zyada nikal jaate hain. Super Surplus thodi si additional premium mein aapko extra protection deta hai, bina treatment quality compromise kiye.
+
+Customer: Theek hai, sounds reasonable. Par abhi mujhe decide karne ke liye thoda time chahiye.
+
+[CLOSING — SENIOR TEAM ESCALATION, NO LIVE TRANSFER]
+Nandini: Bilkul samajh sakti hoon, sir. Maine aapki saari details note kar li hain aur hamari senior team ko forward kar diya hai. Wo aapko is par further discuss karne ke liye call karenge.
+
+Customer: Kitne time mein call aayega unka?
+
+Nandini: Generally agle 8 se 12 ghante ke andar unka call aa jayega. Aap tab tak apni convenience se sochkar rakhiye, koi jaldi nahi hai.
+
+Customer: Theek hai, theek hai.
+
+Nandini: Thank you for your time, Mr. Verma. Have a pleasant day ahead.
+
+Customer: Aap bhi, bye.
+
+────────────────────────────────────────────────────
+COMPLIANCE NOTES (for QA reference, not part of the recording)
+────────────────────────────────────────────────────
+• YES-path followed strictly (Step 2B → 6B); no NO-path content mixed in.
+• Exactly two profiling questions asked (Step 3B).
+• Exactly one add-on pitched (Critical Illness Multipay), not both CI and Hospital Cash.
+• Super Surplus introduced only as a secondary enhancement, after the primary add-on.
+• "Not Interested" handled with exactly one retry attempt, per the mandatory two-strike rule — no further pitching after customer re-engaged.
+• Out-of-scope question (loan) redirected per the mandatory script line, then returned to the flow without answering it.
+• ₹1.5 lakh spoken as "डेढ़ लाख", never "one point five lakh".
+• No exact premium quoted, no sale closed, no urgency/pressure language.
+• Hindi switch initiated by the customer first; Nandini mirrors it — no duplicate lines in both languages.
+• Live-agent transfer replaced per your instruction with: details noted → forwarded to senior team → callback window of 8–12 hours if the customer asks about timing.
