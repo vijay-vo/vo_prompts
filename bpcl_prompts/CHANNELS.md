@@ -152,6 +152,42 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### CPL-26 · `paymentAgent` still ran a "collect for complaint" loop, and it ended in a claimed registration with an invented number — CRC only, CC pending (2026-09-22)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. `paymentAgent` only. Extends CPL-22/CPL-23. **CC not ported.** |
+| **Source** | Live call 21-09-2026 19:33, a village-pickup / no-home-delivery grievance with an advance recorded. 19:33:17 *"आपकी शिकायत के लिए मैं इसे अभी रजिस्टर कर रही हूँ। … यह घटना किस तारीख को हुई थी?"*; 19:34:22 *"आपकी शिकायत मैंने दर्ज कर ली है। … नंबर है एक शून्य शून्य एक चार, छह शून्य सात सात"*. **No `bpcl_create_complaint` call**, and the number was spoken in Hindi digit words. |
+| **Diagnosis** | CPL-22/23 reached `paymentAgent`, but it still had the older **collection flow** that the other nine agents no longer have: **18** *"I collect for complaint"* triggers, three `WHAT I COLLECT FOR FLOW 3/4/5 COMPLAINTS` lists (date, mode, amount), and `BLOCK 5` telling it to ask the next detail. Flow 5 ended *"COMPLETION: complaint registered."* — a finished-registration state reached by collecting, not by calling. Flow 4 had *"a complaint will ensure the team follows up"*. `TOOL 1`'s `When:` had been **empty** since before CPL-22, so nothing on the tool definition said when to call it. The 19:33:17 turn is the Flow 5 list, asked aloud; 19:34:22 is its `COMPLETION`. |
+| **The rule now** | `When:` filled in: the call is the only way a complaint gets registered; when a flow says a complaint is due, for a grievance that already happened, for a data dispute, or an escalation; no announcement; never ask for a date/amount/mode just to fill `complaintSummary`. Every *"collect for complaint"* now reads *"I register a complaint per COMPLAINT TOOL on a turn of its own, with no text"*. Where a first sentence states a verdict (overcharge), the call is on the **next** turn. The three `WHAT I COLLECT` lists are deleted (Flow 3 keeps one line: the summary carries what the consumer already said, and never bank/UPI/card/OTP). Flow 5 `COMPLETION` and Flow 4's follow-up promise are replaced by the standard *"register per COMPLAINT TOOL and follow only its message"*. `BLOCK 5` now allows only a question that decides whether a complaint is due, never one that fills the summary. |
+| **⚠️ Open** | The call itself was a delivery grievance (GREY ZONE says route). The routing decision is untouched. **CC not ported.** |
+
+---
+
+### NUM-07 · `connectionServicesAgent` spoke the complaint number as one whole number — its own voice rule said "no separators" at normal speed — CRC only (2026-09-22)
+
+| | |
+|---|---|
+| **Axis** | Neither — NUM-01 compliance. `connectionServicesAgent`; the long-number exception is also added to both booking agents. |
+| **Source** | Live call: LLM output *"आपका शिकायत नंबर 12644509 है"* → TTS *"एक करोड़ छब्बीस लाख चवालीस हज़ार पाँच सौ नौ"*. The TTS expanded the raw number the model wrote. |
+| **Diagnosis** | The model wrote raw numerals. Three rules in the file contradicted each other: `VOICE CALL DISCIPLINE` (from the original bulk commit) said `" - "` is allowed **only in slow/noting mode** and *"In normal-speed delivery, no separators at all"*; `§9 RULE 2` said every digit is a **Hindi** word, always in three pieces; `LONG NUMBER DELIVERY` (NUM-01/NUM-06) said English digit words with `" - "`, complaint number in one turn. The complaint number's one-turn default reads as "normal speed", so *no separators* + *one go* produced `12644509`. No other agent has the slow/normal-speed line. |
+| **The rule now** | `VOICE CALL DISCIPLINE`: `" - "` goes between the digit words of **every** long number, complaint number included; never raw numerals. `§9 RULE 2` is now a pointer to `LONG NUMBER DELIVERY` (English digit words, contact numbers in pieces, complaint number in one turn). `§9`'s "one piece at a time" and the TTS-safe "every digit as a Hindi word" line point there too. `bookingEligibleAgent` / `bookingNonEligibilityAgent`: *"Convert every digit, number, and date into Hindi words"* now excludes long numbers. |
+| **⚠️ Open** | Unmeasured. |
+
+---
+
+### BNE-03 · `bookingNonEligibilityAgent` invented a last-booking date and a day-count when the handoff held a real booking date and a "planned for Delivery" status — CRC only, CC pending (2026-09-22)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. `bookingNonEligibilityAgent`. Extends BNE-01/BNE-02. **CC not ported.** |
+| **Source** | Handoff: *"LPG refill was booked on 2026-09-20 21:02:00.000. Refill Order has been planned for Delivery. Customer is not eligible for booking."* Spoken: *"आपकी पिछली booking पंद्रह जुलाई दो हजार पच्चीस को हुई थी और अगली booking आप सात दिन बाद कर पाएंगे।"* Neither value exists; the booking was 20-09-2026. |
+| **Diagnosis** | (1) *"planned for Delivery"* was not among the open-order shapes (only *"received Successfully…"* and *"delivered on…"*), so OPEN ORDER did not fire. (2) THREE SEPARATE FACTS said the booking timestamp sits **inside the VERDICT**; here it was its own sentence, so it was never read as the last booking date. (3) The gap-not-over template was picked with no gap in the VERDICT, and its two blanks were filled from the prompt's own tables: *"दो हजार पच्चीस"* (plain ज) is the conversion table's year example, and the output also used पंद्रह and सात from the table. `activeDeliveryAgent` has *HOW I USE THAT TABLE — IT IS A CONVERSION TABLE, NOT DATA* and *NO EXAMPLE DATE IS EVER REAL DATA*; this agent had neither. |
+| **The rule now** | Both guards ported from `activeDeliveryAgent`. Open-order shapes matched by meaning, including *planned for Delivery*, order+payment received, and a failed attempt with another coming. A *"booked on …"* sentence is the last booking date wherever it sits. **THE LAST BOOKING DATE** is spoken in Hindi words on the first turn of OPEN ORDER / gap not over, and whenever it answers the consumer; time only as सुबह/दोपहर/शाम/रात; never asked. Gap-not-over needs a gap or day-count **written in the VERDICT**; a missing value drops its clause. The gap+K Y C example's real-looking values (*बारह जून … आठ दिन*) are now placeholders. |
+| **⚠️ Open** | **CC not ported.** |
+
+---
+
 ### CPL-23 · The English instructions were still scripting the complaint turn, and a general new-connection question was answered from the zip walkthrough — CRC only, CC pending (2026-09-18)
 
 | | |
