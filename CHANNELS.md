@@ -1413,6 +1413,22 @@ a naive grep will produce false positives here. See §3, CS-01 for confirmed rea
 
 ---
 
+### CC-PORT-02 · CC brought level with CRC `main` again — 16 prompts, multilingual — CC only (2026-09-22)
+
+CC had fallen behind again: 35 CRC commits landed on `main` after this branch split from it (at `2e42b2c`), covering TOOL-01 to TOOL-08, ZIP-04, CPL-21 to CPL-26, TTS-03, ID-01, BNE-02/03, DEL-03, NUM-07 and PARAM-01. This time each CC prompt was **three-way merged**, not re-derived: base = the CRC prompt at the split, ours = the CC prompt on this branch, theirs = the CRC prompt on `main`. `main`'s structure and order are the skeleton. Every paragraph `main` changed is taken from `main` and rewritten into CC's multilingual wording; every paragraph only CC changed keeps CC's text; CC-only blocks (head office, LANGUAGE, UNREG-04) are kept.
+
+| | |
+|---|---|
+| **What CC gained** | **TOOL-06/07/08**: `bpcl_create_complaint` and `calltransfer` are the call alone. `callhangup` carries the closing line as the agent's own text on the same turn. No tool takes a `preToolMessage`, and tool names are never spoken. **CPL-21 to CPL-25**: one identical `COMPLAINT TOOL — THE WHOLE PROCEDURE` block (call → read the message → do what it says → no message, no complaint); every scripted success, failure and already-registered line is deleted, along with the TENSE GATE, the wait cue and the "our team will make contact" promise. **CPL-26**: `paymentAgent`'s "collect for complaint" loop and its three `WHAT I COLLECT` lists are removed, and its empty `When:` is filled in. **ZIP-04**: two sizes, who can take it, never quote a price, the 11-step App walkthrough, the three dead ends, Mini and zip offered together. **TTS-03**, **ID-01**, **PARAM-01** (`complaintSummary` / `complaintReason`), **BNE-02/03** (open order includes *planned for Delivery*; the gap template needs a gap in the VERDICT; the date table is a conversion rule, not data), **DEL-03**. |
+| **NUM-07, and its CC twin** | CC's `connectionServicesAgent` had the same bug NUM-07 fixed in CRC, and a stronger form of it: an **old LONG NUMBER DELIVERY block** (*"FIRST TIME — natural continuous flow… no dashes… deliver the full number as one natural spoken sentence"*), §9 RULE 2 saying the same, and a §22 reminder repeating it. All three now point to the current block — every digit its own digit word, contact numbers in three pieces, the complaint number in one turn. That block is the multilingual one from `paymentAgent`. **`main`'s CRC §22 reminder still has the old "natural flow, no dashes" line** — worth fixing there too. |
+| **Multilingual** | Nothing Hindi-scripted came across. Every quoted Hindi line from `main` (closing line, "I don't have that information", the zip steps, Mini/zip offers, switch-line anchors, readiness-gate examples) is now a meaning anchor composed in the consumer's language. Digits follow CC's rule: every digit its own digit word in the consumer's language. |
+| **`unregisteredComplaintAgent`** | Not a CRC twin (CC's compact UNREG-04 design), so it was not merged. Its tool section was rewritten to the same contract: the complaint procedure above, PARAM-01 names, no `preToolMessage` on `calltransfer` or `callhangup`, and zip naming. |
+| **Supersedes** | XFER-06's `preToolMessage` parameter on `calltransfer`, and CPL-21 on this branch. |
+| **Not ported** | `postCallAnalysis/*` (`promptQA`, `postCallAnalysisFlat`) — `main`'s TOOL-06/07 and CPL-22 analyser changes (C3g, C5d, C18, C26…) are still owed. `bpcl_ivrs_support` and this branch's `bpcl_showroom_crc` copy were not touched. |
+| **⚠️ Open** | Unmeasured on live CC calls. The CC platform must return the same complaint-tool **message** CRC's does (CPL-22); with the old `caseNumber` Result the new block has nothing to read. The CC platform must also transfer on a bare `calltransfer` with no `preToolMessage`. |
+
+---
+
 ### CC-PORT-01 · CC derived wholesale from CRC; the two channels are back in sync — CC only (2026-08-27)
 
 CC had fallen ~6 weeks and ~35 ledger rows behind CRC, at roughly a third the file size. Every row

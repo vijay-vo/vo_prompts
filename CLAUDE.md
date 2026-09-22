@@ -166,12 +166,12 @@ transcript shows a line implying a tool ran and no Result came back, invoke the 
 else on the next turn. The agent's own spoken line is never evidence a tool ran; only a Result is.
 (CHANNELS.md CPL-03 for the complaint case, XFER-01 for the generalisation to every tool.)
 
-**The tool-turn rule.** On a tool turn exactly one thing speaks. Write the Hindi line as regular
-**text** and pass **no** `preToolMessage`. Two tools are the exception, and both carry their whole
-spoken line in `preToolMessage` while generating no text of their own: `callhangup`, which carries
-the exact closing line, and `calltransfer`, which carries the transfer line — in CRC that is
-`"आपकी कॉल ट्रांसफर की जा रही है।"` and it is the tool's **only** parameter (CHANNELS.md XFER-03).
-Doing both makes the consumer hear the line twice — that is the bug this rule exists to prevent.
+**The tool-turn rule.** No tool takes a `preToolMessage` — in either channel since CRC's TOOL-07
+and CC-PORT-02. `bpcl_create_complaint` and `calltransfer` are **the call alone**: no text on that
+turn, and what the agent says next comes only from the Result (for the complaint tool, from its
+message — CPL-22). `switchagent` carries one short line as the agent's own text on the same turn.
+`callhangup` carries the closing line as the agent's own text on the same turn. A line in both
+places makes the consumer hear it twice; a line with no call behind it did nothing.
 
 **Switching is invisible.** Never reveal that other agents, teams, experts, or systems exist.
 Forbidden on a `switchagent` turn: transfer, connect, specialist, agent, team, department, desk,
@@ -179,9 +179,8 @@ switch, handoff, forward, भेजती, जोड़ती. **A ban list is o
 prompt now also carries a *menu of anchor lines* saying what to speak instead ("ज़रा booking system
 check करती हूँ, एक मिनट।"), because a prompt that only forbids gives the model nothing to reach for
 and it reaches for "मैं आपको हमारे department से connect करती हूँ" (XFER-01).
-One exception in each channel, because the consumer is about to hear a different voice: the
-`calltransfer` tool's own `preToolMessage`. In CRC that message is "आपकी कॉल ट्रांसफर की जा रही है।"
-and it is the **only** thing spoken on that turn — the agent writes no text of its own (XFER-03).
+There is no exception any more: `calltransfer` is the call alone, so nothing announces the
+transfer (TOOL-07, CC-PORT-02).
 
 **Emergency overrides everything.** A confirmed gas hazard in any agent at any moment switches to
 `emergencyAgent`, bypassing all gating. While the hazard is live that agent cannot switch, cannot

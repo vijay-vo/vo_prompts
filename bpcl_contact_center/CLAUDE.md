@@ -21,15 +21,20 @@ prompts, and is doubly untrue now.
 **Tool:** `calltransfer`, held and invoked by the agent the consumer is already speaking to.
 There is no transfer agent and nothing to switch to.
 
-**Parameters:** `preToolMessage` and **nothing else** (CHANNELS.md XFER-06). The platform supplies
-the forwarding target itself. The old `forwardingNumber` SIP string, `contactNumber`,
-`consumerLanguage` and `consumerQuery` are gone from every prompt.
+**Parameters:** **none** — the call alone (CHANNELS.md CC-PORT-02, porting CRC's TOOL-07; this
+supersedes XFER-06's `preToolMessage`). The platform supplies the forwarding target itself. The old
+`forwardingNumber` SIP string, `contactNumber`, `consumerLanguage` and `consumerQuery` are gone
+from every prompt.
 
-**Speech on a transfer turn.** The agent writes **NO text of its own**. The `preToolMessage`
-carries the whole spoken line and is the only thing the consumer hears — exactly how `callhangup`
-works. Writing the line as text *as well* is the double-speak bug this rule exists to prevent.
-Naming the team is permitted inside that `preToolMessage` only, because the consumer is about to
-hear a different voice. On `switchagent`, naming it is still forbidden.
+**Speech on a transfer turn.** None. The agent writes **no text** and passes **no
+`preToolMessage`**; what it says next comes only from the `calltransfer` Result. No tool in this
+channel takes a `preToolMessage`: `bpcl_create_complaint` is the call alone too, and `callhangup`
+carries the closing line as the agent's own text on the same turn. On `switchagent`, naming a
+team is still forbidden.
+
+**The complaint tool** follows CRC's `COMPLAINT TOOL — THE WHOLE PROCEDURE` (CPL-22): call with
+nothing said → read the tool's message → do what it says in the consumer's language → no message
+means nothing is registered. There are no scripted success, failure or already-registered lines.
 
 **A complaint comes first.** A consumer asking for a human gets their issue **registered** first,
 and is transferred only if they still want a person afterwards. Same as CRC.
@@ -79,7 +84,7 @@ in Mumbai, not an employee of the distributor.
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callhangup`, **`calltransfer`** (`preToolMessage` only),
+**Tools:** `switchagent`, `callhangup`, **`calltransfer`** (the call alone — no parameters),
 `bpcl_create_complaint`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
@@ -130,8 +135,8 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 
 ## Open platform dependencies (created by the CC-port pass, 2026-08-27)
 
-1. **`calltransfer` must resolve its own forwarding target.** Every CC prompt now passes
-   `preToolMessage` alone. If the CC platform does not supply the SIP target the way CRC's does,
+1. **`calltransfer` must resolve its own forwarding target.** Every CC prompt now invokes it
+   with no parameters at all (CC-PORT-02). If the CC platform does not supply the SIP target the way CRC's does,
    **every transfer in this channel fails silently** — the prompts will be correct and the calls
    will still drop. Test one transfer before wide deployment.
 2. **`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**
