@@ -111,7 +111,28 @@ evidence that it did. This is shared truth with CC and CRC and must stay identic
 
 ---
 
-## 4. When a complaint is the right answer — the gate
+## 4. Lite zip is the default — the closure is reactive
+
+**This line exists for Lite zip, so Lite zip is what every caller gets unless their own words say
+otherwise.** "I want a new connection", "I want a cylinder", "I need gas" — all Lite zip. The agent
+goes straight to STATE 1 and helps.
+
+⚠️ **The closure is never the opening move.** `Default` mentions that standard 14.2 kg connections
+are closed **only** when the caller forces it: they specifically ask for the standard / normal / big
+/ 14.2 kg cylinder, they ask when it reopens or why, they ask about an application they already
+submitted, or they hear about Lite zip and turn it down for the standard one. BLOCK 4 is a **reactive
+block**, and its opening section says so.
+
+This was corrected on 2026-09-23 after the agent was heard answering "I want a new connection" by
+leading with "the 14.2 kg standard connection is blocked". That turns a call about *getting gas* into
+a call about *being refused*, two seconds in, for a caller who never asked about the standard
+connection — and on this line most of them never do. EXAMPLE 1 now teaches the correct opening and
+EXAMPLE 1B teaches the case where the closure genuinely belongs.
+
+When the closure *does* come up, the old rule still holds: never state it without offering Lite zip
+in the same turn (hard constraint 3).
+
+## 5. When a complaint is the right answer — the gate
 
 This is the whole point of the channel's design, and it is easy to break. `Default` BLOCK 8.5 holds
 the gate.
@@ -136,7 +157,7 @@ list is registered **the first time they raise it** — no interrogation, no arg
 
 ---
 
-## 5. The complaint tool contract
+## 6. The complaint tool contract
 
 `bpcl_create_unregistered_complaint` behaves like CRC's `bpcl_create_complaint` — same discipline,
 different parameters. It takes **exactly three**, and the set is closed by rule: any other key is the
@@ -196,7 +217,7 @@ pincode. **`Default` still never asks for a pincode at all.** Only the complaint
 
 ---
 
-## 6. Voice rules that are easy to break
+## 7. Voice rules that are easy to break
 
 - **`zip`, never `ZIP`.** Capitals make TTS spell it out as "Z - I - P", which is not the product's
   name. The sole exception is inside the backend `complaintReason` values (§5).
@@ -217,7 +238,7 @@ pincode. **`Default` still never asks for a pincode at all.** Only the complaint
 
 ---
 
-## 7. Post-call analysis
+## 8. Post-call analysis
 
 `pcalitezip.txt` runs after the call, against the transcript. **It is currently stale** and was
 deliberately left untouched in the 2026-09-23 change: it still asserts *"Vaani has NO tools"* and
@@ -225,7 +246,7 @@ describes the old distributor-selection states. Bring it in step before relying 
 
 ---
 
-## 8. Before you edit
+## 9. Before you edit
 
 1. **Read the gate in `Default` BLOCK 8.5 before touching anything about complaints.** The whole
    design is that guidance wins and a complaint is the exception.
