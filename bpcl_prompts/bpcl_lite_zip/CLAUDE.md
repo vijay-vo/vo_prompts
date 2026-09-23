@@ -63,8 +63,21 @@ distributor.
 `unregisteredComplaintAgent` — and `callhangup`. It holds no complaint tool and registers nothing
 itself.
 
-`unregisteredComplaintAgent` holds **four**: `get_pincode_data`,
+`unregisteredComplaintAgent` holds **five**: `updateContact`, `get_pincode_data`,
 `bpcl_create_unregistered_complaint`, `switchagent` (one legal target: `Default`), and `callhangup`.
+
+**Its three data tools run in a fixed order, and each one enables the next:**
+
+```
+name asked + read back + confirmed
+  └─▶ updateContact            (records the name — nothing else does)
+        pincode asked + read back + confirmed
+          └─▶ get_pincode_data
+                └─▶ bpcl_create_unregistered_complaint   (registers it — nothing else does)
+```
+
+Never skipped, never reordered, never two in one turn. The prompt is explicit that neither the
+customer *saying* their name nor a successful pincode fetch records or registers anything on its own.
 
 **Either agent can end the call, and both end it the same way** — the CRC close pattern: help with
 everything first, then ask whether any more help is needed **as a turn of its own**, and only on a
@@ -196,6 +209,23 @@ changes, this table and both prompts change in the same edit.
 ⚠️ **Note the capital `Zip`** in the reason value against the lowercase `zip` rule in §6. That is
 intended: the reason is a backend value that is **never spoken**, so the TTS rule does not touch it.
 Do not "fix" either one to match the other.
+
+### `updateContact`
+
+Takes one parameter, `ConsumerDetailsConsumerName` — the name the caller confirmed on the read-back,
+Latin script, title case, no honorific. **This tool is the only thing that records the name**; the
+caller saying it records nothing.
+
+Called on the same turn the name is confirmed, with the pincode question as that turn's spoken text —
+so it costs no extra turn and needs no waiting line. It is **silent plumbing**: the caller is never
+told their name was saved or updated, and the tool is never named. Called once per name; a second call
+happens only if the caller corrects their name after it was already sent, and then with the corrected
+value. If no Result comes back, the call never fired — re-invoke it without re-asking the caller.
+
+⚠️ **The value it carries and the `ConsumerDetailsConsumerName` on the complaint call must be
+identical, character for character.** The complaint tool still carries the name itself; confirm with
+the platform team whether it should, now that `updateContact` persists it — passing it twice is
+harmless, but if the backend expects it *only* via `updateContact`, drop it from the complaint call.
 
 ### `get_pincode_data`
 
