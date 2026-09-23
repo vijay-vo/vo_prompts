@@ -79,6 +79,14 @@ turn as bad news, or while a gas hazard is live.
 else to send someone who still wants booking help after a complaint. Platform-side this is confirmed
 working.
 
+**`Default` holds no `handoffSummary` block, on purpose.** It is where calls start, so on almost
+every call the field would be empty, and a block explaining an empty variable is just noise in the
+entry prompt. On the way back from a complaint it simply carries on helping with Lite zip from
+wherever the caller now is — asking what is on their screen if they were part-way through the App.
+Only `unregisteredComplaintAgent` reads a `handoffSummary`, because it genuinely needs the grievance
+handed to it. `Default` still *writes* one on the outbound switch. Do not add a receiving block to
+`Default`.
+
 **There is no `calltransfer` and no callback in this channel.** No human, no senior team, no
 department, no number for anyone to call back on. Neither agent may offer, hint at, or promise one.
 This is the sharpest divergence from both other channels — a `calltransfer` block ported from CRC has
