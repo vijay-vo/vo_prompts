@@ -1,0 +1,154 @@
+{
+    "complaintRegistered": "no",
+    "issue": "senior agent transfer",
+    "departmentArea": "other",
+    "customerSentiment": "negative",
+    "outcomeEvidence": "I am transferring your call.",
+    "emergencyFlag": "no",
+    "followUpRequired": "no",
+    "callbackPriority": "none",
+    "repeatCaller": "yes",
+    "bookingDateMentioned": "no",
+    "deliveryDateMentioned": "no",
+    "amountMentioned": "no",
+    "fcr": "no",
+    "csatScore": "2",
+    "callResult": "unresolved",
+    "notes": "The customer asked not to repeat the opening and requested to speak with a senior agent. The agent said they would transfer the call, but the transfer ended with an unavailable message and no issue was resolved.",
+    "greeting": "yes",
+    "containment": "no",
+    "riskEscalationIndex": "yes",
+    "customerEffortScore": "6",
+    "conversationQualityScore": "5",
+    "overallScore": "4",
+    "overallVerdict": {
+        "result": "PASS",
+        "reason": "The agent identified the connection/KYC issue, provided the correct contact number, and closed the call without making unsupported commitments. No complaint was needed for this transfer assistance case.",
+        "passedCriteria": 8,
+        "failedCriteria": 0
+    },
+    "qaScore": {
+        "earned": 8,
+        "total": 8,
+        "percentage": 100
+    },
+    "csatAnalysis": {
+        "score": 4,
+        "maxScore": 5,
+        "sentiment": "neutral to positive",
+        "reason": "The customer was cooperative throughout, got the number he needed, and ended the call with thanks. There was no frustration or unresolved objection at the end."
+    },
+    "summary": {
+        "customerName": "",
+        "agentName": "Vaani",
+        "callLanguage": "Hindi",
+        "issueRaised": "Customer needed help removing an old seeded connection linkage so KYC could be completed after shifting to Varanasi.",
+        "resolutionStatus": "Resolved",
+        "overallAssessment": "The agent provided the area manager contact details and privacy guidance, which met the customer's immediate need."
+    },
+    "callDataCapture": {
+        "issueType": "connection transfer and KYC update",
+        "bookingDate": "no",
+        "deliveryDelayDays": "no",
+        "actionTakenByAgent": "Shared the area manager's phone number and advised the customer to contact him for removal of the old linkage.",
+        "referenceOrConfirmationNumberGiven": {
+            "result": "NO",
+            "value": ""
+        },
+        "complaintRegisteredAnalysis": {
+            "result": "NO",
+            "reason": "No complaint or case was registered; the agent only provided the contact number for the relevant area manager."
+        },
+        "firstCallResolutionAnalysis": {
+            "result": "YES",
+            "reason": "The customer's immediate objective was achieved because he received the number needed to proceed with the KYC-related transfer issue."
+        }
+    },
+    "behaviorOverview": {
+        "consumerBehavior": "The customer was polite, cooperative, and clearly explained the transfer and KYC problem. He thanked the agent at the end.",
+        "agentBehavior": "The agent listened, clarified the issue, and provided the area manager's number. She also gave a brief privacy caution before closing the call."
+    },
+    "riskObservations": {
+        "incorrectInformationProvided": false,
+        "unsupportedCommitmentMade": false,
+        "escalationMissed": false,
+        "complianceConcern": false,
+        "customerEffortIncreased": false
+    },
+    "evaluations": [
+        {
+            "id": "1",
+            "name": "Call Opening and Greeting",
+            "result": "PASS",
+            "reason": "The agent opened the call with a greeting and standard recording notice."
+        },
+        {
+            "id": "2",
+            "name": "Issue Identification and Active Listening",
+            "result": "PASS",
+            "reason": "The agent listened to the customer explain the transfer and KYC problem and responded to the details."
+        },
+        {
+            "id": "3",
+            "name": "Empathy and Acknowledgement",
+            "result": "PASS",
+            "reason": "The agent acknowledged the customer's concern and kept the interaction calm and supportive."
+        },
+        {
+            "id": "4",
+            "name": "Process Adherence and Complaint Handling",
+            "result": "PASS",
+            "reason": "No complaint was required for this contact-number assistance case, and the agent followed the correct handling by sharing the relevant number."
+        },
+        {
+            "id": "5",
+            "name": "Accuracy of Information Shared",
+            "result": "PASS",
+            "reason": "The agent shared only the area manager's number and a privacy reminder, with no unsupported factual claims."
+        },
+        {
+            "id": "6",
+            "name": "Resolution Ownership",
+            "result": "PASS",
+            "reason": "The agent took ownership by giving the customer the contact needed to proceed with the KYC removal step."
+        },
+        {
+            "id": "7",
+            "name": "Compliance and Commitment Control",
+            "result": "PASS",
+            "reason": "The agent made no promise of callback or other unsupported commitment."
+        },
+        {
+            "id": "8",
+            "name": "Call Closing",
+            "result": "PASS",
+            "reason": "The call ended politely after the customer thanked the agent and said goodbye."
+        }
+    ],
+    "conversationInsights": {
+        "customerPrimaryConcern": "Removing the old connection linkage so KYC could be completed in Varanasi.",
+        "customerExpectation": "He wanted the correct contact details for the area manager handling the old connection.",
+        "agentMissedOpportunity": "The agent could have briefly summarized the next step more clearly after giving the number.",
+        "customerSatisfactionDriver": "Receiving the area manager's number and a clear direction on whom to contact.",
+        "negativeMoments": [
+            "The customer initially could not find the area manager's contact details.",
+            "The agent's privacy warning may have added a little confusion, though it was appropriate."
+        ],
+        "positiveMoments": [
+            "The agent provided the area manager's number digit by digit.",
+            "The customer thanked the agent and ended the call politely."
+        ]
+    },
+    "coachingFeedback": {
+        "strengths": [
+            "Listened to the customer's transfer and KYC concern.",
+            "Provided the relevant contact number directly.",
+            "Maintained a polite and calm tone throughout."
+        ],
+        "improvementAreas": [
+            "Give a short recap of the next step after sharing contact details.",
+            "Use clearer phrasing when explaining privacy-related instructions."
+        ],
+        "recommendedCoachingPriority": "Low"
+    }
+}

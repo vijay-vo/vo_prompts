@@ -1,0 +1,20 @@
+flowchart TD
+    A([Consumer calls · 2 rings]) --> B[Inbound Call Node<br/>4 APIs on the calling number]
+    B --> C[Default<br/>greet · classify · switchagent]
+    C --> D{Target needs<br/>consumer data?}
+
+    D -->|No — newConnectionAgent<br/>emergencyAgent| E[Switch straight through]
+    D -->|Yes| F{RefillStatusReturnCode<br/>== 801?}
+
+    F -->|No — data available| G[GATE<br/>eligibility / state check]
+    F -->|Yes — no data| H[getConsumerDetails<br/>ask mobile no. · bpcl_fetch_all_api]
+
+    H -->|data returned| G
+    H -->|no data| I([calltransfer → human agent])
+
+    G --> J[Correct specialist variant<br/>+ enriched handoffSummary]
+    E --> J
+
+    J --> K{Next query<br/>off-topic?}
+    K -->|Yes| L[routingAgent] --> D
+    K -->|No| M([Handled by that agent])
