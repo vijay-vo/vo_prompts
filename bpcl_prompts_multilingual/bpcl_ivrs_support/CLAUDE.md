@@ -89,11 +89,13 @@ in Mumbai, not an employee of the distributor.
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**Prompts unique to this channel:** `postCallAnalysis/postCallAnalysis.txt` only —
-`postCallAnalysisFlat.txt` now has a CRC twin and was derived from it (2026-08-27).
-⚠️ `postCallAnalysis.txt` was **deliberately left untouched** by the CC-port pass and still scores
-scheduled callbacks, which no longer exist in this channel (CB-01). Confirm whether it is still
-deployed before trusting its output.
+**Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
+those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which
+do not exist in this channel (CB-01). `promptQA.txt` was **renamed to `vaaniQA.txt`** to match the
+CRC filename; its content is unchanged apart from the channel label, the removal of a leftover
+"call transfer path" header that contradicted this channel, and a hard-coded Hindi failure line
+replaced with a language-neutral one. CRC's `postCallAnalysisHuman.txt` is deliberately **not**
+ported here.
 
 **Docs:** [ORCHESTRATION.md](docs/ORCHESTRATION.md) is the live routing spec — the Switch Gate
 design, `(topic, consumerPayload) → agentName`. It is **spec-only and not yet applied to the
@@ -104,7 +106,7 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 
 ---
 
-## Open items specific to CC
+## Open items specific to this channel
 
 - ~~**The `getConsumerDetails` blocker**~~ — **CLOSED 2026-08-27.** The agent was derived from
   its CRC twin and now holds `switchagent`, so the recovery loop has a real exit. The old text
@@ -124,9 +126,16 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 1. Never create `.bak` copies of prompt files. Edit in place.
 2. Ask: is this change **shared truth** or **CC policy**? Shared truth lands in CRC too, this
    session. CC policy gets a row in [../CHANNELS.md](../CHANNELS.md).
-3. If you are porting from CRC, translate the axes: an office-visit block becomes a `calltransfer`
-   block only where escalation is genuinely warranted — otherwise it stays inline. Insider phrasing
-   becomes third-party phrasing.
+3. If you are porting from CRC, translate **three** axes, not one:
+   - **Escalation.** CRC's `calltransfer` / `SENIOR TEAM TRANSFER` / T1–T4 blocks have NO IVRS
+     translation. They become a registered complaint plus the honest two-half answer (Axis 1), or
+     they are dropped. Never leave a dangling reference to a transfer section you deleted.
+   - **Identity.** CRC's `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` do not exist here. This is
+     the Bharat Petroleum, Mumbai Headquarters office, and its address is fixed knowledge, not
+     injected data. Insider phrasing becomes third-party phrasing.
+   - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
+     language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
+     fixed closing string becomes a `preToolMessage` composed in the call's language.
 
 ---
 

@@ -14,14 +14,24 @@ shared truth that must stay identical across all three channels lives in [../CLA
 
 ## What makes this channel different
 
-- **Escalation is `calltransfer`.** Vaani can hand the consumer to a human senior team, inline in
-  ten agents. It fires only on `Default` STAGE 0 interrupts: an explicit request for a person, a
-  request for a language other than Hindi, or a non-LPG Bharat Petroleum product. Never blind,
-  never proactively offered, never as a route for a clear LPG topic.
-- **Callbacks are scheduled.** After a *failed* transfer only — a slot between 9am and 5pm within
-  15 days, written into the complaint. No complaint number is spoken on a callback complaint.
-- **Persona: Bharat Petroleum central.** The distributor is a third party — "आपके distributor".
-  Insider phrasing ("हमारे यहाँ", "हमारा office") is CRC's voice and must not appear here.
+- **There is NO `calltransfer` and NO escalation to a person.** No agent in this channel holds the
+  tool. There is no senior team a consumer can be put through to and no number any agent may give.
+  When a consumer asks for a person, the correct turn has two halves and a missing half is a
+  defect: (a) that Vaani has no option to connect them, said plainly and warmly, and (b) what IS
+  happening for them — a registered complaint, its number, and that our team will make contact.
+  `calltransfer` must be **de-registered on the platform for IVRS**.
+- **Escalation is a registered complaint, and there is nothing after it.** No transfer, no
+  callback, no office visit. `bpcl_create_complaint` is the only escalation any agent holds, and
+  `Default`, `emergencyAgent`, `newConnectionAgent_onHold` and `getConsumerDetails` hold not even
+  that.
+- **No callbacks are scheduled.** This channel schedules none. A consumer asking to be called back
+  is asking to reach a person, and is answered the same way — honestly, plus the complaint.
+- **Persona: Bharat Petroleum central.** This is the national head office in Mumbai, so the
+  distributor is a third party and saying so is correct and expected — it always means a PHONE
+  enquiry, never a journey. Insider phrasing that implies the consumer's own local office is CRC's
+  voice and must not appear here. No agent ever sends a consumer to an office to resolve a problem;
+  the only two carve-outs are physical actions at their own distributor's counter — buying a
+  hotplate/stove and submitting K Y C documents.
 
 ## Layout
 
@@ -39,7 +49,7 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 
 | Folder | Agents |
 |---|---|
-| [getConsumerDetails/](prompts/getConsumerDetails/) | `getConsumerDetails` — number capture, entry for unregistered callers |
+| [getConsumerDetails/](prompts/getConsumerDetails/) | `getConsumerDetailsLive` — **the deployed** number-capture prompt; `getConsumerDetails` kept in step with it; `getConsumerDetails-unreg` is a pointer file for legacy deployment names |
 | [Default/](prompts/Default/) | `Default` — greeting, emergency interrupt, FAQ, triage, routing |
 | [routingAgent/](prompts/routingAgent/) | `routingAgent` — silent mid-call re-router |
 | [emergencyAgent/](prompts/emergencyAgent/) | `emergencyAgent` — gas hazard, overrides everything |
@@ -48,9 +58,10 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 | [paymentAgent/](prompts/paymentAgent/) | `paymentAgent` — payment, refund, overcharge |
 | [subsidyAgent/](prompts/subsidyAgent/) | `subsidyAgent` — subsidy / DBTL / PAHAL |
 | [connectionServicesAgent/](prompts/connectionServicesAgent/) | `connectionServicesAgent` — KYC, address, mobile, name, surrender, portability, PNG |
-| [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent` — new connection / Ujjwala / PMUY |
+| [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent_onHold` — **the LIVE prompt**, the 14.2 kg hold. `newConnectionAgent.txt` is **PARKED — do not ship**: it is the full journey, retained for restoration, and still carries Hindi/CRC/transfer conversion debt (see its header) |
 | [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all |
-| [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript. On an AI call: `postCallAnalysisFlat.txt` first, then `promptQA.txt` |
+| [unregisteredComplaintAgent/](prompts/unregisteredComplaintAgent/) | `unregisteredComplaintAgent` — activated by the platform when identification found no record; holds the KB and `bpcl_create_complaint`, no `switchagent`, no transfer |
+| [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript. On an AI call: `postCallAnalysisFlat.txt` first, then `vaaniQA.txt` |
 
 **Topology.** `Default` triages the front of the call. Every specialist is a leaf whose only switch
 target is `routingAgent`. No leaf switches to another leaf, and **nothing ever routes back to
@@ -60,14 +71,16 @@ target is `routingAgent`. No leaf switches to another leaf, and **nothing ever r
 
 - **The tool call is the action, not the sentence.** Speaking a registering line registers nothing.
   A spoken line with no tool call on that same turn is a failed turn.
-- **One thing speaks per tool turn.** Write the Hindi line as text and pass no `preToolMessage` —
-  except `callhangup`, which carries the closing line in `preToolMessage` and generates no text.
+- **One thing speaks per tool turn.** Write the spoken line, in the consumer's language, as text
+  and pass no `preToolMessage` — except `callhangup`, which carries the closing line in
+  `preToolMessage`, composed in the consumer's language, and generates no text of its own.
 - **Switching is invisible.** Never reveal that other agents, teams or systems exist. The one
-  exception in this channel is `calltransfer`, where naming the team is allowed because the
-  consumer is about to hear a different voice.
+  exception in this channel is saying that a consumer CANNOT be connected to a senior team — the
+  meaning is permitted there only in order to refuse it honestly.
 - **Voice/TTS:** Consumer's Indian language, 1–2 sentences per turn, one question per turn. "भारत पेट्रोलियम" in
-  full, never "BPCL". Never say टंकी or जोड़. Never speak a raw digit or a `{{variable}}`.
-  Complaint numbers are spoken in Hindi digit words here.
+  full, transliterated into the call's own script, never "BPCL". Never speak a raw digit or a
+  `{{variable}}`. Every long number — complaint numbers included — is spoken digit by digit in the
+  digit words of the language the consumer is speaking, one language per number, never mixed.
 - `bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else — every other prompt
   that mentions it does so in a blocker forbidding the call.
 
