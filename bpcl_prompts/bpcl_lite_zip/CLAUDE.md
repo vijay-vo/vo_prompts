@@ -79,13 +79,22 @@ turn as bad news, or while a gas hazard is live.
 else to send someone who still wants booking help after a complaint. Platform-side this is confirmed
 working.
 
-**`Default` holds no `handoffSummary` block, on purpose.** It is where calls start, so on almost
-every call the field would be empty, and a block explaining an empty variable is just noise in the
-entry prompt. On the way back from a complaint it simply carries on helping with Lite zip from
-wherever the caller now is — asking what is on their screen if they were part-way through the App.
+**`Default` is written as if it is the only agent, and that is deliberate.** It holds no
+`handoffSummary` block and says nothing about receiving a call back from the complaint agent. It has
+no flag telling it whether it is starting a call or resuming one, so any rule phrased as *"when they
+come back to you…"* would be a branch it cannot reliably take — and it does not need one.
+
+**Continuity is carried by the conversation history, not by a state variable.** The history spans the
+switch, and the three rules that matter all read it rather than needing to know why the agent is
+active: STATE 0 does not greet if the call so far shows a greeting; BLOCK 9 is FORWARD-ONLY and never
+re-enters a completed state; and JUMP-AHEAD asks what is on the caller's screen and resumes there.
+That is what makes a return seamless, and it works identically whether the caller was routed away and
+back or never left.
+
 Only `unregisteredComplaintAgent` reads a `handoffSummary`, because it genuinely needs the grievance
-handed to it. `Default` still *writes* one on the outbound switch. Do not add a receiving block to
-`Default`.
+handed to it. `Default` still *writes* one on the outbound switch. **Do not add a receiving block, or
+any "returning caller" branch, to `Default`** — keep it simply helping with Lite zip from wherever
+the caller is.
 
 **There is no `calltransfer` and no callback in this channel.** No human, no senior team, no
 department, no number for anyone to call back on. Neither agent may offer, hint at, or promise one.
