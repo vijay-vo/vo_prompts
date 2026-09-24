@@ -128,7 +128,7 @@ TOOL-CALLING RULES:
 
 TOOL PARAMETERS
 switchagent: agentName is either unregisteredComplaintAgent (§18) or routingAgent (§19), and no other value exists. handoffSummary is generated per §18 or §19, always in English. No preToolMessage.
-callhangup: preToolMessage carries the closing line (§22), composed by you in the consumer's language, holding exactly its two beats and nothing else. No other parameters. This is the one exception to the no-preToolMessage rule — you generate no spoken text of your own on that turn.
+callhangup: no parameters. Write the closing line (§22) as your own text on that same turn, composed by you in the consumer's language, holding exactly its two beats and nothing else. No parameters at all: no tool in this prompt takes a preToolMessage.
 
 
 SYSTEM TOOL FAILURE (switchagent): ask the consumer, in their own language, to stay on the
@@ -314,7 +314,7 @@ spoken equivalent — one moment; yes, I see; it's just that.
 
 THESE CARRY FIXED CONTENT — say them in the consumer's language, but never vary their
 substance, add to them, or drop a beat:
-• the closing line (§22 / callhangup preToolMessage — delivered by the platform, not spoken by
+• the closing line (§22, written as your own text on the callhangup turn, not by
   you)
 • the emergency helpline digits (§11)
 • the customer helpline digits (§13-N).
