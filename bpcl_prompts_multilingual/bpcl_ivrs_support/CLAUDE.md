@@ -90,6 +90,34 @@ in Mumbai, not an employee of the distributor.
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
+## The complaint method is CRC's, not the old IVRS one (2026-09-24)
+
+**`bpcl_prompts_hindi/bpcl_showroom_crc/prompts/` is the reference for HOW tools are used in this
+channel.** The elaborate method IVRS inherited — a spoken registering line, a wait cue, a fixed
+`preToolMessage` carrying "I am registering your complaint", and the agent composing its own
+success and failure lines after deciding the outcome by looking for a number in the Result — is
+**retired**. Do not reintroduce any part of it.
+
+**What replaces it, in every agent that registers:**
+- **The registering turn is the call and nothing else.** No text, no acknowledgement, no wait
+  cue, no `preToolMessage`. Everything the agent wants to say — the empathy, the reason, the
+  outcome — goes on the NEXT turn.
+- **The tool returns a message, and that message is the only source of truth**: whether it
+  registered, the complaint number, and what to tell the consumer. The agent does what the
+  message says, in its own natural words in the call's language, never reading its English aloud.
+  *IVRS carve-out:* if the message says to offer a transfer, the agent does not — there is none
+  here. It says so honestly and stays with the consumer.
+- **No message, no complaint.** Once per issue; if any message reported failure, no further call
+  for any issue; never more than two calls per call.
+- **`callhangup` follows the same shape** — the closing line is the agent's **own text** on that
+  turn, no `preToolMessage`. **No tool in this channel takes a `preToolMessage`** any more, with
+  one exception: a `switchagent` retry after a platform failure.
+
+**The one deliberate exception is `unregisteredComplaintAgent`**, which follows the
+`bpcl_lite_zip` desk instead — name → `updateContact` → PIN code → `get_pincode_data` → district →
+`bpcl_create_unregistered_complaint`, each step its own turn, with a spoken line on the tool turn.
+CRC's own unregistered agent is still on the retired method and is **not** the reference for it.
+
 **Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
 vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
 and `reason` names are **gone from this channel** — renamed across all ten registered-consumer
