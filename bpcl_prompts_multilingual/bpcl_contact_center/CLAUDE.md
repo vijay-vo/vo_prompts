@@ -12,6 +12,28 @@ the two axes below.
 
 ---
 
+## Re-derived from IVRS (2026-09-24) — read this first
+
+**The prompts in this channel are [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) plus
+`calltransfer`, and nothing else** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01). The complaint
+method (CPL-22), the two complaint tools, `unregisteredComplaintAgent`, the Bharat Gas Lite zip
+ownership in `newConnectionAgent_onHold.txt`, and the post-call set (`postCallAnalysisFlat.txt` +
+`vaaniQA.txt`) are all IVRS's. Where anything below this section disagrees with that, this section
+wins.
+
+- **Transfer conditions come from `bpcl_prompts_hindi/bpcl_showroom_crc`:** complaint first, then
+  T1–T4, one attempt per call, the call alone with no text. Held by the ten leaves,
+  `newConnectionAgent_onHold` (§20A), `routingAgent` (the one case) and `unregisteredComplaintAgent`.
+  `Default`, `emergencyAgent` and the `getConsumerDetails` prompts never transfer.
+- **Porting rule:** a fix to IVRS lands here in the same session unless it touches escalation. This
+  channel and `bpcl_showroom_crc` are identical except for the `vaaniQA` channel label.
+- **Deploy:** `newConnectionAgent_onHold.txt` is the live `newConnectionAgent`;
+  `newConnectionAgent.txt` is parked. `postCallAnalysis.txt` and `promptQA.txt` are gone.
+- **Tools** (adds to the inventory below): `bpcl_create_unregistered_complaint`, `updateContact`,
+  `get_pincode_data` — `unregisteredComplaintAgent` only.
+
+---
+
 ## Axis 1 — Escalation: `calltransfer`, held by every routing-capable agent
 
 Vaani can hand the consumer to a human senior team. **Rewritten 2026-08-27** — the old text on
