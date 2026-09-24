@@ -83,11 +83,46 @@ in Mumbai, not an employee of the distributor.
 ## Channel-specific inventory
 
 **Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`,
+`bpcl_create_unregistered_complaint`, `updateContact`, `get_pincode_data`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
+
+**Two complaint tools, split by whether we hold a record** (2026-09-24). A REGISTERED consumer's
+complaint is registered by the agent that owns the problem, on `bpcl_create_complaint`
+(`ConsumerDetailsConsumerName` + `complaintSummary` + `complaintReason`). An UNREGISTERED
+consumer's goes to `unregisteredComplaintAgent`, which is the only holder of
+`bpcl_create_unregistered_complaint` and runs a fixed three-tool chain: confirmed name →
+`updateContact` → PIN code → `get_pincode_data` → confirmed district →
+`bpcl_create_unregistered_complaint`. `complaintReason` there is copied character for character
+from a nine-value backend list. No other agent may call any of those three.
+
+## Bharat Gas Lite zip — `newConnectionAgent` owns it (2026-09-24)
+
+`newConnectionAgent` (`newConnectionAgent_onHold.txt`) is the **Bharat Gas Lite zip specialist**, and
+that is now the larger half of its job. Lite zip is the default for anyone asking for gas, a
+cylinder or a connection; the 14.2 kg closure is a **reactive** block that never opens a call and
+never travels without the lite zip pivot. It owns the product facts, the Q&A-versus-guided mode
+gate, the twelve-state Hello BPCL App flow, the dead ends, and the complaint gate.
+
+**The fact set is `bpcl_lite_zip`'s, and it overrides everything older:** two sizes, 10 kg and 5 kg;
+**never** a price; **never** a four-hour promise — same day for a daytime order, next day 8am–8pm
+for an evening or night one; App-only booking; domestic, commercial and industrial; documents shown
+at delivery, never uploaded; no eligibility check; new connection versus refill decided by one
+question; no subsidy, stated plainly; availability and stock never claimed and a PIN code never
+asked for. `zip` is always **lowercase** — capitals make TTS spell it out.
+
+**Routing.** `Default` and the specialists keep their existing routes untouched; only a clear intent
+to take, refill or be guided through lite zip goes to `newConnectionAgent`. Other specialists keep
+their short lite zip KB, answer from it, and hold the call — a passing mention is never a handover.
+Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer owns "how to get
+one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
+state — and that agent reaches `routingAgent` only on the way back out.
+
+**Greeting.** `Default` opens on lite zip with a fixed line, usually configured as the platform's
+first message. It is the one turn not in the consumer's language, because they have not spoken yet.
 
 **Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
 those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which
