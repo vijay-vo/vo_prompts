@@ -12,6 +12,28 @@ translating the two axes below.
 
 ---
 
+## Re-derived from IVRS (2026-09-24) — read this first
+
+**The prompts in this channel are [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) plus
+`calltransfer`, and nothing else** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01). They are
+identical to [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md)'s except for the `vaaniQA`
+channel label. Where the history below disagrees with this section, this section wins.
+
+- **Transfer conditions come from `bpcl_prompts_hindi/bpcl_showroom_crc`:** complaint first, then
+  T1–T4, one attempt per call, the call alone with no text. Held by the ten leaves,
+  `newConnectionAgent_onHold` (§20A), `routingAgent` (the one case) and `unregisteredComplaintAgent`.
+  `Default`, `emergencyAgent` and the `getConsumerDetails` prompts never transfer — unlike the Hindi
+  CRC, a caller with no record goes to `unregisteredComplaintAgent`, not to a transfer offer.
+- **⚠️ Identity came from IVRS too.** Agents now speak as the Bharat Petroleum, Mumbai
+  Headquarters office; `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` are no longer used by any
+  live prompt (only the parked `newConnectionAgent.txt` body and the old
+  `getConsumerDetails_MultiToolVersion.txt` still name them). Restoring a CRC office identity is a separate, deliberate change.
+- **Untouched CRC-only files:** `postCallAnalysisHuman.txt`, `naya.json`, `purana.json`, and
+  `getConsumerDetails_MultiToolVersion.txt` (old design — not deployed).
+- **Porting rule:** a fix to IVRS lands here in the same session unless it touches escalation.
+
+---
+
 ## Axis 1 — Escalation: the complaint comes first, then a transfer. Still no office visit.
 
 **CRC tool-result model (TOOL-06/07).** `bpcl_create_complaint` and `calltransfer` are silent action turns with no text or `preToolMessage`. A complaint call passes only `complaintSummary` and `complaintReason`; its Result alone determines success, number and spoken outcome. `callhangup` carries its closing line in `preToolMessage` and gets no speech after its Result. `switchagent` remains the sole tool turn with natural agent text. This is CRC-specific and must not be copied into CC or IVRS.
