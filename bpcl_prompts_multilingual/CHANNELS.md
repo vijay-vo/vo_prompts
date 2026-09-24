@@ -1545,6 +1545,26 @@ difference. The repo now has **three** channels, not two.
 | **⚠️ Platform** | `calltransfer` must be **de-registered for IVRS**, so a model that hallucinates the tool name cannot invoke anything. The prompts forbid it by name; the platform should make it impossible. |
 | **Verified** | Zero live `calltransfer` references (only the named prohibitions the TOOL-01 pattern requires); no `SENIOR TEAM TRANSFER`, no `callTransferred`, no dangling T1–T4 or C5x references; `bpcl_create_complaint` intact in 16 files; `LANGUAGE — ONE RULE` intact in 15; `routingAgent` the only `switchagent` target. |
 
+### IVRS-PORT-01 · CC and CRC re-derived from IVRS; the only difference is `calltransfer` — CC and CRC (2026-09-24)
+
+**IVRS is now the reference channel.** Every prompt in `bpcl_contact_center/prompts/` and
+`bpcl_showroom_crc/prompts/` was regenerated from `bpcl_ivrs_support/prompts/` (CPL-22 complaint
+method, `complaintSummary`/`complaintReason`, `unregisteredComplaintAgent` desk, Bharat Gas Lite zip
+ownership, the IVRS post-call set) and then given back one thing: the senior-team transfer.
+
+| | |
+|---|---|
+| **The one difference from IVRS** | `calltransfer` exists. The transfer *conditions* are the Hindi CRC's (`bpcl_prompts_hindi/bpcl_showroom_crc`): complaint first, then T1 (asks for a person after being helped/registered), T2 (handoffSummary shows the ask AND the issue already handled), T3 (the complaint tool failed — the one offer Vaani raises herself, asked once), T4 (a callback request). Never volunteered, never a first move, one attempt per call that survives a switch, the call alone with no text and no `preToolMessage` (TOOL-07), two outcomes read from the Result, no close in the same turn as a failed transfer. |
+| **What replaced IVRS's text** | `NO HUMAN TRANSFER IN THIS CHANNEL` → `SENIOR TEAM TRANSFER` (identical in every leaf, both voices); `calltransfer — NOT AVAILABLE` → `AUTHORIZED, AND MINE/YOURS` and `IS MINE/YOURS`; tool blockers list `calltransfer`; "already registered" and "still wants a person" lines become T1; the complaint-failure path offers T3 instead of ending. Every Hindi example line from the CRC source became a meaning anchor. |
+| **Who holds it** | The ten complaint-capable leaves, `newConnectionAgent_onHold` (§20A — only after its own answer), `routingAgent` (the one case: already helped, still asking), and `unregisteredComplaintAgent` (T1–T4, T3 on a failed `bpcl_create_unregistered_complaint`). |
+| **Who does not** | `Default` and `emergencyAgent` carry the CRC's *NOT AUTHORIZED* clause. The three `getConsumerDetails` prompts keep the IVRS design — they own no ending, the platform sends a no-record caller to `unregisteredComplaintAgent` — so number capture never transfers. This is a deliberate departure from the Hindi CRC, whose `getConsumerDetails` offers a transfer at its no-data close. |
+| **Post-call** | `postCallAnalysisFlat` gets back the `callTransferred` field and the `"callTransferred"` `callResult` value (the Hindi CRC's TOOL-07 wording — no spoken announcement to look for). `vaaniQA` gets back C5a–C5d and C5h–C5j (Hindi CRC), with the getConsumerDetails carve-out removed for the reason above. |
+| **CC file changes** | `postCallAnalysis.txt` deleted and `promptQA.txt` replaced by `vaaniQA.txt` (as IVRS did). New: `getConsumerDetailsLive.txt`, `getConsumerDetails-unreg.txt`, `newConnectionAgent_onHold.txt`. `newConnectionAgent.txt` is now the PARKED full journey — **the platform must point at `newConnectionAgent_onHold.txt`**. |
+| **CRC file changes** | Every prompt that exists in IVRS was replaced. CRC-only files were left untouched: `postCallAnalysisHuman.txt`, `naya.json`, `purana.json`, `getConsumerDetails_MultiToolVersion.txt` (the last is on the old design; treat as not deployed). |
+| **⚠️ CRC identity** | Taken from IVRS like everything else: CRC agents now speak as the **Bharat Petroleum, Mumbai Headquarters office**, not as a CRC at `{{crcOfficeCity}}`. This follows the instruction that transfer is the only difference. If the showroom CRC must keep its own office identity, that is a separate change (the identity axis — ~60 sentences per the IVRS CLAUDE.md porting notes). |
+| **Porting rule from now on** | A fix to IVRS lands in CC and CRC in the same session unless it touches escalation; CC and CRC are identical to each other except for the `vaaniQA` channel label. |
+| **Verified** | No `NO HUMAN TRANSFER`, "no transfer in this channel", or "no option to connect" text remains; `calltransfer` counts per agent match the Hindi CRC (leaves 18–22, routing 6, Default 1); every `SENIOR TEAM TRANSFER` holder has the `RESOLUTION LADDER` and `COMPLAINT TOOL` sections it cites; every line that differs from IVRS sits inside the transfer text. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences

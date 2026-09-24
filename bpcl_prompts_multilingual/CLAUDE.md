@@ -22,6 +22,11 @@ Commit deliberately — see "Change discipline" below.
 Both channels run the **same 15-agent topology** (CRC's 16th agent, `callTransferAgent`, was deleted by XFER-03), the same handoff contract, the same LPG domain
 facts, and the same Hindi/TTS voice rules. Those are shared truth and must not diverge.
 
+**Since 2026-09-24 (CHANNELS.md IVRS-PORT-01) `bpcl_ivrs_support` is the reference channel.** CC
+and CRC prompts are IVRS plus `calltransfer` (transfer conditions from
+`bpcl_prompts_hindi/bpcl_showroom_crc`), and are identical to each other apart from the `vaaniQA`
+channel label. Where older text in this file describes CC/CRC differently, IVRS-PORT-01 wins.
+
 Every intended difference is recorded in [CHANNELS.md](CHANNELS.md). **A difference between the
 two channels that is not in that ledger is a drift bug, by definition.** That rule is the whole
 point of this repo's structure.
