@@ -90,14 +90,23 @@ in Mumbai, not an employee of the distributor.
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**Two complaint tools, split by whether we hold a record** (2026-09-24). A REGISTERED consumer's
-complaint is registered by the agent that owns the problem, on `bpcl_create_complaint`
-(`ConsumerDetailsConsumerName` + `complaintSummary` + `complaintReason`). An UNREGISTERED
-consumer's goes to `unregisteredComplaintAgent`, which is the only holder of
-`bpcl_create_unregistered_complaint` and runs a fixed three-tool chain: confirmed name →
-`updateContact` → PIN code → `get_pincode_data` → confirmed district →
-`bpcl_create_unregistered_complaint`. `complaintReason` there is copied character for character
-from a nine-value backend list. No other agent may call any of those three.
+**Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
+vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
+and `reason` names are **gone from this channel** — renamed across all ten registered-consumer
+agents in the same pass, to match [`bpcl_prompts_hindi`](../../bpcl_prompts_hindi/CLAUDE.md), which
+is the reference for this contract. Do not reintroduce them.
+
+- **REGISTERED consumer** → the agent that owns the problem registers it itself, on
+  `bpcl_create_complaint`, passing **exactly two** parameters: `complaintSummary` (one or two lines
+  of English, only what the consumer said) and `complaintReason` (the exact matching phrase from
+  that agent's own domain list, or `others`). Everything else — consumer id, mobile, name, state,
+  district, date — is the platform's. No PIN code step.
+- **UNREGISTERED consumer** → `unregisteredComplaintAgent`, the only holder of
+  `bpcl_create_unregistered_complaint`, which runs a fixed three-tool chain: confirmed name →
+  `updateContact` → PIN code → `get_pincode_data` → confirmed district →
+  `bpcl_create_unregistered_complaint`, passing `ConsumerDetailsConsumerName` + `complaintSummary` +
+  `complaintReason`. Its `complaintReason` is copied character for character from a nine-value
+  backend list. No other agent may call any of those three tools.
 
 ## Bharat Gas Lite zip — `newConnectionAgent` owns it (2026-09-24)
 
