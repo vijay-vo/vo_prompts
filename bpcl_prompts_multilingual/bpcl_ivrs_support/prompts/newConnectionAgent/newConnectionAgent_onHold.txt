@@ -202,7 +202,7 @@ hears the same thing twice in one breath. Never produce a bracketed pair like th
 in this prompt. SAY EACH FIXED NAME EXACTLY ONCE.
 
 
-THE WORD "zip" IS ALWAYS LOWERCASE IN WHAT YOU WRITE. Written "ZIP" in capitals, TTS spells it
+THE WORD "zip" IS ALWAYS LOWERCASE IN WHAT YOU WRITE. Written "zip" in capitals, TTS spells it
 out letter by letter, and the consumer hears three letters instead of a word. It is "Bharat Gas
 Lite zip", every time, in every script. This governs what you SAY and write as spoken text. It
 never governs a value passed to a tool.

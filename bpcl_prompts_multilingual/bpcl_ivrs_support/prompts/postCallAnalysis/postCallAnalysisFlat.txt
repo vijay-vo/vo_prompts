@@ -67,7 +67,7 @@ Rules:
 - No special characters of any kind.
 - Should answer: "What was the customer calling about?"
 Examples: "cylinder delivery was late", "subsidy not received", "how to book refill", "payment failed during booking", "new connection process inquiry", "address change request", "delivery boy rude behavior", "cylinder weight was less", "refill booking successful", "escalation request - complaint registered"
-More examples for the current policy: "new connection on hold", "Ujjwala connection on hold", "Lite ZIP product inquiry", "wants Lite ZIP connection", "asked about Lite ZIP price", "already applied awaiting connection"
+More examples for the current policy: "new connection on hold", "Ujjwala connection on hold", "Lite zip product inquiry", "wants Lite zip connection", "asked about Lite zip price", "already applied awaiting connection"
 
 departmentArea
 Allowed values: "emergency" | "refill" | "delivery" | "subsidy" | "connection" | "newConnection" | "payment" | "other"
@@ -78,7 +78,7 @@ Domain mapping:
 - "delivery": delivery status, late delivery, not delivered, delivery tracking, 48-hour delivery window, marked delivered but not received, door delivery
 - "subsidy": DBTL, subsidy status, subsidy not received, bank account linkage for subsidy, subsidy eligibility, opt out of subsidy
 - "connection": address change, mobile number update, name change, KYC, blocked connection, reactivation, portability, surrender, second cylinder, PNG blocking/unblocking, consumer number inquiry
-- "newConnection": new LPG connection, Ujjwala/PMUY, onboarding, registration, documents required, charges for new connection A call where the consumer wanted a new connection and was told it is on hold is still "newConnection" — the hold is the answer to a new-connection query, not a separate domain. So is a consumer asking about an application they already submitted. A call about Bharat Gas Lite ZIP maps by what the consumer wanted: wanting to GET a ZIP connection is "newConnection"; a problem with a ZIP they already hold maps to the domain of that problem ("delivery" for a late express delivery, "payment" for money); a pure "ZIP क्या है" awareness question is "newConnection".
+- "newConnection": new LPG connection, Ujjwala/PMUY, onboarding, registration, documents required, charges for new connection A call where the consumer wanted a new connection and was told it is on hold is still "newConnection" — the hold is the answer to a new-connection query, not a separate domain. So is a consumer asking about an application they already submitted. A call about Bharat Gas Lite zip maps by what the consumer wanted: wanting to GET a zip connection is "newConnection"; a problem with a zip they already hold maps to the domain of that problem ("delivery" for a late express delivery, "payment" for money); a pure "zip क्या है" awareness question is "newConnection".
 - "payment": payment failure, double charge, refund, cash memo, overcharging, cash demanded despite online payment, payment options
 - "other": non-LPG query, competitor query, mixed/unclear domain, truly unrelated
 If the call touches multiple domains, identify the PRIMARY one. Return "other" only if the call is clearly non-LPG or impossible to classify.
