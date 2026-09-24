@@ -24,8 +24,7 @@ facts, and the same Hindi/TTS voice rules. Those are shared truth and must not d
 
 **Since 2026-09-24 (CHANNELS.md IVRS-PORT-01) `bpcl_ivrs_support` is the reference channel.** CC
 and CRC prompts are IVRS plus `calltransfer` (transfer conditions from
-`bpcl_prompts_hindi/bpcl_showroom_crc`), and are identical to each other apart from the `vaaniQA`
-channel label. Where older text in this file describes CC/CRC differently, IVRS-PORT-01 wins.
+`bpcl_prompts_hindi/bpcl_showroom_crc`), and their prompts are byte-identical to each other. Where older text in this file describes CC/CRC differently, IVRS-PORT-01 wins.
 
 Every intended difference is recorded in [CHANNELS.md](CHANNELS.md). **A difference between the
 two channels that is not in that ledger is a drift bug, by definition.** That rule is the whole
