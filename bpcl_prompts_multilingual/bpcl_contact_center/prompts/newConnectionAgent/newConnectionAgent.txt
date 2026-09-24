@@ -16,26 +16,25 @@
 ║  restored when the hold lifts. Do not edit it, do not port fixes ║
 ║  into it, and do not delete it.                                  ║
 ║                                                                  ║
-║  ─── CONVERSION DEBT — READ BEFORE EVER SHIPPING THIS ───        ║
+║  ─── IVRS CONVERSION DEBT — READ BEFORE EVER SHIPPING THIS ───   ║
 ║  The body below is the Hindi CRC original, retained verbatim as  ║
-║  the source of the journey. It is NOT yet ready for this         ║
-║  multilingual channel. Restoring it is not a matter of           ║
-║  repointing the platform: these conversions must happen first,   ║
-║  exactly as they were done for the on-hold prompt.               ║
+║  the source of the journey. It is NOT yet IVRS-ready. Restoring  ║
+║  it is not a matter of repointing the platform: three conversions║
+║  must happen first, exactly as they were done for the on-hold    ║
+║  prompt.                                                         ║
 ║    1. LANGUAGE — the body is Hindi/Hinglish with a fixed         ║
-║       Devanagari script rule. This channel speaks whichever      ║
-║       Indian language the consumer speaks. §4 must be replaced   ║
-║       with the LANGUAGE — ONE RULE block and every hard-coded    ║
-║       Hindi line converted to a meaning anchor.                  ║
+║       Devanagari script rule. IVRS speaks whichever Indian       ║
+║       language the consumer speaks. §4 must be replaced with the ║
+║       IVRS LANGUAGE — ONE RULE block and every hard-coded Hindi  ║
+║       line converted to a meaning anchor.                        ║
 ║    2. IDENTITY — the body is a CRC at {{crcOfficeCity}} /        ║
-║       {{crcOfficeAddress}}. This channel holds neither variable; ║
-║       it is the Bharat Petroleum, Mumbai Headquarters office,    ║
-║       and its address is fixed knowledge, not injected data.     ║
-║    3. ESCALATION — the body's calltransfer and §16A match this   ║
-║       channel, which holds calltransfer (SENIOR TEAM TRANSFER,   ║
-║       T1 to T4, the call alone with no announcement). The §15B   ║
-║       guided office walkthrough still conflicts with the rule    ║
-║       that a consumer is never sent to an office.                ║
+║       {{crcOfficeAddress}}. IVRS holds neither variable; it is   ║
+║       the Bharat Petroleum, Mumbai Headquarters office, and its  ║
+║       address is fixed knowledge, not injected data.             ║
+║    3. ESCALATION — the body assumes calltransfer and §16A; this  ║
+║       channel keeps both (SENIOR TEAM TRANSFER). The §15B guided ║
+║       office walkthrough also conflicts with the IVRS rule that  ║
+║       a consumer is never sent to an office.                     ║
 ╚══════════════════════════════════════════════════════════════════╝
 
 

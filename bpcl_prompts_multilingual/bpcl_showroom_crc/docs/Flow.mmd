@@ -1,0 +1,198 @@
+flowchart TD
+
+%%========================
+%% ENTRY
+%%========================
+
+CALL(["Inbound Call"])
+--> FETCH["Inbound HTTP<br/>Fetch consumer data using caller number"]
+--> DEF["defaultAgent<br/>Greet · Understand Intent"]
+
+DEF -->|Emergency| EMG["emergencyAgent"]
+DEF -->|New Connection| NC["newConnectionAgent"]
+DEF -->|All Other Queries| REG
+
+%%========================
+%% REGISTRATION CHECK
+%%========================
+
+subgraph VERIFY["Consumer Verification"]
+
+REG{"{{RefillStatusReturnCode}} == 801<br/>AND<br/>{{RefillStatusReturnMsg}} == 'Consumer not found'?"}
+
+REG -- No --> TOPIC
+
+REG -- Yes --> GCD["getConsumerDetails<br/>Capture Registered Mobile Number"]
+
+GCD --> API["bpcl_fetch_all_api"]
+
+API --> RESULT{"Result"}
+
+RESULT -- Success --> TOPIC
+
+RESULT -- Failed --> CT["Offer callTransfer"]
+
+CT --> ACCEPT{"Consumer accepts<br/>AND Transfer Successful?"}
+
+ACCEPT -- Yes --> XFER["Senior Team"]
+
+ACCEPT -- No --> EXIT1["Inform consumer:<br/>Unable to help without consumer data.<br/>Please contact your nearest Bharat Petroleum distributor."]
+
+EXIT1 --> END1(["callHangup"])
+
+XFER --> END2(["callHangup"])
+
+end
+
+%%========================
+%% ROUTING
+%%========================
+
+TOPIC{"Detected Intent"}
+
+TOPIC --> BOOK
+TOPIC --> DEL
+TOPIC --> PAY
+TOPIC --> SUB
+TOPIC --> CONN
+TOPIC --> GEN
+
+%%========================
+%% BOOKING
+%%========================
+
+subgraph BOOK["Booking"]
+
+B1{"{{ConsumerDetailsConsumerStatusDesc}} == Active"}
+
+B1 -- No --> BNE["bookingNonEligibilityAgent"]
+
+B1 -- Yes --> B2{"{{gapToNextKyc}} <= 0"}
+
+B2 -- No --> BNE
+
+B2 -- Yes --> B3{"{{gapToNextBooking}} <= 0"}
+
+B3 -- No --> BNE
+
+B3 -- Yes --> BE["bookingEligibleAgent"]
+
+end
+
+%%========================
+%% DELIVERY
+%%========================
+
+subgraph DEL["Delivery"]
+
+DS{"{{RefillStatusReturnMsg}} != 'No refill found'?"}
+
+DS -- Yes --> D1{"{{RefillStatusBookingClearDate}} >= Today"}
+
+D1 -- Yes --> AD["activeDeliveryAgent"]
+
+D1 -- No --> PD["postDeliveryAgent"]
+
+DS -- No --> RH["Use Refill History<br/>{{RHReturnCode}}<br/>{{RHReturnMsg}}"]
+
+RH --> D2{"{{ConsumerDetailsConsumerStatusDesc}} == Active"}
+
+D2 -- No --> NED["notEligibleDeliveryAgent"]
+
+D2 --> D3{"{{gapToNextKyc}} <= 0"}
+
+D3 -- No --> NED
+
+D3 --> D4{"{{gapToNextBooking}} <= 0"}
+
+D4 -- No --> NED
+
+D4 -- Yes --> ED["eligibleDeliveryAgent"]
+
+end
+
+%%========================
+%% PAYMENT
+%%========================
+
+subgraph PAY["Payment"]
+
+PAYCHK{"{{RefillStatusReturnMsg}} != 'No refill found'?"}
+
+PAYCHK -- Yes --> PAY1["paymentAgent<br/><br/>Use:<br/>{{RefillStatusCashMemoAmount}}"]
+
+PAYCHK -- No --> PAY2["paymentAgent<br/><br/>Fallback:<br/>{{RHcashMemoAmount0}}"]
+
+end
+
+%%========================
+%% SUBSIDY
+%%========================
+
+subgraph SUB["Subsidy"]
+
+SUB1["subsidyAgent<br/><br/>Uses:<br/>{{SDoptedOutStatus}}<br/>{{SDsubsidyAmountEligible0}}<br/>{{SDpaymentTransferStatus0}}<br/>{{SDsettlementDate0}}"]
+
+end
+
+%%========================
+%% CONNECTION SERVICES
+%%========================
+
+subgraph CONN["Connection Services"]
+
+CS["connectionServicesAgent"]
+
+end
+
+%%========================
+%% GENERIC
+%%========================
+
+subgraph GEN["Generic"]
+
+GI["genericInfoComplaintAgent"]
+
+end
+
+%%========================
+%% MULTI INTENT
+%%========================
+
+BE --> LEAF
+BNE --> LEAF
+AD --> LEAF
+PD --> LEAF
+ED --> LEAF
+NED --> LEAF
+PAY1 --> LEAF
+PAY2 --> LEAF
+SUB1 --> LEAF
+CS --> LEAF
+GI --> LEAF
+EMG --> LEAF
+NC --> LEAF
+
+LEAF["Current Agent"]
+
+LEAF -->|"New Intent"| RA["routingAgent"]
+
+RA --> TOPIC
+
+LEAF -->|"Conversation Complete"| END(["callHangup"])
+
+%%========================
+%% COLORS
+%%========================
+
+classDef llm fill:#FFF7E6,stroke:#D97706,color:#7C2D12
+classDef api fill:#E8F5E9,stroke:#15803D,color:#14532D
+classDef decision fill:#EEF2FF,stroke:#4338CA,color:#312E81
+classDef agent fill:#FFFFFF,stroke:#64748B,color:#111827
+classDef endnode fill:#FDECEC,stroke:#BE123C,color:#881337
+
+class DEF,RA llm
+class FETCH,API api
+class REG,RESULT,TOPIC,B1,B2,B3,DS,D1,D2,D3,D4,PAYCHK,ACCEPT decision
+class BE,BNE,AD,PD,ED,NED,SUB1,CS,GI,EMG,NC,PAY1,PAY2,GCD agent
+class END,END1,END2,EXIT1,XFER endnode

@@ -1,40 +1,41 @@
-# bpcl_showroom_crc (CRC)
+# bpcl_showroom_crc
 
-The Consumer Relationship Centre channel — Vaani speaks as staff at a **regional head CRC office**
-covering many districts and many distributors. 15 agents — the same topology as CC — plus the
-post-call analysis prompts.
+**CRC channel.** `bpcl_ivrs_support` with one difference: **`calltransfer` exists.** A consumer
+who wants a person gets a registered complaint first and, if they still want a person, a transfer.
+
+See [CLAUDE.md](CLAUDE.md) for the channel contract and [../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01 for the ledger row.
+
+Central Bharat Petroleum contact centre for the whole state. 15 agents, plus the post-call
+analysis prompts.
 
 **Read [CLAUDE.md](CLAUDE.md) before editing anything here** — it is the channel contract. The
-shared truth that must stay identical to CC lives in [../CLAUDE.md](../CLAUDE.md).
+shared truth that must stay identical across all three channels lives in [../CLAUDE.md](../CLAUDE.md).
 
 ## What makes this channel different
 
-- **The complaint comes first, then a transfer.** Help → route → register → *only then*, if the
-  consumer still wants a person, `calltransfer`. Vaani never volunteers a transfer. **No office
-  visit is ever offered** as an escalation.
-- **Every routing-capable agent holds `calltransfer` and invokes it itself** (CHANNELS.md XFER-03,
-  2026-08-11 — the dedicated `callTransferAgent` was deleted). The transfer turn works exactly like
-  `callhangup`: one parameter, `preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`, and **no spoken
-  text of the agent's own**. The agent then reads the tool's Result — success → silence; failure →
-  it says the team could not be reached and stays until the consumer accepts. `Default` and
-  `emergencyAgent` still hold no transfer.
-- **No phone number is given out.** `{{crcOfficeNumber}}` does not exist in this channel. A consumer
-  who asks for one on the failure branch is told there is none. The consumer's own distributor's
-  number is unaffected.
-- **Callbacks are not scheduled.** A complaint is registered and the team makes contact — no time
-  captured, no window promised.
-- **Persona.** The CRC is a regional head office, not the consumer's own distributor — the
-  distributor is a third party here too, and "अपने distributor से पूछिए" is correct. "हमारे यहाँ"
-  refers to this CRC only.
-- **Complaint numbers** are spoken as English digit words separated by `" - "` (CHANNELS.md NUM-01).
+- **`calltransfer` exists, after the complaint.** The ten leaves, `newConnectionAgent_onHold`,
+  `routingAgent` and `unregisteredComplaintAgent` hold it and invoke it themselves, only at T1–T4
+  (see CLAUDE.md), with no text on the transfer turn and one attempt per call. `Default`,
+  `emergencyAgent` and `getConsumerDetails` never transfer.
+- **Escalation is a registered complaint first.** No callback, no office visit.
+  `bpcl_create_complaint` comes before any transfer, and a failed complaint is the one moment Vaani
+  offers the transfer herself (T3).
+- **No callbacks are scheduled.** This channel schedules none. A consumer asking to be called back
+  is asking to reach a person, and is handled as T4.
+- **Persona: Bharat Petroleum central.** This is the national head office in Mumbai, so the
+  distributor is a third party and saying so is correct and expected — it always means a PHONE
+  enquiry, never a journey. Insider phrasing that implies the consumer's own local office is CRC's
+  voice and must not appear here. No agent ever sends a consumer to an office to resolve a problem;
+  the only two carve-outs are physical actions at their own distributor's counter — buying a
+  hotplate/stove and submitting K Y C documents.
 
 ## Layout
 
 | Path | What it holds |
 |---|---|
-| [CLAUDE.md](CLAUDE.md) | The channel contract — escalation, persona, ZIP policy, complaint rules |
+| [CLAUDE.md](CLAUDE.md) | The channel contract — escalation, persona, tool inventory, open items |
 | [prompts/](prompts/) | The shipped `.txt` prompts, one folder per agent group |
-| [docs/](docs/) | [agent-workflow.md](docs/agent-workflow.md) — the navigation map for all 15 prompts; §11 lists known gaps. §7 links to a `customerStatus-spec.md` that does not exist here |
+| [docs/](docs/) | [ORCHESTRATION.md](docs/ORCHESTRATION.md) (routing spec, spec-only — not yet applied to the prompts), [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd), [CUSTOMER_STATUS_SPEC.md](docs/CUSTOMER_STATUS_SPEC.md) |
 
 ### prompts/ — folder to agent
 
@@ -44,7 +45,7 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 
 | Folder | Agents |
 |---|---|
-| [getConsumerDetails/](prompts/getConsumerDetails/) | `getConsumerDetails` — number capture, entry for unregistered callers |
+| [getConsumerDetails/](prompts/getConsumerDetails/) | `getConsumerDetailsLive` — **the deployed** number-capture prompt; `getConsumerDetails` kept in step with it; `getConsumerDetails-unreg` is a pointer file for legacy deployment names |
 | [Default/](prompts/Default/) | `Default` — greeting, emergency interrupt, FAQ, triage, routing |
 | [routingAgent/](prompts/routingAgent/) | `routingAgent` — silent mid-call re-router |
 | [emergencyAgent/](prompts/emergencyAgent/) | `emergencyAgent` — gas hazard, overrides everything |
@@ -53,46 +54,36 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 | [paymentAgent/](prompts/paymentAgent/) | `paymentAgent` — payment, refund, overcharge |
 | [subsidyAgent/](prompts/subsidyAgent/) | `subsidyAgent` — subsidy / DBTL / PAHAL |
 | [connectionServicesAgent/](prompts/connectionServicesAgent/) | `connectionServicesAgent` — KYC, address, mobile, name, surrender, portability, PNG |
-| [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent` — **deployed file is the `_onHold` variant**; the original apply journey sits beside it, parked |
-| [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all: how-to, equipment faults, behaviour complaints |
-| [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript |
-
-Two folders hold a **variant beside the deployed file** (`newConnectionAgent`, whose original apply
-journey is parked; `getConsumerDetails`, whose QA prompt exercises the individual lookup tools).
-Every file with a twin carries a `STATUS:` marker on line 1 — read it before editing either.
+| [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent_onHold` — **the LIVE prompt**, the 14.2 kg hold. `newConnectionAgent.txt` is **PARKED — do not ship**: it is the full journey, retained for restoration, and still carries Hindi/CRC/transfer conversion debt (see its header) |
+| [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all |
+| [unregisteredComplaintAgent/](prompts/unregisteredComplaintAgent/) | `unregisteredComplaintAgent` — activated by the platform when identification found no record; holds the KB, the unregistered-complaint tools and `calltransfer` |
+| [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript. On an AI call: `postCallAnalysisFlat.txt` first, then `vaaniQA.txt` |
 
 **Topology.** `Default` triages the front of the call. Every specialist is a leaf whose only switch
-target is `routingAgent`. Reaching a person is a `calltransfer` tool call, not a switch, so it adds
-no hop and no destination. Nothing ever routes back to `Default`.
+target is `routingAgent`. No leaf switches to another leaf, and **nothing ever routes back to
+`Default`**.
 
 **Rules that apply to every prompt file here**
 
-- **`calltransfer` is authorized in every routing-capable prompt** — the ten complaint-capable
-  leaves, `newConnectionAgent_onHold`, `routingAgent` and `getConsumerDetails`. `Default` and
-  `emergencyAgent` still carry an explicit *"NOT AUTHORIZED"* clause.
-- **No phone number is offered.** A request for one gets "I don't have a number to give", plus the
-  transfer path where it applies. The consumer's own distributor's number is unaffected.
-- **The complaint comes first.** Help → route → register → *only then* a transfer, and only if the
-  consumer still wants a person. Grievances about something that already happened register directly.
-- **The tool call is the action, not the sentence.** A spoken line with no tool call on that same
-  turn is a failed turn — recover by invoking the tool before anything else on the next turn.
-- **One thing speaks per tool turn.** Hindi line as text, no `preToolMessage` — except `callhangup`.
-- **Switching is invisible.** A `switchagent` turn speaks an anchor line about what the agent is
-  personally looking at, and never names a team, a department or another agent. The one place
-  "transfer" may be said is the `calltransfer` tool's own `preToolMessage`.
+- **The tool call is the action, not the sentence.** Speaking a registering line registers nothing.
+  A spoken line with no tool call on that same turn is a failed turn.
+- **One thing speaks per tool turn.** Write the spoken line, in the consumer's language, as text
+  and pass no `preToolMessage` — except `callhangup`, which carries the closing line in
+  `preToolMessage`, composed in the consumer's language, and generates no text of its own.
+- **Switching is invisible.** Never reveal that other agents, teams or systems exist. The one
+  exception is the transfer itself, which is the call alone — nothing announces it.
 - **Voice/TTS:** Consumer's Indian language, 1–2 sentences per turn, one question per turn. "भारत पेट्रोलियम" in
-  full, never "BPCL". Never say टंकी or जोड़. Never speak a raw digit or a `{{variable}}`.
-  Complaint numbers use English digit words separated by `" - "`.
+  full, transliterated into the call's own script, never "BPCL". Never speak a raw digit or a
+  `{{variable}}`. Every long number — complaint numbers included — is spoken digit by digit in the
+  digit words of the language the consumer is speaking, one language per number, never mixed.
 - `bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else — every other prompt
   that mentions it does so in a blocker forbidding the call.
 
-**Known naming defects — do not propagate:** this workspace's folder is `genericInfoComplaint/`
-while the canonical agent name is `genericInfoComplaintAgent`; `bookingEligibleAgent.txt` is titled
-"(NON-ELIGIBILITY BLOCKER CASE)" but holds the eligible flow; `deliveryGenericAgent` and
-`refillSupportAgent` are named as routing targets but **do not exist**.
+**Known naming defects — do not propagate:** `bookingEligibleAgent.txt` is titled "(NON-ELIGIBILITY
+BLOCKER CASE)" but holds the eligible flow; `deliveryGenericAgent` and `refillSupportAgent` are
+named as routing targets in several prompts but **do not exist**.
 
 ## Sister channel
 
-[`bpcl_contact_center`](../bpcl_contact_center/) — its prompts look almost identical to these and
-are **not** interchangeable. A `calltransfer` block has no valid CRC translation; it becomes a
-complaint-escalation block. Every intended difference is recorded in [../CHANNELS.md](../CHANNELS.md).
+[`bpcl_contact_center`](../bpcl_contact_center/) — its prompts are byte-identical to these. [`bpcl_ivrs_support`](../bpcl_ivrs_support/)
+is identical except for the transfer. Every intended difference is recorded in [../CHANNELS.md](../CHANNELS.md).

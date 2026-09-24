@@ -1,567 +1,214 @@
 # bpcl_showroom_crc (CRC) — channel contract
 
-The physical Consumer Relationship Centre — the distributor's own office, in each major city of
-the state. The consumer can walk in.
+Bharat Petroleum's **showroom CRC channel** — serving LPG consumers across India, in whatever Indian language they speak.
 
-Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth that must stay identical to CC.
-This file holds **only what is specific to this channel.**
+**Re-derived 2026-09-24 from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), with exactly
+one policy difference: `calltransfer` exists** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01).
+Everything else — the 15-agent topology plus `unregisteredComplaintAgent`, the handoff contract, the
+LPG domain facts, the multilingual rule, the head office identity and address, the complaint method,
+the Bharat Gas Lite zip ownership, the post-call set — is IVRS's, word for word, and must not
+diverge. The transfer text is the Hindi CRC's (`bpcl_prompts_hindi/bpcl_showroom_crc`), with its
+Hindi example lines turned into meaning anchors and nothing else changed.
 
-Sister channel: [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md). Their prompts look
-almost identical to these and are **not** interchangeable. Never copy a block across without
-translating the two axes below.
+Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth. This file holds **only what is
+specific to this channel.**
 
----
+Sister channels: [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) — its prompts are byte-identical to these —
+and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), identical except for the transfer.
 
-## Re-derived from IVRS (2026-09-24) — read this first
-
-**The prompts in this channel are [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) plus
-`calltransfer`, and nothing else** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01). They are
-identical to [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md)'s except for the `vaaniQA`
-channel label. Where the history below disagrees with this section, this section wins.
-
-- **Transfer conditions come from `bpcl_prompts_hindi/bpcl_showroom_crc`:** complaint first, then
-  T1–T4, one attempt per call, the call alone with no text. Held by the ten leaves,
-  `newConnectionAgent_onHold` (§20A), `routingAgent` (the one case) and `unregisteredComplaintAgent`.
-  `Default`, `emergencyAgent` and the `getConsumerDetails` prompts never transfer — unlike the Hindi
-  CRC, a caller with no record goes to `unregisteredComplaintAgent`, not to a transfer offer.
-- **⚠️ Identity came from IVRS too.** Agents now speak as the Bharat Petroleum, Mumbai
-  Headquarters office; `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` are no longer used by any
-  live prompt (only the parked `newConnectionAgent.txt` body and the old
-  `getConsumerDetails_MultiToolVersion.txt` still name them). Restoring a CRC office identity is a separate, deliberate change.
-- **Untouched CRC-only files:** `postCallAnalysisHuman.txt`, `naya.json`, `purana.json`, and
-  `getConsumerDetails_MultiToolVersion.txt` (old design — not deployed).
-- **Porting rule:** a fix to IVRS lands here in the same session unless it touches escalation.
+**Porting rule for this channel:** a fix landing in IVRS lands here too, in the same session, and in
+`bpcl_contact_center`, UNLESS it touches escalation. Where IVRS refuses a transfer, this channel carries the
+Hindi CRC's transfer line for the same agent instead.
 
 ---
 
-## Axis 1 — Escalation: the complaint comes first, then a transfer. Still no office visit.
+## Axis 1 — Escalation: the complaint comes first, then a transfer
 
-**CRC tool-result model (TOOL-06/07).** `bpcl_create_complaint` and `calltransfer` are silent action turns with no text or `preToolMessage`. A complaint call passes only `complaintSummary` and `complaintReason`; its Result alone determines success, number and spoken outcome. `callhangup` carries its closing line in `preToolMessage` and gets no speech after its Result. `switchagent` remains the sole tool turn with natural agent text. This is CRC-specific and must not be copied into CC or IVRS.
+**This is the only thing that makes this channel different from IVRS.**
 
-> **REVISED 2026-08-11 — see [../CHANNELS.md](../CHANNELS.md) XFER-03.** This channel used to have
-> no transfer at all. XFER-01 gave it one, owned by a single agent. XFER-03 deleted that agent and
-> gave the tool to every routing-capable agent instead. The *when* is unchanged; the *how* is not.
+**`calltransfer` is held and invoked by the agent the consumer is already speaking to**: the ten
+complaint-capable leaves (`SENIOR TEAM TRANSFER` block), `newConnectionAgent_onHold` (§20A),
+`routingAgent` (the one case: already helped, still asking) and `unregisteredComplaintAgent`.
+`Default` and `emergencyAgent` carry the *"`calltransfer` — NOT AUTHORIZED"* clause. The three
+`getConsumerDetails` prompts hold no transfer: they own no ending, and a caller with no record goes
+to `unregisteredComplaintAgent` (the IVRS design, kept).
 
-**`calltransfer` is held and invoked by every routing-capable agent**: the ten complaint-capable
-leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer
-agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
-*"`calltransfer` — NOT AUTHORIZED"* clause.
-
-**`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `vaaniQA` on
-2026-08-05, and XFER-03 removed its last home — the `forwardingNumber` is now the platform's to
-supply, not any prompt's. **No agent holds, speaks, dictates, or offers a phone number for the
-consumer to call us.** A request for one gets "मेरे पास कोई number नहीं है, मैं सिर्फ़ आपकी call
-transfer कर सकती हूँ" — the transfer is the only connection on offer. The consumer's **own
-distributor's** number (`{{ConsumerDetailsDistMobileNumber1}}`/`2`) is unaffected. GCD-03, NUM-02
-and CPL-07 are all retired.
-
-**The complaint still comes first.** A transfer is never the first move. Help → route → register →
-*only then*, if the consumer still wants a person, transfer. Vaani **never volunteers** a transfer;
-she offers one only at the four moments below.
-
-### SENIOR TEAM TRANSFER (canonical — in every routing-capable agent)
-
+**The complaint comes first.** Help → route → register → *only then*, if the consumer still wants a
+person, transfer. Vaani never volunteers one; it happens only at:
 - **T1** — the consumer asks for a person *after* Vaani helped and, where needed, registered.
 - **T2** — `handoffSummary` shows they already asked *and* the issue was already handled/registered.
-- **T3** — `bpcl_create_complaint` FAILED. The one case Vaani raises herself, asking once.
+- **T3** — the complaint tool FAILED. The one case Vaani raises herself, asking once.
 - **T4** — a callback request. This channel schedules none, so it is a request to reach a person.
 
-**Never re-ask someone who already asked.** *"किसी और से बात करवाओ"* **is** the request — asking
-*"क्या मैं आपकी call senior team से connect कर दूँ?"* back at them costs a turn and reads as
-stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
-it: **T3**, and `getConsumerDetails`' no-data closing.
+**The transfer turn is the call alone** — no text, no `preToolMessage`. Two outcomes, read from the
+Result: success → silence, the platform closes the call; failure → the team could not be reached
+and the window the Result carried, and no close in the same turn as the bad news. **One attempt per
+call**, and it survives a switch. No switch after a failed transfer. No phone number, ever — a
+request for one gets "I have no number, I can only transfer the call".
 
-**The transfer turn speaks nothing of its own.** `calltransfer` is invoked exactly the way
-`callhangup` is: the agent generates **no text**, and passes **exactly one parameter** —
-`preToolMessage: "आपकी कॉल ट्रांसफर की जा रही है।"`. Nothing else goes with it: no `agentName`, no
-`handoffSummary`, no `consumerQuery`, no number. Writing that line as text *as well* makes the
-consumer hear it twice. `transfer` is the one word from the forbidden list that may appear — inside
-that `preToolMessage` and nowhere else in an agent's own speech. The old non-committal switch line
-(`"जी बिल्कुल, एक मिनट।"`) is retired with the switch it belonged to.
+## Axis 1b — Language
 
-> **REVISED 2026-08-11 (client instruction).** XFER-01's automatic-on-switch model is gone with the
-> agent it belonged to. `calltransfer` is invoked **by the agent the consumer is already speaking
-> to**, on its own turn, with `preToolMessage` as its only parameter. See CHANNELS.md XFER-03 for the
-> full revision and the platform dependencies it replaces.
+**Any Indian language the consumer speaks.** Identical to CC.
 
-**The transfer has two outcomes and no third**, decided from the tool's **Result** — never from the
-agent's own spoken line, and an absent or unclear Result is never read as success. **Success** → the
-agent produces **nothing** — no text, no `callhangup`; the platform closes the call, and hanging up
-there would cut the consumer off from the person they were just connected to. **Failure** —
-out-of-office-hours, a platform-side failure, busy, or no-answer, all handled identically — → no tool
-that turn; the agent says the team could not be reached and states when they can be reached, in
-Hindi words, **from what the Result carried and from nowhere else**. If the Result names no window,
-it names none: *"अभी हमारी senior team से सम्पर्क नहीं हो पा रहा, कृपया कुछ समय बाद call कीजिए।"*
-Closing is gated on the consumer: the agent **never closes in the same turn as the bad news**, keeps
-answering until they actually accept ("ठीक है", "समझ गया", "फिर call करूँगा", a goodbye) or the line
-is dead through two waits, and only then calls `callhangup`. Turn count is never a reason to close.
-`calltransfer` runs **once per call** and is never retried. That once is **per call, not per agent — it survives a `switchagent`** (CHANNELS.md **XFER-05**): before invoking it, an agent reads back through the whole call for a transfer line or Result, including turns from before it became active. The *offer* dies with the attempt too — once a transfer has been attempted, a later complaint failure gets the failure line and no second T3 question — and with the complaint tool down and the transfer spent there is nothing left, so the agent says so once and closes rather than circling on *"कुछ समय बाद call कीजिए"*. **`bpcl_create_complaint`'s failure is call-scoped in the same way** (CPL-20): a fresh agent is not a fresh attempt.
+## Axis 1c — The head office address
 
-**Who never transfers:** `Default` (routes human requests to `genericInfoComplaintAgent` first, so
-the issue gets registered) and `emergencyAgent` (a live hazard outranks everything). `routingAgent`
-may, but only for an already-helped consumer — an out-of-scope query is still the hangup ladder.
+Identical to IVRS — fixed KB wording, not a variable. "Bharat Petroleum, Mumbai Headquarters office";
+full address on request; **address only, no phone number**; never offered as somewhere to travel to,
+and never a substitute escalation.
 
-**The escalation path is `bpcl_create_complaint`, not the office door.** The consumer has usually
-already tried their distributor before calling a CRC, and one CRC covers a multi-district territory
-— sending them to *any* counter can mean a 100+ km trip. Telling a consumer to travel is not an
-outcome. Registering a complaint and telling them the team will call is.
+## Axis 2 — Persona: Bharat Petroleum central, distributor is a third party
 
-### The COMPLAINT ESCALATION block (canonical — every agent implements this)
+Vaani is a voice agent **for Bharat Petroleum**, speaking from the **national head office**
+in Mumbai, not an employee of the distributor.
 
-1. **Acknowledge warmly.** Never name a team, a senior, a specialist, or another agent as something
-   the consumer is being passed to.
-2. **Do I already know the issue?** If the consumer has already described their problem anywhere in
-   this call, use it — do **not** ask again. Only if the issue is genuinely unknown (a bare
-   "इंसान से बात करनी है" with nothing else) ask exactly one question:
-   `"आपकी समस्या क्या है, मैं दर्ज कर देती हूँ?"`
-3. **Confirm only what is new and consequential** — never re-confirm what the consumer said plainly.
-   When the issue is already clear, spend **no** confirmation turn: the one-line summary rides inside
-   the registering line itself (`"आपकी शिकायत दर्ज कर रही हूँ कि सिलेंडर अभी तक नहीं आया — एक मिनट रुकिए।"`),
-   so the consumer hears what is being filed and can correct it (CHANNELS.md CPL-05).
-4. **Speak that line AND invoke `bpcl_create_complaint` on the same turn.** The platform registers
-   nothing — the tool runs only because the agent invoked it. A registering line spoken with **no**
-   tool call is a **failed turn**: nothing exists, and the next turn invokes the tool before anything
-   else and speaks no number. The agent's own spoken line is never evidence the tool ran; only a
-   Result is (CHANNELS.md CPL-03). `feedbackDescription` is the consumer's real problem in English —
-   never "consumer asked for a senior team" alone. `reason` is the exact matching phrase from **that
-   agent's own scoped reason list**, or `others` when nothing matches — never invented (CPL-05).
-5. **On success** speak the complaint number **digit by digit in English digit words with `" - "`**
-   (NUM-01; Hindi digit words only on consumer preference — CC still uses Hindi words), say it will also
-   arrive by SMS, then say the team will make contact. No timeframe is ever promised.
-6. Go to close check.
-
-**A complaint is the last option, not the first.** Every complaint-capable agent runs the
-`RESOLUTION LADDER` before registering: is the query clear (if not, one clarifying question) → can I
-resolve it from my own data or knowledge → does it belong to another domain (route) → only then
-register. **Carve-out:** a *grievance about something that already happened* — cylinder not
-delivered, test not performed, staff behaviour, money already taken — skips the ladder entirely,
-because nothing said undoes it and the complaint *is* the correct resolution (CHANNELS.md CPL-04).
-
-**Empathy is allowed everywhere, in the model's own words — RETIRED CPL-05's blanket ban
-(CHANNELS.md CLS-03, 2026-08-11).** The ban was already dead in production: live transcripts show
-Vaani saying `"समझ सकती हूँ"` and `"क्षमा चाहती हूँ"` regardless. What made those calls hollow was
-warmth carrying nothing. **The rule now is that every warm sentence carries a fact, an answer, or a
-next step with it** — warmth alone, on a turn where the consumer asked something, is worse than
-none. Acknowledge an issue **once**, never re-acknowledge the same feeling, never reuse a phrase
-already spoken in the call. **No fixed phrases and no script** — the wording is generated fresh.
-Never apologise on the distributor's behalf and never pass judgement on the distributor or their
-staff; stay with what happened to this consumer. Naming back the specific thing that happened is
-acknowledgement, not echo, and `"जी"` / `"अच्छा"` may open a turn where they genuinely fit.
-
-**The close question is a turn of its own, and the gate is the consumer's last turn** (CLS-03).
-`"क्या कुछ और L P G से related help चाहिए?"` is never in the same turn as anything else — CLS-01
-already said that and it still fired eleven times on one call, because the "fully resolved"
-definition three lines below granted permission the moment a complaint number was spoken. **That
-clause is deleted.** A topic is resolved only when the consumer's own last turn carried nothing
-further — no question, no new fact, no fresh grievance. A registered complaint never makes a topic
-resolved. **If they never wind down, the question is never asked**: there is no turn cap and no
-forced close, and a call that never reaches it is correct.
-
-**Standard success line** (identical in all ten complaint-capable agents):
-`"आपकी complaint register हो गई है। आपका complaint number है [digit by digit]. यह number आपको SMS पर भी send किया जाएगा। हमारी team आपसे संपर्क करेगी।"`
-
-**No callback time is ever captured.** CC asks the consumer for a callback slot and writes it into
-the complaint; CRC does not. We register and say the team will call — nothing is scheduled.
-
-**Complaint already registered this call?** Never register a second one for the same issue, and
-never treat a later "senior से बात कराओ" as a new complaint. Say:
-`"आपकी complaint register हो गई है, हमारी team आपको call करेगी।"` and go to close check.
-
-**On `bpcl_create_complaint` failure** — never retry, and never fall back to "register a complaint"
-(the tool is what just failed). Say exactly:
-`"माफ़ कीजिए! अभी complaint register करने में तकनीकी समस्या आ रही है। कृपया थोड़ी देर बाद call कीजिए।"`
-Never invent a complaint number.
-
-### What triggers it
-
-- **Escalation** — the consumer asks for a human, a person, a specialist, a senior, or a callback.
-- **Terminal fallback** — a flow cannot be resolved, or the data Vaani needs is genuinely missing.
-  The old "यह जानकारी मेरे पास नहीं है, आप office आ सकते हैं" ending is retired: it becomes a
-  complaint.
-- **Language and non-LPG.** Any Indian language request is handled inline by speaking that language;
-  it is never a complaint or transfer trigger. For a non-LPG product, say once in the consumer's
-  language that Vaani can help only with LPG. If the consumer repeats that non-LPG request on the
-  very next turn, that is insistence and may be registered.
-
-### What does NOT become a complaint
-
-- **Genuinely physical actions** keep the existing office guidance, unchanged: hotplate/stove
-  purchase and KYC document submission. A complaint does not sell a hotplate or accept a document.
-- **A truly out-of-scope query** stays with `routingAgent`'s hangup ladder. No complaint.
-- **A live gas hazard.** `emergencyAgent` is fully carved out — no complaint, no escalation block,
-  no closing, while the hazard is live.
-- **No consumer record.** `getConsumerDetails` still has no complaint tool — with no record there is
-  nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
-  all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
-  is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
-  → on yes, switch; on no, `callhangup`. The three-piece dictation loop is **retired** and the office
-  hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
-
-### Who can register, and the one routing hop
-
-Ten agents hold `bpcl_create_complaint` and register in place. Three do not, and **never get it**:
-
-- `Default` — triage only. Its STAGE 0 escalation interrupts route via **STAGE 3** to
-  `genericInfoComplaintAgent`, exactly as INTERRUPT A already routes a hazard to `emergencyAgent`.
-- `newConnectionAgent` — escalates via `newConnectionAgent → routingAgent → genericInfoComplaintAgent`.
-  Leaf-to-leaf switching is forbidden, so `routingAgent` is the only legal path.
-- `getConsumerDetails` — see above; it cannot escalate at all.
-
-`bookingEligibleAgent` was in this list until 2026-07-29. It now holds the tool and registers directly — a repeated
-booking failure is a technical fault on our side, so the complaint is the first action, and the
-distributor's phone number is only ever offered afterwards as a convenience.
-
-The consumer must never learn any of this happened. Every hop obeys the invisible-switching rule.
-
-**Address sharing survives as knowledge only — but not in `Default`.** In every agent *except*
-`Default`, `{{ConsumerDetailsDistributorName}}` / `{{ConsumerDetailsDistributorAddress}}` /
-`{{crcOfficeAddress}}` are spoken when the consumer *asks* — "आप कहाँ से बोल रही हैं?", "मेरे
-distributor का पता क्या है?" — and for the physical actions above. They are never offered as the
-resolution to a problem.
-
-**`Default` holds no consumer-specific data at all** (CHANNELS.md DATA-01, 2026-07-29). It runs
-before the platform's data gate resolves, so it kept placeholders that could be uninjected — and
-invented values for them. It now holds only `{{crcOfficeCity}}`/`{{crcOfficeAddress}}` (static
-per-office config). A consumer asking for their own distributor's name, address, or phone is
-routed to `genericInfoComplaintAgent` immediately, **not** answered and **not** escalated as a
-complaint — it is a data question, not a problem.
-
-## Axis 2 — Persona: Vaani works at a REGIONAL HEAD CRC, and the distributor is a third party
-
-> **REVERSED 2026-08-05 (client correction).** This channel previously banned "आपके distributor" and
-> required insider phrasing for the distributor. That was wrong. Vaani calls from a **head CRC office
-> for an area/region covering multiple districts and multiple distributors** — she is NOT inside the
-> consumer's own distributor office. **"अपने distributor से पूछ लीजिए" is correct and expected.**
-> She remains an insider of भारत पेट्रोलियम itself. Escalation (Axis 1) is untouched: pointing to a
-> distributor means a **phone enquiry**, never a journey, and an unresolved problem is still a
-> registered complaint. `vaaniQA` **C8 is retired**; C7 now says the third-party framing is correct.
-> Hotplate purchase and KYC submission now point at the consumer's **own distributor**, not this CRC.
-
-Vaani works at a Bharat Gas / Bharat Petroleum Consumer Relationship Centre (CRC), identified by
-`{{crcOfficeCity}}` and `{{crcOfficeAddress}}` (the CRC's own full address). **One CRC serves a
-whole multi-district territory** (e.g. the Indore CRC covers Indore, Dhar, Ujjain, Ratlam, Neemuch,
-Jhabua, Dewas, Mandsaur, Khandwa, Khargone, Burhanpur, Badwani, Alirajpur) — the calling consumer's
-own city and distributor can be anywhere in that territory, and `{{crcOfficeAddress}}` is **always a
-different physical place** from `{{ConsumerDetailsDistributorAddress}}`.
-
-**`{{crcOfficeCity}}` holds ONLY the bare city name** — nothing else, no brand word, no "CRC", no
-punctuation (e.g. `Indore`). The office name is always **भारत गैस** and never comes from a variable,
-so the prompts build the spoken phrase themselves: `"भारत गैस, {{crcOfficeCity}}"`. The variable is
-never spoken alone as if it were the office name. (It was `{{crcOfficeName}}` until 2026-07-29 and
-carried a mixed "brand + city" label — see [../CHANNELS.md](../CHANNELS.md) D-05.)
-
-Vaani still speaks as an insider of Bharat Gas / Bharat Petroleum throughout — the two-office split
-is a factual/routing distinction, not a persona/tone one. Both addresses are spoken in the same
-natural, TTS-safe Hindi style.
-
-**Neither variable is ever spoken as it arrives** (../CHANNELS.md TTS-01, 2026-07-31). Both are raw
-backend text — Latin script, usually ALL CAPS, with abbreviations and a pin code. Every prompt that
-holds the pair carries a `TTS-SAFE DELIVERY — THE CRC OFFICE PAIR` block directly under the variable
-definition: city transliterated to Devanagari inside the self-built phrase, address broken into
-natural spoken parts with numbers as Hindi words, abbreviations expanded, pin code dropped unless
-asked. `connectionServicesAgent` carries the canonical long form as §9 Rule 6. Coverage is **every
-file holding a `crcOffice*` variable**, `getConsumerDetails` and the parked `newConnectionAgent`
-included.
-
-The block deliberately contains **no worked example address**, and says so — a specimen in the
-prompt becomes a hallucinated one on a call. Under the same rule, every pre-existing specimen was
-removed: the `"Indore"` city example (11 prompts + 3 QA files) and the `KHARGHAR…` name/address/
-number example in §9 Rule 6 and `TTS-SAFE DELIVERY` (**both channels**, now a shape-only template).
-**Do not re-add an illustrative address, city or phone number to any of these blocks.** The one
-survivor is §9 Rule 2's digit-flow example, which cannot be shown without digits — see TTS-01.
-
-The same gap on `{{ConsumerDetailsDistributorName}}`/`Address` outside `connectionServicesAgent`
-is still open in **both** channels; see TTS-01.
-
-**Priority rule, post-ESC-01:** neither address is ever a resolution. For any unresolved problem the
-answer is a registered complaint (Axis 1). `{{ConsumerDetailsDistributorName}}` /
-`{{ConsumerDetailsDistributorAddress}}` are spoken when the consumer asks for them, and proactively
-for the two physical actions (hotplate/stove purchase, KYC document submission).
-`{{crcOfficeCity}}` / `{{crcOfficeAddress}}` are spoken only when the consumer asks where Vaani
-herself is calling from, or explicitly asks for this office's address.
-**`Default` is the exception to the first half of this rule** — it does not hold the distributor
-pair at all and routes the question instead (DATA-01). In `Default` the hotplate/KYC carve-outs
-give the action, price, and timing and point at the consumer's **own distributor**, but never a name
-or address, which `Default` does not hold.
-
-- ✅ "हमारे यहाँ", "हमारा office" — for **this CRC** only
-- ✅ **"आपके distributor" / "अपने distributor"** — correct as of 2026-08-05. The consumer's
-  distributor is a genuinely separate party from this regional head office. Naming it factually
-  ("distributor का नाम ... है") is equally correct.
-- ❌ Telling the consumer to **travel** to any office or distributor to resolve a problem. That rule
-  (Axis 1 / ESC-01) is unchanged — a phone enquiry is fine, a journey is not.
-
-**CS-01 is now moot.** It recorded third-party phrasing in `connectionServicesAgent`'s §7-D fallback
-and C12 examples as a defect and rewrote it. Under the corrected persona that phrasing was never
-wrong; the factual naming it was rewritten to is also fine, so nothing needs reverting.
+- ✅ "आपके distributor", "अपने distributor से संपर्क कीजिए" — correct here
+- ❌ Insider phrasing — "हमारे यहाँ", "हमारा office", "आप हमारे पास आ सकते हैं". That is CRC's
+  voice. It currently appears 0 times in this workspace; keep it that way.
+- "senior team" is a real destination here, reached only through `calltransfer` per
+  `SENIOR TEAM TRANSFER` — never named on a `switchagent` turn.
 
 ---
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `validatecontactno`,
-`bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
-`bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
-routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default` and
-`emergencyAgent`.
+**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `calltransfer`,
+`bpcl_create_unregistered_complaint`, `updateContact`, `get_pincode_data`,
+`validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
+`bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**Variables unique to this channel:** `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` — the CRC's own
-identity, distinct from `{{ConsumerDetailsDistributorAddress}}` (the consumer's own distributor).
-**`{{crcOfficeNumber}}` no longer exists anywhere in this channel** (XFER-01, 2026-08-05; its last
-home, the `forwardingNumber` parameter, went with XFER-03 — the platform supplies it now). A request
-for their **own distributor's** number is still `{{ConsumerDetailsDistMobileNumber1}}`/`2`.
-See Axis 2 above for the priority rule. CC has no equivalent — it has no physical location concept
-at all — so this is CRC-only by design, not drift. Logged in [../CHANNELS.md](../CHANNELS.md).
+## The complaint method is CRC's, not the old IVRS one (2026-09-24)
 
-`{{crcHolidayList}}` joined them 2026-08-18 (CHANNELS.md **HOL-01**): the Bharat Petroleum holidays
-falling on working days in the **next thirty days**, as plain sentences naming occasion, weekday and
-date. Unlike the office pair it describes **both** offices — a BPCL holiday closes this CRC and the
-consumer's distributor alike — so it is the one office fact exempt from distributor ↔ CRC
-non-substitution. Nothing outside the thirty-day window may be answered: absence from the list is
-*"मेरे पास यह जानकारी नहीं है"*, **never** "the office will be open", and never a date worked out
-from festival-calendar knowledge. Held by `Default` and `genericInfoComplaintAgent` only — the query
-is ~0.01% of calls and `routingAgent` already carries a mid-call general-information question to the
-latter.
+**`bpcl_prompts_hindi/bpcl_showroom_crc/prompts/` is the reference for HOW tools are used in this
+channel.** The elaborate method IVRS inherited — a spoken registering line, a wait cue, a fixed
+`preToolMessage` carrying "I am registering your complaint", and the agent composing its own
+success and failure lines after deciding the outcome by looking for a number in the Result — is
+**retired**. Do not reintroduce any part of it.
 
-**Folder naming defect:** this workspace uses `genericInfoComplaint/`; CC uses
-`genericInfoComplaintAgent/`. Canonical is `genericInfoComplaintAgent` (NAME-03).
+**What replaces it, in every agent that registers:**
+- **The registering turn is the call and nothing else.** No text, no acknowledgement, no wait
+  cue, no `preToolMessage`. Everything the agent wants to say — the empathy, the reason, the
+  outcome — goes on the NEXT turn.
+- **The tool returns a message, and that message is the only source of truth**: whether it
+  registered, the complaint number, and what to tell the consumer. The agent does what the
+  message says, in its own natural words in the call's language, never reading its English aloud.
+  If the message says to offer a transfer, that offer is T3 in `SENIOR TEAM TRANSFER`.
+- **No message, no complaint.** Once per issue; if any message reported failure, no further call
+  for any issue; never more than two calls per call.
+- **`callhangup` follows the same shape** — the closing line is the agent's **own text** on that
+  turn, no `preToolMessage`. **No tool in this channel takes a `preToolMessage`** any more, with
+  one exception: a `switchagent` retry after a platform failure.
 
-**The Vaani QA reviewer is `vaaniQA.txt` here, `promptQA.txt` in CC** — renamed 2026-08-19 because the
-file reviews **Vaani**, not prompts, and sits beside `postCallAnalysisHuman.txt`, which reviews the
-human agent. Intended, recorded as [../CHANNELS.md](../CHANNELS.md) **NAME-05**; rename CC's copy when
-CC is next opened. Every `promptQA` reference in ledger rows dated before that day means this file.
-⚠️ **Nothing in the prompts points at the filename, so the platform's post-call config must be
-repointed** — if that is missed, CRC's QA analyser silently stops running.
+**The one deliberate exception is `unregisteredComplaintAgent`**, which follows the
+`bpcl_lite_zip` desk instead — name → `updateContact` → PIN code → `get_pincode_data` → district →
+`bpcl_create_unregistered_complaint`, each step its own turn, with a spoken line on the tool turn.
+CRC's own unregistered agent is still on the retired method and is **not** the reference for it.
 
-**`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
-**deployed** entry prompt again — `getConsumerDetails.txt` ships, `getConsumerDetails_MultiToolVersion.txt`
-is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
-(git history only, along with `prompts/callTransferAgent/`).
-Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
-tell the consumer their record isn't available, offer to connect them to the senior team, and either
-call `calltransfer` on a yes or `callhangup` on a no. That platform-owned hop into
-`Default` is still described by no prompt — see the open items below.
+**Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
+vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
+and `reason` names are **gone from this channel** — renamed across all ten registered-consumer
+agents in the same pass, to match [`bpcl_prompts_hindi`](../../bpcl_prompts_hindi/CLAUDE.md), which
+is the reference for this contract. Do not reintroduce them.
 
-**Unregistered live flow (UNREG-03, 2026-09-18).** `getConsumerDetailsLive.txt` is the deployed
-number-capture prompt for an unregistered caller. It may call `bpcl_fetch_all_api` for at most two
-different consumer-provided, confirmed registered numbers and does not call `switchagent`. On data
-found it stops and the platform resumes the identified-consumer flow. On a second no-data Result it
-also stops: the platform automatically activates `unregisteredComplaintAgent`, which handles the
-unidentified consumer in place. `getConsumerDetails-unreg.txt` is a legacy deployment alias for the
-same flow, not a second stage.
+- **REGISTERED consumer** → the agent that owns the problem registers it itself, on
+  `bpcl_create_complaint`, passing **exactly two** parameters: `complaintSummary` (one or two lines
+  of English, only what the consumer said) and `complaintReason` (the exact matching phrase from
+  that agent's own domain list, or `others`). Everything else — consumer id, mobile, name, state,
+  district, date — is the platform's. No PIN code step.
+- **UNREGISTERED consumer** → `unregisteredComplaintAgent`, the only holder of
+  `bpcl_create_unregistered_complaint`, which runs a fixed three-tool chain: confirmed name →
+  `updateContact` → PIN code → `get_pincode_data` → confirmed district →
+  `bpcl_create_unregistered_complaint`, passing `ConsumerDetailsConsumerName` + `complaintSummary` +
+  `complaintReason`. Its `complaintReason` is copied character for character from a nine-value
+  backend list. No other agent may call any of those three tools.
 
-**Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
-§11 lists known gaps, and they are worth reading before any routing change.
+## Bharat Gas Lite zip — `newConnectionAgent` owns it (2026-09-24)
+
+`newConnectionAgent` (`newConnectionAgent_onHold.txt`) is the **Bharat Gas Lite zip specialist**, and
+that is now the larger half of its job. Lite zip is the default for anyone asking for gas, a
+cylinder or a connection; the 14.2 kg closure is a **reactive** block that never opens a call and
+never travels without the lite zip pivot. It owns the product facts, the Q&A-versus-guided mode
+gate, the twelve-state Hello BPCL App flow, the dead ends, and the complaint gate.
+
+**The fact set is `bpcl_lite_zip`'s, and it overrides everything older:** two sizes, 10 kg and 5 kg;
+**never** a price; **never** a four-hour promise — same day for a daytime order, next day 8am–8pm
+for an evening or night one; App-only booking; domestic, commercial and industrial; documents shown
+at delivery, never uploaded; no eligibility check; new connection versus refill decided by one
+question; no subsidy, stated plainly; availability and stock never claimed and a PIN code never
+asked for. `zip` is always **lowercase** — capitals make TTS spell it out.
+
+**Routing.** `Default` and the specialists keep their existing routes untouched; only a clear intent
+to take, refill or be guided through lite zip goes to `newConnectionAgent`. Other specialists keep
+their short lite zip KB, answer from it, and hold the call — a passing mention is never a handover.
+Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer owns "how to get
+one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
+state — and that agent reaches `routingAgent` only on the way back out.
+
+**Greeting.** `Default` opens on lite zip with a fixed line, usually configured as the platform's
+first message. It is the one turn not in the consumer's language, because they have not spoken yet.
+
+**Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
+those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which
+do not exist in this channel (CB-01). `promptQA.txt` was **renamed to `vaaniQA.txt`** to match the
+CRC filename; its content is unchanged apart from the channel label, the removal of a leftover
+"call transfer path" header that contradicted this channel, and a hard-coded Hindi failure line
+replaced with a language-neutral one. CRC's `postCallAnalysisHuman.txt` is deliberately **not**
+ported here.
+
+**Docs:** [ORCHESTRATION.md](docs/ORCHESTRATION.md) is the live routing spec — the Switch Gate
+design, `(topic, consumerPayload) → agentName`. It is **spec-only and not yet applied to the
+prompts**; §11 lists the four prompt changes it requires. Read it before touching `Default`,
+`routingAgent`, or `getConsumerDetails`, or you will be editing against a design that is about to
+change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
+[CUSTOMER_STATUS_SPEC.md](docs/CUSTOMER_STATUS_SPEC.md).
 
 ---
 
-## New connections are ON HOLD (2026-07-31) — read before touching `newConnectionAgent`
+## Open items specific to this channel
 
-New connections for the **14.2 kg domestic cylinder, Ujjwala included**, are closed. Open-ended, no
-reopening date, no stated reason. Full policy in [../CHANNELS.md](../CHANNELS.md) **NC-01**.
+- **Identity is IVRS's.** The prompts speak as the Bharat Petroleum, Mumbai Headquarters office, as
+  IVRS does; `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` are not used by any live prompt.
+- **CRC-only files kept outside the IVRS set:** `postCallAnalysisHuman.txt` (the analyser for calls
+  answered by a human staff member) and its sample outputs `naya.json` / `purana.json`.
 
-**Two files sit side by side in `prompts/newConnectionAgent/`:**
-
-- **`newConnectionAgent_onHold.txt` — DEPLOYED.** The live prompt. Informs, offers Bharat Gas Mini
-  (5 kg), handles commercial and "already applied", never guides an application.
-- **`newConnectionAgent.txt` — PARKED, DO NOT SHIP.** The original 2,033-line apply journey,
-  retained **unchanged** because there is no version control and it is the only copy. Do not edit
-  it, do not port fixes into it, do not delete it.
-
-⚠️ **The platform must point at the `_onHold` file.** The old filename was kept, so this is a
-config change nothing in the prompts can enforce. If it was missed, the full apply flow is live.
-
-**This agent does not escalate on the hold topic** — a deliberate exception to Axis 1. A prospective
-consumer has no record, so there is nothing to attach a complaint to, and no complaint could reopen
-connections. It holds the consumer itself: restate calmly, offer Mini once, close. Never promise a
-person, a callback, a complaint, or an office visit. A genuinely different problem still routes.
-
-**Not affected, and must never get the hold message:** commercial connections, Bharat Gas Mini,
-second/additional cylinder, portability, and the city-shift Transfer Voucher path (so
-`connectionServicesAgent` C1 is unchanged).
-
-**CC is deliberately behind on this** — client decision. It is a recorded gap, not a design
-difference. See NC-01.
-
-> ⚠️ **Also amended by CHANNELS.md ZIP-03 (2026-08-17)**, the KB refresh against the business team's
-> reviewed FAQ: ZIP is **domestic-only** (the commercial 10-cylinder limit is deleted everywhere);
-> every lookup leads with the **Hello BPCL App** — "Bharatgas for Home" → "Explore Bharatgas
-> Products" → PIN code — and falls back to `commercial-lpg.in` only for a consumer not comfortable
-> with the app, one route or the other, never both; **IVRS is no longer a ZIP booking channel** and
-> there is **no cash on delivery** — payment completes before the cylinder is handed over; the limit
-> is 2 a month **and 2 at a time**, the at-a-time figure only if asked; ID proof is **Aadhaar, PAN,
-> DL, Ration Card or Passport** (Voter ID and the "any Government-issued ID" catch-all dropped); the
-> cylinder carries the **ISI mark**; **anyone may apply**. The FAQ's "instant new connection" wording
-> was **deliberately not adopted** — ZIP stays a product, not a connection.
-
-> ⚠️ **The ZIP section below is superseded by CHANNELS.md ZIP-02 (2026-08-05).** ZIP is now a
-> **product, not a connection**; it is **offered together with Mini** at three moments (the
-> new-connection hold, the extra-refill block, a non-eligible booking) rather than answered-only;
-> the Lite-cylinder/ZIP-package framing is deleted; and most of the soft-unknown list is retired
-> because the facts are now held. Read ZIP-02 before touching any ZIP block.
-
-## Bharat Gas Lite ZIP (2026-07-31) — live across 13 CRC prompts
-
-**भारत गैस लाइट ज़िप**, launched July 2026. Premium Free Trade LPG: composite cylinder + instant
-new connection + express delivery within four hours. Non-subsidised — no subsidy, no DBTL. Full
-policy in [../CHANNELS.md](../CHANNELS.md) **ZIP-01**.
-
-**ZIP is exempt from the new-connection hold** — it is the one connection route still open, so
-`newConnectionAgent_onHold` offers Mini and ZIP together and lets the consumer choose.
-
-**ZIP is OFFERED in exactly one place: `newConnectionAgent_onHold`.** Everywhere else — `Default`,
-both booking agents, all four delivery agents, `paymentAgent`, `subsidyAgent`,
-`connectionServicesAgent`, `genericInfoComplaint` — ZIP is a **knowledge base only**: answer it when
-the consumer raises it, never bring it up, never present it as an option, never offer it as a way
-around a blocked booking, a delivery problem or the extra-refill block. **Bharat Gas Mini is the only
-alternative offered outside the new-connection flow.** Every one of those ten agents carries the
-`ZIP IS KNOWLEDGE ONLY IN MY FLOW — I NEVER OFFER IT` clause; `Default` carries the imperative form
-in MODULE Z. Removing that clause reopens the drift it exists to stop.
-
-**Four rules that are easy to break when editing:**
-
-1. **Never say ZIP is available in the consumer's city.** Availability varies by city and
-   distributor and nothing on this side can see it. The hedge rides with every offer.
-2. **Four hours is a product standard, never a promise about one delivery.** The existing
-   no-delivery-promise rule still binds when ZIP is confirmed.
-3. **Never ask whether a connection or order is ZIP.** Use it only when the consumer volunteers it.
-   Asking is banned fact-gathering.
-4. **Never offer ZIP outside `newConnectionAgent_onHold`.** Answering a ZIP question is correct
-   everywhere; raising it is not. Mini is the only alternative anywhere else.
-
-**The soft unknown line is fenced to ZIP.** For ZIP specs nobody holds yet, Vaani says the service
-is new and points to the distributor / app / website instead of the flat
-`"यह जानकारी मेरे पास नहीं है"`. Every agent carries a clause saying this does **not** apply outside
-ZIP — without it, the distributor-redirect habit ESC-01 retired creeps back. Use "संपर्क कीजिए",
-never "जाकर पूछिए": a phone enquiry is not a journey.
-
-**Never asserted:** whether an existing registered consumer can take or switch to ZIP. Unconfirmed
-both ways, so ZIP is not offered as a route around a blocked booking.
-
-⚠️ **There is no product-type variable — ZIP is confirmed by the consumer only.** A
-`{{ConsumerDetailsProductType}}` variable was written into ten prompts and **removed on 04-08-2026**:
-no such variable is injected, and `customerStatus` carries no product-type field either. Do not
-re-add it under that name. Consequence: delivery agents cannot tell a ZIP booking from a standard
-one unless the consumer says so. If the platform team ever exposes a real product field, rename the
-references back in — see CHANNELS.md ZIP-01.
-
-⚠️ **"यह service अभी नई है" expires.** True in July 2026, silently wrong later. Client will reword.
-
-**CC is deliberately behind on this**, as with NC-01.
-
-## Open items specific to CRC
-
-- **CS-01 (fixed)** — the third-party phrasing leak in `connectionServicesAgent.txt` (§7-D fallback
-  and C12 examples) is corrected; distributor details are now named factually rather than as
-  "आपके distributor".
-- **GCD-01 (stale)** — this note referenced a `getConsumerDetails_v2.txt` that no longer exists in
-  this workspace; only `getConsumerDetails.txt` is present. Remove this item if a future pass
-  confirms it stays gone.
-- **DOC-01** — [agent-workflow.md](docs/agent-workflow.md) §7 links to `customerStatus-spec.md`,
-  which does not exist in this workspace. CC has `CUSTOMER_STATUS_SPEC.md`; CRC has no counterpart.
-- **The undocumented `getConsumerDetails` → `Default` hop** (agent-workflow.md §11.3) — works only
-  if the platform owns that transition. Worth confirming with the platform team.
-- **Four prompts unreachable by name** (§11.4): `bookingNonEligibilityAgent`, `postDeliveryAgent`,
-  `eligibleDeliveryAgent`, `notEligibleDeliveryAgent` are never a `switchagent` target anywhere.
-  They work only if the platform resolves the family name to the right variant from backend state.
-  If it does not, a not-eligible consumer lands in `bookingEligibleAgent`, which opens with *"the
-  system confirms you can book"* — the exact contradiction to avoid.
-- **XFER-03 open items (platform team):** expose `calltransfer` to all thirteen routing-capable
-  agents, accepting `preToolMessage` alone — the `forwardingNumber` is the platform's to supply, not
-  any prompt's; surface that call's **Result** to the calling agent on the next turn, carrying
-  success/failure and, on failure, a reason (out-of-office-hours, platform failure, busy, no-answer)
-  and the office-hours window where one exists — the failure branch is written against it and names
-  no window without it; close the call itself on a **successful** transfer, since the agent
-  deliberately calls no tool there; and de-register `callTransferAgent`, whose prompt is deleted.
-- **`getConsumerDetails_MultiToolVersion` still carries the `{{crcOfficeNumber}}` dictation closing**
-  (NUM-04's twelve-digit flow) while being the QA prompt for a channel where that variable does not
-  exist. Its no-data ending needs porting to `getConsumerDetails.txt`'s `calltransfer` ending before
-  QA can exercise the shipped flow.
-- **`postCallAnalysisHuman.txt` — CLOSED 2026-08-13 (../CHANNELS.md PCA-02).** It is genuinely the
-  human-agent analyser: two people talking, no Vaani. Fully rewritten for that subject and given four
-  flat root scores for the human-QA dashboard (`riskEscalationIndex`, `customerEffortScore`,
-  `conversationQualityScore`, `overallScore` — all strings, no arithmetic anywhere) plus a ninth
-  `evaluations[]` checkpoint, and the root fields `greeting`, `containment` and `csatScore` (renamed
-  from `csat`). **No transcript → `"NA"` for every string in the payload, `0` for every number,
-  empty arrays, `false` for the five `riskObservations` booleans, and its own fixed sentence in
-  `notes`** — revised 2026-08-13, superseding the original `""`-for-four-fields rule. **The two
-  denominators are constants and never move** (`qaScore.total` 10, `csatAnalysis.maxScore` 5), on
-  no-transcript rows included — only the earned numbers go to 0. **`overallScore` is the
-  reviewability gate the dashboard filters on** — there is no `analysisStatus` field, so unreviewable
-  rows are dropped before anything aggregates. Scales stay native and are never averaged across each
-  other: CSAT 1–5, the three QA scores 1–10, `qaScore` a fraction out of 10 rather than a third
-  scale. `evaluations[]` now carries **ten** checkpoints — the tenth is Customer Identification and
-  Verification.
-  **Amended 2026-08-19 by [../CHANNELS.md](../CHANNELS.md) PCA-03:** `customerSentiment` was
-  collapsing into `"neutral"`/`"negative"` on nearly every call — topic bleed, an unreachable
-  `"positive"`, and the *uncertainty resolves downward* rule leaking onto a judgement field. It keeps
-  its name, position and four values (client decision: **no `start`/`trend` split — one field, decided
-  better**) and is now a procedure: what it is **not**, a **middle-and-end weighting** rule, five
-  signals, and a first-match ladder `angry → negative → positive → neutral` with `neutral` explicitly
-  the *narrow* bucket rather than the default. New root field **`agentTone`**
-  (`empathetic`/`professional`/`impatient`/`rude`) records the agent's **tone**, where
-  `conversationQualityScore` records their **conduct** — it moves no score and fails no checkpoint, and
-  `conversationQualityScore` keeps all eight dimensions. Both sentiment fields are **exempt from the
-  downward-uncertainty rule** and both return `"NA"` on a no-transcript row.
-  **Section 1.1 added 2026-08-19 ([../CHANNELS.md](../CHANNELS.md) PCA-04)** — the prompt now describes
-  its own input. Transcripts arrive as `agent:` / `customer:` prefixed lines, and three artefacts in
-  them were about to be scored as behaviour. **The recorded IVR preamble is prefixed `agent:` and names
-  भारत गैस**, so `greeting`, checkpoint 1 and dimension 1 would have passed on *every* call — they are
-  now judged on the agent's first real turn *after* that block, and hold-music lyrics transcribed as
-  agent speech are ignored entirely. **System and tool text also carries a speaker prefix** (a
-  transfer-failure notice arrived under `customer:`) — it is event evidence for `containment` and
-  `callResult`, never speech, never quoted, and it sets no language or sentiment. And **ASR partials
-  are not repetitions**, which `customerEffortScore` would otherwise have counted on nearly every call.
-  **Extended to the other two analysers 2026-08-19 ([../CHANNELS.md](../CHANNELS.md) PCA-05).** All three
-  CRC post-call prompts read the same platform transcript, so `vaaniQA` and `postCallAnalysisFlat` now
-  carry the transcript-format block too — and `postCallAnalysisFlat` also takes PCA-03's
-  `customerSentiment` rewrite, having carried the identical collapsing definition. **`agentTone` is
-  deliberately NOT ported to either**: Vaani's tone comes from her prompt, not the call, so the column
-  would score the prompt. **The IVR block is optional on every channel**, and Vaani's fixed first line
-  (*"नमस्ते, मेरा नाम वाणी है…"*) is the boundary between recording and agent. **PCA sees no tool calls
-  and no tool results** — no rule may assume otherwise; `callTransferred` is judged from the spoken
-  transfer line alone, which is sound because that line is `calltransfer`'s own `preToolMessage`.
-  Two defects fixed in the same pass: `vaaniQA`'s PART C still said *"THERE IS NO TRANSFER IN THIS
-  CHANNEL"*, contradicting its own C5, and the filler allowance was cut from four to
-  **`"अच्छा"` and `"hmm"` only** — with **CLS-03's live carve-out narrowed to match in eight agent
-  prompts**, so QA cannot flag an opener the agents are told they may use.
-  ✅ The client's reference transcript is unmistakably a **Vaani** call, so a routing error was raised
-  and **ruled out — client confirmed 2026-08-19 that this analyser receives only human-answered calls**,
-  and the sample showed the transcript *shape*, not its subject. Should that ever change, §3.2's staff
-  latitude would wrongly exonerate Vaani, for whom each of those allowances is an ESC-01 violation.
-  **It deliberately diverges from
-  `postCallAnalysisFlat` and from CC — do not reconcile.** Note it also records staff latitude that
-  Vaani does not have (a number, an office visit, a price, a callback are not risks for a person);
-  that is scoped to this analyser and changes no live prompt. The earlier CONTEXT fix (2026-08-11,
-  the false *"there is no call transfer"* paragraph) is superseded by this rewrite.
-- **BAN-01 and CPL-08 are shared-truth fixes currently living in CRC only** (2026-08-05, client-scoped).
-  CC carries the identical ban-list gap and the identical `FAILED TURN` clause, and is exposed to both.
-  Port them before the next CC complaint-path or routing change. **GCD-05** is CRC-only by nature —
-  CC has no `crcOffice*` pair to confuse with the distributor's.
-- **OTP-01 (landed 2026-08-17, CC pending)** — the delivery O T P is **correct process, never a
-  grievance**: it reaches the consumer by SMS on their registered mobile number and the delivery
-  person hands the cylinder over only after receiving it. No CRC agent registers or routes a
-  complaint because it was asked for; the explanation *is* the resolution. Registering starts only
-  where the consumer **gave** the O T P and the refill still did not arrive — and then for the
-  non-delivery, never for the O T P. It is also the one carve-out to the PII "never share an O T P"
-  rule: shared at the door, with the delivery person, and nowhere else. Thirteen files; see
-  [../CHANNELS.md](../CHANNELS.md) **OTP-01**. Port to CC before the next CC delivery-path change.
-- **NAME-01, NAME-02, NAME-04** in [../CHANNELS.md](../CHANNELS.md) §3 apply here too.
+- ~~**The `getConsumerDetails` blocker**~~ — **CLOSED 2026-08-27.** The agent was derived from
+  its CRC twin and now holds `switchagent`, so the recovery loop has a real exit. The old text
+  ("you never hand off to another agent", no `switchagent` tool) is gone with the old file.
+- **Urban/rural field name unknown** (§7). Until supplied, the 25/45-day booking gap cannot be
+  computed and the gate defaults everyone to 25 days.
+- **Refill limits are out of scope for phase 1** (§6). A consumer who has hit the 2/month or
+  15/year limit is judged eligible and sent to `bookingEligibleAgent`, which tells them they can
+  book — and the booking fails again. The Hindi lines explaining both limits already exist, unused,
+  at `bookingNonEligibilityAgent.txt:151-153`.
+- **Name defects** NAME-01 → NAME-04 in [../CHANNELS.md](../CHANNELS.md) §3 apply here.
 
 ---
 
 ## Before you edit
 
 1. Never create `.bak` copies of prompt files. Edit in place.
-2. Ask: is this change **shared truth** or **CRC policy**? Shared truth lands in CC too, this
-   session. CRC policy gets a row in [../CHANNELS.md](../CHANNELS.md).
-3. If you are porting from CC, translate the axes: a `calltransfer` block has **no valid CRC
-   translation** — it becomes a COMPLAINT ESCALATION block (Axis 1). A CC callback block loses its
-   time capture entirely. Third-party phrasing becomes insider phrasing. Check both, separately — a
-   block can have the right escalation and still leak the wrong persona.
-4. **"आप हमारे office आ सकते हैं" is no longer a valid ending to a problem.** If you find one
-   outside the hotplate/KYC carve-outs, it is a leftover from the retired policy — it becomes a
-   complaint.
+2. Ask: is this change **shared truth** or **CC policy**? Shared truth lands in CRC too, this
+   session. CC policy gets a row in [../CHANNELS.md](../CHANNELS.md).
+3. If you are porting from CRC, translate **three** axes, not one:
+   - **Escalation.** CRC's `calltransfer` / `SENIOR TEAM TRANSFER` / T1–T4 text is carried here
+     as it stands in the Hindi CRC, with only its Hindi examples turned into meaning anchors.
+   - **Identity.** CRC's `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` do not exist here. This is
+     the Bharat Petroleum, Mumbai Headquarters office, and its address is fixed knowledge, not
+     injected data. Insider phrasing becomes third-party phrasing.
+   - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
+     language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
+     fixed closing string becomes a `preToolMessage` composed in the call's language.
+
+---
+
+## Open platform dependencies (created by the CC-port pass, 2026-08-27)
+
+1. **`calltransfer` must resolve its own forwarding target.** Every prompt invokes it with no
+   parameters at all. If the platform does not supply the target, every transfer fails silently —
+   correct prompt, dropped call. Test one transfer before wide deployment.
+2. **`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**
+   It came across with the derivation and is a CRC-branded variable. If CC does not inject it, the
+   prompts see curly braces, treat the value as absent, and fall back to "I cannot confirm that
+   holiday" — safe, but degraded. Decide whether CC gets a holiday calendar and under what name.

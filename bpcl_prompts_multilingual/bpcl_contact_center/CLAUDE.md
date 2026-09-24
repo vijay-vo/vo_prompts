@@ -1,96 +1,60 @@
 # bpcl_contact_center (CC) — channel contract
 
-Bharat Petroleum's **national head office** contact centre, Mumbai — serving LPG consumers
-across India, in whatever Indian language they speak.
+Bharat Petroleum's **national head office contact centre** — serving LPG consumers across India, in whatever Indian language they speak.
 
-Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth that must stay identical to
-CRC. This file holds **only what is specific to this channel.**
+**Re-derived 2026-09-24 from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), with exactly
+one policy difference: `calltransfer` exists** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01).
+Everything else — the 15-agent topology plus `unregisteredComplaintAgent`, the handoff contract, the
+LPG domain facts, the multilingual rule, the head office identity and address, the complaint method,
+the Bharat Gas Lite zip ownership, the post-call set — is IVRS's, word for word, and must not
+diverge. The transfer text is the Hindi CRC's (`bpcl_prompts_hindi/bpcl_showroom_crc`), with its
+Hindi example lines turned into meaning anchors and nothing else changed.
 
-Sister channel: [`bpcl_showroom_crc`](../bpcl_showroom_crc/CLAUDE.md). Their prompts look almost
-identical to these and are **not** interchangeable. Never copy a block across without translating
-the two axes below.
+Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth. This file holds **only what is
+specific to this channel.**
 
----
+Sister channels: [`bpcl_showroom_crc`](../bpcl_showroom_crc/CLAUDE.md) — its prompts are byte-identical to these —
+and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), identical except for the transfer.
 
-## Re-derived from IVRS (2026-09-24) — read this first
-
-**The prompts in this channel are [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) plus
-`calltransfer`, and nothing else** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01). The complaint
-method (CPL-22), the two complaint tools, `unregisteredComplaintAgent`, the Bharat Gas Lite zip
-ownership in `newConnectionAgent_onHold.txt`, and the post-call set (`postCallAnalysisFlat.txt` +
-`vaaniQA.txt`) are all IVRS's. Where anything below this section disagrees with that, this section
-wins.
-
-- **Transfer conditions come from `bpcl_prompts_hindi/bpcl_showroom_crc`:** complaint first, then
-  T1–T4, one attempt per call, the call alone with no text. Held by the ten leaves,
-  `newConnectionAgent_onHold` (§20A), `routingAgent` (the one case) and `unregisteredComplaintAgent`.
-  `Default`, `emergencyAgent` and the `getConsumerDetails` prompts never transfer.
-- **Porting rule:** a fix to IVRS lands here in the same session unless it touches escalation. This
-  channel and `bpcl_showroom_crc` are identical except for the `vaaniQA` channel label.
-- **Deploy:** `newConnectionAgent_onHold.txt` is the live `newConnectionAgent`;
-  `newConnectionAgent.txt` is parked. `postCallAnalysis.txt` and `promptQA.txt` are gone.
-- **Tools** (adds to the inventory below): `bpcl_create_unregistered_complaint`, `updateContact`,
-  `get_pincode_data` — `unregisteredComplaintAgent` only.
+**Porting rule for this channel:** a fix landing in IVRS lands here too, in the same session, and in
+`bpcl_showroom_crc`, UNLESS it touches escalation. Where IVRS refuses a transfer, this channel carries the
+Hindi CRC's transfer line for the same agent instead.
 
 ---
 
-## Axis 1 — Escalation: `calltransfer`, held by every routing-capable agent
+## Axis 1 — Escalation: the complaint comes first, then a transfer
 
-Vaani can hand the consumer to a human senior team. **Rewritten 2026-08-27** — the old text on
-this page claimed transfer was a `Default` STAGE 0 interrupt only. That was never true of the
-prompts, and is doubly untrue now.
+**This is the only thing that makes this channel different from IVRS.**
 
-**Tool:** `calltransfer`, held and invoked by the agent the consumer is already speaking to.
-There is no transfer agent and nothing to switch to.
+**`calltransfer` is held and invoked by the agent the consumer is already speaking to**: the ten
+complaint-capable leaves (`SENIOR TEAM TRANSFER` block), `newConnectionAgent_onHold` (§20A),
+`routingAgent` (the one case: already helped, still asking) and `unregisteredComplaintAgent`.
+`Default` and `emergencyAgent` carry the *"`calltransfer` — NOT AUTHORIZED"* clause. The three
+`getConsumerDetails` prompts hold no transfer: they own no ending, and a caller with no record goes
+to `unregisteredComplaintAgent` (the IVRS design, kept).
 
-**Parameters:** **none** — the call alone (CHANNELS.md CC-PORT-02, porting CRC's TOOL-07; this
-supersedes XFER-06's `preToolMessage`). The platform supplies the forwarding target itself. The old
-`forwardingNumber` SIP string, `contactNumber`, `consumerLanguage` and `consumerQuery` are gone
-from every prompt.
+**The complaint comes first.** Help → route → register → *only then*, if the consumer still wants a
+person, transfer. Vaani never volunteers one; it happens only at:
+- **T1** — the consumer asks for a person *after* Vaani helped and, where needed, registered.
+- **T2** — `handoffSummary` shows they already asked *and* the issue was already handled/registered.
+- **T3** — the complaint tool FAILED. The one case Vaani raises herself, asking once.
+- **T4** — a callback request. This channel schedules none, so it is a request to reach a person.
 
-**Speech on a transfer turn.** None. The agent writes **no text** and passes **no
-`preToolMessage`**; what it says next comes only from the `calltransfer` Result. No tool in this
-channel takes a `preToolMessage`: `bpcl_create_complaint` is the call alone too, and `callhangup`
-carries the closing line as the agent's own text on the same turn. On `switchagent`, naming a
-team is still forbidden.
-
-**The complaint tool** follows CRC's `COMPLAINT TOOL — THE WHOLE PROCEDURE` (CPL-22): call with
-nothing said → read the tool's message → do what it says in the consumer's language → no message
-means nothing is registered. There are no scripted success, failure or already-registered lines.
-
-**A complaint comes first.** A consumer asking for a human gets their issue **registered** first,
-and is transferred only if they still want a person afterwards. Same as CRC.
-
-**One attempt per CALL — never a second.** The spent attempt belongs to the call, not the agent:
-it survives a `switchagent`, as does a failed `bpcl_create_complaint` (XFER-05, CPL-20).
-
-**When it must not fire:**
-- Never blind, never to route a clear LPG topic — that is `switchagent`'s job.
-- **Never a proactive offer.** A consumer who is upset, repeating themselves, or still talking is
-  not asking for a human. Dissatisfaction and call length are never transfer triggers.
-- Never offered for "better help" after a query has been answered or routed.
-- A हाँ/जी/बिल्कुल confirming some other factual question is **not** a human request.
-
-**On failure**, the agent speaks the failure line and the window the Result carried. **There are
-no callbacks in this channel** — retired 2026-08-27 (CHANNELS.md CB-01).
+**The transfer turn is the call alone** — no text, no `preToolMessage`. Two outcomes, read from the
+Result: success → silence, the platform closes the call; failure → the team could not be reached
+and the window the Result carried, and no close in the same turn as the bad news. **One attempt per
+call**, and it survives a switch. No switch after a failed transfer. No phone number, ever — a
+request for one gets "I have no number, I can only transfer the call".
 
 ## Axis 1b — Language
 
-**Any Indian language the consumer speaks** (CHANNELS.md MULT-01). CC is no longer Hindi-only, so
-a request for another language is **not** a transfer trigger — Vaani simply answers in it.
+**Any Indian language the consumer speaks.** Identical to CC.
 
 ## Axis 1c — The head office address
 
-Fixed KB wording in 13 agents, **not a variable**. CC has no equivalent of `{{crcOfficeCity}}` /
-`{{crcOfficeAddress}}`.
-- "Where are you calling from?" → **"Bharat Petroleum, Mumbai Headquarters office"**
-- Asked for the address itself → Bharat Bhavan, Four and six Currimbhoy Road, Ballard Estate,
-  Mumbai. Pin code only on request, then digit by digit.
-- **Address only — no phone number.** The "I hold no number, you get a transfer" rule stands.
-- **Never offered as somewhere to travel to.** Callers are nationwide; a trip to Mumbai solves
-  nothing.
-- `emergencyAgent` does not carry this block, matching CRC.
-
+Identical to IVRS — fixed KB wording, not a variable. "Bharat Petroleum, Mumbai Headquarters office";
+full address on request; **address only, no phone number**; never offered as somewhere to travel to,
+and never a substitute escalation.
 
 ## Axis 2 — Persona: Bharat Petroleum central, distributor is a third party
 
@@ -100,25 +64,98 @@ in Mumbai, not an employee of the distributor.
 - ✅ "आपके distributor", "अपने distributor से संपर्क कीजिए" — correct here
 - ❌ Insider phrasing — "हमारे यहाँ", "हमारा office", "आप हमारे पास आ सकते हैं". That is CRC's
   voice. It currently appears 0 times in this workspace; keep it that way.
-- "senior team" is a real, reachable destination here (159 references) — not a figure of speech.
+- "senior team" is a real destination here, reached only through `calltransfer` per
+  `SENIOR TEAM TRANSFER` — never named on a `switchagent` turn.
 
 ---
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callhangup`, **`calltransfer`** (the call alone — no parameters),
-`bpcl_create_complaint`,
+**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `calltransfer`,
+`bpcl_create_unregistered_complaint`, `updateContact`, `get_pincode_data`,
 `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
-**Prompts unique to this channel:** `postCallAnalysis/postCallAnalysis.txt` only —
-`postCallAnalysisFlat.txt` now has a CRC twin and was derived from it (2026-08-27).
-⚠️ `postCallAnalysis.txt` was **deliberately left untouched** by the CC-port pass and still scores
-scheduled callbacks, which no longer exist in this channel (CB-01). Confirm whether it is still
-deployed before trusting its output.
+## The complaint method is CRC's, not the old IVRS one (2026-09-24)
+
+**`bpcl_prompts_hindi/bpcl_showroom_crc/prompts/` is the reference for HOW tools are used in this
+channel.** The elaborate method IVRS inherited — a spoken registering line, a wait cue, a fixed
+`preToolMessage` carrying "I am registering your complaint", and the agent composing its own
+success and failure lines after deciding the outcome by looking for a number in the Result — is
+**retired**. Do not reintroduce any part of it.
+
+**What replaces it, in every agent that registers:**
+- **The registering turn is the call and nothing else.** No text, no acknowledgement, no wait
+  cue, no `preToolMessage`. Everything the agent wants to say — the empathy, the reason, the
+  outcome — goes on the NEXT turn.
+- **The tool returns a message, and that message is the only source of truth**: whether it
+  registered, the complaint number, and what to tell the consumer. The agent does what the
+  message says, in its own natural words in the call's language, never reading its English aloud.
+  If the message says to offer a transfer, that offer is T3 in `SENIOR TEAM TRANSFER`.
+- **No message, no complaint.** Once per issue; if any message reported failure, no further call
+  for any issue; never more than two calls per call.
+- **`callhangup` follows the same shape** — the closing line is the agent's **own text** on that
+  turn, no `preToolMessage`. **No tool in this channel takes a `preToolMessage`** any more, with
+  one exception: a `switchagent` retry after a platform failure.
+
+**The one deliberate exception is `unregisteredComplaintAgent`**, which follows the
+`bpcl_lite_zip` desk instead — name → `updateContact` → PIN code → `get_pincode_data` → district →
+`bpcl_create_unregistered_complaint`, each step its own turn, with a spoken line on the tool turn.
+CRC's own unregistered agent is still on the retired method and is **not** the reference for it.
+
+**Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
+vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
+and `reason` names are **gone from this channel** — renamed across all ten registered-consumer
+agents in the same pass, to match [`bpcl_prompts_hindi`](../../bpcl_prompts_hindi/CLAUDE.md), which
+is the reference for this contract. Do not reintroduce them.
+
+- **REGISTERED consumer** → the agent that owns the problem registers it itself, on
+  `bpcl_create_complaint`, passing **exactly two** parameters: `complaintSummary` (one or two lines
+  of English, only what the consumer said) and `complaintReason` (the exact matching phrase from
+  that agent's own domain list, or `others`). Everything else — consumer id, mobile, name, state,
+  district, date — is the platform's. No PIN code step.
+- **UNREGISTERED consumer** → `unregisteredComplaintAgent`, the only holder of
+  `bpcl_create_unregistered_complaint`, which runs a fixed three-tool chain: confirmed name →
+  `updateContact` → PIN code → `get_pincode_data` → confirmed district →
+  `bpcl_create_unregistered_complaint`, passing `ConsumerDetailsConsumerName` + `complaintSummary` +
+  `complaintReason`. Its `complaintReason` is copied character for character from a nine-value
+  backend list. No other agent may call any of those three tools.
+
+## Bharat Gas Lite zip — `newConnectionAgent` owns it (2026-09-24)
+
+`newConnectionAgent` (`newConnectionAgent_onHold.txt`) is the **Bharat Gas Lite zip specialist**, and
+that is now the larger half of its job. Lite zip is the default for anyone asking for gas, a
+cylinder or a connection; the 14.2 kg closure is a **reactive** block that never opens a call and
+never travels without the lite zip pivot. It owns the product facts, the Q&A-versus-guided mode
+gate, the twelve-state Hello BPCL App flow, the dead ends, and the complaint gate.
+
+**The fact set is `bpcl_lite_zip`'s, and it overrides everything older:** two sizes, 10 kg and 5 kg;
+**never** a price; **never** a four-hour promise — same day for a daytime order, next day 8am–8pm
+for an evening or night one; App-only booking; domestic, commercial and industrial; documents shown
+at delivery, never uploaded; no eligibility check; new connection versus refill decided by one
+question; no subsidy, stated plainly; availability and stock never claimed and a PIN code never
+asked for. `zip` is always **lowercase** — capitals make TTS spell it out.
+
+**Routing.** `Default` and the specialists keep their existing routes untouched; only a clear intent
+to take, refill or be guided through lite zip goes to `newConnectionAgent`. Other specialists keep
+their short lite zip KB, answer from it, and hold the call — a passing mention is never a handover.
+Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer owns "how to get
+one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
+state — and that agent reaches `routingAgent` only on the way back out.
+
+**Greeting.** `Default` opens on lite zip with a fixed line, usually configured as the platform's
+first message. It is the one turn not in the consumer's language, because they have not spoken yet.
+
+**Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
+those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which
+do not exist in this channel (CB-01). `promptQA.txt` was **renamed to `vaaniQA.txt`** to match the
+CRC filename; its content is unchanged apart from the channel label, the removal of a leftover
+"call transfer path" header that contradicted this channel, and a hard-coded Hindi failure line
+replaced with a language-neutral one. CRC's `postCallAnalysisHuman.txt` is deliberately **not**
+ported here.
 
 **Docs:** [ORCHESTRATION.md](docs/ORCHESTRATION.md) is the live routing spec — the Switch Gate
 design, `(topic, consumerPayload) → agentName`. It is **spec-only and not yet applied to the
@@ -129,7 +166,7 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 
 ---
 
-## Open items specific to CC
+## Open items specific to this channel
 
 - ~~**The `getConsumerDetails` blocker**~~ — **CLOSED 2026-08-27.** The agent was derived from
   its CRC twin and now holds `switchagent`, so the recovery loop has a real exit. The old text
@@ -149,18 +186,23 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 1. Never create `.bak` copies of prompt files. Edit in place.
 2. Ask: is this change **shared truth** or **CC policy**? Shared truth lands in CRC too, this
    session. CC policy gets a row in [../CHANNELS.md](../CHANNELS.md).
-3. If you are porting from CRC, translate the axes: an office-visit block becomes a `calltransfer`
-   block only where escalation is genuinely warranted — otherwise it stays inline. Insider phrasing
-   becomes third-party phrasing.
+3. If you are porting from CRC, translate **three** axes, not one:
+   - **Escalation.** CRC's `calltransfer` / `SENIOR TEAM TRANSFER` / T1–T4 text is carried here
+     as it stands in the Hindi CRC, with only its Hindi examples turned into meaning anchors.
+   - **Identity.** CRC's `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` do not exist here. This is
+     the Bharat Petroleum, Mumbai Headquarters office, and its address is fixed knowledge, not
+     injected data. Insider phrasing becomes third-party phrasing.
+   - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
+     language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
+     fixed closing string becomes a `preToolMessage` composed in the call's language.
 
 ---
 
 ## Open platform dependencies (created by the CC-port pass, 2026-08-27)
 
-1. **`calltransfer` must resolve its own forwarding target.** Every CC prompt now invokes it
-   with no parameters at all (CC-PORT-02). If the CC platform does not supply the SIP target the way CRC's does,
-   **every transfer in this channel fails silently** — the prompts will be correct and the calls
-   will still drop. Test one transfer before wide deployment.
+1. **`calltransfer` must resolve its own forwarding target.** Every prompt invokes it with no
+   parameters at all. If the platform does not supply the target, every transfer fails silently —
+   correct prompt, dropped call. Test one transfer before wide deployment.
 2. **`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**
    It came across with the derivation and is a CRC-branded variable. If CC does not inject it, the
    prompts see curly braces, treat the value as absent, and fall back to "I cannot confirm that
