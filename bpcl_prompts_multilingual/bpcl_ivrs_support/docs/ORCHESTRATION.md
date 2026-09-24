@@ -42,7 +42,7 @@ gate is a pure function — `(topic, consumerPayload) → agentName`.
 | `paymentAgent` | Payment / refund / overcharge. |
 | `subsidyAgent` | Subsidy / DBTL. |
 | `connectionServicesAgent` | KYC, address, mobile, name, surrender, portability, PNG. |
-| `newConnectionAgent` | Bharat Gas Lite zip specialist; also owns standard new connection / Ujjwala. |
+| `newConnectionAgent` | New connection / Ujjwala. |
 | `emergencyAgent` | Gas hazard. |
 | `genericInfoComplaintAgent` | Everything no senior owns. |
 
@@ -89,7 +89,6 @@ function gate(coarseIntent, session):
     # ---- Stage A: bypass ----
     if coarseIntent == EMERGENCY:        return emergencyAgent
     if coarseIntent == NEW_CONNECTION:   return newConnectionAgent
-    if coarseIntent == LITE_ZIP:         return newConnectionAgent
 
     # ---- Stage B: registration ----
     if not isRegistered(session.consumerPayload):
@@ -114,11 +113,6 @@ function gate(coarseIntent, session):
 ### Stage A — the two agents that skip the gate
 
 **Emergency** skips because a gas leak cannot wait for a database.
-
-**New connection and Bharat Gas Lite zip** skip because prospective zip or new-connection callers
-often have no record. The Bharat Gas Lite zip specialist also owns the App-only booking and refill
-flow, so sending a clear zip intent through record recovery or generic information loses the
-specialist context.
 
 **New connection** skips because `newConnectionAgent.txt:434-438` states that
 `"Consumer not found"` is the **normal, expected** state for its callers — a
