@@ -22,6 +22,19 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### NUM-08 · A real complaint number read out as an amount ("एक करोड़ सत्ताईस लाख …") — the general number rule sent IDs to Hindi words — CRC only, CC pending (2026-09-28)
+
+| | |
+|---|---|
+| **Axis** | Neither — NUM-01 compliance. The eleven CRC agents that speak a complaint number. **CC not ported.** |
+| **Source** | Live call 28-09-2026 16:40, `postDeliveryAgent`. The tool was called correctly and returned a real number (12701511, the backend's 8-digit shape). Vaani said *"आपकी शिकायत संख्या एक करोड़ सत्ताईस लाख एक हज़ार पाँच सौ ग्यारह है"*. |
+| **Diagnosis** | Three places disagreed. ① The general rule near the top of five agents (the four delivery agents and genericInfo): *"I never speak dates, times, money, counts, **or IDs** as raw digits. I always convert into **natural Hindi words**."* A complaint number is an ID, and its "natural Hindi words" are an amount, so the output obeyed the first rule it read. ② `DIGIT WORDS`, nine lines later, had the right rule: English digit words with `" - "`, never one whole number. ③ The complaint-number exception in ten agents said *"I speak it **whole**, in ONE turn"*, and "whole" reads as "one whole number", the opposite of ②. The tool's message delivers the number as numerals, which leaves the model to pick a form. NUM-07 (22-09) fixed the same failure in `connectionServicesAgent` alone; it did not touch ①. |
+| **The rule now** | ① In the five agents: dates, times, money and counts go to Hindi words, and a complaint number, phone number or any other long number is never turned into an amount (never करोड़, लाख, हज़ार or सौ); it goes one digit word at a time per LONG NUMBER DELIVERY. ② *"speak it whole, in ONE turn"* → *"speak all its digits in ONE turn the first time, one digit word at a time with `" - "` between them per DIGIT WORDS, never as one whole number or an amount"* (ten agents). `unregisteredComplaintAgent`'s *"in ONE go, the whole thing"* got the same rewrite. ③ `COMPLAINT TOOL` step 3 in all eleven: the number arrives in the message as numerals, each digit is its own English digit word with `" - "`, never read as a whole and never as an amount. |
+| **Deliberately NOT changed** | The same call's *"एस एम एस (S M S)"* double form (client: not in scope). The *"Every number becomes Hindi words"* line in the address-reading blocks, which is scoped to addresses. `paymentAgent` and both booking agents already sent IDs and long numbers to LONG NUMBER DELIVERY in their general rule, so only ② and ③ landed there. |
+| **⚠️ Open** | **CC not ported.** |
+
+---
+
 ### CPL-27 · Complaint calls typed out as text with invented keys and numbers; the empathy rule's "next step" became the registering line; the consumer's own date read back as the system booking date — CRC only, CC pending (2026-09-28)
 
 | | |
