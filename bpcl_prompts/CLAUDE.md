@@ -111,6 +111,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 | Agent | Role |
 |---|---|
 | `getConsumerDetails` | Number capture + `bpcl_fetch_all_api`. Entry for unregistered callers. |
+| `unregisteredComplaintAgent` | **CRC only** (CHANNELS.md UNREG-03). Activated by the platform after two failed fetches; helps a consumer with no record from its knowledge base, registers via `bpcl_create_unregistered_complaint`, transfers per T1–T4, switches only to `routingAgent`. |
 | `Default` | Greeting, emergency interrupt, FAQ, triage, routing. Never hangs up. |
 | `routingAgent` | Silent mid-call re-router. Owns the out-of-scope hangup ladder. |
 | `emergencyAgent` | Gas hazard. Owns the call absolutely while a hazard is live. |

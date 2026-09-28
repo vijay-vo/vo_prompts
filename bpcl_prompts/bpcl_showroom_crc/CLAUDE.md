@@ -45,7 +45,9 @@ she offers one only at the four moments below.
 **Never re-ask someone who already asked.** *"किसी और से बात करवाओ"* **is** the request — asking
 *"क्या मैं आपकी call senior team से connect कर दूँ?"* back at them costs a turn and reads as
 stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
-it: **T3**, and `getConsumerDetails`' no-data closing.
+it: **T3**, and `getConsumerDetails`' no-data closing in `getConsumerDetailsLive.txt` /
+`getConsumerDetails.txt`. The unregistered-number stage (`getConsumerDetails-unreg.txt`) has no such
+closing — see UNREG-03 below.
 
 > **REVISED 2026-09-14 — CHANNELS.md TOOL-07.** `calltransfer` is now called with **no `preToolMessage` and no text** — there is no transfer announcement at all. `callhangup` carries the closing line as the agent's **own text**, with the call on the same turn; if a `callhangup` Result comes back, the agent produces no text (TOOL-08, 2026-09-15). No agent ever speaks a tool name — a complaint is only "complaint" or "शिकायत" (TOOL-08). The next paragraph describes the superseded XFER-03 shape.
 
@@ -180,6 +182,14 @@ never treat a later "senior से बात कराओ" as a new complaint �
   is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
   → on yes, switch; on no, `callhangup`. The three-piece dictation loop is **retired** and the office
   hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
+- **No consumer record, on the unregistered-number stage — REVISED 2026-09-28, ../CHANNELS.md
+  UNREG-03.** `getConsumerDetails-unreg.txt` holds **no `calltransfer` and no `callhangup`**: it
+  looks up at most two numbers and, after the second empty fetch, says nothing — the platform
+  switches to **`unregisteredComplaintAgent`**, which answers from its knowledge base, registers
+  through **`bpcl_create_unregistered_complaint`** against a confirmed name and PIN-code district,
+  and transfers per T1–T4 if the consumer still wants a person. The platform switches only on two
+  failed fetches, so "no registered number" is asked again for any number the consumer uses, and a
+  consumer with no second number has the first one fetched again silently.
 
 ### Who can register, and the one routing hop
 
@@ -190,6 +200,11 @@ Ten agents hold `bpcl_create_complaint` and register in place. Three do not, and
 - `newConnectionAgent` — escalates via `newConnectionAgent → routingAgent → genericInfoComplaintAgent`.
   Leaf-to-leaf switching is forbidden, so `routingAgent` is the only legal path.
 - `getConsumerDetails` — see above; it cannot escalate at all.
+
+`unregisteredComplaintAgent` is the one agent that registers **without a consumer record**, and it
+never holds `bpcl_create_complaint`: its tool is `bpcl_create_unregistered_complaint`, reached through
+`updateContact` → `get_pincode_data` → a confirmed district, with the IVRS nine-value
+`complaintReason` list (UNREG-03).
 
 `bookingEligibleAgent` was in this list until 2026-07-29. It now holds the tool and registers directly — a repeated
 booking failure is a technical fault on our side, so the complaint is the first action, and the
@@ -328,6 +343,17 @@ Its exits are: data found → stop speaking, the platform resumes the call into 
 tell the consumer their record isn't available, offer to connect them to the senior team, and either
 call `calltransfer` on a yes or `callhangup` on a no. That platform-owned hop into
 `Default` is still described by no prompt — see the open items below.
+
+**`getConsumerDetails-unreg.txt` is the unregistered-number stage** (UNREG-03, 2026-09-28) — the
+prompt used where a no-record consumer is to reach `unregisteredComplaintAgent`. It is Live's loop
+with a different ending: at most two fetches, no `calltransfer`, no `callhangup`, and silence after
+the second empty fetch while the platform switches. It and `getConsumerDetailsLive.txt` are **not**
+two stages of one call and are never kept in step with each other — a Live fix to the capture loop
+(STEP 1–7) should be ported to `-unreg` by hand; the endings differ on purpose.
+**`unregisteredComplaintAgent`** — tools `updateContact`, `get_pincode_data`,
+`bpcl_create_unregistered_complaint`, `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
+topic after its own work is done) and `callhangup`. Its SECTION 4 is still pre-ZIP-04 (see
+UNREG-03's open item).
 
 **Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
 §11 lists known gaps, and they are worth reading before any routing change.

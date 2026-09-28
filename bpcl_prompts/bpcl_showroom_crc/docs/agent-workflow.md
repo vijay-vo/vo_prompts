@@ -91,6 +91,14 @@ The caller's number decides the entry point.
 
 > ⚠️ `getConsumerDetails` has **no `switchagent` tool.** The hop into `Default` is not a prompt-level switch — it is owned by the platform. This is the one transition in the system that no prompt describes.
 
+**Unregistered-number stage → `unregisteredComplaintAgent`** (CHANNELS.md UNREG-03, 2026-09-28). Where the stage runs `getConsumerDetails-unreg.txt` instead, step 5's no-data branch is replaced:
+
+1. First empty fetch → one request for a different registered number, then the loop again. "No registered number" or a refusal is asked again for any number the consumer uses; a consumer with no second number has the first one fetched again, silently.
+2. Second empty fetch → the agent says **nothing**. The platform (which switches only on two failed fetches) activates `unregisteredComplaintAgent`.
+3. `unregisteredComplaintAgent` takes the issue from `{{handoffSummary}}` (Default's), else from the earlier transcript, else one question; answers from its knowledge base; registers via `updateContact` → `get_pincode_data` → confirmed district → `bpcl_create_unregistered_complaint`; transfers per T1–T4; switches only to `routingAgent`, only for a new topic after its own work is done; otherwise closes with `callhangup`.
+
+The diagram above still shows the Live ending; this path has no `callhangup` in `getConsumerDetails`.
+
 ---
 
 ## 4. `Default` — the triage machine
