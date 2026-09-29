@@ -283,10 +283,8 @@ baseline commit with no prior history to diff against.
   **⚠️ CC has not been tested against this.** CC's prompts were stripped to `preToolMessage`-only on
   the client's confirmation that its platform supplies the target. If that is wrong, every CC transfer
   fails silently — correct prompt, dropped call. Test one transfer before wide deployment.
-- **`{{crcHolidayList}}` in CC.** Came across with the derivation and is still CRC-branded, named in
-  CC's `Default.txt` and `genericInfoComplaintAgent.txt`. If CC does not inject it the prompts see
-  curly braces, treat it as absent, and say they cannot confirm the holiday — safe but degraded.
-  Decide whether CC gets a holiday calendar, and under what name.
+- ~~**`{{crcHolidayList}}` in CC.**~~ **CLOSED 2026-09-29 (CHANNELS.md HOL-01):** kept in CRC only,
+  removed from CC and IVRS, whose prompts now say there is no holiday list on this line.
 - **CC's `postCallAnalysis.txt`.** Left untouched by the CC-port pass and still scores scheduled
   callbacks, which no longer exist in CC (CB-01). Confirm whether it is still deployed.
 

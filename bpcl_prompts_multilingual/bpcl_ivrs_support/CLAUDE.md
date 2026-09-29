@@ -245,7 +245,8 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 1. ~~`calltransfer` forwarding target~~ — **N/A in this channel.** No agent holds the tool.
    `calltransfer` must be **de-registered on the platform for IVRS**, so a model that hallucinates
    the name cannot invoke anything.
-2. **`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**
-   It came across with the derivation and is a CRC-branded variable. If CC does not inject it, the
-   prompts see curly braces, treat the value as absent, and fall back to "I cannot confirm that
-   holiday" — safe, but degraded. Decide whether CC gets a holiday calendar and under what name.
+2. ~~**`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**~~
+   **CLOSED 2026-09-29 (CHANNELS.md HOL-01).** Removed from this channel on client instruction: the
+   holiday list is CRC's alone. Both prompts now say there is no holiday list on this line — the
+   agent says it does not have the holiday information, gives the normal office timing, and
+   suggests confirming with the distributor by phone.

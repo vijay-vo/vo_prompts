@@ -229,7 +229,6 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 1. **`calltransfer` must resolve its own forwarding target.** Every prompt invokes it with no
    parameters at all. If the platform does not supply the target, every transfer fails silently —
    correct prompt, dropped call. Test one transfer before wide deployment.
-2. **`{{crcHolidayList}}` is still named in `Default.txt` and `genericInfoComplaintAgent.txt`.**
-   It came across with the derivation and is a CRC-branded variable. If CC does not inject it, the
-   prompts see curly braces, treat the value as absent, and fall back to "I cannot confirm that
-   holiday" — safe, but degraded. Decide whether CC gets a holiday calendar and under what name.
+2. **`{{crcHolidayList}}` is CRC's own variable and stays here** (CHANNELS.md HOL-01, 2026-09-29).
+   It is named in `Default.txt` and `genericInfoComplaintAgent.txt` and is the holiday list for the
+   next thirty days. It was removed from IVRS and CC, which have no holiday list.

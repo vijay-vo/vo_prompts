@@ -1669,6 +1669,16 @@ Live IVRS test call, Hindi. The consumer asked to take Bharat Gas Lite zip. `Def
 | **Not changed** | Default's own fixed greeting (STAGE 1). The parked `newConnectionAgent.txt`. |
 | **⚠️ Open** | **Not yet in CC or CRC multilingual**, which are behind IVRS per IVRS-SYNC-01. Port with that re-derivation, or on its own. |
 
+### HOL-01 · `{{crcHolidayList}}` is CRC's alone — removed from IVRS and CC (2026-09-29)
+
+Client instruction. The holiday list came into CC with the CC-port derivation (and from CC into IVRS) and was only ever injected for CRC; elsewhere it showed curly braces and the agent fell back to "I don't have that information".
+
+| | |
+|---|---|
+| **IVRS, CC** | In `Default.txt` and `genericInfoComplaintAgent.txt` the five-paragraph holiday block is replaced by one line: there is no holiday list on this line; asked about a festival or a date, the agent says it does not have the holiday information, gives the normal office timing (all weekdays, 9am–7pm), and suggests confirming with the distributor by phone. It never works a holiday out itself, and a holiday question registers nothing. |
+| **CRC** | Unchanged — `bpcl_showroom_crc` keeps `{{crcHolidayList}}` and its answering rules. `bpcl_prompts_hindi` (CRC only) is untouched. |
+| **Wording** | CC's `genericInfoComplaintAgent.txt` is still in "I" from before IVRS-SYNC-01; the new line is in "You", like every re-derived prompt. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
