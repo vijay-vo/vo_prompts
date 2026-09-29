@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### BNE-04 · `bookingNonEligibilityAgent` offered a complaint on its first turn because the handoff said "complaint", then typed the call out with a stage direction and an invented number — CRC only, CC pending (2026-09-29)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth** (TOOL_CALLING.md rule 2). `bookingNonEligibilityAgent`. **CC not ported.** |
+| **Source** | Live call 29-09-2026 14:12. Handoff from `Default`: *"Intent: booking and delivery complaint. Context: consumer says distributor (…) does not deliver on time and bookings are not appearing in the system. Please help consumer with booking and delivery complaint."*, followed by the system record *"LPG refill was booked on 2026-09-25 … planned for Delivery"*. Turn 1 stated the open order correctly, then added that she was registering a complaint "so our team can investigate" and asked permission. Turn 2, on the consumer's "हाँ, मेरा booking भी हुआ है": the tool name spoken, a stage direction *"(शिकायत दर्ज करने के बाद)"*, an invented 10-digit number, a team-contact promise and the close question. No tool call. Client confirmed the platform schema is the trimmed two-key one, the same as every other agent. |
+| **Diagnosis** | The TOOL_CALLING §4 shape checks all pass for this file. The failure is in the flow. ① **The handoff's "complaint" read as an instruction.** Both the Intent and the "Please help consumer with" line said complaint, and nothing told the agent that this was the previous agent's label rather than a decision. ② **Two rules licensed a first-turn complaint.** The opening pattern's *"Give the resolution path immediately — what the consumer should do next"* and THE ONE CARVE-OUT's *"register directly"* (a cylinder not delivered is on its list). Both collided with OPEN ORDER's own *"nothing to fix, no complaint"*. ③ **Step 6 fired on a relayed claim.** "Bookings are not appearing" arrived in Context and read as a data dispute, although the system sentence right below showed the booking. Step 6 also said *"on that same turn"* without *"the call alone"*. Once turn 1 had announced the complaint, turn 2 typed it out (rule 2). |
+| **The rule now** | ① New **THE PREVIOUS AGENT'S WORDS NEVER DECIDE A COMPLAINT** under TWO KINDS OF TEXT. Intent and "Please help consumer with" are a topic label. The first turn is the block and its resolution, and nothing about a complaint. What the consumer says next decides Step 6, Step 6A or the carve-out, and each is the call alone. ② Opening pattern item 3: the resolution path is the block's own line, never a complaint, and never mentioned on the first turn. ③ Carve-out: still direct, now *"the call alone, with no text"*, applying after the first turn has stated the record. ④ Step 6: a dispute is the consumer disputing the record *after* it was stated. A Context claim the record contradicts is answered by the record. The call is on the turn they dispute it, alone, with no text. |
+| **⚠️ Open** | **`Default`'s handoff wording** is the upstream cause: its examples put "complaint" in Intent and in "Please help consumer with" (nine places), it merged two problems into one handoff, and its escalation handoff scripts *"tell consumer the team will contact them"*. Under discussion with the client, not changed here. **CC not ported.** |
+
+---
+
 ### NUM-08 · A real complaint number read out as an amount ("एक करोड़ सत्ताईस लाख …") — the general number rule sent IDs to Hindi words — CRC only, CC pending (2026-09-28)
 
 | | |
