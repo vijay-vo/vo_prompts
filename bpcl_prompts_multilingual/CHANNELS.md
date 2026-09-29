@@ -1564,7 +1564,7 @@ refuses a transfer is replaced by the transfer text of the same agent in
 | **Porting rule** | A fix to IVRS lands in CC and CRC in the same session unless it touches escalation. |
 | **Verified** | Sentence-level diff of every prompt against IVRS: every changed sentence is transfer text. No "NO HUMAN TRANSFER", "no transfer in this channel" or "no option to connect" remains; no Hindi script, backticks or markdown added to any prompt; every section a transfer line cites (RESOLUTION LADDER, COMPLAINT TOOL, SECTION 8, §11, §18, §20A, §22) exists in that file. |
 
-### TOOL-PORT-01 · The confirmed CRC tool-calling method (TOOL_CALLING.md, CPL-27, NUM-08) — IVRS (2026-09-29)
+### TOOL-PORT-01 · The confirmed CRC tool-calling method (TOOL_CALLING.md, CPL-27, NUM-08) — IVRS, then CC and CRC (2026-09-29)
 
 **Reference: `bpcl_prompts/TOOL_CALLING.md` on `main`**, confirmed working on Hindi CRC by the client on
 2026-09-29. IVRS already had the silent complaint call from CPL-22 (2026-09-24). What was still missing
@@ -1583,7 +1583,8 @@ lists.
 | **Deliberately NOT ported** | **English digit words.** CRC speaks the digits in English; IVRS keeps the consumer's own language (client decision, 2026-09-29), with only NUM-08's structure taken over. **The `switchagent` retry `preToolMessage`** in `routingAgent` stays: CRC keeps the same single exception. **CPL-27 ④** (the handoffSummary booking date) is a separate row. |
 | **Also fixed** | `subsidyAgent`'s switchagent block said *"a consumer who wants a person gets invoked by you"* (a port leftover, twice). It now says they get a registered complaint instead. |
 | **vaaniQA** | C3g-TAIL and C26 scored the retired wait cue (*"एक मिनट रुकिए।"* followed by "the tool's own fixed sentence"). They now score any registering announcement (C3g-TAIL) and a due action with no outcome, or a tool call written out as speech (C26), as on CRC. C17 and C25 lose "the tool's fixed sentence". C5g/C5f: all digits in one turn is correct, and a whole number or an amount is a violation (NUM-08). |
-| **Docs** | IVRS `CLAUDE.md` names TOOL_CALLING.md as the reference and no longer says `unregisteredComplaintAgent` speaks on its tool turns, or that a closing string becomes a `preToolMessage`. |
+| **CC and CRC** | Ported the same session, per IVRS-PORT-01's rule. The same edits landed in both prompt sets, which are still byte-identical to each other and still differ from IVRS only in transfer text. The one extra: vaaniQA C26 also scores a consumer who asked for a person, with no transfer outcome after it. Their `calltransfer` turn was already the call alone with no `preToolMessage`, spoken from the Result (TOOL_CALLING rule 3), and needed no change. Neither channel had IVRS's broken subsidy sentence. |
+| **Docs** | IVRS, CC and CRC `CLAUDE.md` each name TOOL_CALLING.md as the reference and no longer says `unregisteredComplaintAgent` speaks on its tool turns, or that a closing string becomes a `preToolMessage`. |
 
 ---
 

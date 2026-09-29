@@ -79,10 +79,30 @@ in Mumbai, not an employee of the distributor.
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
+## Tool calling follows TOOL_CALLING.md (2026-09-29)
+
+**The reference for HOW every tool is called is `bpcl_prompts/TOOL_CALLING.md` on `main`** — the
+method the client confirmed working on Hindi CRC on 2026-09-29 (CPL-27, NUM-08). Ported here as
+[TOOL-PORT-01](../CHANNELS.md). Every tool edit in this channel aligns with it; if tool calling
+breaks, start at its §4 checklist. What it means here:
+- **An action tool is not announced.** The complaint turn (either complaint tool, and
+  `updateContact` / `get_pincode_data`) and the `calltransfer` turn are the call alone. The empathy rule says outright that a
+  complaint about to be registered is never the "next step" a warm sentence carries.
+- **No scripted outcome lines.** No success line, no "four-beat" line, no "two turns" block: the
+  outcome is whatever the tool's message says, in the consumer's language.
+- **`callhangup` takes no parameters.** The closing line is the agent's own text with the call on
+  the same turn — never in a `preToolMessage`, and no other key.
+- **`bpcl_create_complaint` carries exactly `complaintSummary` + `complaintReason`**, stated as a
+  closed set in every COMPLAINT TOOL block; `bpcl_create_unregistered_complaint` adds only
+  `ConsumerDetailsConsumerName`. The platform schemas match these keys (client, 2026-09-29).
+- **No backticks** in a live prompt; the line-1 directive keeps the tool name without them.
+- **The complaint number** is all its digits in one turn, one digit word at a time in the
+  consumer's language with `" - "` between them, never a whole number and never an amount (NUM-08,
+  with IVRS's own-language digits kept — CRC uses English digit words).
+
 ## The complaint method is CRC's, not the old IVRS one (2026-09-24)
 
-**`bpcl_prompts_hindi/bpcl_showroom_crc/prompts/` is the reference for HOW tools are used in this
-channel.** The elaborate method IVRS inherited — a spoken registering line, a wait cue, a fixed
+**TOOL_CALLING.md above supersedes this section wherever they differ.** The elaborate method IVRS inherited — a spoken registering line, a wait cue, a fixed
 `preToolMessage` carrying "I am registering your complaint", and the agent composing its own
 success and failure lines after deciding the outcome by looking for a number in the Result — is
 **retired**. Do not reintroduce any part of it.
@@ -101,10 +121,10 @@ success and failure lines after deciding the outcome by looking for a number in 
   turn, no `preToolMessage`. **No tool in this channel takes a `preToolMessage`** any more, with
   one exception: a `switchagent` retry after a platform failure.
 
-**The one deliberate exception is `unregisteredComplaintAgent`**, which follows the
-`bpcl_lite_zip` desk instead — name → `updateContact` → PIN code → `get_pincode_data` → district →
-`bpcl_create_unregistered_complaint`, each step its own turn, with a spoken line on the tool turn.
-CRC's own unregistered agent is still on the retired method and is **not** the reference for it.
+**`unregisteredComplaintAgent`** runs the `bpcl_lite_zip` desk's order — name → `updateContact` →
+PIN code → `get_pincode_data` → district → `bpcl_create_unregistered_complaint`, each step its own
+turn — but each of the three tool turns is the call alone, with no spoken line (2026-09-24, and
+TOOL-PORT-01). Hindi CRC ported this agent from here (UNREG-03).
 
 **Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
 vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
@@ -199,7 +219,8 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
      injected data. Insider phrasing becomes third-party phrasing.
    - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
      language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
-     fixed closing string becomes a `preToolMessage` composed in the call's language.
+     fixed closing string becomes the agent's own closing text, composed in the call's language,
+     on the `callhangup` turn — never a `preToolMessage`.
 
 ---
 
