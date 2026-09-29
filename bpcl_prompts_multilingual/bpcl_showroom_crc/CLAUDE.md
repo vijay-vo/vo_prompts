@@ -1,30 +1,34 @@
 # bpcl_showroom_crc (CRC) — channel contract
 
-Bharat Petroleum's **showroom CRC channel** — serving LPG consumers across India, in whatever Indian language they speak.
+Bharat Petroleum's **showroom CRC channel**. Vaani speaks from the **Bharat Petroleum regional CRC
+office in each city** (`{{crcOfficeCity}}`), a regional head office covering many districts and many
+distributors. She serves LPG consumers in whatever Indian language they speak.
 
-**Re-derived 2026-09-24 from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), with exactly
-one policy difference: `calltransfer` exists** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01).
-Everything else — the 15-agent topology plus `unregisteredComplaintAgent`, the handoff contract, the
-LPG domain facts, the multilingual rule, the head office identity and address, the complaint method,
-the Bharat Gas Lite zip ownership, the post-call set — is IVRS's, word for word, and must not
-diverge. The transfer text is the Hindi CRC's (`bpcl_prompts_hindi/bpcl_showroom_crc`), with its
-Hindi example lines turned into meaning anchors and nothing else changed.
+**Re-derived from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) on 2026-09-24 (IVRS-PORT-01) and
+again on 2026-09-29 (IVRS-SYNC-02).** Every prompt is [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md)'s
+(= IVRS plus `calltransfer`), with **one further difference: identity** (CRC-ID-01, 2026-09-29). The Mumbai
+Headquarters text is replaced by the CRC office text of the same agent in `bpcl_prompts/bpcl_showroom_crc` on
+`main`, translated into the multilingual form, and `{{crcHolidayList}}` stays (HOL-01). Everything else — the
+topology, the handoff contract, the LPG domain facts, the multilingual rule, the complaint method, the
+Bharat Gas Lite zip ownership, the neutral greeting, the post-call set — is IVRS's, word for word, and must
+not diverge.
 
 Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth. This file holds **only what is
 specific to this channel.**
 
-Sister channels: [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) — its prompts are byte-identical to these —
-and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), identical except for the transfer.
+Sister channels: [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) — identical to these except identity and the
+holiday list — and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), which also has no transfer.
 
 **Porting rule for this channel:** a fix landing in IVRS lands here too, in the same session, and in
-`bpcl_contact_center`, UNLESS it touches escalation. Where IVRS refuses a transfer, this channel carries the
-Hindi CRC's transfer line for the same agent instead.
+`bpcl_contact_center`. Translate two axes. Where IVRS refuses a transfer, this channel carries the Hindi
+CRC's transfer line for the same agent. Where IVRS speaks as the Mumbai Headquarters, this channel speaks
+as the CRC in `{{crcOfficeCity}}`, in the Hindi CRC's words for the same agent.
 
 ---
 
 ## Axis 1 — Escalation: the complaint comes first, then a transfer
 
-**This is the only thing that makes this channel different from IVRS.**
+**This, with identity (Axis 1c / Axis 2), is what makes this channel different from IVRS.**
 
 **`calltransfer` is held and invoked by the agent the consumer is already speaking to**: the ten
 complaint-capable leaves (`SENIOR TEAM TRANSFER` block), `newConnectionAgent_onHold` (§20A),
@@ -50,20 +54,26 @@ request for one gets "I have no number, I can only transfer the call".
 
 **Any Indian language the consumer speaks.** Identical to CC.
 
-## Axis 1c — The head office address
+## Axis 1c — The CRC office pair: `{{crcOfficeCity}}`, `{{crcOfficeAddress}}` (CRC-ID-01)
 
-Identical to IVRS — fixed KB wording, not a variable. "Bharat Petroleum, Mumbai Headquarters office";
-full address on request; **address only, no phone number**; never offered as somewhere to travel to,
-and never a substitute escalation.
+Injected variables, not fixed KB wording. `{{crcOfficeCity}}` is the bare city name and Vaani builds the
+phrase "Bharat Gas, [city]" herself, transliterated into the script of her reply. `{{crcOfficeAddress}}` is
+spoken only when the consumer asks for the address of where she is, converted into natural speech in the
+call's language (TTS-SAFE DELIVERY — THE CRC OFFICE PAIR), pin code only on request and in the consumer's
+own digit words. **Address only, no phone number.** It is never offered as somewhere to travel to and never a
+substitute escalation. It is never interchangeable with the distributor's details (DISTRIBUTOR ↔ CRC
+NON-SUBSTITUTION). `{{crcHolidayList}}` is this channel's alone (HOL-01).
 
-## Axis 2 — Persona: Bharat Petroleum central, distributor is a third party
+## Axis 2 — Persona: a regional CRC office, distributor is a third party
 
-Vaani is a voice agent **for Bharat Petroleum**, speaking from the **national head office**
-in Mumbai, not an employee of the distributor.
+Vaani is an insider of Bharat Petroleum at a **regional head office CRC** in `{{crcOfficeCity}}`. It covers a
+multi-district territory and many distributors, and it is **not** the consumer's own distributor.
 
-- ✅ "आपके distributor", "अपने distributor से संपर्क कीजिए" — correct here
-- ❌ Insider phrasing — "हमारे यहाँ", "हमारा office", "आप हमारे पास आ सकते हैं". That is CRC's
-  voice. It currently appears 0 times in this workspace; keep it that way.
+- ✅ "our office", "here with us" mean **this CRC only**. "Your distributor" is a third party, and telling
+  the consumer to ask their distributor BY PHONE is correct.
+- ❌ Sending anyone to travel. The territory spans many districts, so a visit can mean a very long trip. An
+  unresolved problem is a registered complaint, then a transfer if they still want a person.
+- ❌ Naming a district or distributor as falling under this CRC. Vaani does not hold the territory list.
 - "senior team" is a real destination here, reached only through `calltransfer` per
   `SENIOR TEAM TRANSFER` — never named on a `switchagent` turn.
 
@@ -78,6 +88,12 @@ in Mumbai, not an employee of the distributor.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
+
+## Derived from the current IVRS, in the "You" persona (2026-09-29)
+
+Since CHANNELS.md **IVRS-SYNC-02**, every CRC prompt is the CC prompt (the current IVRS plus the Hindi
+CRC's transfer text) with the identity axis translated per CRC-ID-01. **Every agent prompt is written in
+the "You" persona**, never "I".
 
 ## Tool calling follows TOOL_CALLING.md (2026-09-29)
 
@@ -166,7 +182,8 @@ Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer
 one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
 state — and that agent reaches `routingAgent` only on the way back out.
 
-**Greeting.** `Default` opens on lite zip with a fixed line, usually configured as the platform's
+**Greeting (IVRS-GREET-01).** `Default` opens with IVRS's neutral fixed line, "नमस्ते, मेरा नाम वाणी है। मैं
+आपकी किस प्रकार सहायता कर सकती हूँ?" — the Hindi CRC's greeting too — usually configured as the platform's
 first message. It is the one turn not in the consumer's language, because they have not spoken yet.
 
 **Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
@@ -188,8 +205,9 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 
 ## Open items specific to this channel
 
-- **Identity is IVRS's.** The prompts speak as the Bharat Petroleum, Mumbai Headquarters office, as
-  IVRS does; `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` are not used by any live prompt.
+- **Identity is the regional CRC's since CRC-ID-01 (2026-09-29).** Before that the prompts spoke as the
+  Mumbai Headquarters, as IVRS does. `{{crcOfficeCity}}` and `{{crcOfficeAddress}}` must be injected on
+  the platform for every CRC deployment, or the agent has no location to give.
 - **CRC-only files kept outside the IVRS set:** `postCallAnalysisHuman.txt` (the analyser for calls
   answered by a human staff member) and its sample outputs `naya.json` / `purana.json`.
 
@@ -214,9 +232,10 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
 3. If you are porting from CRC, translate **three** axes, not one:
    - **Escalation.** CRC's `calltransfer` / `SENIOR TEAM TRANSFER` / T1–T4 text is carried here
      as it stands in the Hindi CRC, with only its Hindi examples turned into meaning anchors.
-   - **Identity.** CRC's `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` do not exist here. This is
-     the Bharat Petroleum, Mumbai Headquarters office, and its address is fixed knowledge, not
-     injected data. Insider phrasing becomes third-party phrasing.
+   - **Identity.** Keep the Hindi CRC's `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` text, translated to the
+     multilingual form (city transliterated into the reply's script, address in natural speech in the
+     call's language, digits in the consumer's own digit words). When porting from IVRS, its Mumbai
+     Headquarters text becomes that CRC text.
    - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
      language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
      fixed closing string becomes the agent's own closing text, composed in the call's language,

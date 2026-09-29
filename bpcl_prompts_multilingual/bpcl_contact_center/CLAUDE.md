@@ -1,9 +1,12 @@
 # bpcl_contact_center (CC) — channel contract
 
-Bharat Petroleum's **national head office contact centre** — serving LPG consumers across India, in whatever Indian language they speak.
+Bharat Petroleum's **national head office contact centre**. Calls come in from the IVRS, and Vaani answers from the
+Bharat Petroleum Mumbai Headquarters office. It serves LPG consumers across India, in whatever Indian language they
+speak, and callers ask about any LPG topic. It works the same way as [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md).
 
-**Re-derived 2026-09-24 from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), with exactly
-one policy difference: `calltransfer` exists** ([../CHANNELS.md](../CHANNELS.md) IVRS-PORT-01).
+**Re-derived from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) on 2026-09-24 (IVRS-PORT-01) and
+again on 2026-09-29 (IVRS-SYNC-02, after IVRS's own re-derivation from current CRC), with exactly one
+policy difference: `calltransfer` exists** ([../CHANNELS.md](../CHANNELS.md)).
 Everything else — the 15-agent topology plus `unregisteredComplaintAgent`, the handoff contract, the
 LPG domain facts, the multilingual rule, the head office identity and address, the complaint method,
 the Bharat Gas Lite zip ownership, the post-call set — is IVRS's, word for word, and must not
@@ -13,8 +16,9 @@ Hindi example lines turned into meaning anchors and nothing else changed.
 Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth. This file holds **only what is
 specific to this channel.**
 
-Sister channels: [`bpcl_showroom_crc`](../bpcl_showroom_crc/CLAUDE.md) — its prompts are byte-identical to these —
-and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), identical except for the transfer.
+Sister channels: [`bpcl_showroom_crc`](../bpcl_showroom_crc/CLAUDE.md) — its prompts are these plus the regional
+CRC office identity and holiday list (CRC-ID-01) — and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md),
+identical except for the transfer.
 
 **Porting rule for this channel:** a fix landing in IVRS lands here too, in the same session, and in
 `bpcl_showroom_crc`, UNLESS it touches escalation. Where IVRS refuses a transfer, this channel carries the
@@ -78,6 +82,13 @@ in Mumbai, not an employee of the distributor.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
+
+## Derived from the current IVRS, in the "You" persona (2026-09-29)
+
+Since CHANNELS.md **IVRS-SYNC-02**, every CC prompt is the current IVRS prompt (itself re-derived from
+current `bpcl_prompts/bpcl_showroom_crc` on `main`, IVRS-SYNC-01, plus SEAM-01 and IVRS-GREET-01) with
+IVRS's no-transfer text replaced by the Hindi CRC's transfer text for the same agent. **Every agent
+prompt is written in the "You" persona**, never "I", including the transfer text.
 
 ## Tool calling follows TOOL_CALLING.md (2026-09-29)
 
@@ -166,8 +177,9 @@ Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer
 one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
 state — and that agent reaches `routingAgent` only on the way back out.
 
-**Greeting.** `Default` opens on lite zip with a fixed line, usually configured as the platform's
-first message. It is the one turn not in the consumer's language, because they have not spoken yet.
+**Greeting (IVRS-GREET-01).** `Default` opens with IVRS's neutral fixed line, "नमस्ते, मेरा नाम वाणी है। मैं
+आपकी किस प्रकार सहायता कर सकती हूँ?", usually configured as the platform's first message. It is the one
+turn not in the consumer's language, because they have not spoken yet. It no longer opens on Lite zip.
 
 **Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
 those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which

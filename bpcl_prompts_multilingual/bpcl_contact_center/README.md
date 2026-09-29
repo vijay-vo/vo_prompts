@@ -85,5 +85,5 @@ named as routing targets in several prompts but **do not exist**.
 
 ## Sister channel
 
-[`bpcl_showroom_crc`](../bpcl_showroom_crc/) — its prompts are byte-identical to these. [`bpcl_ivrs_support`](../bpcl_ivrs_support/)
+[`bpcl_showroom_crc`](../bpcl_showroom_crc/) — identical to these except that it speaks as the regional CRC office and keeps a holiday list (CRC-ID-01). [`bpcl_ivrs_support`](../bpcl_ivrs_support/)
 is identical except for the transfer. Every intended difference is recorded in [../CHANNELS.md](../CHANNELS.md).

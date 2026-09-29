@@ -23,8 +23,12 @@ Both channels run the **same 15-agent topology** (CRC's 16th agent, `callTransfe
 facts, and the same Hindi/TTS voice rules. Those are shared truth and must not diverge.
 
 **Since 2026-09-24 (CHANNELS.md IVRS-PORT-01) `bpcl_ivrs_support` is the reference channel.** CC
-and CRC prompts are IVRS plus `calltransfer` (transfer conditions from
-`bpcl_prompts_hindi/bpcl_showroom_crc`), and their prompts are byte-identical to each other. Where older text in this file describes CC/CRC differently, IVRS-PORT-01 wins.
+prompts are IVRS plus `calltransfer` (transfer text from the Hindi CRC on `main`), re-derived again on
+2026-09-29 (IVRS-SYNC-02). CRC prompts are CC's plus one more axis, identity (CRC-ID-01): Vaani
+speaks from the regional CRC office in `{{crcOfficeCity}}`, not the Mumbai HQ, and CRC keeps
+`{{crcHolidayList}}` (HOL-01). `bpcl_lite_zip` is a copy of IVRS that keeps the Lite zip greeting
+(LZ-01). IVRS, CC and CRC greet neutrally (IVRS-GREET-01). Where older text in this file describes
+the channels differently, these rows win.
 
 Every intended difference is recorded in [CHANNELS.md](CHANNELS.md). **A difference between the
 two channels that is not in that ledger is a drift bug, by definition.** That rule is the whole
