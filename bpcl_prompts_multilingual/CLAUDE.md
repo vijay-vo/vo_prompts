@@ -158,7 +158,7 @@ XFER-01's recorded exception — every leaf may *also* switch to `callTransferAg
 XFER-03 (2026-08-11)** along with the agent itself. Reaching a person is a `calltransfer` tool call
 made by the agent the consumer is already speaking to, not a switch, so the rule above holds in full.
 
-**Handoff contract.** `switchagent` carries `agentName`, `handoffSummary`, `preToolMessage`.
+**Handoff contract.** `switchagent` carries `agentName` and `handoffSummary`, and no `preToolMessage`.
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
 
@@ -169,6 +169,8 @@ true of `bpcl_create_complaint`, of `switchagent`, and of every other tool. Reco
 transcript shows a line implying a tool ran and no Result came back, invoke the tool before anything
 else on the next turn. The agent's own spoken line is never evidence a tool ran; only a Result is.
 (CHANNELS.md CPL-03 for the complaint case, XFER-01 for the generalisation to every tool.)
+
+**Tool calling follows `bpcl_prompts/TOOL_CALLING.md` on `main`** (confirmed working on Hindi CRC, 2026-09-29; ported as CHANNELS.md TOOL-PORT-01). If tool calling breaks, start at its §4 checklist.
 
 **The tool-turn rule.** No tool takes a `preToolMessage` — in either channel since CRC's TOOL-07
 and CC-PORT-02. `bpcl_create_complaint` and `calltransfer` are **the call alone**: no text on that
@@ -203,11 +205,11 @@ money in Hindi words with "रुपये". Never a double form — never "ए�
 backend are **DD-MM-YYYY, day first**; `{{system.current_date}}` is YYYY-MM-DD, year first.
 Visible curly braces in a value = no data; treat as absent, never speak it.
 
-**Complaint discipline.** Every agent holding `bpcl_create_complaint` carries the same `COMPLAINT PROTOCOL — STANDARD` block (CHANNELS.md CPL-01). A complaint is the **last** option, not the first: the `RESOLUTION LADDER` runs before any registration — understand the query, resolve it if the answer is yours, route it if it is another domain's, and only then register. The one carve-out is a **grievance about something that already happened** (cylinder not delivered, test not performed, staff behaviour, money taken), where nothing said undoes it and the complaint *is* the resolution — those register directly and are never slowed down. Confirmation is **only for what is new and consequential**; what the consumer said plainly is never re-confirmed, and when the issue is clear the one-line summary rides inside the registering line itself rather than costing a turn. **Speaking the registering line is not registering** — the agent invokes the tool on that same turn, and a line spoken with no tool call is a failed turn that must be recovered on the next one (CHANNELS.md CPL-03/CPL-04/CPL-05; CRC only so far). Never claim registration
-before the tool returns success. One call per complaint, never retry on failure, max 2 per call.
-Never invent a complaint number. On success the number is spoken digit by digit — **Hindi words in CC,
-English digit words with `" - "` in CRC since CHANNELS.md NUM-01** — and
-the consumer is told it will also arrive by SMS. CC's callback carve-out is gone with the callback
+**Complaint discipline.** Every agent holding `bpcl_create_complaint` carries the same `COMPLAINT PROTOCOL — STANDARD` block (CHANNELS.md CPL-01). A complaint is the **last** option, not the first: the `RESOLUTION LADDER` runs before any registration — understand the query, resolve it if the answer is yours, route it if it is another domain's, and only then register. The one carve-out is a **grievance about something that already happened** (cylinder not delivered, test not performed, staff behaviour, money taken), where nothing said undoes it and the complaint *is* the resolution — those register directly and are never slowed down. Confirmation is **only for what is new and consequential**; what the consumer said plainly is never re-confirmed. **There is no registering line** (TOOL-PORT-01): the complaint turn is the call alone, the empathy rule never lets "I am registering it" be a warm sentence's next step, and everything about the complaint is said on the next turn, from the tool's message. A complaint decided on with no Result behind it never ran, and is invoked on the next turn before anything else. Never claim registration
+before the tool's message says so. One call per complaint, never retry on failure, max 2 per call.
+Never invent a complaint number. The number comes only from the tool's message and is spoken as all its
+digits in one turn, one digit word at a time **in the consumer's language** with `" - "`, never as a whole
+number or an amount (NUM-08, TOOL-PORT-01). What else is said comes from the message, not a script. CC's callback carve-out is gone with the callback
 itself (CB-01).
 
 ---

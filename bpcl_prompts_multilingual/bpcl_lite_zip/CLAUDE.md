@@ -79,6 +79,16 @@ name asked + read back + confirmed
 Never skipped, never reordered, never two in one turn. The prompt is explicit that neither the
 customer *saying* their name nor a successful pincode fetch records or registers anything on its own.
 
+**Each of the three is the call alone** (2026-09-29, CHANNELS.md TOOL-PORT-01, following
+`bpcl_prompts/TOOL_CALLING.md` on `main`). There is no text on the tool turn: no acknowledgement, no
+"hold a moment" line, and no line about registering. The pincode question comes on the turn *after*
+`updateContact` returns. The complaint's outcome is whatever the tool's message says, in the caller's
+language, with no scripted success beats. The complaint number is all its digits in one turn, one
+digit word at a time with `" - "`, never a whole number or an amount. The empathy rule says a
+complaint about to be registered is never the "next step" a warm sentence carries. This replaced the
+earlier desk design, which spoke a wait line alongside `get_pincode_data` and a registering line
+alongside the complaint call. That is the shape TOOL_CALLING.md §3 records as breaking tool calling.
+
 **Either agent can end the call, and both end it the same way** — the CRC close pattern: help with
 everything first, then ask whether any more help is needed **as a turn of its own**, and only on a
 "no" write the goodbye as text and call `callhangup` on that same turn, with no `preToolMessage`. The
