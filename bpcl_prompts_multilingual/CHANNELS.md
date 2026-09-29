@@ -1655,6 +1655,19 @@ even that (for example CPL-26 and BNE-03 were never in it).
 | **Post-call** | vaaniQA gains F8/F9/C27/C28 (scoring IVRS's own no-record flow); F4 accepts own-language digit words; C22's failure branch has no transfer. postCallAnalysisFlat takes CRC's departmentArea rules — **output value "refill" is now "booking"**. |
 | **⚠️ Open** | **CC and CRC multilingual are now behind IVRS.** Per IVRS-PORT-01 they are IVRS + calltransfer; they need the same re-derivation with CRC's transfer text kept (translated). |
 
+### SEAM-01 · One Vaani, no seam: Default's switch line never names a department, and no agent but Default greets — IVRS (2026-09-29)
+
+Live IVRS test call, Hindi. The consumer asked to take Bharat Gas Lite zip. `Default` answered with two sentences — "certainly, I can help you take a Lite zip connection" and then **"मैं आपको हमारे संबंधित विभाग से जोड़ रही हूँ"** (I am connecting you to our concerned department). `newConnectionAgent` then opened with **"नमस्ते।"**, a sentence saying it was here to give Lite zip information or help book it, "(Bharat Gas Lite zip)" in brackets, and only then the fork. The consumer heard a handover and a second person picking up.
+
+| | |
+|---|---|
+| **Why Default leaked** | The ban list was there, but the anchor menu had **no Lite zip line**, so on the most common route of this channel the model had nothing to reach for and improvised. It also had no rule against a "certainly, I can help" opener, which turned the switch into a promise-then-handover. |
+| **Default** | TEXT GENERATION RULES FOR switchagent rewritten as THE SWITCH LINE: to the consumer there is no switch; one short sentence, a few words, no affirmation or promise opener; the exact live failure quoted as the WRONG case; section / colleague / someone else / the right person added to the forbidden meanings; a four-question SELF-CHECK on every switch turn; new anchors for Lite zip and for a second cylinder. The identity paragraph now says the consumer hears one Vaani, greeting to goodbye. COMPLAINT ESCALATION's "take it forward" anchor (reads as forwarding) replaced. A leftover **"this agent registers and … transfers"** in the genericInfo routing entry corrected — there is no transfer in IVRS. A one-line SWITCH LINE reminder added to CRITICAL REMINDERS. |
+| **Every speaking specialist (16 files)** | One identical NO GREETING block after each agent's existing do-not-greet line: no greeting or welcome word in any language (namaste, namaskar, vanakkam, hello and the like), no "I am here / I can help you with this" opener, first words are the substance, with a first-line self-check. Emergency's tail says the first words are the safety instruction; routingAgent's covers Mode B only. The existing rules said "do not greet" without naming what a greeting is, and the model did not treat "नमस्ते" or "I am here to help" as one. |
+| **newConnectionAgent_onHold** | §8's first-turn block quotes the live failure; for situation (A) the fork question is the whole first turn. |
+| **Not changed** | Default's own fixed greeting (STAGE 1). The parked `newConnectionAgent.txt`. |
+| **⚠️ Open** | **Not yet in CC or CRC multilingual**, which are behind IVRS per IVRS-SYNC-01. Port with that re-derivation, or on its own. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
