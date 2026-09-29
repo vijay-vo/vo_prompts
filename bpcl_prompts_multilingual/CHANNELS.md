@@ -1587,6 +1587,20 @@ lists.
 | **bpcl_lite_zip** | `unregisteredComplaintAgent` was still on the retired desk method: a spoken "checking your pincode, hold a moment" line with `get_pincode_data`, a spoken "registering your complaint, wait a moment" line with the complaint call (rule 2), an acknowledgement-plus-pincode-question with `updateContact`, success decided by looking for a number, scripted success beats ("registered; number; by SMS; our team will contact"), and "the whole number in one go". It now matches IVRS's unregistered agent. All three action tools are the call alone, the pincode question comes on the turn after `updateContact`, the outcome is the tool's message, NUM-08 applies, and the empathy clause is in. `Default` holds only `switchagent` and `callhangup`, and its contract was already right. `pcalitezip.txt` is a post-call analyser (a markdown document) and is untouched. |
 | **Docs** | IVRS, CC and CRC `CLAUDE.md` each name TOOL_CALLING.md as the reference and no longer says `unregisteredComplaintAgent` speaks on its tool turns, or that a closing string becomes a `preToolMessage`. |
 
+### HOFF-01 · `handoffSummary` carries two kinds of text, and the system's booking date wins (CPL-27 ④) — IVRS, CC, CRC (2026-09-29)
+
+Ported from `main`'s CPL-27 ④, as a separate commit from TOOL-PORT-01 (client decision, 2026-09-29).
+It is not a tool-calling fix, but it came out of the same 28-09 calls: `activeDeliveryAgent` read the
+consumer's own "booked on 15th September" back as the booking date over the backend's "booked on
+2026-09-26".
+
+| | |
+|---|---|
+| **Axis** | Neither — shared truth. The same text in all three channels; CC and CRC stay byte-identical. |
+| **The six delivery/booking agents** | *"I treat everything it states as established truth"* → *"the system record in it"*, followed by the CRC **handoffSummary CARRIES TWO KINDS OF TEXT** paragraph: the Context line is the consumer's account, the backend's status sentences are the record, the system sentence wins when they disagree, and a date that appears only in Context is never spoken as the booking date. activeDelivery's and postDelivery's BOOKING DATE, and bookingNonEligibility's direct last-booking-date answer, now name the system sentence as their source. |
+| **Writers** | `Default` (its STAGE 3 build rule and two handoff examples) and `routingAgent` (its format rule) write consumer facts as *"consumer says …"*, never as a bare *"booked on"*, which is how the system states the real date. |
+| **Not ported** | CRC's Example 2 / 3B / 10 lines: IVRS `Default` carries only the consolidated examples list, and both of its examples there were changed. `bpcl_lite_zip` has no booking or delivery agent. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
