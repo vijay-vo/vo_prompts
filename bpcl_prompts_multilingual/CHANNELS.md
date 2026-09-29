@@ -1636,6 +1636,25 @@ Port of `main`'s BNE-04 (CRC 29-09 14:12 call). `Default`'s handoff said *"booki
 | **Translation** | Every Hindi example line in the CRC commits became a language-neutral meaning anchor ("in any language"). IVRS's own identity wording (the Mumbai Headquarters office, "no personal information") is kept, and CRC's ID-01 paragraph is not imported wholesale. |
 | **Not changed** | CRC's gap-not-over day-count clause (tied to its Hindi template; IVRS's template does not name the source). `bpcl_lite_zip` already says "never re-introduce yourself" and answers who-are-you only when asked. |
 
+### IVRS-SYNC-01 · IVRS re-derived from current CRC (`main` c30008f), in the "You" persona — IVRS (2026-09-29)
+
+Client instruction: align IVRS fully with the current CRC prompts, keeping IVRS's Lite zip design,
+and write every agent prompt in the "You" persona. IVRS had only ever taken CRC changes piecemeal;
+the branch's `bpcl_prompts_hindi` snapshot matched CRC at 91ed72e (22-09), and IVRS was behind
+even that (for example CPL-26 and BNE-03 were never in it).
+
+| | |
+|---|---|
+| **Method** | Instruction-level, not line-level. Each agent is rebuilt from CRC's current text; wherever IVRS already held the same instruction in any-language / HQ form, IVRS's wording is used; CRC's new or changed rules that carried Hindi are translated into meaning anchors. Assembly specs and the channel rules they apply are recorded in the commit messages. |
+| **Re-derived in full** | Four delivery agents, paymentAgent, genericInfoComplaintAgent, subsidyAgent, connectionServicesAgent, both booking agents, routingAgent. |
+| **Already aligned, CRC's missing rules added** | Default (ID-01, TTS-03, TOOL NAMES, STAGE 2B worked examples ×17), emergencyAgent (ID-01, TOOL NAMES, crisis-tone rules), getConsumerDetails (ID-01, TOOL NAMES). |
+| **IVRS's own design, kept** | unregisteredComplaintAgent (CRC ported it from here), newConnectionAgent_onHold (the Lite zip specialist), getConsumerDetails-unreg (pointer), getConsumerDetailsLive (silent two-lookup ending). The parked newConnectionAgent.txt is untouched. |
+| **Channel translation (always)** | Hindi speaking rules → LANGUAGE — ONE RULE; CRC office / territory → Mumbai Headquarters (HEAD OFFICE DETAILS); SENIOR TEAM TRANSFER / calltransfer / T1–T4 → NO HUMAN TRANSFER IN THIS CHANNEL; CRC's zip KB and Mini-plus-zip offers → IVRS's Lite zip blocks; complaint and phone digits in the consumer's own language (not English); callhangup takes no parameters; Hindi-only TTS rules ("jod", "tanki") dropped. |
+| **Taken from CRC (examples)** | ID-01, TTS-03, the newer TOOL RECOVERY, Condition C, COMPLAINT READINESS GATE (genericInfo), bookingNonEligibility's opening order / OPEN ORDER / NO REASON STATED / blocker-type gate, the "same non-delivery from different angles is one complaint" guard, NO CHECKING TURNS (postDelivery), newer unauthorized-booking, cancelled-state, dispute and failure paths, "act on the tool's message" everywhere. Dropped because CRC dropped them: the second-registration block, never-the-same-sentence-twice, IVRS-only confirmation/limit lines, "move to confirmation" steps, scripted "our team will make contact" outcomes. |
+| **Voice** | Every agent prompt in the "You" persona (delivery ×4, payment, genericInfo and unregisteredComplaintAgent converted from "I"; stray lines in Default and onHold). Vaani's spoken lines and consumer quotes keep their natural first person. |
+| **Post-call** | vaaniQA gains F8/F9/C27/C28 (scoring IVRS's own no-record flow); F4 accepts own-language digit words; C22's failure branch has no transfer. postCallAnalysisFlat takes CRC's departmentArea rules — **output value "refill" is now "booking"**. |
+| **⚠️ Open** | **CC and CRC multilingual are now behind IVRS.** Per IVRS-PORT-01 they are IVRS + calltransfer; they need the same re-derivation with CRC's transfer text kept (translated). |
+
 ---
 
 ## 3. Confirmed defects — not intended differences

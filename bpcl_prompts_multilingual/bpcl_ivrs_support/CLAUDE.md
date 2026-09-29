@@ -90,6 +90,14 @@ in Mumbai, not an employee of the distributor.
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt
 that mentions it does so in a tool blocker forbidding the call — their data is pre-injected.
 
+## IVRS is derived from current CRC, in the "You" persona (2026-09-29)
+
+Since CHANNELS.md **IVRS-SYNC-01**, every IVRS agent carries the instructions and methods of the
+current `bpcl_prompts/bpcl_showroom_crc` prompts on `main`, translated only on the channel axes
+(language, HQ identity, no transfer, own-language digits, callhangup with no parameters) and with
+IVRS's Lite zip design kept. **When CRC changes, port the change here** the same way. **Every
+agent prompt is written in the "You" persona** — never "I" — even where CRC's source is in "I".
+
 ## Tool calling follows TOOL_CALLING.md (2026-09-29)
 
 **The reference for HOW every tool is called is `bpcl_prompts/TOOL_CALLING.md` on `main`** — the
