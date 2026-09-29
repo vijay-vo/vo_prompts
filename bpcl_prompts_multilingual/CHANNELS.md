@@ -1679,6 +1679,17 @@ Client instruction. The holiday list came into CC with the CC-port derivation (a
 | **CRC** | Unchanged — `bpcl_showroom_crc` keeps `{{crcHolidayList}}` and its answering rules. `bpcl_prompts_hindi` (CRC only) is untouched. |
 | **Wording** | CC's `genericInfoComplaintAgent.txt` is still in "I" from before IVRS-SYNC-01; the new line is in "You", like every re-derived prompt. |
 
+### LZ-01 · `bpcl_lite_zip` becomes a copy of IVRS; its old two-agent design moves to `legacy/` — bpcl_lite_zip (2026-09-29)
+
+Client instruction. `bpcl_lite_zip` works the way IVRS does: calls come from the IVRS and Vaani answers from the Mumbai Headquarters office. The difference is that most of its calls are about Bharat Gas Lite zip.
+
+| | |
+|---|---|
+| **Copied** | `bpcl_ivrs_support/prompts/` and `docs/`, byte for byte, into `bpcl_lite_zip/`. Same 15 agents plus `unregisteredComplaintAgent`, same post-call set (`postCallAnalysisFlat`, `vaaniQA`), same tools, no transfer. |
+| **Kept, not deployed** | The old two-agent design (`Default.txt`, `unregisteredComplaintAgent.txt`, `pcalitezip.txt`, and its `CLAUDE.md`) moved to `bpcl_lite_zip/legacy/`, each file starting with a NOT DEPLOYED banner. Its Lite zip facts and complaint order were already in IVRS's `newConnectionAgent_onHold` and `unregisteredComplaintAgent` (2026-09-24). |
+| **The one difference from IVRS** | `Default`'s greeting. This channel keeps the Lite zip greeting and the "most consumers on this line are calling about Lite zip" framing. IVRS drops both in IVRS-GREET-01. |
+| **Porting rule** | A fix to IVRS lands here byte for byte in the same session, unless it touches the greeting or that framing. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences

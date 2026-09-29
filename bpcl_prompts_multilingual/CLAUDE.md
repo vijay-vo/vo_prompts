@@ -47,6 +47,11 @@ bpcl_ivrs_support/       copy of CC with NO human transfer (CHANNELS.md IVRS-01)
   CLAUDE.md              channel contract
   prompts/<agent>/*.txt
   docs/
+bpcl_lite_zip/           copy of IVRS for the Lite zip line; only the greeting differs (CHANNELS.md LZ-01)
+  CLAUDE.md              channel contract (points to IVRS's)
+  prompts/<agent>/*.txt
+  docs/
+  legacy/                the old two-agent Lite zip design, NOT DEPLOYED
 CHANNELS.md              the divergence ledger — every intended CC/CRC difference
 CLAUDE.md                this file
 ```

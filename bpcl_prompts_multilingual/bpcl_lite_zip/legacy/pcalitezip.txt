@@ -1,3 +1,6 @@
+STATUS: LEGACY - NOT DEPLOYED. DO NOT SHIP THIS FILE.
+This is the old two-agent Lite zip design, retired on 2026-09-29 (CHANNELS.md LZ-01). The live Lite zip prompts are in bpcl_lite_zip/prompts/. This file is kept for reference only.
+
 # VANI LITE ZIP PCA — Post Call Analysis Agent
 
 ## ROLE & PURPOSE
