@@ -22,6 +22,19 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### HOFF-03 · The consumer's own request rides in `Context`; a second problem is kept as "consumer also says"; the escalation handoff no longer orders a complaint — CRC only, CC pending (2026-09-29)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth** (the handoff contract). `Default`, `routingAgent`, and the ten complaint-registering agents. Completes HOFF-02. **CC not ported.** |
+| **Client framing** | `handoffSummary` has two parts. `Default` writes the first, always in the fixed `Intent. Context. Please help consumer with.` shape. The platform appends the second, the system record, which differs per agent. Every change here is to the **words inside Default's three slots**. Routing is untouched: the destination is `agentName`, plus the platform's family resolution. |
+| **The rule now** | ① **`Default` build rule:** what the consumer explicitly asked for (a complaint, a person, a callback, a number) goes into `Context` in their words, e.g. *"consumer asked to register a complaint"*. It never goes in NEXT_ACTION and never changes where the call is routed. ② **Two problems:** routing stays exactly as today, and the problem the chosen agent does not own goes into `Context` as *"consumer also says …"*. Context parts are separated by semicolons. ③ **Escalation handoff** (`Default` COMPLAINT ESCALATION, `routingAgent` MODE A): *"Please register a complaint and tell consumer the team will contact them"* is gone. The request is in `Context`, the next action is neutral, and it still routes to `genericInfoComplaintAgent`, which registers first and transfers by its own rules. HOFF-02's "one exception" is removed. `Default` line 504 no longer quotes the old line. `routingAgent`'s format rule gets the same Intent/NEXT_ACTION/Context rules. ④ **Receiving agents (ten):** a new **THE CONSUMER'S OWN REQUEST IN handoffSummary** rule. A request already made is never asked for again. A complaint request is honoured once the record has been stated, if the problem still stands: the call alone, with no text, and no "do you want it?". A person request follows SENIOR TEAM TRANSFER as before. |
+| **Worked example (29-09 call)** | Default's part would read: *"Intent: late delivery by distributor. Context: consumer says Morsa Gas Agency delivers late every time; consumer also says bookings do not show in the system; consumer asked for the sales officer's number. Please help consumer with booking status and delivery."* |
+| **Deliberately NOT changed** | The parked `newConnectionAgent.txt` (still holds the old escalation line; not deployed). `genericInfoComplaintAgent`'s guard that the old line never overrides its GATE A/B (harmless, and it covers any stale summary). `unregisteredComplaintAgent`, which receives no `Default` handoff. |
+| **⚠️ Open** | **CC not ported.** |
+
+---
+
 ### HOFF-02 · `Default`'s handoff never says "complaint" in its Intent or its next-action line — CRC only, CC pending (2026-09-29)
 
 | | |
@@ -30,7 +43,7 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 | **Source** | The 29-09 14:10 call behind BNE-04. The consumer asked for the sales officer's number, then said the distributor delivers late every time and bookings do not show in the system. They never said "complaint". `Default` wrote *"Intent: booking and delivery complaint … Please help consumer with booking and delivery complaint."* |
 | **Diagnosis** | `Default` line 503 already says "complaint" is an action word, never a topic, and line 504 says a register instruction tells the receiving agent the work is already decided. Its own examples taught the opposite: 16 example handoffs put "complaint" in the Intent or in "Please help consumer with". The receiving agent reads either as a decision to register. |
 | **The rule now** | The STAGE 3 build rule: INTENT names the problem the consumer has, never the word "complaint". NEXT_ACTION names what they need help with, never "complaint" and never "register". The next agent, which holds the record, decides whether a complaint is registered. All 16 examples rewritten (e.g. *"Intent: recurring rude behaviour by delivery person … Please help consumer with the delivery person's behaviour."*). Three examples whose Context stated the consumer's account as a plain fact now start "consumer says" (CPL-27). |
-| **Deliberately NOT changed (under discussion)** | The escalation handoff (`Default` line 109, `routingAgent` line 228): *"Please register a complaint and tell consumer the team will contact them."* That is the one exception the build rule names. The client is deciding whether it stays, and how a consumer's own explicit request (a complaint, a person, a number) is carried. Two problems in one handoff is also open. |
+| **Follow-up** | The escalation handoff, the consumer's own requests and the two-problem case are settled in HOFF-03. |
 
 ---
 

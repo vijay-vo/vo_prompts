@@ -155,6 +155,7 @@ made by the agent the consumer is already speaking to, not a switch, so the rule
 **Handoff contract.** `switchagent` carries `agentName`, `handoffSummary`, `preToolMessage`.
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
+**In CRC (CHANNELS.md HOFF-02/HOFF-03, 2026-09-29)** the format is unchanged but its slots are fixed: `Intent` names the problem and `NEXT_ACTION` the help, never "complaint" or "register"; `Context` is the consumer's account ("consumer says …"), plus their own requests in their words ("consumer asked to register a complaint") and any second problem ("consumer also says …"), separated by semicolons. The platform appends its system record after this line, and the receiving agent ranks that record above `Context`. CC not ported.
 
 **The tool-calling method is fixed — [TOOL_CALLING.md](TOOL_CALLING.md).** Confirmed working on live CRC calls 2026-09-29: every tool invoked, none typed out. Any edit touching a tool block aligns with it, and any future tool-calling failure is diagnosed from its §4 first.
 
