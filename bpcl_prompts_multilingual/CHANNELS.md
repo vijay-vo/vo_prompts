@@ -1601,6 +1601,29 @@ consumer's own "booked on 15th September" back as the booking date over the back
 | **Writers** | `Default` (its STAGE 3 build rule and two handoff examples) and `routingAgent` (its format rule) write consumer facts as *"consumer says …"*, never as a bare *"booked on"*, which is how the system states the real date. |
 | **Not ported** | CRC's Example 2 / 3B / 10 lines: IVRS `Default` carries only the consolidated examples list, and both of its examples there were changed. `bpcl_lite_zip` has no booking or delivery agent. |
 
+### BNE-04 · `bookingNonEligibilityAgent` never offers a complaint on its first turn because the handoff said so — IVRS, CC, CRC (2026-09-29, from `main`)
+
+Port of `main`'s BNE-04 (CRC 29-09 14:12 call). `Default`'s handoff said *"booking and delivery complaint"*. The agent stated the open order, announced a complaint and asked permission, and on the next turn typed the call out with an invented number.
+
+| | |
+|---|---|
+| **The rule now** | ① **THE PREVIOUS AGENT'S WORDS NEVER DECIDE A COMPLAINT**, directly under TWO KINDS OF TEXT: Intent and "Please help consumer with" are a topic label, and the first turn is the block and its resolution from the record, with nothing about a complaint. ② Opening item 3: the resolution path is the block's own line, never a complaint. ③ THE ONE CARVE-OUT: still direct, now the call alone with no text, and after the first turn has stated the record. ④ Step 6: a dispute is the consumer disputing the record *after* it was stated. A Context claim the record contradicts is answered by the record, and the complaint is then the call alone on the turn they dispute it. |
+| **Also found, same shape (TOOL_CALLING rule 2)** | Step 6 in this channel still said *"Speak a short line of your own … ending with the registering turn, and call bpcl_create_complaint on that same turn — the call is the whole turn, with no text"*. Four more agents had the same announce-then-call sentence, which TOOL-PORT-01's sweep missed because it was worded as "registering turn", not "registering line": `connectionServicesAgent` and `subsidyAgent` (the confirm-yes turn), `activeDeliveryAgent` (unauthorized booking) and `notEligibleDeliveryAgent` (data dispute). Each is now the call alone, with no text. |
+
+### HOFF-02 · `Default`'s handoff never says "complaint" in its Intent or its next-action line — IVRS, CC, CRC (2026-09-29, from `main`)
+
+| | |
+|---|---|
+| **The rule now** | `Default`'s STAGE 3 build rule: INTENT names the problem, never "complaint"; NEXT_ACTION names the help, never "complaint" or "register". The next agent, which holds the record, decides whether a complaint is registered. The nine example handoffs that said "complaint" were rewritten with `main`'s exact text (IVRS `Default` has only the consolidated examples list, and all nine matched it word for word). `main` numbered this HOFF-02 because HOFF-01 is this branch's row; the IDs now line up. |
+
+### HOFF-03 · The consumer's own request rides in `Context`; a second problem is "consumer also says"; the escalation handoff no longer orders a complaint — IVRS, CC, CRC (2026-09-29, from `main`)
+
+| | |
+|---|---|
+| **The rule now** | ① `Default` build rule: what the consumer explicitly asked for (a complaint, a person, a callback, a number) goes into `Context` in their words, never into NEXT_ACTION, and never changes the route. ② Two problems: routing unchanged, and the one the chosen agent does not own goes into `Context` as *"consumer also says …"*, with the parts separated by semicolons. ③ The escalation handoff (`Default` COMPLAINT ESCALATION, `routingAgent` MODE A) no longer says *"Please register a complaint and tell consumer the team will contact them"*; `routingAgent`'s format rule gets the same slot rules. ④ The ten registering agents gain **THE CONSUMER'S OWN REQUEST IN handoffSummary**: a request already made is never asked for again, and a complaint request is honoured once the record has been stated, the call alone, without asking "do you want it?". |
+| **Channel translation** | **IVRS:** a person request *"is answered per NO HUMAN TRANSFER IN THIS CHANNEL"*, and the escalation handoff's destination *"answers the request by its own rules"*. **CC and CRC:** `main`'s wording, *"follows SENIOR TEAM TRANSFER"* and *"registers first and then transfers, by its own rules"*. |
+| **Deliberately NOT changed** | As on `main`: the parked `newConnectionAgent.txt`, and `genericInfoComplaintAgent`'s guard that a "please register a complaint" line never overrides GATE A/B. Also `newConnectionAgent_onHold`'s handoff into `unregisteredComplaintAgent`, which asks it to register. That agent exists only to register, and it receives no `Default` handoff. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences

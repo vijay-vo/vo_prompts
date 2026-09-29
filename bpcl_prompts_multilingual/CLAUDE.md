@@ -161,6 +161,7 @@ made by the agent the consumer is already speaking to, not a switch, so the rule
 **Handoff contract.** `switchagent` carries `agentName` and `handoffSummary`, and no `preToolMessage`.
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
+**The slots are fixed (CHANNELS.md HOFF-02/HOFF-03, 2026-09-29, from `main`):** `Intent` names the problem and `NEXT_ACTION` the help, never "complaint" or "register". `Context` is the consumer's account ("consumer says …"), plus their own requests in their words ("consumer asked to register a complaint") and any second problem ("consumer also says …"), separated by semicolons. The platform appends its system record after this line, and the receiving agent ranks that record above `Context` (HOFF-01).
 
 **The tool call is the action, not the sentence.** The platform never invokes a tool on the agent's
 behalf. Speaking a registering line registers nothing; speaking a "ज़रा details देखती हूँ" line
