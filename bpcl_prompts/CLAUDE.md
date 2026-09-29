@@ -40,6 +40,7 @@ bpcl_showroom_crc/
   prompts/<agent>/*.txt
   docs/                  agent-workflow.md
 CHANNELS.md              the divergence ledger — every intended CC/CRC difference
+TOOL_CALLING.md          the confirmed tool-calling method — the reference for any tool issue
 CLAUDE.md                this file
 ```
 
@@ -154,6 +155,8 @@ made by the agent the consumer is already speaking to, not a switch, so the rule
 **Handoff contract.** `switchagent` carries `agentName`, `handoffSummary`, `preToolMessage`.
 `handoffSummary` is one plain-English line: `"Intent: [INTENT]. Context: [ONE FACT]. Please help
 consumer with [NEXT_ACTION]."` No history, no raw API output, no mobile number, no consumer id.
+
+**The tool-calling method is fixed — [TOOL_CALLING.md](TOOL_CALLING.md).** Confirmed working on live CRC calls 2026-09-29: every tool invoked, none typed out. Any edit touching a tool block aligns with it, and any future tool-calling failure is diagnosed from its §4 first.
 
 **The tool call is the action.** The platform never invokes a tool on the agent's behalf; only a Result proves a tool ran. **In CRC (CHANNELS.md TOOL-06, 2026-09-14) the tools that act are not announced:** `bpcl_create_complaint` is called with no text at all and the agent speaks from its Result; since TOOL-07 `calltransfer` is the call alone too, and `callhangup` and `switchagent` keep their spoken line as text on the same turn as the call — no CRC tool takes a `preToolMessage`. Recovery is state-based — a tool the agent had decided to use with no Result behind it never ran and is invoked on the next turn, and an outcome with no Result behind it is never spoken. CC still carries the older line-plus-call contract (CPL-03, XFER-01).
 
