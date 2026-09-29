@@ -1687,8 +1687,19 @@ Client instruction. `bpcl_lite_zip` works the way IVRS does: calls come from the
 |---|---|
 | **Copied** | `bpcl_ivrs_support/prompts/` and `docs/`, byte for byte, into `bpcl_lite_zip/`. Same 15 agents plus `unregisteredComplaintAgent`, same post-call set (`postCallAnalysisFlat`, `vaaniQA`), same tools, no transfer. |
 | **Kept, not deployed** | The old two-agent design (`Default.txt`, `unregisteredComplaintAgent.txt`, `pcalitezip.txt`, and its `CLAUDE.md`) moved to `bpcl_lite_zip/legacy/`, each file starting with a NOT DEPLOYED banner. Its Lite zip facts and complaint order were already in IVRS's `newConnectionAgent_onHold` and `unregisteredComplaintAgent` (2026-09-24). |
-| **The one difference from IVRS** | `Default`'s greeting. This channel keeps the Lite zip greeting and the "most consumers on this line are calling about Lite zip" framing. IVRS drops both in IVRS-GREET-01. |
+| **The one difference from IVRS** | The greeting. This channel keeps the Lite zip greeting and the "most consumers on this line are calling about Lite zip" framing, which IVRS drops in IVRS-GREET-01. Three files carry it: `Default` (STAGE 1), and in the post-call set `postCallAnalysisFlat` ("VAANI'S OWN FIRST LINE IS FIXED", the boundary between the IVR recording and Vaani) and `vaaniQA` (C10). IVRS's post-call set already expected the neutral greeting, so a byte-for-byte copy would have looked for a first line this channel never speaks. |
 | **Porting rule** | A fix to IVRS lands here byte for byte in the same session, unless it touches the greeting or that framing. |
+
+### IVRS-GREET-01 · IVRS greets neutrally; the line takes calls about anything, not mostly Lite zip — IVRS (2026-09-29)
+
+Client instruction. IVRS now receives ordinary calls about any LPG topic. The Lite zip-majority traffic has its own channel, `bpcl_lite_zip` (LZ-01).
+
+| | |
+|---|---|
+| **Default STAGE 1** | The fixed greeting is now "नमस्ते, मेरा नाम वाणी है। मैं आपकी किस प्रकार सहायता कर सकती हूँ?", the same as the Hindi CRC on `main`. "It opens on Bharat Gas Lite zip because that is what most consumers on this line are calling about" is replaced by a line saying the greeting names no product. The THEN WAIT line no longer says that opening on Lite zip decides nothing. It says routing follows what the consumer says, per STAGE 2. |
+| **Post-call** | No change. `postCallAnalysisFlat` ("VAANI'S OWN FIRST LINE IS FIXED") and `vaaniQA` C10 already quoted the neutral greeting, so they had been out of step with IVRS's own Lite zip greeting. |
+| **Not changed** | Lite zip ownership. `newConnectionAgent_onHold` is still the Lite zip specialist, and Lite zip is still what is offered when a consumer cannot get gas: the new-connection hold, the extra-refill block, and a booking they are not eligible to make. Default's MODULE Z, its Lite zip routing (awareness inline, wanting one → `newConnectionAgent`) and its Lite zip switch anchor stay, because a consumer can still ask. Every specialist's short Lite zip KB stays. |
+| **Porting** | CC and CRC take this greeting with their IVRS re-derivation (IVRS-SYNC-02). `bpcl_lite_zip` keeps the Lite zip greeting (LZ-01). |
 
 ---
 

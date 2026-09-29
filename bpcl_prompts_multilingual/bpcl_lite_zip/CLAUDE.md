@@ -27,6 +27,13 @@ IVRS moved to a neutral greeting on 2026-09-29 (CHANNELS.md IVRS-GREET-01), alon
 keeps both.** Opening on Lite zip still decides nothing: Vaani routes on what the caller actually
 says, so a refill, delivery or payment caller is routed as usual.
 
+The greeting shows up in three files, and all three differ from IVRS:
+- `Default/Default.txt`: STAGE 1 and the THEN WAIT line after it.
+- `postCallAnalysis/postCallAnalysisFlat.txt`: "VAANI'S OWN FIRST LINE IS FIXED". It marks where the
+  IVR recording ends and Vaani begins, so it has to be the line Vaani actually speaks.
+- `postCallAnalysis/vaaniQA.txt`: C10. It accepts the Lite zip greeting, and the neutral one as a
+  close rewording.
+
 Any other difference from IVRS is a drift bug.
 
 ## Porting rule

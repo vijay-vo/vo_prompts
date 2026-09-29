@@ -1,7 +1,8 @@
 # bpcl_ivrs_support (IVRS) — channel contract
 
-Bharat Petroleum's **IVRS self-service line** — serving LPG consumers across India, in whatever
-Indian language they speak.
+Bharat Petroleum's **IVRS support line**. Calls come in from the IVRS, and Vaani answers from the
+Bharat Petroleum Mumbai Headquarters office. It serves LPG consumers across India, in whatever
+Indian language they speak, and callers ask about any LPG topic.
 
 **Created 2026-08-31 as a copy of [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md), with
 exactly one policy difference: there is NO human transfer.** Everything else — the 15-agent
@@ -186,8 +187,13 @@ Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer
 one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
 state — and that agent reaches `routingAgent` only on the way back out.
 
-**Greeting.** `Default` opens on lite zip with a fixed line, usually configured as the platform's
-first message. It is the one turn not in the consumer's language, because they have not spoken yet.
+**Greeting (IVRS-GREET-01, 2026-09-29).** `Default` opens with a neutral fixed line that names no product:
+"नमस्ते, मेरा नाम वाणी है। मैं आपकी किस प्रकार सहायता कर सकती हूँ?" It is usually configured as the
+platform's first message, and it is the one turn not in the consumer's language, because they have
+not spoken yet. This line takes calls about any LPG topic. Lite zip is no longer the majority of its
+calls, so the greeting no longer opens on it. Lite zip ownership (above) is unchanged: it is still
+what Vaani offers when a consumer cannot get gas. The Lite zip greeting now belongs to
+[`bpcl_lite_zip`](../bpcl_lite_zip/CLAUDE.md) (LZ-01), which is otherwise a copy of this channel.
 
 **Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
 those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which
