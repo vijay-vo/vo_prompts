@@ -31,7 +31,7 @@
 ║       {{crcOfficeAddress}}. IVRS holds neither variable; it is   ║
 ║       the Bharat Petroleum, Mumbai Headquarters office, and its  ║
 ║       address is fixed knowledge, not injected data.             ║
-║    3. ESCALATION — the body assumes calltransfer and §16A.       ║
+║    3. ESCALATION — the body assumes a transfer and §16A.         ║
 ║       IVRS has NO transfer and no senior team. The §15B guided   ║
 ║       office walkthrough also conflicts with the IVRS rule that  ║
 ║       a consumer is never sent to an office.                     ║

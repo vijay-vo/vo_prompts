@@ -1750,8 +1750,18 @@ Client instruction, after SEAM-02, where `getConsumerDetails` reached for `updat
 | **The block** | TOOL LIST (TOOLS-01), placed at the top of each agent's tools section: YOU CAN CALL, one line per tool with what it is for; YOU NEVER CALL, every other tool of the thirteen the platform has; and one paragraph saying the list is complete and that no tool stands in for a failed one. The existing tool sections are kept as they were. |
 | **Who can call what (IVRS, bpcl_lite_zip)** | `Default`, `emergencyAgent`: switchagent. `routingAgent`: switchagent, callhangup. `getConsumerDetails` (all three files): validatecontactno, bpcl_fetch_all_api. The ten leaves: switchagent, callhangup, bpcl_create_complaint. `newConnectionAgent_onHold`: switchagent, callhangup. `unregisteredComplaintAgent`: updateContact, get_pincode_data, bpcl_create_unregistered_complaint, switchagent, callhangup. |
 | **CC, CRC** | The same, plus calltransfer for the ten leaves, `newConnectionAgent_onHold`, `unregisteredComplaintAgent` and `routingAgent` (its one case), matching IVRS-SYNC-02. `Default`, `emergencyAgent` and `getConsumerDetails` never hold it. |
-| **The thirteen** | switchagent, callhangup, calltransfer, bpcl_create_complaint, bpcl_create_unregistered_complaint, updateContact, get_pincode_data, validatecontactno, bpcl_fetch_all_api, bpcl_get_consumer_details, bpcl_check_refill_status, bpcl_get_refill_history, bpcl_get_subsidy_details. A new platform tool must be added to every block. |
+| **The tools** | switchagent, callhangup, bpcl_create_complaint, bpcl_create_unregistered_complaint, updateContact, get_pincode_data, validatecontactno, bpcl_fetch_all_api, bpcl_get_consumer_details, bpcl_check_refill_status, bpcl_get_refill_history, bpcl_get_subsidy_details, plus the transfer tool in CC and CRC only. IVRS and bpcl_lite_zip never name the transfer tool, not even under YOU NEVER CALL (NOXFER-01). A new platform tool must be added to every block. |
 | **Not changed** | The parked `newConnectionAgent.txt` and the post-call analysers, which call no tools. |
+
+### NOXFER-01 · IVRS and bpcl_lite_zip never name the transfer tool — IVRS, bpcl_lite_zip (2026-09-30)
+
+Client instruction, after TOOLS-01 listed the transfer tool under YOU NEVER CALL. These two channels will never have a transfer tool, so their prompts do not mention it at all, not even to forbid it: naming it only puts it in front of the model.
+
+| | |
+|---|---|
+| **Removed** | Every "calltransfer — NOT AVAILABLE IN THIS CHANNEL" paragraph (Default, emergencyAgent, routingAgent ×3, the ten leaves, `newConnectionAgent_onHold`), every "YOU HOLD NO calltransfer" line, the name from every TOOLS-01 list and older blocker list, and every "there is no transfer tool" sentence, including in `postCallAnalysisFlat` and `vaaniQA`. The parked `newConnectionAgent.txt` banner now says "a transfer". |
+| **Kept** | The behaviour: there is no way to put the consumer through to a person, there is no senior team, and a registered complaint is the escalation (NO HUMAN TRANSFER IN THIS CHANNEL, Condition B, and the like). The spoken-word ban on "transfer" in switch lines stays. |
+| **Rule** | Porting from CC or CRC into IVRS or bpcl_lite_zip drops the tool name entirely. CC and CRC keep it. The channel docs (`bpcl_ivrs_support/CLAUDE.md`, `README.md`, `docs/ORCHESTRATION.md`) still name it and are not prompts. |
 
 ---
 
