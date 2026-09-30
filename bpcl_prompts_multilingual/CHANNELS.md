@@ -1653,7 +1653,7 @@ even that (for example CPL-26 and BNE-03 were never in it).
 | **Taken from CRC (examples)** | ID-01, TTS-03, the newer TOOL RECOVERY, Condition C, COMPLAINT READINESS GATE (genericInfo), bookingNonEligibility's opening order / OPEN ORDER / NO REASON STATED / blocker-type gate, the "same non-delivery from different angles is one complaint" guard, NO CHECKING TURNS (postDelivery), newer unauthorized-booking, cancelled-state, dispute and failure paths, "act on the tool's message" everywhere. Dropped because CRC dropped them: the second-registration block, never-the-same-sentence-twice, IVRS-only confirmation/limit lines, "move to confirmation" steps, scripted "our team will make contact" outcomes. |
 | **Voice** | Every agent prompt in the "You" persona (delivery ×4, payment, genericInfo and unregisteredComplaintAgent converted from "I"; stray lines in Default and onHold). Vaani's spoken lines and consumer quotes keep their natural first person. |
 | **Post-call** | vaaniQA gains F8/F9/C27/C28 (scoring IVRS's own no-record flow); F4 accepts own-language digit words; C22's failure branch has no transfer. postCallAnalysisFlat takes CRC's departmentArea rules — **output value "refill" is now "booking"**. |
-| **⚠️ Open** | **CC and CRC multilingual are now behind IVRS.** Per IVRS-PORT-01 they are IVRS + calltransfer; they need the same re-derivation with CRC's transfer text kept (translated). |
+| ~~**⚠️ Open**~~ | **Closed 2026-09-30 by IVRS-SYNC-02:** CC and CRC were re-derived from this IVRS, with CRC's transfer text kept (translated). |
 
 ### SEAM-01 · One Vaani, no seam: Default's switch line never names a department, and no agent but Default greets — IVRS (2026-09-29)
 
@@ -1667,7 +1667,7 @@ Live IVRS test call, Hindi. The consumer asked to take Bharat Gas Lite zip. `Def
 | **newConnectionAgent_onHold** | §8's first-turn block quotes the live failure; for situation (A) the fork question is the whole first turn. |
 | **Revised the same day (client)** | Two changes on review. **Wording:** the switch line says Vaani is *checking*, *looking into it* or *helping* — not "pulling up" a record, since most switches pull up nothing — and Default is told to vary the verb from call to call. "Pull up" was replaced in the switch anchors of all eleven agents that carried it (and in routingAgent's description of the line it follows). **Framing:** Default's switch section and the specialists' block now lead with what to say; the prohibitions are one short closing paragraph, not the body. The specialists' block is renamed YOUR FIRST WORDS CARRY THE CONVERSATION ON. |
 | **Not changed** | Default's own fixed greeting (STAGE 1). The parked `newConnectionAgent.txt`. |
-| **⚠️ Open** | **Not yet in CC or CRC multilingual**, which are behind IVRS per IVRS-SYNC-01. Port with that re-derivation, or on its own. |
+| ~~**⚠️ Open**~~ | **Closed 2026-09-30:** ported to CC and CRC with IVRS-SYNC-02. |
 
 ### HOL-01 · `{{crcHolidayList}}` is CRC's alone — removed from IVRS and CC (2026-09-29)
 
@@ -1700,6 +1700,31 @@ Client instruction. IVRS now receives ordinary calls about any LPG topic. The Li
 | **Post-call** | No change. `postCallAnalysisFlat` ("VAANI'S OWN FIRST LINE IS FIXED") and `vaaniQA` C10 already quoted the neutral greeting, so they had been out of step with IVRS's own Lite zip greeting. |
 | **Not changed** | Lite zip ownership. `newConnectionAgent_onHold` is still the Lite zip specialist, and Lite zip is still what is offered when a consumer cannot get gas: the new-connection hold, the extra-refill block, and a booking they are not eligible to make. Default's MODULE Z, its Lite zip routing (awareness inline, wanting one → `newConnectionAgent`) and its Lite zip switch anchor stay, because a consumer can still ask. Every specialist's short Lite zip KB stays. |
 | **Porting** | CC and CRC take this greeting with their IVRS re-derivation (IVRS-SYNC-02). `bpcl_lite_zip` keeps the Lite zip greeting (LZ-01). |
+
+### IVRS-SYNC-02 · CC and CRC re-derived from the current IVRS, plus `calltransfer` — CC, CRC (2026-09-30)
+
+CC and CRC had been IVRS plus `calltransfer` since IVRS-PORT-01 (385b98a). IVRS then moved on (IVRS-SYNC-01, SEAM-01, HOL-01, IVRS-GREET-01), and CC and CRC stayed behind. Client instruction: CC and CRC work exactly as IVRS does.
+
+| | |
+|---|---|
+| **Method** | Each CC prompt starts from the current IVRS file byte for byte, including its "You" persona, SEAM-01's switch line and NO GREETING / YOUR FIRST WORDS blocks, and the neutral greeting. Every place IVRS refuses a transfer is replaced by transfer text. Where old CC (385b98a) held the transfer version of the same instruction, its wording is reused, converted to "You". Where the spot is new in IVRS (it came in with IVRS-SYNC-01 from `main` c30008f), the Hindi CRC's transfer text for that agent is translated: meaning anchors, the consumer's language, "You" persona. |
+| **Leaves (10)** | `calltransfer — NOT AVAILABLE` → `AUTHORIZED, AND YOURS`. The NO HUMAN TRANSFER block → the SENIOR TEAM TRANSFER block (T1–T4 through NEVER TRANSFER WHEN; the Hindi block is the same in every leaf once persona is normalised). The tool-use list gains calltransfer. "One transfer attempt" is added to the once-only rule. TOOL RECOVERY gains the transfer turn and outcomes. "A calltransfer turn is NOT on this list." and "calltransfer IS YOURS" are added. The tool-message transfer offer is T3. Condition B → T1, Condition C → T2, ALREADY REGISTERED → T1. The phone-number paragraph says "a call transfer, not a number". The switchagent line says "gets calltransfer". |
+| **Other agents** | `Default` and `emergencyAgent`: the Hindi *NOT AUTHORIZED* lines. `Default`'s escalation routing entry says genericInfo "registers and, if they still want a person after that, transfers" (the Hindi's). SEAM-01's "looking into this" escalation line is kept. `routingAgent`: the Hindi one-case transfer. `newConnectionAgent_onHold`: §20A (a clean three-way merge). `unregisteredComplaintAgent`: the leaf block with SECTION 8 and bpcl_create_unregistered_complaint in T3, plus Condition B/C as T1/T2. `getConsumerDetails` ×3: never transfer; only the "no transfer in this channel" wording goes. |
+| **Post-call** | `postCallAnalysisFlat`: callTransferred field, callResult value, ladder, pending, priority, fcr and csat transfer rules. `vaaniQA`: C18 is back; C22's failure branch is "then the offer to reach a person"; C28 is "transfers only per C5" (both as in the Hindi); the channel label is "contact centre channel" / "showroom CRC channel". |
+| **Verified** | Every changed line in IVRS→CC is transfer text (about 85–90 lines per leaf). No "NO HUMAN TRANSFER", "NOT AVAILABLE IN THIS CHANNEL" or "no option to connect" remains. calltransfer counts match the Hindi file per agent (subsidy +2 from old CC's §3 and §22 lines). No markdown, backticks or Devanagari added. |
+| **Unchanged** | The parked `newConnectionAgent.txt` in both channels. CRC's `postCallAnalysisHuman.txt`, `naya.json`, `purana.json`. |
+
+### CRC-ID-01 · CRC speaks from the regional CRC office in each city, not the Mumbai HQ — CRC (2026-09-30)
+
+Client instruction: in `bpcl_showroom_crc`, Vaani talks from the Bharat Petroleum regional office in each city. CC and IVRS stay at the Mumbai Headquarters. This reverses the "Identity: IVRS's, in both channels" line of IVRS-PORT-01 for CRC only. **CRC is now CC plus this identity axis, and the two are no longer byte-identical.**
+
+| | |
+|---|---|
+| **Source** | The CRC identity text of the same agent in `bpcl_prompts/bpcl_showroom_crc` on `main`, translated into the multilingual form. |
+| **What changed** | Identity paragraph: a Bharat Gas / Bharat Petroleum Consumer Relationship Centre (CRC) in `{{crcOfficeCity}}`, a REGIONAL HEAD OFFICE covering many districts and many distributors, not the consumer's distributor; "our territory covers many districts, so a visit can mean a very long trip". ID-01: "a Virtual Voice A I Assistant at a Bharat Gas / Bharat Petroleum C R C". HEAD OFFICE DETAILS → CRC OFFICE DETAILS (`{{crcOfficeCity}}` bare city, the phrase "Bharat Gas, {{crcOfficeCity}}" built by Vaani, `{{crcOfficeAddress}}` only on request, no territory list, never somewhere to travel), plus TTS-SAFE DELIVERY — THE CRC OFFICE PAIR. That rule translates the Hindi's: the city is transliterated into the reply's script, not Devanagari; the address is converted into the call's language; the pin code is in the consumer's own digit words. DISTRIBUTOR ↔ CRC NON-SUBSTITUTION. "YOU HOLD NO OFFICE PHONE NUMBER … no CRC office number". Self-location answers "Bharat Gas, {{crcOfficeCity}}". connectionServices' "the head office address needs no clean-up" is now "the CRC pair is injected too and gets the same clean-up". `vaaniQA` and `postCallAnalysisFlat` judge against the CRC office. |
+| **Holiday list** | `{{crcHolidayList}}` and its four answering rules are back in `Default` and `genericInfoComplaintAgent` in place of HOL-01's "no holiday list on this line" line (genericInfo's copy converted to "You"). |
+| **⚠️ Platform** | `{{crcOfficeCity}}`, `{{crcOfficeAddress}}` and `{{crcHolidayList}}` must be injected for every CRC deployment. With no value, the prompts treat curly braces as no data, and Vaani has no location to give. |
+| **Verified** | Every changed line in CC→CRC is identity or holiday text. No Mumbai, Headquarters, Bharat Bhavan, Currimbhoy, Ballard or "national head office" remains in any live CRC prompt. crcOffice mentions track the Hindi file per agent. |
 
 ---
 
