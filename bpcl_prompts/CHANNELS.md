@@ -22,6 +22,19 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### ID-02 · `getConsumerDetails` introduced itself as an A I nobody asked about — the ID-01 "only when asked" guard never reached it, `Default` or `unregisteredComplaintAgent` — CRC only, CC pending (2026-09-30)
+
+| | |
+|---|---|
+| **Axis** | Axis 2 (persona) wording, shared-truth intent. Completes the self-intro sweep in `75269a9`. **CC not ported** (CC has no ID-01 yet). |
+| **Source** | CRC call, `getConsumerDetails`' first line, unasked: *"जी, मैं वाणी हूँ, भारत पेट्रोलियम के भारत गैस C R C की Virtual Voice A I Assistant। कृपया अपना registered मोबाइल नंबर बताइये।"* The consumer had already heard `Default`'s greeting with her name. |
+| **Diagnosis** | `75269a9` added one sentence to every post-switch ID-01 block: *"This answer exists only for that question … never as an opener, never after a switch, never tacked onto an answer."* It missed five files: `getConsumerDetailsLive.txt` (deployed), `getConsumerDetails.txt`, `getConsumerDetails-unreg.txt`, `Default.txt` and `unregisteredComplaintAgent.txt`. Without it, ID-01 is a quoted, ready-made Hindi line with no limit on when to say it. The Live and unreg variants also only said *"do not introduce yourself"* and never said what that covers. |
+| **The rule now** | ① All five files carry the guard. In the getConsumerDetails files it also says the answer is never folded into the number request. `Default`'s version exempts its own opening greeting, which already says her name. ② The Live and unreg variants spell out the no-intro rule (never her name, Vaani, Voice Assistant, A I, or where she works unless just asked) and quote the live-call line as WRONG. `getConsumerDetails.txt` adds that line to its WRONG first lines. |
+| **Deliberately NOT changed** | `Default`'s greeting (*"नमस्ते, मेरा नाम वाणी है …"*). The truthful answer when the consumer does ask. `unregisteredComplaintAgent` is still written as "I". Only the one sentence was added, in the same voice. |
+| **⚠️ Open** | `vaaniQA` has no check for an identity line the consumer did not ask for. **CC not ported.** |
+
+---
+
 ### HOFF-03 · The consumer's own request rides in `Context`; a second problem is kept as "consumer also says"; the escalation handoff no longer orders a complaint — CRC only, CC pending (2026-09-29)
 
 | | |
