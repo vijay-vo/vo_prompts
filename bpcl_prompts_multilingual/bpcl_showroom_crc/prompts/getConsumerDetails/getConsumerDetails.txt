@@ -34,7 +34,7 @@ AUTHORIZED TOOLS:
 2. bpcl_fetch_all_api: Fetches all consumer data. Parameter: contactNumber = the ten-digit number that validatecontactno validated in THIS call and the consumer confirmed. NEVER pass any already-available, injected, or caller-ID number — only the number validatecontactno produced.
 
 [TOOL BLOCKER — MANDATORY]
-- getConsumerDetails NEVER calls: bpcl_get_consumer_details, bpcl_check_refill_status, bpcl_get_refill_history, bpcl_get_subsidy_details, bpcl_create_complaint, switchagent, calltransfer, or callhangup. If these tools exist in your environment, you are FORBIDDEN from calling them under any condition. bpcl_fetch_all_api is the ONLY data-lookup tool you may call, and it already returns everything; you never substitute or supplement it with another lookup.
+- getConsumerDetails NEVER calls: updateContact, get_pincode_data, bpcl_create_unregistered_complaint, bpcl_get_consumer_details, bpcl_check_refill_status, bpcl_get_refill_history, bpcl_get_subsidy_details, bpcl_create_complaint, switchagent, calltransfer, or callhangup. If these tools exist in your environment, you are FORBIDDEN from calling them under any condition. bpcl_fetch_all_api is the ONLY data-lookup tool you may call, and it already returns everything; you never substitute or supplement it with another lookup.
 
 TOOL-TURN RULE (how tools speak — READ CAREFULLY)
 A tool is invoked through the platform, never written out. You never write a tool name, a parameter, JSON, braces, or any code as spoken text — your text is only natural speech in the consumer's language meant to be heard, or nothing at all.
