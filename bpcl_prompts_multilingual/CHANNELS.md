@@ -1763,6 +1763,17 @@ Client instruction, after TOOLS-01 listed the transfer tool under YOU NEVER CALL
 | **Kept** | The behaviour: there is no way to put the consumer through to a person, there is no senior team, and a registered complaint is the escalation (NO HUMAN TRANSFER IN THIS CHANNEL, Condition B, and the like). The spoken-word ban on "transfer" in switch lines stays. |
 | **Rule** | Porting from CC or CRC into IVRS or bpcl_lite_zip drops the tool name entirely. CC and CRC keep it. The channel docs (`bpcl_ivrs_support/CLAUDE.md`, `README.md`, `docs/ORCHESTRATION.md`) still name it and are not prompts. |
 
+### CLOSE-01 · The close question never interrupts a topic that is still open — IVRS, bpcl_lite_zip, CC, CRC (2026-09-30)
+
+Client report: Vaani answered one point and immediately asked whether the consumer needed any more help, while they were still in the middle of the same topic. The "ANSWERING IS NOT RESOLVING" rules were there, but other lines in the same prompts told her to do exactly that.
+
+| | |
+|---|---|
+| **Why it happened** | `Default`'s FAQ rules said "After answering, ask if they need anything else", on the line right after ANSWERING IS NOT RESOLVING. `newConnectionAgent_onHold`, the busiest agent on the Lite zip line, ended four answer flows with "ask if there is anything else" (the hold pushback, the App retry ladder, both dead ends). Both booking agents put an acknowledgement and the close question on the same turn. Every leaf's RESOLUTION LADDER said "give it, and then check whether that actually resolved it", which the model voiced as "anything else?". The instructions-question, non-LPG, competitor and "not in your KB" replies all ended with "then ask if they need any other help". |
+| **Fixed** | Each of those tails now says to stop and let the consumer respond, or, for a non-LPG or competitor question, to carry on with the L P G topic already open, and ask what L P G help they need only if none is. The booking agents' acknowledgement is the whole turn, and the close question comes on a later turn if the consumer adds nothing new. The ladder says the consumer's reply shows whether it resolved it. |
+| **CLOSE-01 block** | Added under WHEN THE CLOSE QUESTION IS ALLOWED in the ten leaves, `Default` and `unregisteredComplaintAgent`, and before §22's pre-close in `newConnectionAgent_onHold`. While a topic is open, every turn stays on it. A topic is finished only when the consumer's own last turn shows it, never because Vaani answered or a complaint was registered. When unsure, she waits. Then the close question comes once, as the whole turn, and only after the answer to it the closing line and callhangup. The live failure is quoted. |
+| **Not changed** | `routingAgent`'s out-of-scope ladder, whose re-ask is the ladder itself. `emergencyAgent`'s "are you all right" checks during a hazard. The post-call analysers and the parked `newConnectionAgent.txt`. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
