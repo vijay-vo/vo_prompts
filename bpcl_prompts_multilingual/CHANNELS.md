@@ -1741,6 +1741,18 @@ Live `bpcl_lite_zip` call, Hindi. After the close question the consumer asked wh
 | **Porting** | Edited in `bpcl_lite_zip` and `bpcl_ivrs_support` (byte for byte, still differing only in the three greeting files), and applied by the same exact-match edits to CC and CRC, all of which matched once per file. The parked `newConnectionAgent.txt` is unchanged. |
 | **⚠️ Platform** | `updateContact` should not be exposed to `getConsumerDetails` at all. The prompt now forbids it, but removing it from that agent's tool list is the real fix. |
 
+### TOOLS-01 · Every agent carries one complete list of the tools it can call and the tools it never calls — IVRS, bpcl_lite_zip, CC, CRC (2026-09-30)
+
+Client instruction, after SEAM-02, where `getConsumerDetails` reached for `updateContact`. The existing TOOL BLOCKER lines named the allowed tools but their forbidden lists were uneven: most leaves never mentioned `updateContact`, `get_pincode_data` or `bpcl_create_unregistered_complaint`, and some left out `validatecontactno`.
+
+| | |
+|---|---|
+| **The block** | TOOL LIST (TOOLS-01), placed at the top of each agent's tools section: YOU CAN CALL, one line per tool with what it is for; YOU NEVER CALL, every other tool of the thirteen the platform has; and one paragraph saying the list is complete and that no tool stands in for a failed one. The existing tool sections are kept as they were. |
+| **Who can call what (IVRS, bpcl_lite_zip)** | `Default`, `emergencyAgent`: switchagent. `routingAgent`: switchagent, callhangup. `getConsumerDetails` (all three files): validatecontactno, bpcl_fetch_all_api. The ten leaves: switchagent, callhangup, bpcl_create_complaint. `newConnectionAgent_onHold`: switchagent, callhangup. `unregisteredComplaintAgent`: updateContact, get_pincode_data, bpcl_create_unregistered_complaint, switchagent, callhangup. |
+| **CC, CRC** | The same, plus calltransfer for the ten leaves, `newConnectionAgent_onHold`, `unregisteredComplaintAgent` and `routingAgent` (its one case), matching IVRS-SYNC-02. `Default`, `emergencyAgent` and `getConsumerDetails` never hold it. |
+| **The thirteen** | switchagent, callhangup, calltransfer, bpcl_create_complaint, bpcl_create_unregistered_complaint, updateContact, get_pincode_data, validatecontactno, bpcl_fetch_all_api, bpcl_get_consumer_details, bpcl_check_refill_status, bpcl_get_refill_history, bpcl_get_subsidy_details. A new platform tool must be added to every block. |
+| **Not changed** | The parked `newConnectionAgent.txt` and the post-call analysers, which call no tools. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
