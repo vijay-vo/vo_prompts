@@ -1774,6 +1774,20 @@ Client report: Vaani answered one point and immediately asked whether the consum
 | **CLOSE-01 block** | Added under WHEN THE CLOSE QUESTION IS ALLOWED in the ten leaves, `Default` and `unregisteredComplaintAgent`, and before §22's pre-close in `newConnectionAgent_onHold`. While a topic is open, every turn stays on it. A topic is finished only when the consumer's own last turn shows it, never because Vaani answered or a complaint was registered. When unsure, she waits. Then the close question comes once, as the whole turn, and only after the answer to it the closing line and callhangup. The live failure is quoted. |
 | **Not changed** | `routingAgent`'s out-of-scope ladder, whose re-ask is the ladder itself. `emergencyAgent`'s "are you all right" checks during a hazard. The post-call analysers and the parked `newConnectionAgent.txt`. |
 
+### ID-02-PORT · No unasked self-introduction in number capture, Default or the no-record desk; vaaniQA judges SEAM-02, CLOSE-01 and the subsidy status — IVRS, bpcl_lite_zip, CC, CRC (2026-09-30, from `main` 184ed34)
+
+`main`'s 184ed34 (CRC ID-02) found that the ID-01 "only for that question, never as an opener" limit had reached every post-switch agent except five files, and getConsumerDetails opened a live call by introducing herself before asking for the number. The multilingual set had the same gap. `main`'s 1dc6ad6 (unregisteredComplaintAgent in "You") needed nothing here: the multilingual file was already in "You".
+
+| | |
+|---|---|
+| **getConsumerDetailsLive** | A NOT INTRODUCING YOURSELF MEANS paragraph under IDENTITY (never the name, Vaani, Voice Assistant, A I or the office unless just asked; the number request is never the place), quoting the live failure as a meaning, not in Hindi. Its WHO YOU ARE line gains the "only for that question … never folded into the line that asks for their mobile number" limit. |
+| **getConsumerDetails, -unreg** | `getConsumerDetails.txt`: the limit extended to the number request, and the live failure added to its WRONG first lines. The `-unreg` pointer says it never introduces itself. |
+| **Default** | Its limit said "never as an opener", which its own greeting ("my name is Vaani") contradicts. Now, as on `main`: the greeting already says her name, and apart from it she never says it unasked — not as a second introduction, not tacked onto an answer, not as the lead-in to a question. |
+| **unregisteredComplaintAgent** | Gains the "only for that question" limit it lacked. |
+| **vaaniQA** | New C29 ONE VAANI, NO SEAM: hand-off wording on any agent's switch turn (C8's ban, now for every agent), a question or permission ask on the switch turn, a permission question for a topic the consumer plainly asked about, a second checking line after a bare yes, and a greeting or self-introduction after the opening greeting unless asked. C16 names answer-plus-"anything else?" as the commonest close-question failure (CLOSE-01). D7 says "Not applicable" beside a zero amount is not a failure, and calling it Failed is a D1 violation (SEAM-02's subsidy case). C27 reports number capture calling any tool but its two, updateContact above all. The output shape is unchanged. |
+| **Contracts** | The shared `CLAUDE.md` §4 now states SEAM-02, CLOSE-01 and TOOLS-01/NOXFER-01 as shared truth. |
+| **Not changed** | The parked `newConnectionAgent.txt`, as in every earlier row. `postCallAnalysisFlat` (it summarises and scores none of these behaviours). The Hindi prompts: `bpcl_prompts_hindi` on this branch is the stale split snapshot, and `main`'s `bpcl_prompts` is its own line. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences

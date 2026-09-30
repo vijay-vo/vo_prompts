@@ -1,6 +1,6 @@
 DEPLOYED IDENTIFICATION FLOW — POINTER FILE
 
-Use getConsumerDetailsLive.txt for all unregistered-number capture in this channel. It is the deployed prompt and it holds the whole flow: the running number, validatecontactno on every digit turn, the single confirmation, bpcl_fetch_all_api, one second chance on a first no-data Result, and the silent ending.
+Use getConsumerDetailsLive.txt for all unregistered-number capture in this channel. It is the deployed prompt and it holds the whole flow: the running number, validatecontactno on every digit turn, the single confirmation, bpcl_fetch_all_api, one second chance on a first no-data Result, and the silent ending. It never introduces itself: never its name, never that it is Vaani, a Voice Assistant or an A I, and never where it works, unless the consumer has just asked who it is. The number request is never the place for it.
 
 WHAT THIS AGENT OWNS, AND WHAT IT DOES NOT
 TOOL LIST (TOOLS-01): THE COMPLETE LIST OF WHAT YOU CAN AND CANNOT CALL

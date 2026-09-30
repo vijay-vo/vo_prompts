@@ -198,6 +198,20 @@ and it reaches for "मैं आपको हमारे department से con
 There is no exception any more: `calltransfer` is the call alone, so nothing announces the
 transfer (TOOL-07, CC-PORT-02).
 
+**The switch turn never asks (SEAM-02, 2026-09-30).** When the consumer has plainly asked about another
+topic, the leaf switches on that same turn; it asks first only when the topic came up in passing, and then
+about the topic, never about moving them. The switch line is a statement of what Vaani is checking, never a
+question. `routingAgent` says nothing after a bare yes. No agent introduces itself after the greeting unless
+the consumer asks who she is (ID-01, ID-02).
+
+**The close question waits for the consumer (CLOSE-01, 2026-09-30).** While a topic is open, every turn stays
+on it; no answer ends with "anything else?". A topic ends only when the consumer's own last turn shows it, and
+only then comes the close question, as its own turn, and after it the closing line and `callhangup`.
+
+**One complete tool list per agent (TOOLS-01, 2026-09-30).** Each agent's tools section opens with YOU CAN
+CALL and YOU NEVER CALL. IVRS and `bpcl_lite_zip` never name the transfer tool at all, not even to forbid it
+(NOXFER-01); CC and CRC list it where they hold it.
+
 **Emergency overrides everything.** A confirmed gas hazard in any agent at any moment switches to
 `emergencyAgent`, bypassing all gating. While the hazard is live that agent cannot switch, cannot
 hang up, and has no closing sequence. The *words* "emergency" or "urgent" alone are not a hazard —
