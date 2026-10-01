@@ -29,8 +29,10 @@ transfer, no order or link.
 - Every number and name in the prompt is written **in spoken form**: "ten W thirty", "five hundred fifty rupees", "two point four litre", years in Hindi ("दो हज़ार बीस").
 - Brand is written **"मेक"** in Devanagari everywhere (pronounced "mek"), inside product names too. Never "mak" or "MAK" in Latin script. Never "RE".
 - **Closing line is fixed**: "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका दिन शुभ हो।" with callhangup on the same turn, nothing added. The callhangup directive is at line 1, in the CRC shape from TOOL_CALLING.md, because "callhangup" was being spoken as text.
-- Hello BPCL App facts are limited to: pump locator, "right oil for your vehicle", and MAK Mechanic/Retailer coupon cashback up to ₹1000. **The App does not sell MAK oil.**
+- Hello BPCL App facts are limited to: nearest-pump details (no route), "right oil for your vehicle", and MAK Mechanic/Retailer coupon cashback up to ₹1000. **The App does not sell MAK oil.**
 - The toll-free 1800 22 4344 is a last resort only.
+- **Selling is the goal** (2026-10-01, after a test call that gave only oil + price): BLOCK 8 is a mandatory six-rung sales ladder (sold recommendation → upgrade → grease → coupon → one more vehicle → where to buy) plus a SALES GATE before any goodbye.
+- The App shows the nearest Bharat Petroleum pump and its details. It never gives a route or directions.
 
 ## Not done yet
 - No post-call analysis prompt.
