@@ -31,7 +31,7 @@ transfer, no order or link.
 - **Closing line is fixed**: "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका दिन शुभ हो।" with callhangup on the same turn, nothing added. The callhangup directive is at line 1, in the CRC shape from TOOL_CALLING.md, because "callhangup" was being spoken as text.
 - Hello BPCL App facts are limited to: nearest-pump details (no route), "right oil for your vehicle", and MAK Mechanic/Retailer coupon cashback up to ₹1000. **The App does not sell MAK oil.**
 - The toll-free 1800 22 4344 is a last resort only.
-- **Selling is the goal** (2026-10-01, after a test call that gave only oil + price): BLOCK 8 is a mandatory six-rung sales ladder (sold recommendation → upgrade → grease → coupon → one more vehicle → where to buy) plus a SALES GATE before any goodbye.
+- **Selling is the goal**: one caller, one vehicle, one basket (one engine oil, with the upgrade pitched while it is being decided, plus one grease). Satisfy what they asked first, then sell the rest. A settled category is never pitched again. Never ask about another vehicle. A SALES GATE runs before any goodbye (2026-10-01).
 - The App shows the nearest Bharat Petroleum pump and its details. It never gives a route or directions.
 
 ## Not done yet
