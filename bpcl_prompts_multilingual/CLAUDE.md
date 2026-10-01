@@ -273,7 +273,8 @@ baseline commit with no prior history to diff against.
    unrecorded difference is indistinguishable from a bug six weeks later.
 6. **Duplicate prompt files need a status marker.** If two versions of a prompt ever sit side by
    side, annotate which one is deployed before touching either. (The old `getConsumerDetails_v2.txt`
-   that prompted this rule is gone — CRC has a single `getConsumerDetails.txt`.)
+   that prompted this rule is gone. Since 2026-10-01 (CHANNELS.md GCD-LOOP-01) every channel has a single
+   `getConsumerDetails/getConsumerDetailsLive.txt`.)
 7. **Commit at logical boundaries, not at session end.** One commit per intended change (a single
    agent's fix, a CHANNELS.md ledger entry plus its prompt edits, a §4 shared-truth fix landed in
    both channels) — not one giant commit per session. Write commit messages that say *why*, the

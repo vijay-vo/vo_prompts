@@ -49,7 +49,7 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 
 | Folder | Agents |
 |---|---|
-| [getConsumerDetails/](prompts/getConsumerDetails/) | `getConsumerDetailsLive` — **the deployed** number-capture prompt; `getConsumerDetails` kept in step with it; `getConsumerDetails-unreg` is a pointer file for legacy deployment names |
+| [getConsumerDetails/](prompts/getConsumerDetails/) | `getConsumerDetailsLive` — the one number-capture prompt (`getConsumerDetails` and the `-unreg` pointer were deleted 2026-10-01, GCD-LOOP-01) |
 | [Default/](prompts/Default/) | `Default` — greeting, emergency interrupt, FAQ, triage, routing |
 | [routingAgent/](prompts/routingAgent/) | `routingAgent` — silent mid-call re-router |
 | [emergencyAgent/](prompts/emergencyAgent/) | `emergencyAgent` — gas hazard, overrides everything |
