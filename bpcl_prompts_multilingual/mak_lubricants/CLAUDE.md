@@ -27,7 +27,8 @@ transfer, no order or link.
 
 ## Voice rules specific to this case
 - Every number and name in the prompt is written **in spoken form**: "ten W thirty", "five hundred fifty rupees", "two point four litre", years in Hindi ("दो हज़ार बीस").
-- Brand is "mak" in lowercase, said as a word. Never "RE".
+- Brand is written **"मेक"** in Devanagari everywhere (pronounced "mek"), inside product names too. Never "mak" or "MAK" in Latin script. Never "RE".
+- **Closing line is fixed**: "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका दिन शुभ हो।" with callhangup on the same turn, nothing added. The callhangup directive is at line 1, in the CRC shape from TOOL_CALLING.md, because "callhangup" was being spoken as text.
 - Hello BPCL App facts are limited to: pump locator, "right oil for your vehicle", and MAK Mechanic/Retailer coupon cashback up to ₹1000. **The App does not sell MAK oil.**
 - The toll-free 1800 22 4344 is a last resort only.
 
