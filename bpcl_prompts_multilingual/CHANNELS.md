@@ -1788,6 +1788,19 @@ Client report: Vaani answered one point and immediately asked whether the consum
 | **Contracts** | The shared `CLAUDE.md` §4 now states SEAM-02, CLOSE-01 and TOOLS-01/NOXFER-01 as shared truth. |
 | **Not changed** | The parked `newConnectionAgent.txt`, as in every earlier row. `postCallAnalysisFlat` (it summarises and scores none of these behaviours). The Hindi prompts: `bpcl_prompts_hindi` on this branch is the stale split snapshot, and `main`'s `bpcl_prompts` is its own line. |
 
+
+### GCD-LOOP-01 · Number capture counts the digits itself, nudges in one or two words worded differently each time, confirms once, then fetches silently — IVRS, bpcl_lite_zip (2026-10-01)
+
+Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard the same sentence, "जी, आगे के अंक बताएँ।", after every piece. Then the agent said "जी, मैं आपकी जानकारी चेक कर रही हूँ।" over and over, never confirmed the number and never fetched; it asked for the whole number again, got a second ten digits, and looped on the same checking line until the call died.
+
+| | |
+|---|---|
+| **Why it happened** | The agent carried the running number but had to send it to validatecontactno on every digit turn and wait for a Result to tell it whether to nudge, reject or confirm. The partial state had a single meaning ("go on"), which came out as the same sentence every time. Once the ten digits were in, the agent narrated a check instead of acting, and the confirm and fetch never happened. |
+| **Now** | `getConsumerDetailsLive.txt` is rewritten around the client's sequence. She counts the digits herself; validatecontactno moves to YOU NEVER CALL. While fewer than ten digits are in, the turn is a nudge of one or two words, worded differently every time, never the full request again. At ten digits she reads them back once and asks if it is correct. Only a clear yes triggers bpcl_fetch_all_api (key validatedContactNumber, unchanged), as the call alone with no checking line. Data → silence. First no-data → one ask for a different registered number. Second no-data, no other number, or refusal → silence. The prompt no longer says what the platform does after the fetch. |
+| **Also** | The `-unreg` pointer and its TOOLS-01 list match. `vaaniQA` C27 now reports validatecontactno from this stage, a repeated or over-long nudge, a checking line, and a lookup without the consumer's clear yes. |
+| **⚠️ Platform** | If `bpcl_fetch_all_api` still refuses a number that did not pass through validatecontactno first ("validate the customer number first"), that gate has to come off for this agent. The prompt treats that Result as an error: one silent retry, then no data. |
+| **Not changed** | `getConsumerDetails.txt` (not the deployed file, per the `-unreg` pointer). CC and CRC, which keep their own transfer endings and still use validatecontactno. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
