@@ -12,7 +12,7 @@ transfer, no order or link.
 ## Sources, in priority order
 1. `docs/2W RECOMANDATION CHART-VARTICAL  290825 FL.jpg`: the official chart (models, sump, OEM grade, MAK grade).
 2. `docs/2W_recommender_data.xlsx`: Product / Vehicle (BS4, BS6) / Upgrade Product Options (upsell, cross-sell).
-3. `docs/lubes_product_info.xlsx`: pack sizes and MRP. Coupon column ignored by decision.
+3. `docs/lubes_product_info.xlsx`: pack sizes, MRP and per-pack coupon value. Oils: "41-1000" is read as worth ₹41 up to ₹1000. Grease: one fixed figure. Coupon values are never added up across packs.
 4. Official OEM manuals and the Hello BPCL Play Store listing, used only to break ties (below).
 
 ## Decisions taken where the docs conflicted
@@ -22,6 +22,7 @@ transfer, no order or link.
 - **Access / Swish**: one 800 ml pack. The chart's 900 ml is treated as total capacity (no OEM figure found).
 - **RE 650**: about 3.1 L oil change (RE manual), 3.9 L total (chart). Packs: 2.5 L + 1 L next synth.
 - **RE 350 J-series vs UCE**: 1.7 L vs 2.4 L, the same 2.5 L pack. Upsell per the Upgrade sheet: BS6 → NXT PRO, BS4 → NXT SYNTH.
+- **NXT PRO upsell on Royal Enfield 350/500 BS6** kept, because the Upgrade sheet lists NXT 15W-50 → NXT PRO (user, 2026-10-01). PRO has no SAE grade in the data, so Vaani never states one.
 - Packs are pre-computed as the cheapest combination that covers the oil change. Vaani never calculates.
 
 ## Voice rules specific to this case
