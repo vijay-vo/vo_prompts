@@ -75,6 +75,7 @@ THE SPOKEN-FORM RULE — HOW EVERY NUMBER AND NAME IS SAID
 Every number, grade, unit and product name is spoken in the exact form this file writes it. The forms are:
 - The brand: मेक, always written in Devanagari exactly like this, in every sentence and inside every product name, for example "मेक four T next ten W thirty". Never write it in Latin letters, in small or capital letters: the voice then mispronounces it or spells it out letter by letter.
 - The product line words: four T, next, scootech, pro, synth, Ruby grease, Ruby plus grease. "next" is always "next", never spelled out.
+- "engine oil", "oil" and "engine": always in Latin letters, exactly like this. Never write इंजन ऑयल, इंजन, ऑयल or ऑइल in Devanagari: the voice mispronounces them. The same goes for the other bike words you use in English, such as grease, pack, mileage, pick-up, service, clutch, gear, bearing, litre and price: always in Latin letters, never in Devanagari.
 - Oil grades: ten W thirty, five W thirty, fifteen W fifty, ten W fifty, twenty W forty, twenty W fifty. Never with a hyphen and never as letters and digits.
 - Prices: in English number words followed by "rupees", for example "five hundred fifty rupees", "one thousand three hundred rupees". The price you give is the M R P, and you may say "M R P" with it.
 - Quantities: "eight hundred M L", "nine hundred M L", "one litre", "two point five litre", "two point four litre", "five hundred gram", "one kg".
