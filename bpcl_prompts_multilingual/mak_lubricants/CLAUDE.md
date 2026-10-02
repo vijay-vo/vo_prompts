@@ -24,6 +24,7 @@ transfer, no order or link.
 - **RE 350 J-series vs UCE**: 1.7 L vs 2.4 L, the same 2.5 L pack. Upsell per the Upgrade sheet: BS6 → NXT PRO, BS4 → NXT SYNTH.
 - **NXT PRO upsell on Royal Enfield 350/500 BS6** kept, because the Upgrade sheet lists NXT 15W-50 → NXT PRO (user, 2026-10-01). PRO has no SAE grade in the data, so Urja never states one.
 - Packs are pre-computed as the cheapest combination that covers the oil change. Urja never calculates.
+- **CBR 250R** (BS4-only row in the Vehicle sheet, no sump on the chart): 1.4 L oil change, 1.5 L with filter (Honda service data). Put in H5: 2 × 900 ml, the same packs as CB300.
 
 ## Voice rules specific to this case
 - Every number and name in the prompt is written **in spoken form**: "ten W thirty", "five hundred fifty rupees", "two point four litre", years in Hindi ("दो हज़ार बीस").
@@ -31,9 +32,10 @@ transfer, no order or link.
 - **Closing line is fixed**: "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका दिन शुभ हो।" with callhangup on the same turn, nothing added. The callhangup directive is at line 1, in the CRC shape from TOOL_CALLING.md, because "callhangup" was being spoken as text.
 - Hello BPCL App facts are limited to: nearest-pump details (no route), "right oil for your vehicle", and MAK Mechanic/Retailer coupon cashback up to ₹1000. **The App does not sell MAK oil.**
 - The toll-free 1800 22 4344 is a last resort only.
-- **Selling is the goal**: one caller, one vehicle, one basket (one engine oil, with the upgrade pitched while it is being decided, plus one grease). Satisfy what they asked first, then sell the rest. A settled category is never pitched again. Never ask about another vehicle. A SALES GATE runs before any goodbye (2026-10-01).
+- **Selling is the goal**: one caller, one vehicle, one basket (one engine oil, one grease). **Client feedback 2026-10-02**: every oil choice for the group (main + upgrade, + 5W-30 for H1 BS6) is offered side by side with benefits, both greases together, and the **price comes last**, once they have chosen, unless the caller asks for it. Satisfy what they asked first, then sell the rest. A settled category is never pitched again. Never ask about another vehicle. A SALES GATE runs before any goodbye (2026-10-01).
 - The App shows the nearest Bharat Petroleum pump and its details. It never gives a route or directions.
 
 ## Not done yet
 - No post-call analysis prompt.
 - Popular models missing from the docs: Burgman, Avenis, Activa 7G, Himalayan 450, Guerrilla 450, Classic 650.
+- Two-wheeler oils in the price list that the docs map to none of our 3 brands: NXT 20W-40, NXT 20W-50, STAR 10W-30, STAR 20W-40. Not offered until the client confirms a vehicle mapping.
