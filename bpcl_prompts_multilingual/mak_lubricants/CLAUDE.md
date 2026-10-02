@@ -6,7 +6,7 @@ the whole call: **one agent, `prompts/Default/Default.txt`, only tool `callhangu
 transfer, no order or link.
 
 ## Scope (2026-10-01)
-- Brands: **Honda, Suzuki, Royal Enfield** only. Every other brand and model gets a polite out-of-scope reply.
+- Brands: **Honda, Suzuki, Royal Enfield, Bajaj, TVS** (Bajaj and TVS added 2026-10-02, to cover NXT 20W-50 and old Scootech 10W-30). Every other brand and model gets a polite out-of-scope reply.
 - Cars, trucks, LPG and other Bharat Petroleum products are out of scope. A gas leak gets 1906.
 
 ## Sources, in priority order
@@ -25,6 +25,13 @@ transfer, no order or link.
 - **NXT PRO upsell on Royal Enfield 350/500 BS6** kept, because the Upgrade sheet lists NXT 15W-50 → NXT PRO (user, 2026-10-01). PRO has no SAE grade in the data, so Urja never states one.
 - Packs are pre-computed as the cheapest combination that covers the oil change. Urja never calculates.
 - **CBR 250R** (BS4-only row in the Vehicle sheet, no sump on the chart): 1.4 L oil change, 1.5 L with filter (Honda service data). Put in H5: 2 × 900 ml, the same packs as CB300.
+
+## Bajaj and TVS (2026-10-02): docs only, no web source
+- Built strictly from the chart (sump, MAK grades, OEM grade column) plus the Vehicle and Upgrade sheets. Packs are the cheapest combination covering the **chart** sump.
+- Chart "A / B" pairs become side-by-side choices. Upgrade sheet adds NXT PRO to every 10W-30, 20W-50 and 15W-50 (BS6) row. SYNTH is cross-sold with Ruby Plus only (Upgrade sheet), applied to B4, B5, B6.
+- TVS scooters: chart lists Scootech NXT 10W-30 and Scootech 10W-30 for all; NXT is recommended (API SP, cheaper). Ntorq 880 ml → two 800 ml packs.
+- Pulsar RS 200 appears in two chart rows (1100 and 1150/1200); put in B3, where both rows agree (20W-50; SYNTH not offered). Open with the client.
+- "Grade TVS itself uses" comes from the chart's OEM grade column. Bajaj has no OEM grade in the chart, so no grade line.
 
 ## Voice rules specific to this case
 - Every number and name in the prompt is written **in spoken form**: "ten W thirty", "five hundred fifty rupees", "two point four litre", years in Hindi ("दो हज़ार बीस").
