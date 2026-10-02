@@ -1,7 +1,7 @@
 # mak_lubricants — case contract
 
 Inbound Hindi/Hinglish voice line for **Bharat Petroleum MAK Lubricants**, two-wheelers only.
-Callers are mostly mechanics, plus riders. Vaani recommends, upsells and cross-sells over voice, and owns
+Callers are mostly mechanics, plus riders. Urja recommends, upsells and cross-sells over voice, and owns
 the whole call: **one agent, `prompts/Default/Default.txt`, only tool `callhangup`**, no handoff, no
 transfer, no order or link.
 
@@ -22,8 +22,8 @@ transfer, no order or link.
 - **Access / Swish**: one 800 ml pack. The chart's 900 ml is treated as total capacity (no OEM figure found).
 - **RE 650**: about 3.1 L oil change (RE manual), 3.9 L total (chart). Packs: 2.5 L + 1 L next synth.
 - **RE 350 J-series vs UCE**: 1.7 L vs 2.4 L, the same 2.5 L pack. Upsell per the Upgrade sheet: BS6 → NXT PRO, BS4 → NXT SYNTH.
-- **NXT PRO upsell on Royal Enfield 350/500 BS6** kept, because the Upgrade sheet lists NXT 15W-50 → NXT PRO (user, 2026-10-01). PRO has no SAE grade in the data, so Vaani never states one.
-- Packs are pre-computed as the cheapest combination that covers the oil change. Vaani never calculates.
+- **NXT PRO upsell on Royal Enfield 350/500 BS6** kept, because the Upgrade sheet lists NXT 15W-50 → NXT PRO (user, 2026-10-01). PRO has no SAE grade in the data, so Urja never states one.
+- Packs are pre-computed as the cheapest combination that covers the oil change. Urja never calculates.
 
 ## Voice rules specific to this case
 - Every number and name in the prompt is written **in spoken form**: "ten W thirty", "five hundred fifty rupees", "two point four litre", years in Hindi ("दो हज़ार बीस").
