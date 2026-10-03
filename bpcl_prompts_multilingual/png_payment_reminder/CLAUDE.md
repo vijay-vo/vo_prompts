@@ -19,53 +19,61 @@ transfer, no payment collection. This is a **demo** agent (2026-10-03).
    called about a P N G bill".
 
 ## The hardcoded demo customer (BLOCK 5) — all easy to swap
-- Name: **राजेश शर्मा** (Rajesh Sharma) · City: **Mumbai**
-- B P number: **7 0 0 5 6 8 2 3 1** (written as digit words in the prompt)
-- Period: **September 2026** · Amount: **₹1,200** ("one thousand two hundred rupees") · Due:
-  **20 October 2026** (after today, so a genuine reminder, not yet overdue). Real BGRL P N G is
-  bi-monthly; the demo is simplified to a single September-month bill at the user's request (2026-10-03).
+- Name: **राजेश शर्मा** (Rajesh Sharma) · Address: **सनशाइन अपार्टमेंट, अंधेरी ईस्ट, Mumbai**
+- **No account number / Customer ID / B P number is held** (user, 2026-10-03). On this call Urja has
+  only the name and address; if asked for an account/ID number she says she does not have it and that
+  it is printed on the customer's own bill.
+- Period: **bi-monthly, Aug–Sep 2026** · Amount: **₹1,200** ("one thousand two hundred rupees") · Due:
+  **20 October 2026** (after today, so a genuine reminder, not yet overdue). Aligned to the real BGRL
+  bi-monthly cycle (user, 2026-10-03). **₹1,200 is the only rupee figure Urja ever states.**
 - **Fixed greeting** (BLOCK 8, said verbatim on the first turn): "नमस्ते, मैं भारत पेट्रोलियम से ऊर्जा बोल
   रही हूँ। क्या मेरी बात राजेश शर्मा जी से हो रही है?" On confirm → reminder. A **family member** who
   picked up is treated like the customer (full reminder). A **wrong number** → apologise, say she was
   calling to reach राजेश शर्मा जी, and end — no bill detail disclosed.
 - **End-of-call issue check** (BLOCK 8 steps 6–8): after the reminder lands, Urja asks if they face any
   P N G connection issue; if yes she hears it out, says she is noting it down, and answers **only from
-  her own knowledge base** (BLOCK 6/7) — anything outside it is noted and pointed to the helpline/website,
-  never invented. She then asks if more help is needed and **closes only on a clear "no"**. The payment
-  reminder stays the primary purpose; she does not wander off-topic.
-- These are demo values. The real format of a BGRL B P number, the real amount/period, and the real
-  payment URL/helpline are open questions — see [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
+  her own knowledge base** (BLOCK 6/7) — anything outside it is noted and pointed to the SmartLine
+  helpline, never invented. She then asks if more help is needed and **closes only on a clear "no"**.
+  The payment reminder stays the primary purpose; she does not wander off-topic.
+- These are demo values. The real account-number format, amount/period, surcharge/charges and whether
+  BGRL has a P N G-specific care line are open questions — see [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
 
 ## Domain facts the agent may state (BLOCK 6/7), from research 2026-10-03
 - **BPCL genuinely provides P N G** through **Bharat Gas Resources Limited (BGRL)**, its city-gas arm
-  (1.73 lakh+ connections; areas include Aurangabad, Ahmednagar, Darbhanga, Purulia, Bidar, Goa).
-- P N G is billed on the **meter reading** (gas in S C M) — the honest answer to "bill is too high" is
-  that it follows the meter, never a guess at the reason. (Real BGRL billing is bi-monthly; the demo
-  bill is a single September month.)
-- Non-payment well past the due date can **eventually stop the connection** — stated **only if asked**,
-  calmly, never as a threat.
-- Payment channels: Bharat Petroleum website; U P I apps (PhonePe/Paytm → bills → Piped Gas → B P
-  number); net banking / N E F T. The agent explains **where to go and what to enter**, never walks
-  through or collects a card/UPI-PIN/password/OTP.
-- Two phone numbers (BLOCK 3): the **Bharat Petroleum toll-free helpline 1800 22 4344** (reused from
-  `mak_lubricants`; given when the customer wants a person/customer care) and **1906** for a gas leak
-  (the common gas emergency number, same as the LPG agents). 1800 22 4344 is the LPG toll-free — whether
-  BGRL has a P N G-specific care line is open question 11.
+  (PNGRB-authorized for 25 GAs across 62 districts; areas include Aurangabad, Ahmednagar, Darbhanga,
+  Purulia, Bidar, Goa).
+- P N G is **billed bi-monthly** (every two months) on the **meter reading** (gas in S C M) — the honest
+  answer to "bill is too high" is that it covers two months and follows the meter, never a guess.
+- **Non-payment stakes (added 2026-10-03, no figures):** paying **after the due date adds a late
+  surcharge**; prolonged non-payment can lead to the supply being **temporarily disconnected, restored
+  once dues are cleared**. Stated calmly, as a reason to pay on time — never as a threat. Grounded in the
+  real bill's "payable on/before due date" vs "payable after due date" tiers, but **Urja quotes no
+  amount** for any of it.
+- **NEVER-QUOTE rule (user, 2026-10-03):** the **only** rupee figure Urja ever states is this bill's
+  amount. No per-S C M rate, no surcharge/fee amount, no new-connection charge — exact figures go to the
+  SmartLine helpline.
+- **Payment channels, in priority order (user, 2026-10-03):** **Hello B P C L App first** (it genuinely
+  views+pays P N G bills), then **U P I apps** (PhonePe/Paytm → bills → Piped Gas), then net banking /
+  N E F T. **No website link is given** — the App/UPI cover it (user: no need for the BGRL URL).
+- Two phone numbers (BLOCK 3), **and only these** — no email addresses given out (user, 2026-10-03): the
+  **Bharat Petroleum SmartLine 1800 22 4344** (reused from `mak_lubricants`; used for P N G too; given
+  when the customer wants a person/customer care or needs any figure) and **1906** for a gas leak
+  (confirmed correct). Whether BGRL has a P N G-specific care line is open question 11.
 
 ## Hard rules (match the house style)
 - **Never collect or ask for** card, C V V, U P I P I N, bank account, net-banking password, or O T P.
   Same security posture as the LPG `paymentAgent`. (BLOCK 10)
 - **Never threaten disconnection** as a stick; never argue; never push. A reminder is a courtesy. If
   the customer says they paid or will pay, take it at face value and thank them. (BLOCK 2/9)
-- **Never invent** a figure, date, reason, past payment, meter reading, or URL/number not in the
-  prompt. Honest unknown → website or helpline. (BLOCK 4/6)
+- **Never invent** a figure, date, reason, past payment, meter reading, or number not in the
+  prompt. Honest unknown → SmartLine helpline. (BLOCK 4/6)
 
 ## Voice rules specific to this case
 - Everything is written **in spoken form**: amounts as "one thousand two hundred rupees", dates
-  as "fifteen October" with the year in Hindi ("दो हज़ार छब्बीस"), the B P number and any phone number
-  as separate digit words with " - ".
+  as "fifteen October" with the year in Hindi ("दो हज़ार छब्बीस"), any phone number as separate digit
+  words with " - ".
 - Brand is **"Bharat Petroleum"** in full, never "BPCL" (except the "Hello B P C L App" name).
-  Abbreviations letter by letter: P N G, U P I, O T P, S M S, S C M, N E F T, B P.
+  Abbreviations letter by letter: P N G, U P I, O T P, S M S, S C M, N E F T.
 - **Closing line is fixed and outbound-appropriate** (she called them, so *not* "thanks for calling"):
   "धन्यवाद भारत पेट्रोलियम को अपना कीमती समय देने के लिए। आपका दिन शुभ हो।" with callhangup on the same
   turn. The callhangup directive sits at line 1 in the CRC shape, as in `mak_lubricants`, so "callhangup"
