@@ -19,9 +19,9 @@ demo, confirm the following with BPCL / Bharat Gas Resources Limited (BGRL). Not
    live call?
 
 ## The pitch — benefits & figures
-5. May the agent ever quote **concrete numbers** (e.g. "around 20–30% cheaper", a per-S C M rate, a
-   monthly saving)? The demo deliberately speaks **no figures** and defers all cost questions to the
-   distributor/website. Confirm this stays, or supply approved, accurate figures.
+5. The demo now speaks **approximate connection/deposit/refund figures** (BLOCK 6, unofficial — see
+   Q11/Q12) but still **no "% cheaper" / per-S C M rate / monthly saving** (usage-dependent, kept
+   qualitative). Confirm whether a savings figure may be quoted and, if so, supply an approved one.
 6. Confirm the **benefit claims** are acceptable as stated (cheaper/pay-per-use, no cylinder hassle,
    24/7, safer at low pressure, space-saving) and whether any must be qualified or dropped.
 7. Is there approved **social-proof** language ("neighbours in your area have switched")? The demo
@@ -32,17 +32,18 @@ demo, confirm the following with BPCL / Bharat Gas Resources Limited (BGRL). Not
    demo gives no raw link, only "the apply-for-P N G option on the Bharat Petroleum website".
 9. Does the **Hello B P C L App** support applying for a P N G connection? If so, add it as a channel.
 10. Confirm the **documents** needed (demo says photo + identity proof + address proof, generally).
-11. **L P G surrender + deposit-refund** — the agent now states this as fact (research 2026-10-03):
-    surrender is mandatory to move to P N G (LPG Control Order amendment 14 Mar 2026; keep at most one
-    L P G at non-subsidised rate), done via distributor (return cylinder + regulator → Termination
-    Voucher → deposit refunded). **Confirm this is accurate for BGRL P N G switchers and worded
-    acceptably.** The refund **amount (~₹3,500–3,900 per news sources) and timeline are deferred** — not
-    spoken — pending official confirmation.
-12. **P N G connection charge / security deposit figures NOT added** (deliberately). Third-party sources
-    (pipedgas.com) cite ~₹6,000–6,100 incl. a ₹5,000 refundable installation deposit, but this is **not
-    official BGRL** and sources disagree; BPCL's own pages publish no figure. The agent says only that
-    there IS a one-time cost + refundable deposit, numbers → official channels. **Supply the official BGRL
-    domestic P N G tariff/connection card** to let the agent speak real figures.
+11. **L P G surrender + deposit-refund** — the agent states this as fact (research 2026-10-03): surrender
+    is mandatory to move to P N G, usually within ~30 days (LPG Control Order amendment 14 Mar 2026; keep
+    at most one L P G at non-subsidised rate), done via distributor (return cylinder + regulator →
+    Termination Voucher → deposit refunded). For the demo it also speaks the **refund figure ≈ ₹3,500–3,900
+    (single cylinder), 7–15 working days** — **source is news sites, varies per connection, UNOFFICIAL.**
+    Confirm the surrender wording is acceptable for BGRL switchers and replace the refund figure with the
+    real per-connection amount before real use.
+12. **P N G connection charge / security deposit — DEMO figures now spoken, UNOFFICIAL.** For the demo the
+    agent states ≈ six thousand rupees one-time (~₹5,000 refundable equipment deposit + ~₹500 refundable
+    consumption deposit + ~₹500 non-refundable registration), plus the instalment scheme. **Source is
+    pipedgas.com, NOT official BGRL, and sources disagree; BPCL's own pages publish no figure.** ⚠️ Replace
+    with the **official BGRL domestic P N G tariff/connection card** before any real use.
 
 ## Call policy / compliance
 13. Any **script/compliance language** required on an outbound sales/marketing call (consent, "this call

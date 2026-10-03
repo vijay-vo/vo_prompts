@@ -24,12 +24,12 @@ The differences:
 2. **It holds area news, not bill data.** No amount, no due date, no B P number. The customer-specific
    facts (BLOCK 5) are just: name, that they're an existing L P G customer, their city, the society
    where P N G is now live, and general social proof that neighbours have switched. **No figures at all.**
-3. **No rupee figure is ever spoken, but the real policy facts are.** Benefits are stated
-   **qualitatively** (cheaper/pay-per-use, no cylinder hassle, 24/7, safer, space-saving) and every
-   price/deposit/saving *number* is deferred to the distributor or website. What the agent DOES now
-   state as fact (added 2026-10-03, see "Factual additions" below): the **L P G surrender requirement**,
-   the **surrender mechanics**, and that the **L P G deposit is refundable** — all without a figure.
-   See the money rule in BLOCK 3 and BLOCK 6. No-figures-on-a-sales-call is the main guardrail.
+3. **It speaks approximate DEMO rupee figures** (the P N G connection cost/deposits, the L P G refund)
+   plus the surrender policy — see "Factual additions" below. Benefits that are genuinely
+   usage-dependent (how much cheaper / monthly saving) stay **qualitative**. Every figure is spoken as
+   approximate with "the distributor confirms the exact amount". The figures are **unofficial
+   placeholders for the demo only** and must be swapped for the official BGRL tariff before real use.
+   See BLOCK 3 (money rule) and BLOCK 6 (the figures). Guardrail: never a number beyond the BLOCK 6 set.
 
 ## The hardcoded demo customer (BLOCK 5) — all easy to swap
 - Name: **अमित कुमार** (Amit Kumar) · City: **Ahmednagar** · Locality: **Sudarshan Colony**
@@ -69,15 +69,20 @@ The agent now states these as fact (BLOCK 6/7/9), because they are real and sour
 - The agent frames surrender as a normal, positive step (deposit comes back), **never as a scare**, and
   never dwells on subsidy loss unless asked — then answers honestly.
 
-**Deliberately NOT added — no rupee figures spoken (and why):**
-- **P N G connection charge / security deposit** (the "₹6,000 / ₹6,100, ₹5,000 deposit" numbers): these
-  come from **pipedgas.com, a third-party aggregator — not official BGRL**, and sources disagree. BPCL's
-  own pages publish no figure. The agent says only that there IS a one-time cost and a refundable deposit,
-  numbers → official channels. (QUESTIONS Q12)
-- **L P G refund amount** (~₹3,500–3,900 cited by news sites): varies per connection, not confirmable for
-  this customer. Agent says "refundable", defers the amount. (QUESTIONS Q11)
-- **The exact 30-day surrender window / subsidy-conversion detail:** policy detail that may change; kept
-  in this contract for humans, not spoken by the agent beyond the core surrender fact.
+**Rupee figures ARE spoken — as approximate DEMO values (user's call 2026-10-03).** For the demo the
+agent now states these numbers, each in spoken form, each with "the distributor confirms the exact
+amount" attached. ⚠️ **These are UNOFFICIAL placeholders** (third-party aggregators + news sites, not
+official BGRL), kept only because it is a demo — they must be replaced with the official BGRL tariff
+card before any real use (QUESTIONS Q11/Q12):
+- **P N G connection, one-time ≈ six thousand rupees** = ~₹5,000 refundable equipment deposit + ~₹500
+  refundable consumption deposit + ~₹500 non-refundable registration fee. Plus the instalment scheme
+  for the ₹5,000 (paid with bills). Source: pipedgas.com (not official; sources disagree).
+- **L P G refund ≈ three thousand five hundred to three thousand nine hundred rupees** (single cylinder),
+  **7–15 working days**. Source: news sites; varies per connection.
+- **Surrender window ≈ thirty days** of getting P N G; keep at most one L P G at non-subsidised rate.
+  Source: LPG Control Order amendment 14 Mar 2026 + eBharatGas FAQ.
+- The agent still speaks **no "% cheaper" / monthly-saving figure** (genuinely usage-dependent) — that
+  stays qualitative.
 
 How to apply (BLOCK 7), one channel at a time, only once interested:
 - **Bharat Petroleum website** — the apply-for-new-P N G-connection option (register, pick
@@ -106,7 +111,8 @@ a real P N G campaign — see [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
 
 ## Voice rules specific to this case
 - Everything is written **in spoken form**: the year as "दो हज़ार छब्बीस", any phone number as separate
-  digit words with " - ". **No rupee amounts anywhere** (this case speaks no money).
+  digit words with " - ". Rupee amounts (the BLOCK 6 demo figures) in English number words with
+  "rupees" — "five thousand rupees" — never a digit or the "₹" symbol, always approximate.
 - Brand is **"Bharat Petroleum"** in full, never "BPCL" (except the "Hello B P C L App" name).
   Abbreviations letter by letter: P N G, L P G, U P I, O T P, S M S, S C M.
 - **Closing line is fixed and outbound-appropriate** (she called them): "धन्यवाद भारत पेट्रोलियम को अपना
@@ -121,9 +127,11 @@ at the top of the prompt.
 
 ## Not done yet
 - **Not tested on a live call** (2026-10-03). Test: interested customer (→ gets one apply channel);
-  "happy with my cylinder" (→ one gentle benefit, no push); "how much cheaper / what's the deposit"
-  (→ no figure, deferred); "is it safe"; "what about my L P G deposit"; a wrong number (discloses
-  nothing); "is this a scam" / money-or-OTP bait (must refuse); a gas-leak mention mid-call (→ 1906).
+  "happy with my cylinder" (→ one gentle benefit, no push); "what's the deposit / what will it cost"
+  (→ ~six thousand rupees, mostly refundable, + "distributor confirms exact"); "how much cheaper"
+  (→ stays qualitative, no figure); "is it safe"; "what about my L P G deposit" (→ ~₹3,500–3,900,
+  7–15 days); a wrong number (discloses nothing); "is this a scam" / money-or-OTP bait (must refuse);
+  a gas-leak mention mid-call (→ 1906).
 - **No post-call analysis prompt**, consistent with `mak_lubricants` and `png_payment_reminder`.
 - **Demo data, area serviceability, apply URL and helpline are placeholders** — see
   [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
