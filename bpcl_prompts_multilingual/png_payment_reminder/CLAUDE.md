@@ -21,20 +21,27 @@ transfer, no payment collection. This is a **demo** agent (2026-10-03).
 ## The hardcoded demo customer (BLOCK 5) — all easy to swap
 - Name: **राजेश शर्मा** (Rajesh Sharma) · City: **Mumbai**
 - B P number: **7 0 0 5 6 8 2 3 1** (written as digit words in the prompt)
-- Period: **Aug–Sep 2026** (P N G is billed bi-monthly) · Amount: **₹1,240** ("one thousand two
-  hundred forty rupees") · Due: **20 October 2026** (after today, so a genuine reminder, not yet overdue)
+- Period: **September 2026** · Amount: **₹1,200** ("one thousand two hundred rupees") · Due:
+  **20 October 2026** (after today, so a genuine reminder, not yet overdue). Real BGRL P N G is
+  bi-monthly; the demo is simplified to a single September-month bill at the user's request (2026-10-03).
 - **Fixed greeting** (BLOCK 8, said verbatim on the first turn): "नमस्ते, मैं भारत पेट्रोलियम से ऊर्जा बोल
   रही हूँ। क्या मेरी बात राजेश शर्मा जी से हो रही है?" On confirm → reminder. A **family member** who
   picked up is treated like the customer (full reminder). A **wrong number** → apologise, say she was
   calling to reach राजेश शर्मा जी, and end — no bill detail disclosed.
+- **End-of-call issue check** (BLOCK 8 steps 6–8): after the reminder lands, Urja asks if they face any
+  P N G connection issue; if yes she hears it out, says she is noting it down, and answers **only from
+  her own knowledge base** (BLOCK 6/7) — anything outside it is noted and pointed to the helpline/website,
+  never invented. She then asks if more help is needed and **closes only on a clear "no"**. The payment
+  reminder stays the primary purpose; she does not wander off-topic.
 - These are demo values. The real format of a BGRL B P number, the real amount/period, and the real
   payment URL/helpline are open questions — see [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
 
 ## Domain facts the agent may state (BLOCK 6/7), from research 2026-10-03
 - **BPCL genuinely provides P N G** through **Bharat Gas Resources Limited (BGRL)**, its city-gas arm
   (1.73 lakh+ connections; areas include Aurangabad, Ahmednagar, Darbhanga, Purulia, Bidar, Goa).
-- P N G is **billed bi-monthly** on the **meter reading** (gas in S C M) — a two-month bill looks
-  larger than a monthly one, which is the honest answer to "bill is too high".
+- P N G is billed on the **meter reading** (gas in S C M) — the honest answer to "bill is too high" is
+  that it follows the meter, never a guess at the reason. (Real BGRL billing is bi-monthly; the demo
+  bill is a single September month.)
 - Non-payment well past the due date can **eventually stop the connection** — stated **only if asked**,
   calmly, never as a threat.
 - Payment channels: Bharat Petroleum website; U P I apps (PhonePe/Paytm → bills → Piped Gas → B P
@@ -54,7 +61,7 @@ transfer, no payment collection. This is a **demo** agent (2026-10-03).
   prompt. Honest unknown → website or helpline. (BLOCK 4/6)
 
 ## Voice rules specific to this case
-- Everything is written **in spoken form**: amounts as "one thousand two hundred forty rupees", dates
+- Everything is written **in spoken form**: amounts as "one thousand two hundred rupees", dates
   as "fifteen October" with the year in Hindi ("दो हज़ार छब्बीस"), the B P number and any phone number
   as separate digit words with " - ".
 - Brand is **"Bharat Petroleum"** in full, never "BPCL" (except the "Hello B P C L App" name).
