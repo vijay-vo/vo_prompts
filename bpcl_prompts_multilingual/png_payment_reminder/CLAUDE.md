@@ -60,6 +60,19 @@ transfer, no payment collection. This is a **demo** agent (2026-10-03).
   when the customer wants a person/customer care or needs any figure) and **1906** for a gas leak
   (confirmed correct). Whether BGRL has a P N G-specific care line is open question 11.
 
+## Human-style interruption handling (BLOCK 2 / BLOCK 13)
+Aligned with the sibling `lpg_to_png_conversion` block (2026-10-04) so Urja manages a call the way a
+person does: **barge-in** (stop mid-sentence, answer what they said, never finish the cut-off thought or
+restart it); **don't make them repeat** a fact they just gave; **broken/partial speech** gets a gentle
+"आगे बोलिए" and a re-read — and a "क्या कहा?" gets it again in fewer words — never treated as refusal /
+nonsense / off-topic; a **presence check** ("hello", "सुन रही हो?", "are you there?") gets a brief "यस,
+I'm listening" and resumes — **never a re-greet or a restarted reminder**; and **patience on silence** —
+wait after a question, hold silently if asked to wait, one gentle "क्या आप लाइन पर हैं?", and **only
+then** the close. All are meaning-anchors (generated fresh, mirrored to the customer's language), not
+fixed verbatim lines — the only fixed strings remain the greeting and the closing line. **One
+intentional difference from the sibling:** this reminder agent keeps the eventual close-on-dead-air
+(a reminder call should end if the line is truly dead); the conversion pitch does not force a close.
+
 ## Hard rules (match the house style)
 - **Never collect or ask for** card, C V V, U P I P I N, bank account, net-banking password, or O T P.
   Same security posture as the LPG `paymentAgent`. (BLOCK 10)
