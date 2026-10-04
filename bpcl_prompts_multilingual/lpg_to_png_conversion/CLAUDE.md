@@ -109,6 +109,17 @@ a real P N G campaign — see [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
 - **Privacy gate** — because it is outbound, nothing about the customer (not even that they're an L P G
   customer) is disclosed before the person is confirmed; a wrong number hears nothing. (BLOCK 8/10)
 
+## Human-style interruption handling (BLOCK 2 / BLOCK 13)
+Ported from the CRC `Default` "LISTENING AND CONVERSATION" behaviour (2026-10-04) so Urja manages a
+call the way a person does: **barge-in** (stop mid-sentence, answer what they said, never finish the
+cut-off thought or restart it); **don't make them repeat** a fact they just gave; **broken/partial
+speech** gets a gentle "आगे बोलिए" and a re-read, never treated as refusal / nonsense / off-topic; a
+**presence check** ("hello", "सुन रही हो?", "are you there?") gets a brief "यस, I'm listening" and
+resumes — **never a re-greet or a restarted pitch**; and **patience on silence** — wait after a
+question, hold silently if asked to wait, one gentle "क्या आप लाइन पर हैं?", and only then close.
+All are meaning-anchors (generated fresh, mirrored to the customer's language), not fixed verbatim
+lines — the only fixed strings remain the greeting and the closing line.
+
 ## Voice rules specific to this case
 - Everything is written **in spoken form**: the year as "दो हज़ार छब्बीस", any phone number as separate
   digit words with " - ". Rupee amounts (the BLOCK 6 demo figures) in English number words with
