@@ -23,9 +23,9 @@ transfer, no payment collection. This is a **demo** agent (2026-10-03).
 - **No account number / Customer ID / B P number is held** (user, 2026-10-03). On this call Urja has
   only the name and address; if asked for an account/ID number she says she does not have it and that
   it is printed on the customer's own bill.
-- Period: **bi-monthly, Aug–Sep 2026** · Amount: **₹1,200** ("one thousand two hundred rupees") · Due:
+- Period: **bi-monthly, Aug–Sep 2026** · Amount: **₹2,000** ("two thousand rupees") · Due:
   **20 October 2026** (after today, so a genuine reminder, not yet overdue). Aligned to the real BGRL
-  bi-monthly cycle (user, 2026-10-03). **₹1,200 is the only rupee figure Urja ever states.**
+  bi-monthly cycle (user, 2026-10-03). **₹2,000 is the only rupee figure Urja ever states.**
 - **Fixed greeting** (BLOCK 8, said verbatim on the first turn): "नमस्ते, मैं भारत पेट्रोलियम से ऊर्जा बोल
   रही हूँ। क्या मेरी बात राजेश शर्मा जी से हो रही है?" On confirm → reminder. A **family member** who
   picked up is treated like the customer (full reminder). A **wrong number** → apologise, say she was
@@ -82,7 +82,7 @@ intentional difference from the sibling:** this reminder agent keeps the eventua
   prompt. Honest unknown → SmartLine helpline. (BLOCK 4/6)
 
 ## Voice rules specific to this case
-- Everything is written **in spoken form**: amounts as "one thousand two hundred rupees", dates
+- Everything is written **in spoken form**: amounts as "nine hundred fifty rupees", dates
   as "fifteen October" with the year in Hindi ("दो हज़ार छब्बीस"), any phone number as separate digit
   words with " - ".
 - Brand is **"Bharat Petroleum"** in full, never "BPCL" (except the "Hello B P C L App" name).
