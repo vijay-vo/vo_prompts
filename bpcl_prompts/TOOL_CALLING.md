@@ -39,6 +39,7 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
    | Tool | The turn | After the Result |
    |---|---|---|
    | `bpcl_create_complaint`, `bpcl_create_unregistered_complaint` | The call alone. No text, no `preToolMessage` (TOOL-06). | Read the tool's message and do what it says in natural Hindi. Never read its English aloud (CPL-22). |
+   | `bpcl_complaint_status` (CST-01) | The call alone, exactly like `bpcl_create_complaint`. No text, no `preToolMessage`. Only after the consumer has confirmed the number read back to them. | The status first, then the comment's progress, in natural Hindi. Never its English, and never a name, number or date out of the comment. Two per call; none after an `Error`. |
    | `calltransfer` | The call alone. No text, no `preToolMessage` (TOOL-07). | Success → nothing; the platform closes the call. Failure → say the team could not be reached, using only the window the Result gave. Once per call (XFER-05). |
    | `callhangup` | The closing line as the agent's own text, with the call on the same turn. | No text (TOOL-08). |
    | `switchagent` | A short anchor line as text, plus `agentName` and `handoffSummary`. | — |
@@ -69,6 +70,8 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
    - `bpcl_create_complaint` takes **exactly two** keys: `complaintSummary` and `complaintReason`.
      The set is closed by rule. Any other key belongs to the platform, and a field that comes back
      in a Result is never passed back in as an input (PARAM-01).
+   - `bpcl_complaint_status` takes **exactly one** key: `complaintNumber`. No mobile number and no
+     consumer id (CST-01).
    - The schema for every tool holds only what its prompt teaches. When a tool needs a new key,
      it goes into the prompt's `Parameters:` block with its value in the same change.
    - Never write code-shaped call syntax such as `tool(key=value)` in a prompt. It teaches the model
@@ -78,7 +81,7 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
    tool never ran. The agent invokes it on the next turn before doing anything else, and speaks no
    number (CPL-03). A complaint is registered once per issue, never retried after a failure, and at
    most twice per call. Transfer and complaint-failure limits carry across a `switchagent`
-   (XFER-05, CPL-20).
+   (XFER-05, CPL-20). So does the status check: two per call, none after an `Error` (CST-01).
 
 The complaint number comes **only from the tool's message**. It is spoken as English digit words
 separated by `" - "`, never as one whole number or as an amount (NUM-01, NUM-08).

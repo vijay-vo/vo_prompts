@@ -218,22 +218,23 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 | `Default` | ✅ | — | — | ❌ blocked |
 | `routingAgent` | ✅ | ✅ *(OOS only)* | — | ❌ blocked |
 | `emergencyAgent` | ✅ *(post-hazard)* | — | — | — |
-| `bookingEligibleAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `bookingNonEligibilityAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `activeDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `postDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `eligibleDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `notEligibleDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `paymentAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
-| `subsidyAgent` | ✅ | ✅ | `bpcl_create_complaint` | ❌ blocked |
-| `connectionServicesAgent` | ✅ | ✅ | `bpcl_create_complaint` | ❌ blocked |
+| `bookingEligibleAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `bookingNonEligibilityAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `activeDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `postDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `eligibleDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `notEligibleDeliveryAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `paymentAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
+| `subsidyAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | ❌ blocked |
+| `connectionServicesAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | ❌ blocked |
 | `newConnectionAgent` | ✅ | ✅ | — | ❌ blocked |
-| `genericInfoComplaintAgent` | ✅ | ✅ | `bpcl_create_complaint` | — |
+| `genericInfoComplaintAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
 
 Notes worth knowing:
 
 - **`bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else.** Every other prompt that mentions it does so in an explicit *tool blocker* forbidding the call — their data is pre-injected.
 - **Neither `Default` nor `emergencyAgent` can end a call.** Hangup is a leaf/`routingAgent` privilege.
+- **Eleven agents hold `bpcl_complaint_status`** (CHANNELS.md CST-01): the ten below plus `unregisteredComplaintAgent`. It reads what has happened to an earlier complaint from the number the consumer gives, before anything is registered again. `Default` and `routingAgent` never check a status; they route a follow-up by its problem.
 - **Ten agents hold `bpcl_create_complaint`** and register in place. Three never get it: `Default` (triage only — it escalates via STAGE 3 to `genericInfoComplaintAgent`), `newConnectionAgent` (escalates `→ routingAgent → genericInfoComplaintAgent`, since leaf-to-leaf switching is forbidden), and `getConsumerDetails` (no record exists yet, so there is nothing to attach a complaint to).
 - **`bookingEligibleAgent` registers its own complaints** as of 2026-07-29 (CHANNELS.md CPL-02). A booking that failed across two or more methods is a technical fault on our side, so the complaint is the **first** action; the distributor's phone number is only ever offered afterwards, as a convenience for a consumer who still wants to book today.
 

@@ -157,6 +157,15 @@ the complaint; CRC does not. We register and say the team will call — nothing 
 **Complaint already registered this call?** Never register a second one for the same issue, and
 never treat a later "senior से बात कराओ" as a new complaint — answer from the tool's earlier message.
 
+**An earlier complaint is checked, not re-registered blind (CHANNELS.md CST-01, 2026-10-05).** The ten
+complaint agents and `unregisteredComplaintAgent` hold `bpcl_complaint_status` (one key, `complaintNumber`)
+and one identical `COMPLAINT STATUS` block. When the consumer asks about an earlier complaint, or a complaint
+is due and they say they already complained, Vaani asks for the number (or points to the SMS), reads it back,
+makes the call alone, then gives the status first and the comment second — never the comment's English, names,
+numbers or dates. A new complaint follows only when the consumer asks, accepts one offer after being unhappy,
+or no status could be found while the problem still stands. Two checks per call. `Default` is unchanged and
+routes on the problem. Design: [docs/COMPLAINT_STATUS_PLAN.md](docs/COMPLAINT_STATUS_PLAN.md).
+
 ### What triggers it
 
 - **Escalation** — the consumer asks for a human, a person, a specialist, a senior, or a callback.
@@ -300,7 +309,8 @@ wrong; the factual naming it was rewritten to is also fine, so nothing needs rev
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `validatecontactno`,
+**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `bpcl_complaint_status` (held by the ten
+complaint agents and `unregisteredComplaintAgent`, CST-01), `validatecontactno`,
 `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
 `bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
 routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default` and
@@ -353,7 +363,7 @@ the second empty fetch while the platform switches. It and `getConsumerDetailsLi
 two stages of one call and are never kept in step with each other — a Live fix to the capture loop
 (STEP 1–7) should be ported to `-unreg` by hand; the endings differ on purpose.
 **`unregisteredComplaintAgent`** — tools `updateContact`, `get_pincode_data`,
-`bpcl_create_unregistered_complaint`, `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
+`bpcl_create_unregistered_complaint`, `bpcl_complaint_status` (CST-01), `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
 topic after its own work is done) and `callhangup`. Its SECTION 4 is still pre-ZIP-04 (see
 UNREG-03's open item).
 
