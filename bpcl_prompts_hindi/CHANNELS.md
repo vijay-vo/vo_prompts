@@ -22,6 +22,16 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### VOICE-01 · Every agent prompt is written as "You", never "I" — both channels and lite_zip (2026-10-05)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. Instruction voice only; no rule, flow or spoken line changed. |
+| **Before** | A mixed set. The delivery leaves, `paymentAgent` and `genericInfoComplaintAgent` were wholly "I am Vaani / I never / my record"; `bookingAgent`, `connectionServicesAgent`, `subsidyAgent`, `Default`, `routingAgent`, `getConsumerDetails`, `newConnectionAgent` and lite_zip `Default` mixed "I" sections into a "You" prompt. |
+| **Now** | Every agent prompt in CC, CRC and lite_zip is second person: *"You are Vaani"*, *"WHO YOU ARE"*, *"your record"*. 33 files, pronouns only (I/me/my/mine/myself → you/your/yours/yourself, "I am" → "you are", "I'm" → "you're"). CC `activeDeliveryAgent` and `notEligibleDeliveryAgent` each had one line that called the consumer "you"; those now say "they"/"them". |
+| **Deliberately NOT changed** | Anything inside quotes: Vaani's spoken lines and meaning anchors, consumer quotes (*"I want a new connection"*), her own quoted thoughts (*"not my domain"*, *"what I would say anyway"*). Spelled abbreviations containing the letter I (A I, I D, I V R S, I S I, U P I, P O I, Z I P, I F S C, P I N, F I R, I O C L, B I S) and *"my - L P G - dot - in"*. The post-call analysers (`postCallAnalysis*`, `vaaniQA`, `promptQA`, lite_zip `pcalitezip`) are not agent personas and keep their own voice. Older ledger entries quote headings as they read then (*"HOW I SPEAK"*, *"WHEN I REGISTER"*); the prompts now read *"HOW YOU SPEAK"*, *"WHEN YOU REGISTER"*. |
+| **Supersedes** | COMPLAINT PROTOCOL's *"Two legitimate variants per channel"* (first person vs second person): there is now one variant, "You". |
+
 ### TOOL-01 · Every tool turn is one sentence, then the tool, then wait for the Result — `preToolMessage` retired channel-wide — CRC only, CC pending (2026-09-08)
 
 | | |
@@ -329,7 +339,7 @@ Recognising the consumer's *request* for one is required and legitimate — see 
 | **Axis** | Neither — this is **shared truth**. All ten agents per channel that hold `bpcl_create_complaint` carry a block headed `COMPLAINT PROTOCOL — STANDARD`, byte-identical within its channel. |
 | **What it fixes** | The nine agents per channel had nine different complaint blocks: some had a duplicate guard and some didn't, four had **no Result-reading block at all**, caps ranged from "at most one time in this call" to "no more than two", and the failure path was written six different ways. |
 | **Clauses (identical everywhere)** | CONFIRM FIRST · CALL ONCE, NEVER RETRY (max two per call) · SAME-ISSUE / DUPLICATE GUARD · PARAMETERS (exactly `complaintSummary` + `complaintReason`, renamed from `feedbackDescription`/`reason` 2026-09-02; the set is closed **by rule** — any other key is the platform's, named in the prompt or not, PARAM-01) · THE TOOL TURN (wait-line as text, no `preToolMessage`, no number spoken on the tool turn) · WHEN THE TOOL RESPONDS (success/failure) · ANTI-FABRICATION + numeral SELF-CHECK. |
-| **Two legitimate variants per channel** | First person ("I") in the six agents written in Vaani's voice; second person ("You") in `bookingNonEligibilityAgent`, `connectionServicesAgent`, `subsidyAgent`, which are written as instructions. Same clauses, same order, same meaning. |
+| **Two legitimate variants per channel** | First person ("I") in the six agents written in Vaani's voice; second person ("You") in `bookingNonEligibilityAgent`, `connectionServicesAgent`, `subsidyAgent`, which are written as instructions. Same clauses, same order, same meaning. **Superseded by VOICE-01 (2026-10-05): all agents are now "You".** |
 | **What stays agent-specific** | The trigger sentence (when this agent registers at all) and the domain reason list. Those were left untouched. |
 | **CC vs CRC — the only two differences, both from ESC-01** | **Success:** CRC appends "हमारी team आपसे संपर्क करेगी"; CC does not, and keeps its callback exception (a callback complaint speaks no number and confirms date and time instead). **Failure:** CRC says "माफ़ कीजिए! अभी complaint register करने में तकनीकी समस्या आ रही है। कृपया थोड़ी देर बाद call कीजिए।" and stops; CC apologises, offers the senior team via `calltransfer` — never a callback, since one cannot be recorded while the tool is failing — and falls back to "अभी हमारी team busy है…". **Params:** CC's `feedbackDescription` has the extra callback-sentence exception. |
 | **Verified** | 4 hashes across 18 files — exactly one per channel/person combination. Zero cross-channel leakage: no CRC prompt contains CC's failure line, no CC prompt contains CRC's, and `calltransfer` is present in all 9 CC agents and 0 CRC ones. |
