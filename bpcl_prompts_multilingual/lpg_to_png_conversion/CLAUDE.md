@@ -8,22 +8,40 @@ if they are interested — points them to the official ways to apply. **One agen
 payment/deposit/document collection. This is a **demo** agent (2026-10-03).
 
 ## What this case is (and the win)
-The goal is **inform + point to sources** (user's choice, 2026-10-03): Urja pitches the switch, and
-when the customer is interested she tells them how to apply (Bharat Petroleum website / distributor)
-and closes. She does **not** capture a lead, register an application, book a site visit, or promise a
-callback — there is no such tool and no backend. A good call leaves the customer understanding P N G is
-now available to them, what they'd gain, and how to apply if they want — free to decide, never pushed.
+**A sales call, built like `mak_lubricants`** (user's direction, 2026-10-05). Urja *sells* the switch:
+excited good-news turn → one question about their cylinder pain → benefits matched to that pain, one
+per turn → cost reframed as small and mostly refundable → **asks for the yes** (a spoken commitment to
+apply) → one way to apply → sales gate → close. A call where the customer only heard "P N G is
+available" plus a list of channels is a **failed** call.
+
+**Outbound twist:** in mak the caller brings the need; here the need is ours, so Urja creates it (the
+pain question, BLOCK 8 step 4) instead of waiting for interest.
+
+Decisions taken 2026-10-05:
+1. **Soft no gets one soft try** with a different benefit/reframe; the second no is final (as in mak).
+   A **firm no** ("मत call करो", irritation, busy with no opening) is final at once — no try.
+2. **One pain question** about life with cylinders, early, once; skipped if they already said it.
+3. **The yes is the customer's commitment to apply.** The distributor does **not** contact them — the
+   customer applies online or contacts the distributor themselves. Urja never promises a call, visit
+   or follow-up (BLOCK 2/4/7/9).
+4. **One pre-written comparison:** the L P G refund (≈3,500+) covers more than half of the ≈6,000
+   connection cost. Written into BLOCK 6 so she never calculates (BLOCK 3 NEVER CALCULATE).
+5. **No "is this a good time?"** at the opening. A customer in a hurry gets news + top benefit in one
+   turn, the way to apply in the next, then the close.
+- The **greeting stays verbatim and gas-free** (privacy gate for wrong numbers); the excitement lands
+  on the first turn after the person is confirmed (BLOCK 8 step 3).
+- Still **no lead capture / registration / callback** — no tool, no backend.
 
 ## How it differs from the sibling case `png_payment_reminder`
 Both are **outbound** Urja calls built on the same `mak_lubricants`/CRC prompt shape (callhangup
 directive at line 1 so "callhangup" is never spoken; one agent; free-hand rule; spoken-form numbers).
 The differences:
-1. **Purpose is persuasion, not a reminder.** This is a warm conversion pitch, not a bill nudge. The
-   house "never push" rule still holds — on a clear "not interested" Urja backs off and closes, never
-   re-pitches (BLOCK 2/9).
+1. **Purpose is selling, not a reminder.** This is a conversion sale with mak's selling engine (drip
+   benefits, ask for the yes, sales gate), not a bill nudge. Soft no → one soft try; firm no → close
+   (BLOCK 8 WHEN THEY SAY NO).
 2. **It holds area news, not bill data.** No amount, no due date, no B P number. The customer-specific
    facts (BLOCK 5) are just: name, that they're an existing L P G customer, their city, the society
-   where P N G is now live, and general social proof that neighbours have switched. **No figures at all.**
+   where P N G is now live, and general social proof that neighbours have switched.
 3. **It speaks approximate DEMO rupee figures** (the P N G connection cost/deposits, the L P G refund)
    plus the surrender policy — see "Factual additions" below. Benefits that are genuinely
    usage-dependent (how much cheaper / monthly saving) stay **qualitative**. Every figure is spoken as
@@ -96,14 +114,17 @@ cases; given when the customer wants a person) and **1906** for a gas leak. Both
 a real P N G campaign — see [BPCL_QUESTIONS.md](BPCL_QUESTIONS.md).
 
 ## Hard rules (match the house style)
-- **Never quote a figure** — no price, deposit, installation charge, or monetary saving. Qualitative
-  only; specifics → distributor/website. (BLOCK 3/6) — the defining guardrail of this case.
+- **Never a figure outside BLOCK 6** — only the approximate demo cost/deposit/refund figures, each with
+  "the distributor confirms the exact amount"; no saving %/monthly figure; never calculate beyond the one
+  pre-written refund-vs-cost line. (BLOCK 3/6)
 - **Never carry out the switch** — no application, no document collection, no payment/deposit on the
   call. Urja points to the official way; the customer applies themselves. (BLOCK 4/7/10)
 - **Never collect or ask for** card, C V V, U P I P I N, bank account, net-banking password, or O T P.
   Same security posture as the LPG `paymentAgent` and the sibling P N G case. (BLOCK 10)
-- **Never pressure, never argue.** A switch is the customer's free choice. On a clear "not interested",
-  accept it and close — never re-pitch. (BLOCK 2/9)
+- **Persuade, never pressure.** Soft no → one soft try with a new benefit; second no or any firm no →
+  accept and close, never re-pitch. No invented urgency or offers. (BLOCK 2/8/9)
+- **Never promise contact** — nobody calls or visits from this call; the first step is the customer's.
+  (BLOCK 4/7)
 - **Never invent** a figure, date, saving, neighbour name, installation timeline, pipeline detail, URL
   or number not in the prompt. Honest unknown → distributor, website or helpline. (BLOCK 4/6)
 - **Privacy gate** — because it is outbound, nothing about the customer (not even that they're an L P G
@@ -137,8 +158,10 @@ not quotable Hindi. Keep it that way — everything Urja says is generated fresh
 at the top of the prompt.
 
 ## Not done yet
-- **Not tested on a live call** (2026-10-03). Test: interested customer (→ gets one apply channel);
-  "happy with my cylinder" (→ one gentle benefit, no push); "what's the deposit / what will it cost"
+- **Not tested on a live call** (sales rewrite 2026-10-05). Test: the excited news turn after confirm;
+  the pain question then a matched benefit; the ask for the yes; interested customer (→ one apply
+  channel, first step theirs, no "someone will call"); "happy with my cylinder" (→ one soft try, then
+  accept); "मत call करो" (→ close, no try); "busy हूँ" (→ crisp two turns); the sales gate on wind-down; "what's the deposit / what will it cost"
   (→ ~six thousand rupees, mostly refundable, + "distributor confirms exact"); "how much cheaper"
   (→ stays qualitative, no figure); "is it safe"; "what about my L P G deposit" (→ ~₹3,500–3,900,
   7–15 days); a wrong number (discloses nothing); "is this a scam" / money-or-OTP bait (must refuse);
