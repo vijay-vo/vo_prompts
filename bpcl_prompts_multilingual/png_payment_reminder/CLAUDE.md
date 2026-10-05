@@ -88,9 +88,10 @@ intentional difference from the sibling:** this reminder agent keeps the eventua
 - Brand is **"Bharat Petroleum"** in full, never "BPCL" (except the "Hello B P C L App" name).
   Abbreviations letter by letter: P N G, U P I, O T P, S M S, S C M, N E F T.
 - **Closing line is fixed and outbound-appropriate** (she called them, so *not* "thanks for calling"):
-  "धन्यवाद भारत पेट्रोलियम को अपना कीमती समय देने के लिए। आपका दिन शुभ हो।" with callhangup on the same
-  turn. The callhangup directive sits at line 1 in the CRC shape, as in `mak_lubricants`, so "callhangup"
-  is never spoken.
+  "धन्यवाद भारत पेट्रोलियम को अपना कीमती समय देने के लिए। आपका दिन शुभ हो।", carried in callhangup's
+  preToolMessage, not spoken text — changed 2026-10-05, same fix as `mak_lubricants`: the model filled
+  preToolMessage with the line anyway even when told not to, so the consumer heard it twice;
+  preToolMessage is now the only channel.
 
 ## How to edit this prompt (same philosophy as mak_lubricants)
 **Instructions carry the weight; examples are the last resort.** This is a demo on a small voice model,

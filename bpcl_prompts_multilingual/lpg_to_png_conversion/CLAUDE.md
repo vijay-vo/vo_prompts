@@ -148,8 +148,9 @@ lines — the only fixed strings remain the greeting and the closing line.
 - Brand is **"Bharat Petroleum"** in full, never "BPCL" (except the "Hello B P C L App" name).
   Abbreviations letter by letter: P N G, L P G, U P I, O T P, S M S, S C M.
 - **Closing line is fixed and outbound-appropriate** (she called them): "धन्यवाद भारत पेट्रोलियम को अपना
-  कीमती समय देने के लिए। आपका दिन शुभ हो।" with callhangup on the same turn. The callhangup directive sits
-  at line 1 in the CRC shape, as in `mak_lubricants`, so "callhangup" is never spoken.
+  कीमती समय देने के लिए। आपका दिन शुभ हो।", carried in callhangup's preToolMessage, not spoken text —
+  changed 2026-10-05, same fix as `mak_lubricants`: the model filled preToolMessage with the line
+  anyway even when told not to, so the consumer heard it twice; preToolMessage is now the only channel.
 
 ## How to edit this prompt (same philosophy as mak_lubricants / png_payment_reminder)
 **Instructions carry the weight; examples are the last resort.** This is a demo on a small voice model,
