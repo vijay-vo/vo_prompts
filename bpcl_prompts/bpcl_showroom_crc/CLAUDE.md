@@ -353,8 +353,8 @@ into `unregisteredComplaintAgent` — are described by no prompt; see the open i
 ⚠️ **The platform's `getConsumerDetails` agent must point at this prompt.**
 **`unregisteredComplaintAgent`** — tools `updateContact`, `get_pincode_data`,
 `bpcl_create_unregistered_complaint`, `bpcl_complaint_status` (CST-01), `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
-topic after its own work is done) and `callhangup`. Its SECTION 4 is still pre-ZIP-04 (see
-UNREG-03's open item).
+topic after its own work is done) and `callhangup`. Its SECTION 4 Lite zip block was brought to the
+Lite zip redesign below on 2026-10-06 (no price, no four hours, Lite zip alone, Mini only on request).
 
 **Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
 §11 lists known gaps, and they are worth reading before any routing change.
@@ -368,8 +368,9 @@ reopening date, no stated reason. Full policy in [../CHANNELS.md](../CHANNELS.md
 
 **Two files sit side by side in `prompts/newConnectionAgent/`:**
 
-- **`newConnectionAgent_onHold.txt` — DEPLOYED.** The live prompt. Informs, offers Bharat Gas Mini
-  (5 kg), handles commercial and "already applied", never guides an application.
+- **`newConnectionAgent_onHold.txt` — DEPLOYED.** The live prompt. Since 2026-10-06 it is the **Bharat
+  Gas Lite zip specialist** (see the banner below): Lite zip by default, the closure only on demand and
+  always with Lite zip, commercial and "already applied" handled, never guides an application.
 - **`newConnectionAgent.txt` — PARKED, DO NOT SHIP.** The original 2,033-line apply journey,
   retained **unchanged** because there is no version control and it is the only copy. Do not edit
   it, do not port fixes into it, do not delete it.
@@ -379,7 +380,7 @@ config change nothing in the prompts can enforce. If it was missed, the full app
 
 **This agent does not escalate on the hold topic** — a deliberate exception to Axis 1. A prospective
 consumer has no record, so there is nothing to attach a complaint to, and no complaint could reopen
-connections. It holds the consumer itself: restate calmly, offer Mini once, close. Never promise a
+connections. It holds the consumer itself: restate calmly, put Lite zip in front of them once, close. Never promise a
 person, a callback, a complaint, or an office visit. A genuinely different problem still routes.
 
 **Not affected, and must never get the hold message:** commercial connections, Bharat Gas Mini,
@@ -389,7 +390,39 @@ second/additional cylinder, portability, and the city-shift Transfer Voucher pat
 **CC is deliberately behind on this** — client decision. It is a recorded gap, not a design
 difference. See NC-01.
 
-> 🛑 **READ CHANNELS.md ZIP-04 (2026-09-09) FIRST — it reverses parts of every ZIP row below.**
+> 🛑 **LITE ZIP REDESIGN (2026-10-06) — READ THIS FIRST. It supersedes ZIP-04 and every ZIP row below
+> wherever they disagree.** Ported into this Hindi CRC from the multilingual branch's Lite zip design
+> (`multilingual-vijay-contact-center`, IVRS commits of 2026-09-24, carried into its CRC by IVRS-SYNC-02),
+> which the client named the full truth for Lite zip. Written in this channel's Hindi, not multilingual.
+> Not recorded in CHANNELS.md, by the user's instruction.
+> - **`newConnectionAgent_onHold` owns Lite zip end to end.** Lite zip is its default for anyone asking
+>   for gas, a cylinder or a connection; the 14.2 kg closure is reactive (§8-HOLD) and never travels
+>   without Lite zip. It holds Z1–Z19, the Q&A-versus-guided gate (§15), the 12-state Hello BPCL App flow
+>   (§16), the three dead ends (§17) and the answer-versus-real-problem split (§18). A real problem on an
+>   order is routed through `routingAgent` like any other problem — there is **no switch to
+>   `unregisteredComplaintAgent`** from this agent (client decision).
+> - **No helpline anywhere in onHold** (§13-N deleted, dead ends end on "check the App again later"):
+>   Vaani is the help on this line.
+> - **Never four hours, or any hour count.** Daytime order: same day. Evening/night order (6pm–6am):
+>   next day, 8am–8pm.
+> - **App only**, paid online in advance. The distributor route and the 11-step walkthrough in other
+>   agents are gone.
+> - **Lite zip alone is what is offered** when a consumer cannot get gas (the hold, the extra-refill
+>   block, a booking they may not make). **Bharat Gas Mini is named only if the consumer asks** (Ujjwala
+>   callers who ask: Mini first). **Exception: `bookingNonEligibilityAgent` offers both, Lite zip first
+>   as the recommendation, then Mini** (client decision 2026-10-06).
+> - **Other agents keep a short Lite zip block, answer from it and keep the call.** A clear wish to
+>   take, book or refill one, or be guided through the App, switches to `routingAgent`, which routes it
+>   to `newConnectionAgent`. `Default` gives one short answer and routes; `genericInfoComplaintAgent`
+>   no longer owns "how to get one".
+> - **Unknowns:** price, city, stock, warranty — the softer "App or your distributor" line, zip only.
+> - **Limits:** domestic 2 a month and 2 at a time, only if asked (the commercial/industrial limit is
+>   no longer stated).
+> - **Refill vs New Connection:** always one question ("खाली सिलेंडर है exchange करने के लिए?"), never
+>   assumed.
+> - Post-call (`vaaniQA`, `postCallAnalysisFlat`, `postCallAnalysisHuman`) score this design.
+
+> 🛑 **READ CHANNELS.md ZIP-04 (2026-09-09) NEXT — it reverses parts of every older ZIP row below.**
 > The standalone `bpcl_lite_zip/litezipAgent.txt` KB was merged in, client ruling that it wins on
 > facts while CRC keeps its channel layer (Hindi only, 1906 → `emergencyAgent`, tools, complaint
 > protocol, no office visit). What changed: ZIP has **two sizes, 10 kg and 5 kg** (ZIP-02's
