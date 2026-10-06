@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CST-05 · `bpcl_complaint_status` in lite_zip — `unregisteredComplaintAgent` checks, `Default` switches for it — lite_zip (2026-10-06)
+
+| | |
+|---|---|
+| **Axis** | lite_zip's own: multilingual, two agents, no human on the call. Same intent as CRC CST-01 to CST-03, client instruction "all agents, all channels". |
+| **The rule now** | ① `unregisteredComplaintAgent` gets **BLOCK 5A**, the status procedure in lite_zip's form. Spoken content is given as beats in the customer's own language, with no Hindi lines; the read-back is in the customer's digit words (BLOCK 2 NUMBERS); the number is exactly eight digits; the call has no spoken line (stated as the one exception to its tool contract); the exposed Comments/Complaint Status get the "NO other key" line; the status is spoken only when the tool's message states it. ② Not satisfied → its BLOCK 3 name turn is the one offer of a new complaint. A request for one → BLOCK 3 to BLOCK 5. No status found while the problem stands → a new complaint (there is no senior team here). ③ Its tool list goes from five to six, the hard constraints are updated, BLOCK 6 counts "a status told" as finished business, and the handoff bullet reads a status request as BLOCK 5A. ④ `Default` gets a second switch reason, **AN EARLIER COMPLAINT**, with its own handoff shape (*"Please help consumer with the status of their earlier complaint"*). Default never asks for the number or guesses a status. ⑤ The literal word `calltransfer` is removed from both prompts ("any transfer" / "no transfer tool"), per the standing no-calltransfer-name rule for lite_zip. |
+| **Deliberately NOT changed** | `pcalitezip` (it has no complaint fields). The new-connection "already applied" status, which is still BLOCK 4's answer and not a complaint. |
+| **⚠️ Open** | The platform fix from CST-03. And the CRC question still open for lite_zip: does the tool find complaints registered through `bpcl_create_unregistered_complaint`? |
+
+---
+
 ### CST-04 · `bpcl_complaint_status` ported to CC — the CRC block as of CST-03, with CC's escalation axis — CC (2026-10-06)
 
 | | |

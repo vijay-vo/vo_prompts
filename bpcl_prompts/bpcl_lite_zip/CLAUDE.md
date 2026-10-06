@@ -63,7 +63,7 @@ distributor.
 `unregisteredComplaintAgent` — and `callhangup`. It holds no complaint tool and registers nothing
 itself.
 
-`unregisteredComplaintAgent` holds **five**: `updateContact`, `get_pincode_data`,
+`unregisteredComplaintAgent` holds **six** (`bpcl_complaint_status` added by CHANNELS.md CST-05, its BLOCK 5A): `updateContact`, `get_pincode_data`,
 `bpcl_create_unregistered_complaint`, `switchagent` (one legal target: `Default`), and `callhangup`.
 
 **Its three data tools run in a fixed order, and each one enables the next:**
