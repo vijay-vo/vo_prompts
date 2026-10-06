@@ -71,9 +71,10 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
      The set is closed by rule. Any other key belongs to the platform, and a field that comes back
      in a Result is never passed back in as an input (PARAM-01).
    - `bpcl_complaint_status` takes **exactly one** key: `complaintNumber`. No mobile number and no
-     consumer id (CST-01). While the platform still shows its answer fields (Comments, Complaint
-     Status) as inputs, the prompt teaches each the fixed value `NA`; "leave them empty" did not hold
-     (CST-02).
+     consumer id (CST-01). Its exposed answer fields (Comments, Complaint Status) get the same line that
+     works for `caseId`/`caseNumber`: "filled by the platform automatically … NO other key". The
+     status is spoken only when the tool's message **states** it; a message that only says it was
+     fetched is no status (CST-03).
    - The schema for every tool holds only what its prompt teaches. When a tool needs a new key,
      it goes into the prompt's `Parameters:` block with its value in the same change.
    - Never write code-shaped call syntax such as `tool(key=value)` in a prompt. It teaches the model

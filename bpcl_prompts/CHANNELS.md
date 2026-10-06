@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CST-03 · The status check still echoed the request — the status tool's message carries no status, unlike `bpcl_create_complaint`'s — CRC only (2026-10-06)
+
+| | |
+|---|---|
+| **Axis** | Neither — a tool-calling defect in CST-01/CST-02, in the shared `COMPLAINT STATUS` block in all eleven agents. |
+| **Source** | Several test calls after CST-02: the agent still put a status into the request and spoke it back on the next turn as if it were the answer. |
+| **Diagnosis** | `bpcl_create_complaint` also has exposed output fields (`caseId`, `caseNumber`) and never had this problem, for two reasons. ① Its **message carries the answer**: *"Complaint registration successful. Share Complaint Number: …"*. The status tool's message (the platform's "Answer") says only *"Complaint status fetched successfully."*, and the status and comments sit in "Raw", which the agent most likely does not see. ② Its prompt names the exposed fields as the platform's (*"NO other key, caseId and caseNumber included"*). CST-02's block instead told the agent to "find complaintStatus in the Result", and the only field called Complaint Status in its context was the one it had written into its own request. The input and output fields share names, so the echo looked like an answer. |
+| **The rule now** | ① The exposed fields get the line that works for the complaint tool: *"All other fields are filled by the platform automatically — the call carries complaintNumber and NO other key, Comments and Complaint Status included."* `NA` is gone. ② Step 4 is rewritten on COMPLAINT TOOL's model: the tool returns a **message**, and that message is the only source of truth. No field name is given to look up. ③ **The status must be written in the message.** A message that only says the status was fetched has given no status; the gap is never filled from the request, and step 7 applies (the status cannot be seen right now, and the tool is down for the call). ④ *"The call you send is a question, never an answer."* ⑤ The line-2 directive and the tool-use line now say the same. |
+| **⚠️ Open — the real fix is the platform's** | Make the status tool's message carry the values, the way `bpcl_create_complaint`'s does, e.g. *"Complaint status fetched successfully. Complaint Status: Closed. Comments: …"*, and remove Comments and Complaint Status from its input schema. **Until then this prompt makes every check end in "the status cannot be seen right now"**, which is honest, but the feature delivers nothing. |
+
+---
+
 ### CST-02 · A status-check turn invented "In Progress" from the prompt's own status list, while the Result said Closed; the tool's answer fields were filled as inputs — CRC only (2026-10-06)
 
 | | |
