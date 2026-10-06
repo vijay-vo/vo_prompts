@@ -54,9 +54,9 @@ whether a new one is needed.
 **Getting the number**
 1. Taken from the call, or from handoffSummary's Context, if the consumer already said it.
    Otherwise she asks, as one question on its own turn.
-2. No number → it is in the SMS they received; she waits. It must be exactly eight digits:
-   ten → probably their mobile number; any other count → she says it has eight digits and asks once
-   more. She never reads back or checks a number that is not eight digits.
+2. No number → it is in the SMS they received; she waits. She asks for the eight digit
+   complaint number; anything that is not eight digits is simply asked for again. She never reads back
+   or checks a number that is not eight digits.
 3. She reads it back in English digit words and asks whether it is right. She never calls on an
    unconfirmed number.
 
