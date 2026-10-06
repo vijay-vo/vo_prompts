@@ -20,7 +20,7 @@ whether a new one is needed.
 | | |
 |---|---|
 | **Name** | `bpcl_complaint_status` |
-| **Input** | `complaintNumber` only, 6 to 8 digits, given by the consumer. No mobile number. |
+| **Input** | `complaintNumber` only, exactly 8 digits (client clarification 2026-10-06), given by the consumer. No mobile number. |
 | **Output** | `complaintStatus` and `comments` |
 | **`complaintStatus` values** | `New`, `In Progress`, `On Hold`, `Escalated`, `ReOpen`, `Closed`, or an error value (`Error`, `Case not found` or similar) |
 | **`comments`** | Free text written by the BPCL person handling the complaint |
@@ -54,8 +54,9 @@ whether a new one is needed.
 **Getting the number**
 1. Taken from the call, or from handoffSummary's Context, if the consumer already said it.
    Otherwise she asks, as one question on its own turn.
-2. No number → it is in the SMS they received; she waits. Ten digits → probably their mobile
-   number. Any other wrong length → she asks once more.
+2. No number → it is in the SMS they received; she waits. It must be exactly eight digits:
+   ten → probably their mobile number; any other count → she says it has eight digits and asks once
+   more. She never reads back or checks a number that is not eight digits.
 3. She reads it back in English digit words and asks whether it is right. She never calls on an
    unconfirmed number.
 
