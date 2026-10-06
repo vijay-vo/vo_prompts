@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CST-04 · `bpcl_complaint_status` ported to CC — the CRC block as of CST-03, with CC's escalation axis — CC (2026-10-06)
+
+| | |
+|---|---|
+| **Axis** | Axis 1 (escalation) translated. Otherwise identical intent to CRC CST-01 to CST-03, client instruction "all agents, all channels". |
+| **Before** | CC's `postDeliveryAgent` PATH 4, `genericInfoComplaintAgent` PATH 4 and `bookingNonEligibilityAgent` Step 6A answered an earlier complaint with *"no complaint-status lookup anywhere on this call"* and offered the senior team. `routingAgent` said *"No agent on this call can look up an earlier complaint"*. |
+| **The rule now** | The ten CC complaint agents hold `bpcl_complaint_status` and carry one identical `COMPLAINT STATUS` block, generated from CRC's, so the wording cannot drift. The CC differences: ① the read-back uses CC's **Hindi digit words** (the COMPLAINT PROTOCOL digit mapping), not CRC's English ones; ② the call is **the one CC tool with no spoken line**, stated explicitly because CC's tool-turn rule otherwise pairs a line with every call (the CRC lesson: an announced lookup invents its own outcome); ③ **not satisfied → the senior-team offer once**, CC's existing answer to an earlier complaint, instead of CRC's one new-complaint offer; no status found → the same offer, not a re-registration; ④ a consumer who asks for a new complaint still gets one, per COMPLAINT PROTOCOL — STANDARD. The tool lists, the lookup bans (and the TOOL BLOCKER in `connectionServicesAgent`/`subsidyAgent`) and the tool-turn lists name the tool. `connectionServicesAgent`'s "never ask for internal complaint/reference numbers" gets the one exception. The three follow-up passages and `routingAgent` are rewritten as in CRC. `promptQA` gets C22 plus pointers from A11/A16. `postCallAnalysis` and `postCallAnalysisFlat` get the status-is-not-a-registration guard, `repeatCaller` and `issueResolved` notes. |
+| **Deliberately NOT changed** | CC's own complaint tool-turn shape (line plus call, CPL-03) and everything else TOOL_CALLING.md lists as not ported to CC. `Default`, `getConsumerDetails`, `emergencyAgent`, `newConnectionAgent`. |
+| **⚠️ Open** | Same platform fix as CST-03: the tool's message must state the status and comment. Until then CC, like CRC, answers "the status cannot be seen right now". |
+
+---
+
 ### CST-03 · The status check still echoed the request — the status tool's message carries no status, unlike `bpcl_create_complaint`'s — CRC only (2026-10-06)
 
 | | |
