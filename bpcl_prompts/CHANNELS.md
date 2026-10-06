@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### GCD-06 · One `getConsumerDetails` prompt: the unregistered-number version becomes the only one — CRC only (2026-10-06)
+
+| | |
+|---|---|
+| **Axis** | Axis 1 (escalation): no-record callers now always end in `unregisteredComplaintAgent`, never a transfer or a hangup. |
+| **Before** | Three files: `getConsumerDetailsLive.txt` (deployed; no record → offer the senior team, then `calltransfer` or `callhangup`), `getConsumerDetails.txt` (an older copy kept in step with Live) and `getConsumerDetails-unreg.txt` (UNREG-03: two fetches, then silence while the platform switches). |
+| **Now** | Client decision: **only the UNREG-03 version remains**, renamed `getConsumerDetails.txt` to match the agent name. Flow: ask for the mobile number → `validatecontactno` → confirm → `bpcl_fetch_all_api`. Data found → silence, and the platform takes the call on. No data → one more number. Still none → silence, and the platform switches to `unregisteredComplaintAgent`. `getConsumerDetailsLive.txt` and the old `getConsumerDetails.txt` are deleted (git history only). The prompt text is unchanged; Live's capture loop differed only in its refusal handling, and the kept version's is the one this flow needs. |
+| **⚠️ Open** | **Platform:** point the `getConsumerDetails` agent at this prompt. **Docs not yet updated:** CRC `CLAUDE.md` and `agent-workflow.md` still describe the three-file set and the transfer ending (and a `getConsumerDetails_MultiToolVersion.txt` that no longer exists); older ledger rows name the deleted files as they were. CC is unchanged: one file, and no `unregisteredComplaintAgent`. |
+
+---
+
 ### CST-07 · The eight-digit complaint number is collected conversationally, in the consumer's own pace, and always asked fresh — CRC, CC and lite_zip (2026-10-06)
 
 | | |
