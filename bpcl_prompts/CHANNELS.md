@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CST-06 · A new complaint only after Closed, Error or Case not found — never while the earlier one is open, not even when the consumer insists — CRC, CC and lite_zip (2026-10-06)
+
+| | |
+|---|---|
+| **Axis** | Neither — client rule for the status procedure, the same in all three channels. Supersedes step 6 of CST-01, CST-04 and CST-05. |
+| **Before** | Any status could lead to a new complaint: registered whenever the consumer asked, and offered once when they were unhappy. CC offered the senior team once instead. |
+| **The rule now** | ① **Open — New, In Progress, On Hold, Escalated, ReOpen:** no new complaint for the same problem, never registered and never offered. An open complaint is never a reason to offer a transfer or the senior team. Vaani helps herself from the status, the comment and her own data. ② **The consumer insists:** she says the earlier complaint already exists and is still open, naming the status, so a new one cannot be registered for the same problem, and a different problem can have its own complaint. It is freshly worded each time, and nothing is registered. ③ **A request for a person** is handled by each channel's existing transfer rules (CRC SENIOR TEAM TRANSFER, CC transfer conditions, none in lite_zip), with nothing added. ④ **Closed:** accepted → nothing; the problem still stands → registered on request, otherwise offered once (lite_zip: the BLOCK 3 name turn). ⑤ **Error, a message with no status, Case not found with no different number left, or no number at all:** registered while the problem still stands. CC now registers here too, instead of offering the senior team. The per-agent "problem still standing" lines, the underweight exceptions and the `unregisteredComplaintAgent` glue say the same. `vaaniQA` F10/C29 and CC `promptQA` C22 now report a complaint registered or offered while the status was open, or a transfer offered because of it. |
+| **Deliberately NOT changed** | Steps 1 to 5 (number, read-back, silent call, message only, status then comment) and the limits. The transfer rules themselves. |
+
+---
+
 ### CST-05 · `bpcl_complaint_status` in lite_zip — `unregisteredComplaintAgent` checks, `Default` switches for it — lite_zip (2026-10-06)
 
 | | |

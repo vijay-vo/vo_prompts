@@ -80,10 +80,16 @@ a list of outcome meanings was copied as a fake status on a live test call.
 | ReOpen | Closed earlier, opened again for action |
 | Closed | Marked resolved and closed |
 
-**After the status**
-- **Accepted:** nothing more is registered.
-- **The consumer asks for a new complaint:** it is registered, whatever the status, as the call alone.
-- **Not satisfied but not asking:** one offer, the one sanctioned "shall I register?".
+**After the status** (CST-06, 2026-10-06: a new complaint only after Closed, Error or Case not found)
+- **Still open — New, In Progress, On Hold, Escalated, ReOpen:** no new complaint for the same
+  problem, never registered and never offered, and no transfer offered because of it. Vaani helps
+  herself from the status, the comment and her own knowledge.
+- **They insist anyway:** she says the earlier complaint already exists and is still open (naming
+  its status), so a new one cannot be made for the same problem. A different problem can have its
+  own complaint. Said fresh each time; nothing is registered.
+- **A request for a person** follows each channel's existing transfer rules, unchanged.
+- **Closed and accepted:** nothing more. **Closed and the problem still stands:** registered if
+  they ask, otherwise one offer (CC: one offer; lite_zip: the name turn).
 - **The new complaint's summary** names the old number, the checked status and why they are
   unhappy. That is the one place a checked status enters `complaintSummary`.
 - **Another domain's problem:** a new complaint for it is routed. The Result stays in the call, and
@@ -138,7 +144,8 @@ complaints never count against each other's limits.
 | Lookups per call | 2 |
 | What is shared | The status first, then the comment's progress; nothing more |
 | When to ask for the number | When they want an update, or when a complaint is due and they say one exists |
-| Consumer insists on a new complaint | Register it, whatever the status |
+| Consumer insists on a new complaint | Only after Closed, Error or Case not found (CST-06). While the complaint is open: tell them it already exists and is in progress, so not for the same problem; a different problem can be registered |
+| Transfer | No transfer offered because of a status; each channel's existing transfer rules apply unchanged (CST-06) |
 | Underweight | Lookup first, then the underweight block |
 | `Default` | Unchanged |
 | Turn shape | The same as `bpcl_create_complaint`: the call alone |
