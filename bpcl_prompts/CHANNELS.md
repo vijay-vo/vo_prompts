@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CST-07 · The eight-digit complaint number is collected conversationally, in the consumer's own pace, and always asked fresh — CRC, CC and lite_zip (2026-10-06)
+
+| | |
+|---|---|
+| **Axis** | Neither — client design for steps 1 and 2 of the status procedure, the same in all three channels, modelled on `getConsumerDetails`' mobile-number loop but with no validator tool (Vaani counts herself, as today). |
+| **The rule now** | ① **Always asked fresh**: every check starts with asking for the number, even if one came up earlier in the call or is in the handoff. A number not collected and confirmed in this check is never checked. ② **The ask is simple**: "your eight digit complaint number". The SMS is mentioned only when they do not have it or cannot find it. ③ **While they look**: two or three words to take their time, then silence. ④ **In parts**: Vaani keeps the running number. After each part, while she has fewer than eight digits, her whole turn is two or three words meaning "go on", freshly worded and never the same as her last. No digits echoed back, no count, no sentence. ⑤ **The digits so far are spoken only when the consumer asks.** ⑥ **Counting**: a two-digit word is two digits, double/triple repeats the next digit, an ASR repeat is not new digits, and a correction changes that digit. More than eight → ask once for the whole number and start fresh. ⑦ **A long silence** mid-number gets one short "still listening", once. ⑧ **Confirm all eight at once**, like the mobile confirmation, in CRC English digit words, CC Hindi digit words, or the lite_zip caller's language. If asked to slow down, two digits at a time. ⑨ **Anything but a yes** → the whole number again, never patched. A second wrong read-back → she mentions the SMS once. |
+| **Routing** | The number never travels in a handoff: removed from both `routingAgent`s and lite_zip `Default`, and lite_zip `unregisteredComplaintAgent` always asks. CRC and CC `Default` get one line: a consumer who only wants an earlier complaint's status, with no problem described, goes straight to `genericInfoComplaintAgent` (CRC's handoff keeps HOFF-02: Intent "status of an earlier case", never "complaint"). With a problem, it routes on the problem as before. `newConnectionAgent_onHold` (CRC) and `newConnectionAgent` (CC) route an earlier complaint to `routingAgent` and never answer it. |
+| **QA** | `vaaniQA` F10/C29 and CC `promptQA` C22: the short go-on turns, the read-back only on request, the eight-at-once confirmation and asking again are correct. Reportable: a number checked without being asked for and confirmed in this check, digits echoed unasked, a sentence-length or repeated go-on prompt, and patched digits after a no. |
+| **Deliberately NOT changed** | `getConsumerDetails`, `emergencyAgent`, the parked CRC `newConnectionAgent.txt`, and steps 3 to 7. |
+
+---
+
 ### CST-06 · A new complaint only after Closed, Error or Case not found — never while the earlier one is open, not even when the consumer insists — CRC, CC and lite_zip (2026-10-06)
 
 | | |

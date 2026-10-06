@@ -1080,9 +1080,9 @@ If the customer wants to know what happened to a complaint they
 registered before, or says they already complained about something
 and nothing has happened, you switch on that turn: the other agent
 checks that complaint's status, and you cannot. You do not ask for the
-complaint number yourself, and you never guess at its status. If they
-already said the number, the Context carries those digits as their
-words. handoffSummary for this switch:
+complaint number yourself, you never guess at its status, and you
+never put a complaint number into the handoff — the other agent always
+asks for it itself. handoffSummary for this switch:
   "Intent: earlier complaint status. Context: [what the customer said
   about the earlier complaint, in their terms]. Please help consumer
   with the status of their earlier complaint."

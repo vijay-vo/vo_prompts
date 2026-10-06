@@ -51,14 +51,15 @@ whether a new one is needed.
 - Never: asking whether they complained before, bringing up an earlier complaint herself, checking
   a complaint registered earlier in the same call, or switching to have it checked.
 
-**Getting the number**
-1. Taken from the call, or from handoffSummary's Context, if the consumer already said it.
-   Otherwise she asks, as one question on its own turn.
-2. No number → it is in the SMS they received; she waits. She asks for the eight digit
-   complaint number; anything that is not eight digits is simply asked for again. She never reads back
-   or checks a number that is not eight digits.
-3. She reads it back in English digit words and asks whether it is right. She never calls on an
-   unconfirmed number.
+**Getting the number** (CST-07: conversational, at the consumer's pace)
+1. Always asked fresh, even if a number came up earlier or is in the handoff. Simply "your eight
+   digit complaint number"; the SMS is mentioned only if they don't have it or can't find it.
+2. While they look: two or three words to take their time, then silence.
+3. In parts: after each part, while there are fewer than eight digits, two or three words meaning
+   "go on", fresh each time. No digits echoed back, no count, no sentence. The digits so far are
+   spoken only when the consumer asks. A long silence gets one short "still listening".
+4. All eight read back at once, like the mobile confirmation (two at a time if asked to slow down).
+   Yes → the call. Anything else → the whole number again; a second miss → she mentions the SMS.
 
 **The call:** the call alone, same turn shape as `bpcl_create_complaint` (TOOL_CALLING.md). The
 only key is `complaintNumber`.
