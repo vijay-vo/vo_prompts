@@ -68,6 +68,9 @@ complaint's progress, in at most two sentences of her own Hindi. Never the comme
 a name, phone number, amount, date or code from it, and nothing added to it. An empty or unclear
 comment → the status alone.
 
+The table below is for people reading this doc. **It is deliberately not in the prompts** (CST-02):
+a list of outcome meanings was copied as a fake status on a live test call.
+
 | Status | What Vaani conveys |
 |---|---|
 | New | Registered, not yet taken up by the team |
