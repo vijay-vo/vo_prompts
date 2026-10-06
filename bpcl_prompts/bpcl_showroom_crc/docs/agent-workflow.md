@@ -1,7 +1,7 @@
 # Vaani — Agent Workflow & Navigation Map
 
 **System:** Bharat Petroleum (Bharat Gas) LPG voice assistant
-**Scope:** All 15 prompts in [prompts/](../prompts/) — entry points, routing topology, tools, handoff contract
+**Scope:** All 16 prompts in [prompts/](../prompts/) — entry points, routing topology, tools, handoff contract
 **Persona:** One voice throughout. The consumer believes they are talking to a single person — "Vaani", an employee of *their own* Bharat Gas distributor office. Agent switching is invisible and must never be revealed.
 
 ---
@@ -16,7 +16,9 @@ graph TD
     REG -->|Yes| DEF
 
     GCD -->|fetch OK — platform resumes| DEF[Default<br/>greet · triage · FAQ · route]
-    GCD -->|no data / refusal| HANG([callhangup])
+    GCD -->|two empty fetches — platform switches| UNREG[unregisteredComplaintAgent<br/>KB · unregistered complaint · status check]
+    UNREG -->|new topic| ROUTE
+    UNREG --> HANG([callhangup])
 
     DEF --> EMG[emergencyAgent]
     DEF --> BOOK[bookingEligibleAgent]
@@ -56,7 +58,7 @@ graph TD
 
 | # | Agent | File | Role |
 |---|---|---|---|
-| 1 | `getConsumerDetails` | [getConsumerDetails.txt](../prompts/getConsumerDetails/getConsumerDetails.txt) | Entry for unregistered callers. Captures mobile number, fetches record. |
+| 1 | `getConsumerDetails` | [getConsumerDetails.txt](../prompts/getConsumerDetails/getConsumerDetails.txt) | Entry for callers not on their registered number. Captures the mobile number, fetches the record; two empty fetches → `unregisteredComplaintAgent` (GCD-06). The only `getConsumerDetails` prompt. |
 | 2 | `Default` | [Default.txt](../prompts/Default/Default.txt) | Greeting, emergency detection, FAQ, refill triage, routing. |
 | 3 | `routingAgent` | [routingAgent.txt](../prompts/routingAgent/routingAgent.txt) | Silent fallback hub. Classify → switch. Owns out-of-scope hangup. |
 | 4 | `emergencyAgent` | [emergencyAgent.txt](../prompts/emergencyAgent/emergencyAgent.txt) | Gas hazards. Owns the call until the consumer is safe. |
@@ -71,6 +73,7 @@ graph TD
 | 13 | `connectionServicesAgent` | [connectionServicesAgent.txt](../prompts/connectionServicesAgent/connectionServicesAgent.txt) | KYC, address/name/mobile change, portability, surrender, cylinder return. |
 | 14 | `newConnectionAgent` | [newConnectionAgent.txt](../prompts/newConnectionAgent/newConnectionAgent.txt) | New connection, Ujjwala/PMUY, documents, onboarding. |
 | 15 | `genericInfoComplaintAgent` | [genericInfoComplaint.txt](../prompts/genericInfoComplaint/genericInfoComplaint.txt) | Catch-all: booking/delivery how-to, equipment faults, behaviour complaints. |
+| 16 | `unregisteredComplaintAgent` | [unregisteredComplaintAgent.txt](../prompts/unregisteredComplaintAgent/unregisteredComplaintAgent.txt) | A consumer with no record: answers from its knowledge base, registers via `bpcl_create_unregistered_complaint`, checks an earlier complaint's status. Reached only from `getConsumerDetails` (UNREG-03). |
 
 ---
 
@@ -80,24 +83,18 @@ The caller's number decides the entry point.
 
 **Registered caller** → straight to `Default`. Consumer data is pre-injected; no lookup happens.
 
-**Unregistered caller** → `getConsumerDetails` first:
+**Caller not on their registered number** → `getConsumerDetails` first (one prompt, CHANNELS.md GCD-06):
 
-1. Ask for the 10-digit registered mobile number.
+1. Ask for the 10-digit registered mobile number. "No registered number" or a refusal is asked again for any number the consumer uses.
 2. `validatecontactno` collects and validates it (digits only; never a caller-ID or injected number).
 3. Confirm the number back **exactly once**. Any affirmative locks it.
 4. `bpcl_fetch_all_api` with that confirmed number — **the only place in the whole system this tool is legitimately called.**
 5. **Data found** → job done, stop speaking. The platform resumes the call into `Default`.
-   **No data / refusal / no registered number** → tell the consumer their record isn't available, ask them to contact their Bharat Gas distributor (share *no* distributor details — there are none), then `callhangup`.
+   **First empty fetch** → one request for a different registered number, then the loop again; a consumer with no second number has the first one fetched again, silently.
+   **Second empty fetch** → the agent says **nothing**. The platform activates `unregisteredComplaintAgent`.
+6. `unregisteredComplaintAgent` takes the issue from `{{handoffSummary}}` (Default's), else from the earlier transcript, else one question; answers from its knowledge base; registers via `updateContact` → `get_pincode_data` → confirmed district → `bpcl_create_unregistered_complaint`; checks an earlier complaint's status (CST-01); transfers per T1–T4; switches only to `routingAgent`, only for a new topic after its own work is done; otherwise closes with `callhangup`.
 
-> ⚠️ `getConsumerDetails` has **no `switchagent` tool.** The hop into `Default` is not a prompt-level switch — it is owned by the platform. This is the one transition in the system that no prompt describes.
-
-**Unregistered-number stage → `unregisteredComplaintAgent`** (CHANNELS.md UNREG-03, 2026-09-28). Where the stage runs `getConsumerDetails-unreg.txt` instead, step 5's no-data branch is replaced:
-
-1. First empty fetch → one request for a different registered number, then the loop again. "No registered number" or a refusal is asked again for any number the consumer uses; a consumer with no second number has the first one fetched again, silently.
-2. Second empty fetch → the agent says **nothing**. The platform (which switches only on two failed fetches) activates `unregisteredComplaintAgent`.
-3. `unregisteredComplaintAgent` takes the issue from `{{handoffSummary}}` (Default's), else from the earlier transcript, else one question; answers from its knowledge base; registers via `updateContact` → `get_pincode_data` → confirmed district → `bpcl_create_unregistered_complaint`; transfers per T1–T4; switches only to `routingAgent`, only for a new topic after its own work is done; otherwise closes with `callhangup`.
-
-The diagram above still shows the Live ending; this path has no `callhangup` in `getConsumerDetails`.
+> ⚠️ `getConsumerDetails` has **no `switchagent`, no `calltransfer` and no `callhangup`.** Both of its exits — into `Default` and into `unregisteredComplaintAgent` — are owned by the platform. These are the two transitions in the system that no prompt describes.
 
 ---
 
@@ -214,7 +211,8 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 
 | Agent | switchagent | callhangup | complaint tool | data lookup |
 |---|:---:|:---:|:---:|:---:|
-| `getConsumerDetails` | — | ✅ | — | `validatecontactno` + `bpcl_fetch_all_api` |
+| `getConsumerDetails` | — | — | — | `validatecontactno` + `bpcl_fetch_all_api` |
+| `unregisteredComplaintAgent` | ✅ *(→ routingAgent only)* | ✅ | `bpcl_create_unregistered_complaint` + `bpcl_complaint_status` | — |
 | `Default` | ✅ | — | — | ❌ blocked |
 | `routingAgent` | ✅ | ✅ *(OOS only)* | — | ❌ blocked |
 | `emergencyAgent` | ✅ *(post-hazard)* | — | — | — |
@@ -268,7 +266,7 @@ Putting a sentence in `preToolMessage` **and** generating text makes the consume
 
 The spoken line must sound like Vaani is personally checking something — "ज़रा booking system check करती हूँ, एक मिनट।" It must never reveal the switch. **Forbidden words:** transfer, connect, specialist, agent, team, switch, handoff, forward, भेजती, जोड़ती.
 
-**One exception:** `getConsumerDetails` inverts this. `validatecontactno` takes **no** `preToolMessage` (Vaani speaks); `bpcl_fetch_all_api` and `callhangup` carry the real sentence **in** `preToolMessage` (Vaani stays silent).
+**One exception:** `getConsumerDetails` speaks on no tool turn at all. `validatecontactno` and `bpcl_fetch_all_api` are invoked silently, with no text and no `preToolMessage`, and Vaani speaks only after a Result. It holds no `callhangup` (GCD-06).
 
 ---
 
@@ -293,6 +291,6 @@ Findings from reading the prompts against each other. Each is a real inconsisten
 
 2. **`refillSupportAgent` does not exist.** Named as a routing destination in [connectionServicesAgent.txt:224](../prompts/connectionServicesAgent/connectionServicesAgent.txt#L224) and [newConnectionAgent.txt:2027](../prompts/newConnectionAgent/newConnectionAgent.txt#L2027) for refill/booking/delivery/payment topics. No such file. (Mitigated in practice: both agents may only switch to `routingAgent`, so the name is misleading guidance rather than a live break.)
 
-3. **The `getConsumerDetails` → `Default` hop is undocumented.** `getConsumerDetails` has no `switchagent` tool and its prompt just says "your job is done: stop speaking." Nothing in any prompt states how the call reaches `Default`. It works only if the platform owns that transition — worth confirming with the platform team.
+3. **The `getConsumerDetails` hops are undocumented.** `getConsumerDetails` has no `switchagent` tool: on data found its prompt just says "your job is done: stop speaking", and after two empty fetches it goes silent. Nothing in any prompt states how the call reaches `Default` or `unregisteredComplaintAgent`. It works only if the platform owns that transition — worth confirming with the platform team.
 
 4. **Four prompts are unreachable by name.** `bookingNonEligibilityAgent`, `postDeliveryAgent`, `eligibleDeliveryAgent`, and `notEligibleDeliveryAgent` are never a `switchagent` target anywhere. They only work if the platform resolves the family name (`bookingEligibleAgent` / `activeDeliveryAgent`) to the right variant using backend state. If it does not, a not-eligible consumer lands in `bookingEligibleAgent`, which is hard-coded to open with *"the system confirms you can book"* — the exact contradiction [customerStatus-spec.md](customerStatus-spec.md) §4.6 warns against.

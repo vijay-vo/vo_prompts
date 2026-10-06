@@ -19,8 +19,8 @@ translating the two axes below.
 > gave the tool to every routing-capable agent instead. The *when* is unchanged; the *how* is not.
 
 **`calltransfer` is held and invoked by every routing-capable agent**: the ten complaint-capable
-leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer
-agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
+leaves, `unregisteredComplaintAgent`, `newConnectionAgent_onHold` and `routingAgent`. `getConsumerDetails`
+holds none since GCD-06 (2026-10-06). There is no transfer agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
 *"`calltransfer` — NOT AUTHORIZED"* clause.
 
 **`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `vaaniQA` on
@@ -44,10 +44,8 @@ she offers one only at the four moments below.
 
 **Never re-ask someone who already asked.** *"किसी और से बात करवाओ"* **is** the request — asking
 *"क्या मैं आपकी call senior team से connect कर दूँ?"* back at them costs a turn and reads as
-stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
-it: **T3**, and `getConsumerDetails`' no-data closing in `getConsumerDetailsLive.txt` /
-`getConsumerDetails.txt`. The unregistered-number stage (`getConsumerDetails-unreg.txt`) has no such
-closing — see UNREG-03 below.
+stalling. The confirming question belongs in exactly one place, where Vaani is the one raising it:
+**T3**. `getConsumerDetails` has no closing of its own any more — see GCD-06 below.
 
 > **REVISED 2026-09-14 — CHANNELS.md TOOL-07.** `calltransfer` is now called with **no `preToolMessage` and no text** — there is no transfer announcement at all. `callhangup` carries the closing line as the agent's **own text**, with the call on the same turn; if a `callhangup` Result comes back, the agent produces no text (TOOL-08, 2026-09-15). No agent ever speaks a tool name — a complaint is only "complaint" or "शिकायत" (TOOL-08). The next paragraph describes the superseded XFER-03 shape.
 
@@ -187,20 +185,15 @@ routes on the problem. Design: [docs/COMPLAINT_STATUS_PLAN.md](docs/COMPLAINT_ST
 - **A truly out-of-scope query** stays with `routingAgent`'s hangup ladder. No complaint.
 - **A live gas hazard.** `emergencyAgent` is fully carved out — no complaint, no escalation block,
   no closing, while the hazard is live.
-- **No consumer record.** `getConsumerDetails` still has no complaint tool — with no record there is
-  nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
-  all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
-  is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
-  → on yes, switch; on no, `callhangup`. The three-piece dictation loop is **retired** and the office
-  hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
-- **No consumer record, on the unregistered-number stage — REVISED 2026-09-28, ../CHANNELS.md
-  UNREG-03.** `getConsumerDetails-unreg.txt` holds **no `calltransfer` and no `callhangup`**: it
-  looks up at most two numbers and, after the second empty fetch, says nothing — the platform
-  switches to **`unregisteredComplaintAgent`**, which answers from its knowledge base, registers
-  through **`bpcl_create_unregistered_complaint`** against a confirmed name and PIN-code district,
-  and transfers per T1–T4 if the consumer still wants a person. The platform switches only on two
-  failed fetches, so "no registered number" is asked again for any number the consumer uses, and a
-  consumer with no second number has the first one fetched again silently.
+- **No consumer record — ../CHANNELS.md GCD-06 (2026-10-06), on UNREG-03's flow.** `getConsumerDetails`
+  holds **no complaint tool, no `calltransfer`, no `callhangup` and no `switchagent`**. It looks up at
+  most two numbers ("no registered number" or a refusal is asked again for any number the consumer
+  uses; a consumer with no second number has the first one fetched again silently) and, after the
+  second empty fetch, says nothing: the platform switches to **`unregisteredComplaintAgent`**, which
+  answers from its knowledge base, registers through **`bpcl_create_unregistered_complaint`** against
+  a confirmed name and PIN-code district, and transfers per T1–T4 if the consumer still wants a
+  person. The old no-data closing (senior-team offer, `calltransfer` or `callhangup`, XFER-01) is gone
+  with the files that carried it.
 
 ### Who can register, and the one routing hop
 
@@ -347,21 +340,17 @@ CC is next opened. Every `promptQA` reference in ledger rows dated before that d
 ⚠️ **Nothing in the prompts points at the filename, so the platform's post-call config must be
 repointed** — if that is missed, CRC's QA analyser silently stops running.
 
-**`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
-**deployed** entry prompt again — `getConsumerDetailsLive.txt` ships (corrected 2026-09-14, TOOL-07; `getConsumerDetails.txt` is kept in step with it), `getConsumerDetails_MultiToolVersion.txt`
-is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
-(git history only, along with `prompts/callTransferAgent/`).
-Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
-tell the consumer their record isn't available, offer to connect them to the senior team, and either
-call `calltransfer` on a yes or `callhangup` on a no. That platform-owned hop into
-`Default` is still described by no prompt — see the open items below.
-
-**`getConsumerDetails-unreg.txt` is the unregistered-number stage** (UNREG-03, 2026-09-28) — the
-prompt used where a no-record consumer is to reach `unregisteredComplaintAgent`. It is Live's loop
-with a different ending: at most two fetches, no `calltransfer`, no `callhangup`, and silence after
-the second empty fetch while the platform switches. It and `getConsumerDetailsLive.txt` are **not**
-two stages of one call and are never kept in step with each other — a Live fix to the capture loop
-(STEP 1–7) should be ported to `-unreg` by hand; the endings differ on purpose.
+**`getConsumerDetails` is one prompt: `getConsumerDetails.txt`** (GCD-06, 2026-10-06) — the former
+`getConsumerDetails-unreg.txt` (UNREG-03), renamed unchanged. It holds `validatecontactno` and
+`bpcl_fetch_all_api` only, both invoked silently, and speaks only after a Result. Its exits:
+data found → stop speaking, the platform resumes the call into `Default`; first empty fetch → one
+request for another number; second empty fetch → silence, the platform switches to
+`unregisteredComplaintAgent`. **Deleted (git history only):** `getConsumerDetailsLive.txt` and the old
+`getConsumerDetails.txt` (both ended in a senior-team offer and `callhangup`),
+`getConsumerDetails_MobileVersion.txt` and `prompts/callTransferAgent/`. There is no
+`getConsumerDetails_MultiToolVersion.txt` in this repo. Both platform-owned hops — into `Default` and
+into `unregisteredComplaintAgent` — are described by no prompt; see the open items below.
+⚠️ **The platform's `getConsumerDetails` agent must point at this prompt.**
 **`unregisteredComplaintAgent`** — tools `updateContact`, `get_pincode_data`,
 `bpcl_create_unregistered_complaint`, `bpcl_complaint_status` (CST-01), `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
 topic after its own work is done) and `callhangup`. Its SECTION 4 is still pre-ZIP-04 (see
@@ -489,13 +478,11 @@ references back in — see CHANNELS.md ZIP-01.
 - **CS-01 (fixed)** — the third-party phrasing leak in `connectionServicesAgent.txt` (§7-D fallback
   and C12 examples) is corrected; distributor details are now named factually rather than as
   "आपके distributor".
-- **GCD-01 (stale)** — this note referenced a `getConsumerDetails_v2.txt` that no longer exists in
-  this workspace; only `getConsumerDetails.txt` is present. Remove this item if a future pass
-  confirms it stays gone.
 - **DOC-01** — [agent-workflow.md](docs/agent-workflow.md) §7 links to `customerStatus-spec.md`,
   which does not exist in this workspace. CC has `CUSTOMER_STATUS_SPEC.md`; CRC has no counterpart.
-- **The undocumented `getConsumerDetails` → `Default` hop** (agent-workflow.md §11.3) — works only
-  if the platform owns that transition. Worth confirming with the platform team.
+- **The undocumented `getConsumerDetails` hops** (agent-workflow.md §11.3) — into `Default` on data
+  found, and into `unregisteredComplaintAgent` after two empty fetches. Both work only if the platform
+  owns those transitions. Worth confirming with the platform team.
 - **Four prompts unreachable by name** (§11.4): `bookingNonEligibilityAgent`, `postDeliveryAgent`,
   `eligibleDeliveryAgent`, `notEligibleDeliveryAgent` are never a `switchagent` target anywhere.
   They work only if the platform resolves the family name to the right variant from backend state.
@@ -508,10 +495,8 @@ references back in — see CHANNELS.md ZIP-01.
   and the office-hours window where one exists — the failure branch is written against it and names
   no window without it; close the call itself on a **successful** transfer, since the agent
   deliberately calls no tool there; and de-register `callTransferAgent`, whose prompt is deleted.
-- **`getConsumerDetails_MultiToolVersion` still carries the `{{crcOfficeNumber}}` dictation closing**
-  (NUM-04's twelve-digit flow) while being the QA prompt for a channel where that variable does not
-  exist. Its no-data ending needs porting to `getConsumerDetails.txt`'s `calltransfer` ending before
-  QA can exercise the shipped flow.
+- **QA environment:** `getConsumerDetails_MultiToolVersion.txt` is not in this repo. QA should
+  exercise the shipped `getConsumerDetails.txt` (GCD-06).
 - **`postCallAnalysisHuman.txt` — CLOSED 2026-08-13 (../CHANNELS.md PCA-02).** It is genuinely the
   human-agent analyser: two people talking, no Vaani. Fully rewritten for that subject and given four
   flat root scores for the human-QA dashboard (`riskEscalationIndex`, `customerEffortScore`,
