@@ -59,6 +59,7 @@ Scan the entire transcript for any instance where the agent mentions registering
 CRITICAL INSTRUCTION: Do not infer or assume complaint registration if it is not explicitly mentioned by the agent. Customer merely raising a concern does NOT mean a complaint was registered — only the agent's explicit acknowledgment of registration counts.
 ONLY A COMPLETED REGISTRATION COUNTS. The agent saying she is about to register, or is registering right now, is an intention and not an outcome. "मैं आपकी complaint register कर रही हूँ", "complaint register कर देती हूँ", "एक मिनट रुकिए" and anything else in the present or future tense are NOT registration. Return "yes" only for a completed registration stated after the fact — "register हो गई है", "दर्ज कर दी है" — and normally carrying a complaint number the agent reads out.
 A LATER FAILURE CANCELS AN EARLIER CLAIM. Read the whole transcript before deciding, and let the last thing the agent said about the complaint win. If the agent said she was registering and then said it failed — "अभी complaint register करने में तकनीकी समस्या आ रही है", "कृपया थोड़ी देर बाद call कीजिए", or any equivalent apology about a technical problem — nothing was registered. Return "no". The same applies if she told the customer to register it themselves, or to come to the office and register it there: that is an instruction to the customer, not an action she took.
+AN EARLIER COMPLAINT'S STATUS IS NOT A REGISTRATION. The agent can check what has happened to a complaint the customer made before: she asks for its number, reads it back, and tells them its status — that it is being worked on, or that it was closed. None of that registers anything, and a complaint number she reads back from what the customer said is not a new one. Return "yes" only when a NEW complaint was registered on this call.
 
 callTransferred
 Allowed values: "yes" or "no" only.
@@ -81,7 +82,7 @@ Rules:
 - No special characters of any kind.
 - Should answer: "What was the customer calling about?"
 Examples: "cylinder delivery was late", "subsidy not received", "how to book refill", "payment failed during booking", "new connection process inquiry", "address change request", "delivery boy rude behavior", "cylinder weight was less", "refill booking successful", "escalation request - complaint registered"
-More examples for the current policy: "new connection on hold", "Ujjwala connection on hold", "Lite zip product inquiry", "wants Lite zip connection", "asked about Lite zip price", "already applied awaiting connection"
+More examples for the current policy: "new connection on hold", "Ujjwala connection on hold", "Lite zip product inquiry", "wants Lite zip connection", "asked about Lite zip price", "already applied awaiting connection", "earlier complaint status check"
 
 departmentArea
 Allowed values: "emergency" | "booking" | "delivery" | "subsidy" | "connection" | "newConnection" | "payment" | "other"
@@ -140,7 +141,7 @@ A SUCCESSFUL TRANSFER IS "none" unless a complaint from earlier in the call is s
 
 repeatCaller
 Allowed values: "yes" or "no".
-Return "yes" ONLY if the customer explicitly states in the transcript that they have called before or references a previous interaction. Do not infer from metadata.
+Return "yes" ONLY if the customer explicitly states in the transcript that they have called before or references a previous interaction. Do not infer from metadata. A customer asking about a complaint they made earlier, or saying they already complained, has referenced a previous interaction: "yes".
 
 bookingDateMentioned
 Extract the booking date if discussed. Format as YYYY-MM-DD. If only relative time is given (e.g., "kal", "do din pehle"), calculate based on the {{callStartDate}} date. Return "no" if absent.
@@ -186,7 +187,7 @@ Return a single camelCase value representing the FINAL outcome of the call.
 DECIDE THIS LAST, AFTER READING THE WHOLE TRANSCRIPT END TO END. This value is not the first thing that happened, it is what the call had become by the time it ended. Never settle it early on the first matching event and never let an outcome that was later undone stand: a complaint claimed and then reported as failed is a failure, an answer given and then contradicted is not an answer, a complaint claimed but never registered is not a complaint, and a transfer that did not go through is not a transfer. Read to the end, then choose.
 Value definitions:
 - "callTransferred": The call ended in the hands of a human on the senior team. The transfer was invoked, the Result showed it succeeded, and the call passed out of the agent's hands with nothing following it. This is the terminal state of that call — see the priority order below, where it outranks everything.
-- "issueResolved": The customer's query was answered or the issue was handled inline, with no complaint, transfer, or escalation needed, and nothing left pending.
+- "issueResolved": The customer's query was answered or the issue was handled inline, with no complaint, transfer, or escalation needed, and nothing left pending. A customer who asked about an earlier complaint, was told its status, and accepted it is "issueResolved".
 - "unresolved": The call completed normally but the customer's issue was NOT resolved — agent could not help, customer remained unsatisfied, or no actionable outcome was reached.
 - "complaintRegistered": A complaint or case was registered for the customer. The agent explicitly acknowledged registration as done. Use this value only when complaintRegistered is "yes".
 - "complaintFailed": The agent tried to register a complaint and it did not go through. Use this value ONLY for a real attempt that failed — the agent said she was registering it and then said there was a technical problem, or otherwise made clear it could not be registered. The customer left with no complaint and no complaint number. Do not use it for a call where no complaint was ever attempted, and do not use it where the agent merely told the customer to register it themselves — that is "unresolved". If a later attempt in the same call succeeded, return "complaintRegistered" instead.

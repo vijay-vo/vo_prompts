@@ -82,8 +82,8 @@ multi-district territory and many distributors, and it is **not** the consumer's
 ## Channel-specific inventory
 
 **Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `calltransfer`,
-`bpcl_create_unregistered_complaint`, `updateContact`, `get_pincode_data`,
-`validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
+`bpcl_complaint_status` (CST-PORT-01), `bpcl_create_unregistered_complaint`, `updateContact`,
+`get_pincode_data`, `validatecontactno`, `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`,
 `bpcl_get_refill_history`, `bpcl_get_consumer_details`, `bpcl_check_refill_status`.
 
 `bpcl_fetch_all_api` is callable by `getConsumerDetails` **and nothing else**. Every other prompt

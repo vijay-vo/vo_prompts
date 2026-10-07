@@ -241,6 +241,7 @@ Three tests, all of which must hold for "yes":
 1. THE AGENT SAID IT. A customer raising a concern is not a registration, and neither is the agent sympathising. Only the agent's own statement counts.
 2. IT IS DONE, NOT STARTING. "मैं register कर रही हूँ", "डाल देता हूँ", "एक मिनट रुकिए" are intentions, not outcomes. "yes" needs a statement after the fact, normally with a complaint number read out — a spoken complaint number is the strongest evidence there is.
 3. NOTHING LATER CANCELLED IT. Read to the end and let the last word on it win. If they said it was registering and then reported a technical problem, the system being down, or asked the customer to call back later, nothing was registered — "no". Telling the customer to register it themselves, or to come to the office and get it registered there, is an instruction to the customer, not an action by the agent — also "no".
+AN EARLIER COMPLAINT'S STATUS IS NOT A REGISTRATION. Telling the customer what has happened to a complaint they made before — reading back its number, saying it is in progress or closed — registers nothing. Only a NEW complaint registered on this call is "yes".
 
 issue — 2 to 5 words
 A plain English label for what the call was about. Lowercase except proper nouns ("LPG", "Ujjwala"). No underscores, hyphens, camelCase, abbreviations or any special character. Count the words strictly.
@@ -308,7 +309,7 @@ callbackPriority — "high" | "medium" | "low" | "none"
 "high" for emergencies, safety issues or a highly angry customer. "medium" for a registered complaint or an unresolved issue. "low" for a resolved routine query. "none" where nothing is pending at all.
 
 repeatCaller — "yes" or "no"
-"yes" ONLY where the customer says in the transcript that they have called before or refers to a previous interaction. Never infer it.
+"yes" ONLY where the customer says in the transcript that they have called before or refers to a previous interaction. Never infer it. A customer asking about a complaint they made earlier has referred to a previous interaction: "yes".
 
 bookingDateMentioned — YYYY-MM-DD or "NA"
 The booking date if one was discussed, formatted as YYYY-MM-DD and nothing else — no day name, no time, no words around it. Resolve relative time ("kal", "do din pehle") against {{callStartDate}}. "NA" when none was discussed, and "NA" rather than a guess when what was said cannot be pinned to a single day ("पिछले हफ्ते किसी दिन").
@@ -335,7 +336,7 @@ Predicted customer satisfaction, from the customer's own observable behaviour, t
 
 callResult — "issueResolved" | "unresolved" | "complaintRegistered" | "complaintFailed"
 The single most significant outcome.
-- issueResolved — answered or handled inline, with no complaint, transfer or escalation needed.
+- issueResolved — answered or handled inline, with no complaint, transfer or escalation needed. A customer told the status of an earlier complaint who accepts it is issueResolved.
 - unresolved — the call ended normally but the issue was not resolved: the agent could not help, the customer stayed unsatisfied, or nothing actionable came of it.
 - complaintRegistered — a complaint was registered and the agent acknowledged it as done. Use only where complaintRegistered is "yes".
 - complaintFailed — a real attempt that did not go through: they said they were registering it, then reported a technical problem or otherwise made clear it could not be done, and the customer left with no complaint and no number. Not for a call where none was ever attempted, and not where the agent merely told the customer to register it themselves — that is "unresolved". If a later attempt in the same call succeeded, return "complaintRegistered".

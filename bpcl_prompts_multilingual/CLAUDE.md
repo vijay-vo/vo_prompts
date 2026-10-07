@@ -235,6 +235,10 @@ Never invent a complaint number. The number comes only from the tool's message a
 digits in one turn, one digit word at a time **in the consumer's language** with `" - "`, never as a whole
 number or an amount (NUM-08, TOOL-PORT-01). What else is said comes from the message, not a script. CC's callback carve-out is gone with the callback
 itself (CB-01).
+**An earlier complaint is checked before it is registered again (CHANNELS.md CST-PORT-01, 2026-10-07).** The 11
+complaint agents in every channel hold `bpcl_complaint_status` (one key, `complaintNumber`) and carry the same
+`COMPLAINT STATUS` block: the 8-digit number asked fresh and read back, the call alone, the status first and the comment
+second from the tool's message, no new complaint while the earlier one is open, and two checks per call.
 
 ---
 
