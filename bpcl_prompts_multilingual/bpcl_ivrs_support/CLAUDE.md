@@ -115,6 +115,9 @@ breaks, start at its §4 checklist. What it means here:
 - **`bpcl_create_complaint` carries exactly `complaintSummary` + `complaintReason`**, stated as a
   closed set in every COMPLAINT TOOL block; `bpcl_create_unregistered_complaint` adds only
   `ConsumerDetailsConsumerName`. The platform schemas match these keys (client, 2026-09-29).
+- **`bpcl_complaint_status` carries exactly `complaintNumber`** (CST-PORT-01): the 8 digits the consumer
+  gave and confirmed, nothing else. Its answer fields (Comments, Complaint Status) are the platform's and
+  are never filled. The turn is the call alone, and the status is spoken only from the tool's message.
 - **No backticks** in a live prompt; the line-1 directive keeps the tool name without them.
 - **The complaint number** is all its digits in one turn, one digit word at a time in the
   consumer's language with `" - "` between them, never a whole number and never an amount (NUM-08,
