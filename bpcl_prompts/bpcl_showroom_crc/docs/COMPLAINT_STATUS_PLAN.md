@@ -21,8 +21,8 @@ whether a new one is needed.
 |---|---|
 | **Name** | `bpcl_complaint_status` |
 | **Input** | `complaintNumber` only, exactly 8 digits (client clarification 2026-10-06), given by the consumer. No mobile number. |
-| **Output** | `complaintStatus` and `comments` |
-| **`complaintStatus` values** | `New`, `In Progress`, `On Hold`, `Escalated`, `ReOpen`, `Closed`, or an error value (`Error`, `Case not found` or similar) |
+| **Output** | A message of one of two kinds (CST-08, 2026-10-07). **Success** states the case status and the comments. **Failure** says the status could not be retrieved and asks to apologise and have the consumer verify the number. The wording varies, so the prompts describe the two kinds by meaning and carry no example message. |
+| **Status values** | `New`, `In Progress`, `On Hold`, `Escalated`, `ReOpen`, `Closed`. Errors and unknown numbers both come back as a Failure; the platform no longer separates them. |
 | **`comments`** | Free text written by the BPCL person handling the complaint |
 | **Not available** | Looking up the last 3 cases by mobile number alone |
 
@@ -81,7 +81,7 @@ a list of outcome meanings was copied as a fake status on a live test call.
 | ReOpen | Closed earlier, opened again for action |
 | Closed | Marked resolved and closed |
 
-**After the status** (CST-06, 2026-10-06: a new complaint only after Closed, Error or Case not found)
+**After the status** (CST-06, 2026-10-06: a new complaint only after Closed or when no status could be found)
 - **Still open — New, In Progress, On Hold, Escalated, ReOpen:** no new complaint for the same
   problem, never registered and never offered, and no transfer offered because of it. Vaani helps
   herself from the status, the comment and her own knowledge.
@@ -100,11 +100,13 @@ a list of outcome meanings was copied as a fake status on a live test call.
 - **`unregisteredComplaintAgent`:** a new complaint starts at its OFFER-AND-NAME turn, and the
   check itself needs no consumer record.
 
-**When no status comes back**
-- **Case not found:** one more, different number. The same number is never checked twice.
-- **Error:** the tool is down for the rest of the call.
-- **No number at all, or no status found**, while the problem still stands: the old rule applies, a
-  new complaint saying they raised it before and got no response.
+**When no status comes back** (CST-08: a Failure message, or one that states no status)
+- **A check still left:** a short apology, no status found with that number, and a request to check
+  it in the SMS. A different number is collected, read back, confirmed and checked. The same number
+  is never checked twice.
+- **No check left:** a short apology, and the status cannot be seen on this call.
+- **No different number left, or no number at all**, while the problem still stands: the old rule
+  applies, a new complaint saying they raised it before and got no response.
 
 **Limits:** two checks per call, counted by Results and call-scoped across switches. Checks and
 complaints never count against each other's limits.
@@ -141,7 +143,7 @@ complaints never count against each other's limits.
 | New agent or the specialist agents? | The specialists, and all of them, not just `postDeliveryAgent` |
 | Mobile number? | Not used at all |
 | Consumer has no number | Tell them it is in the SMS they received, and wait |
-| Error response | `complaintStatus` carries `Error` / `Case not found` or similar |
+| Error response | ~~`complaintStatus` carries `Error` / `Case not found` or similar~~ → since 2026-10-07 one Failure message for both (CST-08) |
 | Lookups per call | 2 |
 | What is shared | The status first, then the comment's progress; nothing more |
 | When to ask for the number | When they want an update, or when a complaint is due and they say one exists |
