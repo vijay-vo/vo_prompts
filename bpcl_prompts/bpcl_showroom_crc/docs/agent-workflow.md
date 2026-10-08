@@ -47,6 +47,7 @@ graph TD
     SUB -.out of scope.-> ROUTE
     CONN -.out of scope.-> ROUTE
     NEW -.out of scope.-> ROUTE
+    NEW -->|earlier complaint / money paid, no connection — CST-11| UNREG
     EMG -.only after hazard resolved.-> ROUTE
 ```
 
@@ -73,7 +74,7 @@ graph TD
 | 13 | `connectionServicesAgent` | [connectionServicesAgent.txt](../prompts/connectionServicesAgent/connectionServicesAgent.txt) | KYC, address/name/mobile change, portability, surrender, cylinder return. |
 | 14 | `newConnectionAgent` | [newConnectionAgent.txt](../prompts/newConnectionAgent/newConnectionAgent.txt) | New connection, Ujjwala/PMUY, documents, onboarding. |
 | 15 | `genericInfoComplaintAgent` | [genericInfoComplaint.txt](../prompts/genericInfoComplaint/genericInfoComplaint.txt) | Catch-all: booking/delivery how-to, equipment faults, behaviour complaints. |
-| 16 | `unregisteredComplaintAgent` | [unregisteredComplaintAgent.txt](../prompts/unregisteredComplaintAgent/unregisteredComplaintAgent.txt) | A consumer with no record: answers from its knowledge base, registers via `bpcl_create_unregistered_complaint`, checks an earlier complaint's status. Reached only from `getConsumerDetails` (UNREG-03). |
+| 16 | `unregisteredComplaintAgent` | [unregisteredComplaintAgent.txt](../prompts/unregisteredComplaintAgent/unregisteredComplaintAgent.txt) | A consumer with no record: answers from its knowledge base, registers via `bpcl_create_unregistered_complaint`, checks an earlier complaint's status. Reached from `getConsumerDetails` (UNREG-03) and, since CST-11, from `newConnectionAgent_onHold` §19A. |
 
 ---
 
@@ -225,7 +226,7 @@ The spec makes the contract explicit (§4.6): *"the platform must not route to `
 | `paymentAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
 | `subsidyAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | ❌ blocked |
 | `connectionServicesAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | ❌ blocked |
-| `newConnectionAgent` | ✅ | ✅ | — | ❌ blocked |
+| `newConnectionAgent` | ✅ *(onHold: → routingAgent, or → unregisteredComplaintAgent per §19A)* | ✅ | — | ❌ blocked |
 | `genericInfoComplaintAgent` | ✅ | ✅ | `bpcl_create_complaint` + `bpcl_complaint_status` | — |
 
 Notes worth knowing:

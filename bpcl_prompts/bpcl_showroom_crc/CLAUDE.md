@@ -399,8 +399,10 @@ difference. See NC-01.
 >   for gas, a cylinder or a connection; the 14.2 kg closure is reactive (§8-HOLD) and never travels
 >   without Lite zip. It holds Z1–Z19, the Q&A-versus-guided gate (§15), the 12-state Hello BPCL App flow
 >   (§16), the three dead ends (§17) and the answer-versus-real-problem split (§18). A real problem on an
->   order is routed through `routingAgent` like any other problem — there is **no switch to
->   `unregisteredComplaintAgent`** from this agent (client decision).
+>   order is routed through `routingAgent` like any other problem. **REVISED 2026-10-08 (CST-11, user
+>   instruction):** an earlier complaint's status, and a complaint about money already paid for a new
+>   connection that never came, now switch straight to **`unregisteredComplaintAgent`** (§19A) — the
+>   old "no switch to `unregisteredComplaintAgent`" decision is withdrawn for those two cases only.
 > - **No helpline anywhere in onHold** (§13-N deleted, dead ends end on "check the App again later"):
 >   Vaani is the help on this line.
 > - **Never four hours, or any hour count.** Daytime order: same day. Evening/night order (6pm–6am):

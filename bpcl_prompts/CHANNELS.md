@@ -33,6 +33,20 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### CST-11 · newConnectionAgent_onHold switches an earlier complaint, or money paid for a connection that never came, straight to unregisteredComplaintAgent; the PIN code is collected in parts — CRC only (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — routing and capture fixes in two CRC agents. |
+| **Source** | Live CRC Lite zip call, 2026-10-08. The consumer had paid ten thousand rupees to a distributor four months earlier for a 14.2 kg connection, never got it, and had already complained. `newConnectionAgent_onHold` said it could not see the complaint's status, then said "मेरे पास शिकायत दर्ज करने का tool नहीं है" and offered to transfer the call "हमारे routingAgent को" — naming an internal agent and its own missing tool. The call then went routingAgent → getConsumerDetails (which asked a consumer with no connection for a registered number) → unregisteredComplaintAgent. There, the PIN code said in two parts ("four", then "five four double seven five") lost its first digit and was read back as five digits, and the next attempt was answered with "PIN code छह अंकों का होता है… पूरा बताइए" after only two digits. |
+| **Cause** | onHold could switch only to `routingAgent`, and its §12 item 11a sent an earlier complaint there too. §8-HOLD told it to say it "cannot see the application's status", and §20 said "THERE IS NOTHING YOU CAN REGISTER", so the model concluded it could neither check nor register and said so in its own words. unregisteredComplaintAgent's PIN rule was a single line ("if it is not six digits, ask again"), with no running number and no "go on" turn. Its closing summary still said "YOUR SIX TOOLS" without `bpcl_complaint_status`. |
+| **The rule now** | ① **onHold §19A (new):** an earlier complaint's status, or a complaint the consumer asks for about money already paid for a new connection that never came, switches to `unregisteredComplaintAgent` on the turn they ask, with no confirmation question and one short line ("जी, मैं आपकी शिकायत देखती हूँ।" by meaning). It never says it cannot check or register, never says it has no tool, and never names an agent, a tool or a team. Item 11a now points to §19A; new item 11b covers the money-paid complaint. §3, TOOL PARAMETERS, §8-HOLD, §18, §19 step 4, §20 and §23 allow the second destination. The closure itself is still never a complaint, and a Lite zip order problem still goes via `routingAgent` (§18). ② **unregisteredComplaintAgent:** a second way in (from onHold, with no lookup); "two numbers were already tried" is now "either their number was tried or they came with no connection". ③ **PIN code (TOOL 2 and step 6):** a running PIN code across turns; fewer than six digits → a two or three word "go on" only; more than six, or fewer when they say that is all → never read back or sent, they are told it is six digits and asked once more, and the running PIN code starts fresh; `get_pincode_data` is called the moment exactly six digits are held, and never with any other length. ④ Closing summary: SEVEN tools, `bpcl_complaint_status` included. |
+| **QA** | `vaaniQA` C3-NC: the §19A switch is correct; saying she cannot check or register a complaint is a violation. C8: naming an agent or a tool aloud is a violation at the highest severity. |
+| **Platform** | `newConnectionAgent_onHold`'s `switchagent` must list `unregisteredComplaintAgent` as a destination, or §19A fails at runtime. |
+| **Deliberately NOT changed** | CC, lite_zip and the multilingual branch; getConsumerDetails; the parked `newConnectionAgent.txt`. |
+
+---
+
 ### CST-10 · A complaint number is exactly eight digits — any other length is never read back, confirmed or checked; the three-check cap holds even for a volunteered number — CRC, CC and lite_zip (2026-10-08)
 
 | | |
