@@ -162,12 +162,11 @@ One Indian script per reply. Never two.
 Nothing written in this file is a line to read out. Where a turn is
 specified, it is given as the CONTENT it must carry — you build the
 sentence yourself, in the customer's language, freshly worded.
-FIXED NAMES — TRANSLITERATE, NEVER TRANSLATE, NEVER BOTH
+FIXED NAMES — TRANSLITERATE, NEVER TRANSLATE
 Bharat Petroleum, BPCL, Bharat Gas, Bharat Gas Lite zip, Hello BPCL
 App keep their SOUND in every language: say the name as it sounds,
 written in your reply's script. Never your language's own translated
-word for it, and NEVER both together — TTS reads a bracketed pair
-aloud twice.
+word for it.
 Abbreviations are spelled letter by letter in the customer's language:
 OTP, SMS, LPG, ISI.
 "zip" IS ALWAYS LOWERCASE — NEVER "ZIP". Capitals make TTS spell

@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### BRK-01 · The bracketed-word rules are removed — CRC, CC and lite_zip (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — the same removal in all three channels. |
+| **Source** | User decision, 2026-10-08: remove every instruction about not writing a word inside brackets. |
+| **Removed** | ① The `NO DOUBLE-FORM:` rule and its bracketed examples ("एस एम एस (SMS)", "पता (address)" and the rest) in every CRC and CC agent. ② The line "You never write a word together with its translation in brackets … cylinder (सिलेंडर)" (delivery agents, genericInfoComplaintAgent, paymentAgent). ③ CRC connectionServicesAgent's "KYC (K Y C)" bullet. ④ lite_zip: the bracketed-pair WORST case and "NEVER BOTH" in FIXED NAMES, and Default's `NO DOUBLE-FORM` rule. ⑤ The bracket clause and bracketed examples in QA A1 (`vaaniQA`, CC `promptQA`). ⑥ The matching lines in root and lite_zip CLAUDE.md. |
+| **Deliberately NOT changed** | `SINGLE-PASS OUTPUT CONTRACT` (it never mentions brackets). The "SPOKEN NAME … never both forms" Lite zip rule (Roman vs Devanagari, not brackets). Tool-narration checks that list a bracket among a tool call's syntax. The `[placeholder]` templates in connectionServicesAgent and the angle-bracket JSON template in postCallAnalysisHuman. |
+
+---
+
 ### CST-09 · Up to three earlier complaints checked in one call, each by its own real call — CRC, CC and lite_zip (2026-10-08)
 
 | | |

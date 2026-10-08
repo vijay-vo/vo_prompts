@@ -264,7 +264,6 @@ pincode. **`Default` still never asks for a pincode at all.** Only the complaint
   commercial or industrial connection outside Lite zip, or alongside the App at a dead end. Never for
   a new-connection question, never for an emergency, and never for a debited payment — that last one
   is a complaint.
-- **No double form.** Never a word and its translation together; TTS reads a bracketed pair twice.
 
 ---
 
