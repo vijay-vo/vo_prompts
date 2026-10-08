@@ -403,6 +403,9 @@ difference. See NC-01.
 >   instruction):** an earlier complaint's status, and a complaint about money already paid for a new
 >   connection that never came, now switch straight to **`unregisteredComplaintAgent`** (§19A) — the
 >   old "no switch to `unregisteredComplaintAgent`" decision is withdrawn for those two cases only.
+> - **NCOH-SYNC-01 (2026-10-08):** onHold took SEAM-01, CLOSE-01, the closing rules, the emergency block,
+>   TOOLS-01 and a set of small rules from the multilingual CRC onHold (see CHANNELS.md). SEAM-02 and the
+>   §5 listening rules were left out by choice.
 > - **No helpline anywhere in onHold** (§13-N deleted, dead ends end on "check the App again later"):
 >   Vaani is the help on this line.
 > - **Never four hours, or any hour count.** Daytime order: same day. Evening/night order (6pm–6am):

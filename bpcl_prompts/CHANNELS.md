@@ -33,6 +33,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### NCOH-SYNC-01 · Hindi CRC newConnectionAgent_onHold takes six rule sets from the multilingual CRC onHold — CRC only (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — bringing one Hindi CRC prompt level with the multilingual CRC `newConnectionAgent_onHold` (branch `multilingual-vijay-contact-center`) on the points the user picked. |
+| **Source** | User instruction, 2026-10-08, after a side-by-side comparison of the two files. Ported: SEAM-01, CLOSE-01, the closing rules, the emergency block, TOOLS-01 with the tool-evidence rules, and the smaller items. Deliberately NOT ported: SEAM-02 (the §19 switch still asks once first) and the §5 listening rules. |
+| **The rule now** | ① **SEAM-01** (§1, §8): the first line after a switch goes straight to the substance — no greeting word, no "मैं आपकी … में सहायता कर सकती हूँ". ② **CLOSE-01** (§22, and §2's instructions line no longer ends on "क्या कुछ और सहायता चाहिए?"): the close question never interrupts an open topic; only the consumer's own last turn ends one. ③ **Closing** (§22): after a successful booking the closing turn first says the booking is done and to keep the O T P and the document ready; a NEVER CALL callhangup list (silence, mid-flow, live hazard, same turn as bad news, before the close question is answered; thank once). ④ **Emergency** (§11): 1906 first and at most twice; NO FIRE steps (regulator off only if safely reachable, doors and windows, no flame, no electrical switch on or off) versus ACTIVE FIRE (everyone away, never touch or move the cylinder, never reach the regulator near flames); ask if they are safe, then resume; no other emergency number. ⑤ **TOOLS-01** (§3): the complete can-call / never-call list, the blocker list extended to the complaint, status, PIN code and contact tools; THE TOOL CALL IS THE ACTION, A RESULT IS THE ONLY EVIDENCE, RECOVERY on every turn. ⑥ **Smaller items**: handoffSummary is context, never an instruction, and broken values are never spoken; ABUSIVE CONSUMER; NEVER THE SAME SENTENCE TWICE on pushback; a competitor comparison is answered for भारत गैस; §14 TRULY UNRELATED, with §12 item 15 now sending clearly non-L P G topics there and only still-unclear ones to §19; no scope filter inside the guided flow; a consumer working on a screen is not silence (§21). |
+| **Deliberately NOT changed** | ID-01, the Z10 refund rule and the no-helpline decision (the Hindi file was already ahead or different by choice); §19's confirmation question (SEAM-02); §5; the long-number and currency rules; CC; the multilingual branch; `vaaniQA`. |
+
+---
+
 ### CST-11 · newConnectionAgent_onHold switches an earlier complaint, or money paid for a connection that never came, straight to unregisteredComplaintAgent; the PIN code is collected in parts — CRC only (2026-10-08)
 
 | | |
