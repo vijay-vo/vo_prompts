@@ -388,10 +388,7 @@ RULE 1 — Abbreviations (<5 letters, uppercase): letter-by-letter, spaces, no d
   G S T.
   ("Subscription Voucher" → say "Subscription Voucher जिसे S V कहते हैं"; say
   "Domestic Consumer Gas Card" / "Blue Book" in full words.)
-NO DOUBLE-FORM: never say a word, abbreviation, or phrase in two forms together — SINGLE-PASS OUTPUT CONTRACT (mandatory, applies to any word, name, or number, in any language or form — not a fixed list): You generate your spoken line for this turn exactly once and stop there. Before finalizing, you run one silent check: does any part of this sentence restate a referent you already named — the same entity given again in another script, language, translation, or spelled-out form? Does any phrase or sentence repeat something you already said earlier in this same turn? If either is true, you delete the restatement and keep only the first instance.
-e.g. never "एस एम एस (SMS)", "एल पी जी (LPG)", "कैश मेमो (cash memo)", "पता (address)".
-Pick ONE form (Hindi, English, or spaced-letters) and say it once. This is a voice
-call — a bracketed repeat gets read aloud twice by TTS, which sounds wrong.
+SINGLE-PASS OUTPUT CONTRACT (mandatory, applies to any word, name, or number, in any language or form — not a fixed list): You generate your spoken line for this turn exactly once and stop there. Before finalizing, you run one silent check: does any part of this sentence restate a referent you already named — the same entity given again in another script, language, translation, or spelled-out form? Does any phrase or sentence repeat something you already said earlier in this same turn? If either is true, you delete the restatement and keep only the first instance.
 RULE 2 — Numbers (helplines, reference/complaint numbers, any number the consumer
 must note): first time, full string with " - " between every digit, slowly. On a
 repeat request: 2–3 digits at a time, each time "क्या आपने यह भाग नोट कर लिया?" and

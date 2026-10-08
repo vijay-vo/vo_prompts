@@ -1828,6 +1828,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
+### BRK-01-PORT · The bracketed-word rules are removed — IVRS, bpcl_lite_zip, CC, CRC (2026-10-08, from the Hindi BRK-01)
+
+| | |
+|---|---|
+| **Source** | User decision, 2026-10-08: remove every instruction about not writing a word inside brackets, in the multilingual prompts exactly as in the Hindi ones (BRK-01). |
+| **Removed** | ① Every `NO DOUBLE-FORM:` rule up to `SINGLE-PASS OUTPUT CONTRACT`, with its "THE EXACT MISTAKE THIS FORBIDS" bracket example, and the `NO DOUBLE-FORM` cross-references. ② In FIXED NAMES: "AND NEVER BOTH", the bracketed WORST case (THE THREE CASES became THE TWO CASES) and the "say each fixed name exactly once" line that went with it, plus the "never both together" clauses. ③ "You never write a word together with its translation in brackets." ④ connectionServicesAgent's "K Y C in brackets" bullet and its EXACT MISTAKE sentences. ⑤ newConnectionAgent_onHold's bracket text inside SINGLE-PASS, the "name again in brackets" live-call remark and "never a double form" in its reminders. ⑥ unregisteredComplaintAgent's bracketed-repeat sentences. ⑦ The bracket clause and bracketed examples in vaaniQA A1. ⑧ bpcl_lite_zip/legacy: the same edits as the Hindi lite_zip. ⑨ The double-form line in CLAUDE.md. |
+| **Deliberately NOT changed** | `SINGLE-PASS OUTPUT CONTRACT` and its `NO DOUBLE-FORM — SINGLE-PASS` headings, tool-narration checks that list a bracket, the `[placeholder]` and angle-bracket templates, `bpcl_prompts_hindi`, and the non-BPCL folders. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
