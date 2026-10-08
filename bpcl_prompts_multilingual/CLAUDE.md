@@ -238,7 +238,9 @@ itself (CB-01).
 **An earlier complaint is checked before it is registered again (CHANNELS.md CST-PORT-01, 2026-10-07).** The 11
 complaint agents in every channel hold `bpcl_complaint_status` (one key, `complaintNumber`) and carry the same
 `COMPLAINT STATUS` block: the 8-digit number asked fresh and read back, the call alone, the status first and the comment
-second from the tool's message, no new complaint while the earlier one is open, and two checks per call.
+second from the tool's message, no new complaint while the earlier one is open. IVRS, `bpcl_lite_zip` and CRC allow
+up to three checks per call, each a different number and each its own call, and only an exactly 8-digit number is read
+back or sent (CST-PORT-02, 2026-10-08); CC still has two checks and no length gate, because it was outside that port.
 
 ---
 

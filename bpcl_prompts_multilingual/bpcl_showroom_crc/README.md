@@ -58,7 +58,7 @@ related agents; the **file name** is the agent, not the folder. `agentName` valu
 | [connectionServicesAgent/](prompts/connectionServicesAgent/) | `connectionServicesAgent` — KYC, address, mobile, name, surrender, portability, PNG |
 | [newConnectionAgent/](prompts/newConnectionAgent/) | `newConnectionAgent_onHold` — **the LIVE prompt**, the 14.2 kg hold. `newConnectionAgent.txt` is **PARKED — do not ship**: it is the full journey, retained for restoration, and still carries Hindi/CRC/transfer conversion debt (see its header) |
 | [genericInfoComplaintAgent/](prompts/genericInfoComplaintAgent/) | `genericInfoComplaintAgent` — catch-all |
-| [unregisteredComplaintAgent/](prompts/unregisteredComplaintAgent/) | `unregisteredComplaintAgent` — activated by the platform when identification found no record; holds the KB, the unregistered-complaint tools, `bpcl_complaint_status` and `calltransfer` |
+| [unregisteredComplaintAgent/](prompts/unregisteredComplaintAgent/) | `unregisteredComplaintAgent` — activated by the platform when identification found no record, or switched to by `newConnectionAgent_onHold` for a grievance or an earlier complaint's status; holds the KB, the unregistered-complaint tools, `bpcl_complaint_status` and `calltransfer` |
 | [postCallAnalysis/](prompts/postCallAnalysis/) | Not live-call prompts — they run after the call, against the transcript. On an AI call: `postCallAnalysisFlat.txt` first, then `vaaniQA.txt` |
 
 **Topology.** `Default` triages the front of the call. Every specialist is a leaf whose only switch

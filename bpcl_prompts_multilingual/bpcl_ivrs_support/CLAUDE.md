@@ -118,6 +118,8 @@ breaks, start at its §4 checklist. What it means here:
 - **`bpcl_complaint_status` carries exactly `complaintNumber`** (CST-PORT-01): the 8 digits the consumer
   gave and confirmed, nothing else. Its answer fields (Comments, Complaint Status) are the platform's and
   are never filled. The turn is the call alone, and the status is spoken only from the tool's message.
+  At most three checks per call, each a different number and each its own call; a number of any
+  length other than eight is never read back, confirmed or sent (CST-PORT-02).
 - **No backticks** in a live prompt; the line-1 directive keeps the tool name without them.
 - **The complaint number** is all its digits in one turn, one digit word at a time in the
   consumer's language with `" - "` between them, never a whole number and never an amount (NUM-08,
@@ -148,7 +150,9 @@ success and failure lines after deciding the outcome by looking for a number in 
 **`unregisteredComplaintAgent`** runs the `bpcl_lite_zip` desk's order — name → `updateContact` →
 PIN code → `get_pincode_data` → district → `bpcl_create_unregistered_complaint`, each step its own
 turn — but each of the three tool turns is the call alone, with no spoken line (2026-09-24, and
-TOOL-PORT-01). Hindi CRC ported this agent from here (UNREG-03).
+TOOL-PORT-01). The PIN code is collected in parts, like the complaint number, and sent only at
+exactly six digits; the issue in handoffSummary holds for the whole call, after a status check
+included (CST-PORT-02). Hindi CRC ported this agent from here (UNREG-03).
 
 **Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
 vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
@@ -174,7 +178,11 @@ is the reference for this contract. Do not reintroduce them.
 that is now the larger half of its job. Lite zip is the default for anyone asking for gas, a
 cylinder or a connection; the 14.2 kg closure is a **reactive** block that never opens a call and
 never travels without the lite zip pivot. It owns the product facts, the Q&A-versus-guided mode
-gate, the twelve-state Hello BPCL App flow, the dead ends, and the complaint gate.
+gate, the twelve-state Hello BPCL App flow, the dead ends, and the complaint gate. An earlier
+complaint's status goes from it straight to `unregisteredComplaintAgent` (§18A), and so does a
+complaint about money paid for a new connection that never came (§18); it never says it cannot
+check or register one. Every switch line follows its §3 `WHAT YOU SAY ON ANY switchagent TURN`
+block (CST-PORT-02).
 
 **The fact set is `bpcl_lite_zip`'s, and it overrides everything older:** two sizes, 10 kg and 5 kg;
 **never** a price; **never** a four-hour promise — same day for a daytime order, next day 8am–8pm
