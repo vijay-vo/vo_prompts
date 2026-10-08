@@ -33,6 +33,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### NCOH-SWITCHLINE-01 · newConnectionAgent_onHold speaks its switch line the way Default and every specialist does — CRC only (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — one CRC agent brought to the switch-line pattern the rest of the channel already uses. |
+| **Source** | Live CRC test call, 2026-10-08. On the §19A switch the agent said, in three sentences, that the matter should be a complaint and "इसलिए मैं आपकी कॉल को हमारे संबंधित विभाग को ट्रांसफर कर रही हूँ ताकि वे आपकी शिकायत दर्ज कर सकें". §19A step 3 already banned "transfer" and "team", but onHold had only a one-line example and no anchors. |
+| **The rule now** | New §3 block WHAT YOU SAY ON ANY switchagent TURN, taken from Default's TEXT GENERATION RULES and the specialists' anchor list: strictly one sentence, sounding like Vaani is checking something herself and naming the consumer's topic; empathy woven into that sentence, never a separate one; no explanation of why and nothing about what happens next; the ban is on the MEANING (विभाग, संबंधित विभाग, पहुँचाना, आगे बढ़ाना, किसी से बात करवाना, any agent name, anything about what she cannot do); BANNED IS ONLY HALF THE RULE — a banned line is replaced by an anchor. Anchors: the specialists' topic list plus three for §19A (earlier complaint status, money paid for a connection, both). §19 step 3 and §19A step 3 now point to the block. |
+| **Deliberately NOT changed** | SEAM-02 (§19 still asks once before switching), every other agent, CC, the multilingual branch, `vaaniQA` (C8 already reports these words). |
+
+---
+
 ### UNREG-ISSUE-01 · unregisteredComplaintAgent keeps the issue from handoffSummary for the whole call — it never asks the consumer to repeat it — CRC only (2026-10-08)
 
 | | |
