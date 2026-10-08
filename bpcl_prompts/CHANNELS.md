@@ -33,6 +33,20 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### CST-10 · A complaint number is exactly eight digits — any other length is never read back, confirmed or checked; the three-check cap holds even for a volunteered number — CRC, CC and lite_zip (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — a fix to the shared status procedure in all three channels (22 agents). |
+| **Source** | Live CRC call, 2026-10-08. The first number (eight digits) was checked correctly. The consumer then said three ten-digit numbers, some of them all in one sentence. Vaani read each one back as ten digits, got a yes, and sent all ten digits to `bpcl_complaint_status`; each came back as a failure. After the third Result she still asked "क्या आप किसी और नंबर के बारे में जानकारी चाहते हैं?". The consumer then gave a fourth number in the same breath as the request, and she read it back, confirmed it and checked it — a fourth check. |
+| **Cause** | Step 2 said "the moment you hold exactly eight digits, read back". When the digits arrive all at once, that moment never comes, and nothing made her count before the read-back or the call. "MORE THAN EIGHT DIGITS" was a single line in step 1 with no gate at step 2 or step 3. Step 7 said "if a check is still left" without making her count the Results, and the cap rule only said "do not ask for its number", which did not cover a number the consumer volunteered. |
+| **The rule now** | ① **Step 1, NOT EIGHT DIGITS** (replaces MORE THAN EIGHT DIGITS): before any read-back she counts the digits one by one, whether they came in parts or all at once. More than eight, or fewer than eight when the consumer says that is all, is never read back, confirmed or checked. She says the number is eight digits and asks once more; a second wrong length gets the S M S pointer. A wrong-length number never uses up a check. With no eight-digit number at all, step 7's THEN applies. ② **Step 2:** a read-back is always exactly eight digit words. ③ **Step 3:** if complaintNumber is not exactly eight digits there is no call, even after a yes. ④ **Step 7:** she first counts the Results already in the call (successes and failures); at three, none is left, and she never asks whether they want another number checked. ⑤ **WHEN ALL THREE CHECKS ARE USED:** a number the consumer says anyway, even in the same breath, is not collected, read back or confirmed, and there is no fourth call. |
+| **QA** | `vaaniQA` C29 and CC `promptQA` C22: reportable now includes a complaint number of any length other than eight that was read back or checked, a fourth number read back or confirmed after three checks (even a volunteered one), and asking for another number after a third Result. |
+| **Deliberately NOT changed** | Steps 4, 5 and 6, the go-on prompts, the digit-word forms, the complaint limits, the post-call analysers. |
+| **Not ported** | `bpcl_prompts_multilingual` (branch `multilingual-vijay-contact-center`), as with CST-09. |
+
+---
+
 ### CST-09 · Up to three earlier complaints checked in one call, each by its own real call — CRC, CC and lite_zip (2026-10-08)
 
 | | |
