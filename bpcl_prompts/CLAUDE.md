@@ -8,6 +8,14 @@ Commit deliberately — see "Change discipline" below.
 
 ---
 
+## Known-good version — agent workflow 1.147
+
+**Agent workflow 1.147 is the confirmed fully working version** (confirmed by the client 2026-10-08,
+repo `main` at commit `8038cc6`, VOICE-01). If any issue or regression shows up later, this is the
+version to fall back to and publish.
+
+---
+
 ## 1. The two channels
 
 | | `bpcl_contact_center` (CC) | `bpcl_showroom_crc` (CRC) |
