@@ -33,6 +33,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
+### UNREG-ISSUE-01 · unregisteredComplaintAgent keeps the issue from handoffSummary for the whole call — it never asks the consumer to repeat it — CRC only (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — a fix to one CRC agent. |
+| **Source** | Live CRC test call, 2026-10-08. `newConnectionAgent_onHold` switched to `unregisteredComplaintAgent` (§19A) with the whole issue in handoffSummary: a new connection applied for three months ago, fifteen thousand rupees paid to the distributor, no connection given. After the earlier complaint's status could not be found, the agent asked the consumer to describe the problem "विस्तार से", and when the consumer said it was already told, answered "मेरे पास आपकी कोई पुरानी जानकारी या रिकॉर्ड नहीं है". |
+| **Cause** | SECTION 1 framed the handoffSummary-first rule as an opening rule ("you never open by asking…"), and CHECK 7 is first-turn only. After the status detour the model treated the issue as unknown, and read SECTION 3's "you hold no record… no complaint history" as covering what the consumer had already said. |
+| **The rule now** | ① SECTION 1: the issue taken from handoffSummary or the transcript holds on EVERY turn, after a status check or any detour included; the consumer is never asked to tell or describe it again. ② Only a detail that is genuinely missing is asked, in one short specific question, never the whole story. ③ handoffSummary and the transcript are not a record the agent lacks; it never says it has no information about their problem, and "I already told you" is taken at its word, without naming any summary aloud. ④ SECTION 3's "what you do not hold" list is about system records only. ⑤ RESOLUTION LADDER step 1, the COMPLAINT FOLLOW-UP paragraph, SECTION 8 step 1 and the SECTION 9 summary: a complaint that comes due after COMPLAINT STATUS starts at the OFFER-AND-NAME turn with the issue already held. |
+| **Deliberately NOT changed** | The shared COMPLAINT STATUS block (still identical across the 11 CRC agents), every other agent, CC, lite_zip, the multilingual branch. |
+
+---
+
 ### NCOH-SYNC-01 · Hindi CRC newConnectionAgent_onHold takes six rule sets from the multilingual CRC onHold — CRC only (2026-10-08)
 
 | | |
