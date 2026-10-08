@@ -22,6 +22,20 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CST-09 · Up to three earlier complaints checked in one call, each by its own real call — CRC, CC and lite_zip (2026-10-08)
+
+| | |
+|---|---|
+| **Axis** | Neither — a fix to the shared status procedure in all three channels (22 agents). |
+| **Source** | Live CRC call, 2026-10-08, `activeDeliveryAgent`. The consumer asked about three earlier complaints. The first was checked and answered from its Result. For the second and third, Vaani collected and confirmed each number, never called `bpcl_complaint_status`, and invented a status for each ("In Progress, delivery being attempted"; "Closed, delivered") from the booking context. She was about to register a new complaint on the invented Closed. |
+| **Cause** | The procedure assumed one earlier complaint per call. The two-check cap was explained only as a retry after a failure (step 7, "the second check"), and nothing covered the limit being reached for a different complaint — so the model ran steps 1 and 2, reached the point where a status comes next, and filled it with no tool behind it. |
+| **The rule now** | ① **EVERY COMPLAINT NUMBER IS ITS OWN CHECK, AND EVERY CHECK IS A CALL** (new, before step 1): each different confirmed number runs steps 1 to 5 on its own, step 3 is always a real call, a Result answers only its own number, and nothing else (handoffSummary, booking, delivery, an earlier status) is ever a complaint's status. ② **Step 3:** the call follows the yes for the first number and every one after it. ③ **Step 7:** a corrected number after a failure is "a check of its own, counted per LIMITS" (was "the second check"). ④ **LIMITS:** at most THREE checks, each of a different number; a step-7 retry is one of the three. ⑤ **WHEN ALL THREE CHECKS ARE USED** (new): the number is not collected, she says a further complaint's status cannot be seen on this call, never gives one, and step 7's THEN applies with no number. ⑥ CRC line-2 directive: every different confirmed number gets its own call, up to three. CRC "a tool has been used only when…" line says three status checks. lite_zip: another earlier complaint is still BLOCK 5A, never BLOCK 6. |
+| **QA** | `vaaniQA` C29 and CC `promptQA` C22: three checks allowed. Reportable: a fourth check, a fourth number asked for, the same number twice, and — at the highest severity — a status spoken for a confirmed number with no Result of its own. |
+| **Deliberately NOT changed** | Steps 1, 2, 4, 5 and 6, the complaint limits, the post-call analysers. |
+| **Not ported** | `bpcl_prompts_multilingual` (branch `multilingual-vijay-contact-center`, CST-PORT-01) still has the two-check block. |
+
+---
+
 ### CST-08 · The status tool now answers Success or Failure in its message — the agents read it by meaning, and a failure leads to one more check — CRC, CC and lite_zip (2026-10-07)
 
 | | |

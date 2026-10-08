@@ -86,7 +86,7 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
    tool never ran. The agent invokes it on the next turn before doing anything else, and speaks no
    number (CPL-03). A complaint is registered once per issue, never retried after a failure, and at
    most twice per call. Transfer and complaint-failure limits carry across a `switchagent`
-   (XFER-05, CPL-20). So does the status check: two per call (CST-01, CST-08).
+   (XFER-05, CPL-20). So does the status check: three per call, one per different number, each a real call (CST-01, CST-08, CST-09).
 
 The complaint number comes **only from the tool's message**. It is spoken as English digit words
 separated by `" - "`, never as one whole number or as an amount (NUM-01, NUM-08).

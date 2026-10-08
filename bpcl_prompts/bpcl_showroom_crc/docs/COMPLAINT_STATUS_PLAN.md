@@ -108,7 +108,9 @@ a list of outcome meanings was copied as a fake status on a live test call.
 - **No different number left, or no number at all**, while the problem still stands: the old rule
   applies, a new complaint saying they raised it before and got no response.
 
-**Limits:** two checks per call, counted by Results and call-scoped across switches. Checks and
+**Limits:** three checks per call (CST-09, 2026-10-08; was two), each of a different complaint number, counted by Results and
+call-scoped across switches. Every number is its own real call; a status is never spoken for a number with no Result of its own.
+Once all three are used, a further complaint's number is not collected and its status cannot be seen on this call. Checks and
 complaints never count against each other's limits.
 
 ## 5. What changed in each agent

@@ -161,7 +161,7 @@ and one identical `COMPLAINT STATUS` block. When the consumer asks about an earl
 is due and they say they already complained, Vaani asks for the number (or points to the SMS), reads it back,
 makes the call alone, then gives the status first and the comment second — never the comment's English, names,
 numbers or dates. A new complaint follows only when the consumer asks, accepts one offer after being unhappy,
-or no status could be found while the problem still stands. Two checks per call. `Default` is unchanged and
+or no status could be found while the problem still stands. Up to three checks per call, one per different complaint number, each a real call (CST-09). `Default` is unchanged and
 routes on the problem. Design: [docs/COMPLAINT_STATUS_PLAN.md](docs/COMPLAINT_STATUS_PLAN.md).
 
 ### What triggers it

@@ -197,7 +197,7 @@ the consumer is told it will also arrive by SMS — the sole exception is CC's c
 which confirms the callback slot instead and speaks no number.
 **In CRC (CHANNELS.md CST-01, 2026-10-05)** an earlier complaint is checked with `bpcl_complaint_status`
 (one key, `complaintNumber`) before anything is registered again: the number read back and confirmed,
-the call alone, the status first and the comment second, two checks per call. CC not ported.
+the call alone, the status first and the comment second, up to three checks per call, one per different number (CST-09). CC not ported.
 
 ---
 
