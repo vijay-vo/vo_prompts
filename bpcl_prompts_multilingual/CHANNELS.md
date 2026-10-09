@@ -1854,6 +1854,18 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Platform** | Nothing new: onHold's `switchagent` already lists `unregisteredComplaintAgent` for §18. |
 | **Deliberately NOT ported** | **CC** (not in the user's list of folders): it still has the CST-PORT-01 block (two checks, no length gate) and its own onHold and `unregisteredComplaintAgent`. **NCOH-SYNC-01**: it brought multilingual rules into the Hindi onHold, so the source is already here. **BRK-01**: already ported as BRK-01-PORT. **The Hindi `getConsumerDetails` commits** (GCD-06 and its restores): this branch has its own capture prompt (GCD-LOOP-01). **The Hindi CRC's Lite zip client decisions** (`bookingNonEligibilityAgent` offering both with Lite zip first, no helpline in onHold): decisions for the Hindi CRC, kept open for the user. `bpcl_lite_zip/legacy/` (not deployed) and `bpcl_prompts_hindi`. |
 
+
+### GCD-IVRS-02 · IVRS number capture rewritten short: the two tool points are mandatory, the tools' Results lead, every spoken tool line goes in preToolMessage alone — IVRS only (2026-10-09)
+
+| | |
+|---|---|
+| **Axis** | Neither (number capture), but changed in IVRS only, on the user's instruction. bpcl_lite_zip, CC and CRC keep their current capture prompts. |
+| **What the live call did** | The consumer gave the number in three groups. After the last group ("नाइन फोर एट फाइव"), Vaani did not call validatecontactno: she read the ten digits back from her own count. The tool never reached mobile_number_captured. After the yes, bpcl_fetch_all_api answered "validate the customer number first", and Vaani told the consumer she could not find any details. The old STEP 6 sent that answer to a silent fetch retry, not to validatecontactno. Separately, "जी, एक पल रुकिए, मैं जाँच कर रही हूँ।" was spoken twice and the nudge twice ("जी, आगे के अंक बताइए।जी, और आगे के"): each line was written as text and also put in preToolMessage. |
+| **Now** | `getConsumerDetails.txt` is cut from 160 lines to about 60, on the user's instruction to strip it down to the tools' own instructions. THE TOOLS DECIDE: only a Result says the number is complete, correct or ready. THE TWO POINTS WHERE A TOOL MUST BE CALLED: validatecontactno on every digit turn, including the last group, even when the number sounds complete, and bpcl_fetch_all_api on the yes to the read-back. Both are stated with the live failure. "Validate the number first" now means call validatecontactno with the full confirmed number, then fetch again when it is captured. It is never reported to the consumer as not found. preToolMessage replaces the ban (the confirmed double-speak fix): validatecontactno gets no text and an empty preToolMessage; the fetch gets no text and the checking line as its preToolMessage, once per call; retries get an empty preToolMessage. |
+| **Kept** | Only new digits passed, the three validatecontactno states and their short replies, read-back only on a captured Result, two lookups then silence, digit words never numerals, the consumer's language, no self-introduction, emergency, TOOLS-01 list (no transfer tool named, NOXFER-01). |
+| **QA** | `vaaniQA` C27 unchanged: it already reports a read-back with no captured Result, and the checking line goes out with the fetch call. |
+| **Open** | If validatecontactno appends the full number to digits it already holds, the "validate first" recovery may come back invalid_mobile_number, and the consumer is then asked once more. Prevention, the mandatory call on every digit group, is the real fix. |
+
 ---
 
 ## 3. Confirmed defects — not intended differences
