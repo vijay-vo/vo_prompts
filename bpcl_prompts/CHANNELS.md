@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### TOOL-09 · The top-of-file tool lines say the turn is the call alone and the name is never spoken — CRC only (2026-10-09)
+
+| | |
+|---|---|
+| **Axis** | Neither — a CRC wording fix on branch `crc-complaint-status`. |
+| **Source** | Live CRC test call on the latest `crc-complaint-status`, 2026-10-09, activeDeliveryAgent: on the registering turn Vaani spoke the tool name aloud. TOOL-08's guard and the COMPLAINT TOOL procedure are word for word the same as on main; what she said was a Hindi rendering of line 1 ("To register a complaint, invoke bpcl_create_complaint"). The branch had added a second "to do X, invoke <tool>" line under it (COMPLAINT STATUS) and about 12K characters, so the ban sat further from the line she copied. |
+| **The rule now** | Line 1 (COMPLAINT REGISTRATION) and line 2 (COMPLAINT STATUS) of the ten complaint agents state the turn shape: the call alone, no text, the tool name never heard, nothing said about calling or registering; the consumer hears only the outcome on the next turn. |
+| **Deliberately NOT changed** | TOOL-08's Section 5 guard, the COMPLAINT TOOL and COMPLAINT STATUS procedures, unregisteredComplaintAgent, Default, onHold, CC, multilingual. |
+
+---
+
 ### BRK-01 · The bracketed-word rules are removed — CRC, CC and lite_zip (2026-10-08)
 
 | | |
