@@ -77,6 +77,26 @@ exception, and "send it on WhatsApp" is answered with it. **Sending is handled o
 user sends the WhatsApp message by an HTTP request after the call ends (2026-10-11), so the agent has
 no WhatsApp tool and needs none.
 
+## Four call reasons, each with its own basket (user, 2026-10-11)
+The owner line was telling the same story as the outbound call, so it now handles four reasons, and
+**what Urja sells depends on why they called** (BLOCK 8, THE BASKET BY WHY THEY CALLED). The user
+tests whichever one they choose.
+
+| Why they called | How Urja solves it (BLOCK 6) | Then sells, in order |
+|---|---|---|
+| **A. A fill they don't recognise** | find the fill → **block the card now** → dispute in the App → new free virtual card → lower daily limit. Never accuses anyone, never promises money back | **Control for every truck** (cardless OTP first, then a limit on every card) → every truck on Smart Fleet → Petro miles |
+| **B. New trucks** | add each truck (number + RC) → virtual card free in ~15 min, physical ₹50 in ~21 working days → daily limit → cardless for new drivers → also the 2 uncarded trucks + blocked 7834 | **Fuel credit for the bigger fleet** → Petro miles → BPCL on the road |
+| **C. Using Petro miles** | what 48,600 covers → pick the item → App → Rewards → choose → confirm; vouchers in the App, goods at a loyalty fuel station, wallet conversion straight in | **Every truck on Smart Fleet** (missing points) → fuel credit → BPCL on the road |
+| **D. Recharge not showing** | as before: ₹5 lakh NEFT safe, in process, same working day, don't pay again | Bonus → Petro miles → fuel credit → every truck → BPCL on the road |
+| Anything else | balance, limits, card reasons | Petro miles → fuel credit → every truck → BPCL on the road |
+
+**Test data for A:** only card **6107** has a fill list — today ~7 AM ₹4,000 Indore; **9 Oct ~2:10 AM
+₹9,000 Dhule** (the suspicious one); 8 Oct ~6 PM ₹7,500 Indore. Other cards: "see the App".
+⚠️ Demo assumptions added: dispute raised from the App's transaction list; adding a truck with number
++ RC in the App; cardless turned on per truck with the driver's mobile; physical card ~21 working
+days (BPCL's terms say a 21-working-day target); redeemed goods collected at a loyalty fuel station.
+Also fixed: the expiry line in BLOCK 6 still said 3,100 (now 9,200), here and in the outbound prompt.
+
 ## Not done yet
 - Not tested on a live call. Test: "where is my five lakh" (→ safe, in process, same working day, don't
   pay again, App) → bonus → Petro miles → credit → fleet; the 9 Oct UPI; each truck's card; wrong
