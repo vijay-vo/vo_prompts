@@ -191,6 +191,15 @@ exception, and "send it on WhatsApp" is answered with it. **Sending is handled o
 user sends the WhatsApp message by an HTTP request after the call ends (2026-10-11), so the agent has
 no WhatsApp tool and needs none.
 
+## Second live test (owner line, 10 Oct 2026, 22:34) — applied to all three
+"जुड़ जाएगा" was mispronounced by the TTS, so **जुड़ / जोड़ in every form are banned**: say add,
+connect, link or credit, in Latin (EVERY TURN, rule 5, and BLOCK 3). English words and amounts were
+again written in Devanagari, and translating "forty eight thousand six hundred" into Hindi made it
+**सैंतालीस हजार छह सौ (47,600) — a wrong figure**; rule 2 now says to copy every figure exactly as the
+file writes it, in Latin, never translated or retold. The owner line called the caller सुरेश जी before
+he gave his name: it now asks the name or business first, never assumes it, and digits alone never
+verify anyone.
+
 ## Not done yet
 - **Not tested on a live call.** Test: confirm → alert turn; ₹5 lakh recommendation → bonus → yes →
   App; "too much" (→ ₹1.5 lakh once); "already paid" (→ face value, 6 Oct is the last one held);
