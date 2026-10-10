@@ -164,6 +164,24 @@ instruction and she builds the words fresh. The only Hindi quotes left are **wha
 (so she recognises it: soft no, firm no, hurry, wind-down, line checks) and **what she must never
 say**. The only fixed strings she speaks are the greeting and the closing line. Keep it that way.
 
+## Live test call fixes (2026-10-11) — applied to all three Smart Fleet agents
+A test call (10 Oct 2026, 19:14) showed: filler turns ("hmm", "अच्छा") about fifteen times; turns of
+three or four sentences; English words and amounts in Devanagari (वॉलेट, फ्यूल क्रेडिट, "पाँच लाख रुपये",
+यादव रोडलाइन्स); सुरेश जी at the start of almost every turn; the alert stopping without asking to
+recharge; nearly every turn ending "क्या आप और जानना चाहेंगे?"; the 112 line given for a past accident
+where the drivers were safe; "Ghar has no charge" (invented); drivers sent to the *for Business* app;
+an eager "I want the insurance" left unsold; the closing line spoken as text and then again.
+Fixes: a five-point **EVERY TURN** check at line 2 (two sentences max, Latin for English words and
+amounts, the name once, **one topic at a time** — details one per turn, close it, then move on herself
+to the next topic with a recommendation, never asking what they want next or whether they need
+anything else — and no text on the closing turn); the **alert turn now ends with the ask to recharge today**; **CONNECT WHAT
+THEY SAY** (tired drivers / long trips → Ghar dormitories + driver insurance; past accident → Petro
+miles for servicing / tyre / battery / CV insurance; cash stuck → credit; real interest → stay on it);
+**emergency only when danger is happening now**; Ghar / BeCafe charges are never stated, free or paid;
+the drivers' app is the Hello B P C L App; the insurance answer moves on to CV insurance with Petro
+miles. **The "hmm" / "अच्छा" filler turns come from the platform, not the prompt** (user, 2026-10-11),
+so the prompt has no filler rule.
+
 ## Not done yet
 - **Not tested on a live call.** Test: confirm → alert turn; ₹5 lakh recommendation → bonus → yes →
   App; "too much" (→ ₹1.5 lakh once); "already paid" (→ face value, 6 Oct is the last one held);
