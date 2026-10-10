@@ -51,8 +51,7 @@ treated as the owner's side. A **driver** on this line gets the driver-line answ
 
 All sums are pre-written (BLOCK 5); Urja never calculates.
 
-**Greeting (verbatim):** same as the driver line — "नमस्ते, मैं भारत पेट्रोलियम Smart Fleet से ऊर्जा बोल रही हूँ।
-बताइए, मैं आपकी क्या मदद कर सकती हूँ?" · **Closing:** "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका दिन शुभ हो।"
+**Greeting (verbatim, changed 2026-10-11):** "नमस्ते, मेरा नाम ऊर्जा है। मैं आपकी Smart Fleet संबंधी सवालों में कैसे सहायता कर सकती हूँ?" · **Closing:** "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका दिन शुभ हो।"
 
 ## Facts: confirmed vs demo
 Same sources and ⚠️ list as [`balance_alert/CLAUDE.md`](../../outbound_smart_fleet/balance_alert/CLAUDE.md),

@@ -39,8 +39,7 @@ Yadav Roadlines, Indore, owner सुरेश यादव. **The wallet has to
 Digits are **read back and confirmed** before any answer (BLOCK 2 DIGITS ARE CHECKED) — the
 GCD-IVRS lesson: never guess a number.
 
-**Greeting (verbatim):** "नमस्ते, मैं भारत पेट्रोलियम Smart Fleet से ऊर्जा बोल रही हूँ। बताइए, मैं आपकी क्या मदद कर
-सकती हूँ?" · **Closing (verbatim, in callhangup's preToolMessage):** "धन्यवाद भारत पेट्रोलियम को call करने के लिए।
+**Greeting (verbatim, changed 2026-10-11):** "नमस्ते, मेरा नाम ऊर्जा है। मैं आपकी Smart Fleet संबंधी सवालों में कैसे सहायता कर सकती हूँ?" · **Closing (verbatim, in callhangup's preToolMessage):** "धन्यवाद भारत पेट्रोलियम को call करने के लिए।
 आपका दिन शुभ हो।"
 
 ## The shared demo story (all three agents, one day)
