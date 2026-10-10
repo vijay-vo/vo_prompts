@@ -69,6 +69,15 @@ No helpline or customer-care number — Urja is the help; **112** only, for an e
 time beyond "usually the same working day"; never "pay again"; never "I'll speed it up". Never collect
 card / P I N / O T P / bank details. Instructions only — no Hindi line Urja could speak.
 
+## WhatsApp line at the end of the call (user, 2026-10-11) — all three Smart Fleet agents
+On the close-question turn Urja says, once, that she will share all the details discussed on the
+customer's WhatsApp (BLOCK 12, THE WHATSAPP LINE), then asks the close question. Never on the closing
+turn (no text there), never to family / staff / a wrong number / an unverified caller / a firm no;
+the driver line shares only the driver's own card details. The "never send" rules now carry this one
+exception, and "send it on WhatsApp" is answered with it. **Sending is handled outside the prompt:** the
+user sends the WhatsApp message by an HTTP request after the call ends (2026-10-11), so the agent has
+no WhatsApp tool and needs none.
+
 ## Not done yet
 - Not tested on a live call. Test: "where is my five lakh" (→ safe, in process, same working day, don't
   pay again, App) → bonus → Petro miles → credit → fleet; the 9 Oct UPI; each truck's card; wrong

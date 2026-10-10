@@ -24,8 +24,9 @@ yet (created 2026-10-10).
 8. How long does each recharge mode take to reflect (UPI / card / net banking / NEFT / RTGS / IMPS /
    FINO)? The demo states no time.
 9. Is there a **minimum or maximum recharge**, or a UPI cap the agent should know about?
-10. Can we send the owner a **payment link by SMS during the call** (a tool on our side)? The demo
-    agent cannot send anything.
+10. Can we send the owner a **WhatsApp summary of the call** (and a payment link) from our side? The
+    demo agent now promises "all the details on your WhatsApp" at the end of the call; it needs a
+    WhatsApp Business number and approved templates to be real.
 
 ## Fuel credit
 11. How does an existing prepaid owner **apply for fuel credit** — App, portal, relationship manager,
