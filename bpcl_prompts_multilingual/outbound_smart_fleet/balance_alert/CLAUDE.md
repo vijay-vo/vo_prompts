@@ -192,8 +192,11 @@ user sends the WhatsApp message by an HTTP request after the call ends (2026-10-
 no WhatsApp tool and needs none.
 
 ## Second live test (owner line, 10 Oct 2026, 22:34) — applied to all three
-"जुड़ जाएगा" was mispronounced by the TTS, so **जुड़ / जोड़ in every form are banned**: say add,
-connect, link or credit, in Latin (EVERY TURN, rule 5, and BLOCK 3). English words and amounts were
+"जुड़ जाएगा" was mispronounced by the TTS. The prompt does **not** name that word (a listed word gets
+used): EVERY TURN rule 5 and BLOCK 3 only tell her to say **added, credited, connected, linked** in Latin
+whenever money reaches the wallet or a truck / card / mobile comes onto the account. **House rule
+(user, 2026-10-11): guide with the words to use, never with examples of words not to use** — the same
+cleanup removed the quoted never-say phrases and the list of misspelled Devanagari words. English words and amounts were
 again written in Devanagari, and translating "forty eight thousand six hundred" into Hindi made it
 **सैंतालीस हजार छह सौ (47,600) — a wrong figure**; rule 2 now says to copy every figure exactly as the
 file writes it, in Latin, never translated or retold. The owner line called the caller सुरेश जी before
