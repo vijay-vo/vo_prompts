@@ -36,6 +36,16 @@ Amazon / Flipkart vouchers and movie tickets, servicing via OE tie-ups, where to
 earn more; Ghar, BeCafe and the HelloBPCL pump locator sold as reasons to keep every truck at BPCL
 (never as SmartFleet benefits or Petromiles spends).
 
+**Petro miles made big, credit first when cash is short, and BPCL on the road sold as its own item**
+(user, 2026-10-11): Petro miles raised to **48,600** (9,200 expiring 31 Mar 2027) with a full demo
+points table and pre-written "what it covers" lines (a tyre today with 23,600 left; a tyre + battery
+with 8,600 left; the expiring 9,200 alone = two ₹1,000 Amazon/Flipkart vouchers; with the bonus, two
+tyres; ≈ ₹12,150 as a wallet recharge, more than one truck's diesel for a day). **A customer with no
+money right now gets fuel credit first and fully**; the Petro miles wallet conversion comes only
+after credit, once, and Petro miles stay short for that customer. **Ghar, BeCafe, In & Out, mæk Quik
+and the Hello BPCL App** are now a basket item of their own with full details, and in the sales gate
+— before, they came up only if the owner mentioned drivers, so most calls skipped them.
+
 The basket, in order (BLOCK 8), each with its own soft no / firm no:
 1. **The recharge** — recommend **₹5 lakh** (≈ one week of fleet fuel), the **bonus offer**, one way
    to recharge (App first), ask for the yes. Step down to **₹1.5 lakh** (≈ two days) once, on hesitation.
@@ -44,8 +54,12 @@ The basket, in order (BLOCK 8), each with its own soft no / firm no:
 3. **Fuel credit** — "third time this month the wallet ran this low". Apply in the Hello BPCL for Business App.
 4. **Every truck on SmartFleet** — ask about the 2 quiet cards; sell free virtual cards for the 2
    trucks with none; reasons: Petromiles, visibility in the App, driver accident insurance, cardless OTP.
+5. **Bharat Petroleum on the road** — Ghar, BeCafe, In & Out, mæk Quik, Hello BPCL App, one per turn;
+   the yes is "I'll tell my drivers to stop there".
 
-Then the **sales gate** (BLOCK 12), priority order recharge → credit → Petromiles → fleet.
+Exception: **no money right now → fuel credit straight after the recharge, before Petromiles.**
+
+Then the **sales gate** (BLOCK 12), priority order recharge → credit → Petromiles → fleet → on the road.
 
 ## The hardcoded demo customer (BLOCK 5) — all easy to swap
 Hardcoded, like the sibling outbound cases, so the demo runs standalone and the model never invents
@@ -62,12 +76,13 @@ account data. Every comparison the agent may make is **pre-written** (BLOCK 3 NE
 | Average fleet spend | **≈ ₹75,000 / day** (8 active trucks ≈ ₹9,400 per truck per day) |
 | Last recharge | **₹3 lakh by NEFT, 6 Oct 2026** (≈ 4 days of fuel) |
 | Low-balance history | 3rd time this month below one day of fuel |
-| Petromiles | **12,400**, of which **3,100 expire 31 Mar 2027** |
+| Petromiles | **48,600**, of which **9,200 expire 31 Mar 2027** |
 | Not held | Fleet account ID (FAID), card / vehicle numbers, driver names, transactions, statement |
 
 Pre-written comparisons: ₹6,200 < one truck's daily diesel · ₹3 lakh ≈ 4 days · ₹5 lakh ≈ 1 week ·
-₹1.5 lakh ≈ 2 days · 12,400 + 5,000 bonus = 17,400 > 15,000 (battery) · 12,400 ≈ half a tyre (25,000)
-· 2,600 short of a battery · 12,400 Petromiles ≈ ₹3,100 as a wallet recharge.
+₹1.5 lakh ≈ 2 days · 48,600 = a tyre (25,000) with 23,600 left · tyre + battery (40,000) with 8,600
+left · expiring 9,200 = two ₹1,000 vouchers (8,000) · 48,600 + 5,000 bonus = 53,600 = two tyres ·
+48,600 Petromiles ≈ ₹12,150 as a wallet recharge.
 
 **Who picks up (BLOCK 8 / 10):** Suresh → full call. **Family, office staff or accounts person** →
 only "the wallet is running low, please ask Suresh ji to recharge today", no figures, then close
@@ -97,8 +112,13 @@ only "the wallet is running low, please ask Suresh ji to recharge today", no fig
 **Demo values, NOT confirmed by BPCL (user's call 2026-10-10: keep them for the demo):**
 - ⚠️ **The bonus offer** — "₹5 lakh or more by 20 Oct 2026 → 5,000 bonus Petromiles". **Invented for
   the demo** as a proposal to BPCL. Must be confirmed or removed before any real use.
-- ⚠️ **Points per item** — tyre ≈ 25,000, battery ≈ 15,000, FASTag / vouchers from ≈ 1,000, and the
-  wallet conversion value (≈ ₹0.25 per Petromile → 12,400 ≈ ₹3,100). Not public.
+- ⚠️ **Points per item** — tyre ≈ 25,000, battery ≈ 15,000, mæk 18 L truck oil ≈ 22,000, tracking
+  device ≈ 12,000, 10,000 points ≈ ₹2,500 off insurance or a service bill, ₹500 FASTag ≈ 2,000, ₹1,000
+  Amazon/Flipkart voucher ≈ 4,000, two movie tickets ≈ 2,400, ₹250 mobile top-up ≈ 1,000; wallet
+  conversion ≈ ₹0.25 per Petromile → 48,600 ≈ ₹12,150. All invented for the demo; not public.
+- ⚠️ Ghar "more than 150 centres" and its amenities, BeCafe's ATM / air / PUC / Wi-Fi, In & Out, mæk
+  Quik "6,000+ pumps": from BPCL's own pages and news, but per-outlet availability varies and whether
+  mæk Quik handles heavy trucks is not confirmed (the prompt never promises it).
 - ⚠️ Adding a virtual card for a truck **from the Hello BPCL for Business App, ready in ≈15 minutes**
   (BPCL states 15 minutes for a new enrolment's virtual card; per-truck addition in the App is assumed).
 - ⚠️ Blocking a lost card **in the App** (the terms say self-hotlisting is on the portal).

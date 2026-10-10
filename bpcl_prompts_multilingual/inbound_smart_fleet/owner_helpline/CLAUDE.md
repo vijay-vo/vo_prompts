@@ -16,13 +16,16 @@ three share one demo fleet and one demo day (story in the driver line's CLAUDE.m
 same selling). mak's inbound shape: FIRST SATISFY, THEN SELL THE NEXT — never sell over an open worry;
 an angry owner is reassured first and sold to only once calm. The basket, in order (BLOCK 8):
 1. **The bonus** — his ₹5 lakh NEFT today is one single ≥₹5 lakh recharge before 20 Oct → 5,000 bonus
-   Petro miles once it is added; with it, 17,400 > a battery (15,000). Hearing it settles it.
+   Petro miles once it is added; with it, 53,600 = two truck tyres instead of one. Hearing it settles it.
 2. **Petro miles** — the "how are the trucks running" question chooses the item; family rewards
    (Amazon/Flipkart, movie tickets, travel), ways to earn more, the expiry.
 3. **Fuel credit** — "today your trucks are waiting while the money clears, third time this month".
 4. **Every truck on Smart Fleet** — the 2 quiet cards, the 2 trucks with no card, **and a new virtual
    card for the blocked 7834**.
-Then the sales gate: own answer → bonus → credit → Petro miles → fleet.
+5. **Bharat Petroleum on the road** — Ghar, BeCafe, In & Out, mæk Quik, Hello BPCL App, with full details.
+Exception: an owner with no money right now gets **fuel credit first**, before Petro miles.
+Then the sales gate: own answer → bonus → credit → Petro miles → fleet → on the road.
+Petro miles figures, the points table and the credit-first rule match the outbound agent (2026-10-11).
 
 The selling text (BLOCK 6 Petro miles, fuel credit in detail, every truck, Ghar/BeCafe) is **ported
 from the outbound agent as the user edited it on 2026-10-10** — keep the two in step: a change to one
@@ -44,7 +47,7 @@ treated as the owner's side. A **driver** on this line gets the driver-line answ
 | 6 Oct 2026 | ₹3 lakh NEFT — added same day |
 | Spend | ≈ ₹75,000 / day · 3rd low balance this month |
 | Cards | the same 12 trucks as the driver line, with daily limits; 6649 and 2093 quiet 30 days; 7834 blocked; 9015, 4470 no card |
-| Petro miles | 12,400 · 3,100 expire 31 Mar 2027 |
+| Petro miles | 48,600 · 9,200 expire 31 Mar 2027 |
 
 All sums are pre-written (BLOCK 5); Urja never calculates.
 
