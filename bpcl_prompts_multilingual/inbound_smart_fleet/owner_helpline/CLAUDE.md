@@ -97,6 +97,13 @@ tests whichever one they choose.
 days (BPCL's terms say a 21-working-day target); redeemed goods collected at a loyalty fuel station.
 Also fixed: the expiry line in BLOCK 6 still said 3,100 (now 9,200), here and in the outbound prompt.
 
+## Demo: any name, any mobile digits, any truck number (user, 2026-10-11)
+Verification accepts **any name or business plus any four mobile digits** (read back and confirmed);
+Urja calls the caller by the name they gave, once, and never corrects it to सुरेश यादव. **Any truck
+digits** not in the card list are an active card, ₹15,000 limit, all left. For the misuse story, the
+three demo fills belong to **whichever truck** the owner names. The listed trucks (4521, 7834, 9015,
+4470, 6649, 2093, 6107) keep their own scenarios for testing. Production must restore real checks.
+
 ## Not done yet
 - Not tested on a live call. Test: "where is my five lakh" (→ safe, in process, same working day, don't
   pay again, App) → bonus → Petro miles → credit → fleet; the 9 Oct UPI; each truck's card; wrong

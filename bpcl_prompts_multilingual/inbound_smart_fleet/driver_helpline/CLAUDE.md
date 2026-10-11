@@ -72,6 +72,11 @@ exception, and "send it on WhatsApp" is answered with it. **Sending is handled o
 user sends the WhatsApp message by an HTTP request after the call ends (2026-10-11), so the agent has
 no WhatsApp tool and needs none.
 
+## Demo: any truck number accepted (user, 2026-10-11)
+Any four digits not in the list are an active Yadav Roadlines card, ₹15,000 limit all left, reason
+"the account needs balance". A driver is never told the truck is not found. The listed trucks keep
+their own scenarios (4521 limit used, 7834 blocked, 9015 / 4470 no card).
+
 ## Not done yet
 - Not tested on a live call. Test each digit row, unclear digits, digits not found, "how much balance
   / has the owner paid" (must refuse), "owner's number", attendant on the phone, P I N wrong, "pay
