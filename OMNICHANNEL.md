@@ -35,28 +35,34 @@ The HTTP node sends the post-call JSON plus call metadata. Every value is a flat
 | Field | From | Needed for |
 |---|---|---|
 | `customerPhone` | HTTP node (call metadata) | the memory key and the WhatsApp number — **must be present** |
-| `callId` | HTTP node (call metadata) | ignoring a duplicate delivery of the same call |
-| `callStartTime` | HTTP node (call metadata) | the memory timeline |
+| `callSid` | HTTP node (Plivo call SID / CallUUID) | ignoring a duplicate delivery of the same call |
 | the 29 post-call fields | post-call analysis | everything else (see `postCallAnalysis.txt`) |
 
-To confirm in the HTTP node: that the customer's phone number and the call ID can be added to
-the body, and whether the node runs on calls that never connected (`callOutcome = noConversation`).
+Confirmed (user, 2026-10-11): the HTTP node sends the customer's phone number and the Plivo call
+SID. When the post-call analysis and the HTTP node run (every call, or only connected calls) is
+decided on the platform later; the server handles any `callOutcome`.
 
 ## Server rules
 
-- **Duplicates:** if `callId` is already saved, return 200 and do nothing.
+- **Duplicates:** if `callSid` is already saved, return 200 and do nothing.
 - **Send WhatsApp only when `sendWhatsApp = "yes"`.** It is already "no" for staff, wrong numbers,
   refusals, do-not-call and emergencies.
 - **`doNotCall = "yes"`:** mark the customer, send nothing on any channel, and never call again.
 - **First WhatsApp message = an approved template.** WhatsApp allows free text only within 24
-  hours of the customer's last message. Template body idea (one variable):
-  `Namaste, Bharat Petroleum Smart Fleet ki aaj ki call ke liye dhanyavaad. {{1}} Koi bhi sawal ho to isi chat par reply karein.`
+  hours of the customer's last message. Template body (one variable):
+  `नमस्ते! Bharat Petroleum Smart Fleet की आज की call के लिए धन्यवाद। {{1}} कोई भी सवाल हो तो इसी chat पर reply कीजिए।`
   where `{{1}}` = `whatsappSummary`. A template variable cannot contain line breaks, which is why the
   post-call prompt writes it on one line.
 - **Email:** one message after the call with `callSummary`, the agreed recharge and the steps.
   No replies are handled on email. Demo email address comes from the demo customer's profile.
 
-## The WhatsApp agent (step 5) — to build
+## The server — built
+
+Python (FastAPI) in [server/](server/): webhook, SQLite memory, Meta WhatsApp Cloud API (free
+test number), Groq for the WhatsApp replies (any OpenAI-compatible API), Gmail SMTP for email.
+Setup: [server/README.md](server/README.md). Dry-run check: `server/smoke_test.py`.
+
+## The WhatsApp agent (step 5) — [server/prompts/whatsappAgent.txt](server/prompts/whatsappAgent.txt)
 
 - Same facts as the voice prompt (BLOCK 5–7 of `Default.txt`), rewritten for chat: short
   messages, no voice/TTS rules, digits and ₹ allowed.
