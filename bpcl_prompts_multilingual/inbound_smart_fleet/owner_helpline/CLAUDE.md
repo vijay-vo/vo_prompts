@@ -22,12 +22,12 @@ an angry owner is reassured first and sold to only once calm. The basket, in ord
 3. **Fuel credit** — "today your trucks are waiting while the money clears, third time this month".
 4. **Every truck on Smart Fleet** — the 2 quiet cards, the 2 trucks with no card, **and a new virtual
    card for the blocked 7834**.
-5. **Bharat Petroleum on the road** — Ghar, BeCafe, In & Out, mæk Quik, Hello BPCL App, with full details.
+5. **Bharat Petroleum on the road** — Ghar, Be Cafe, In & Out, mæk Quik, Hello BPCL App, with full details.
 Exception: an owner with no money right now gets **fuel credit first**, before Petro miles.
 Then the sales gate: own answer → bonus → credit → Petro miles → fleet → on the road.
 Petro miles figures, the points table and the credit-first rule match the outbound agent (2026-10-11).
 
-The selling text (BLOCK 6 Petro miles, fuel credit in detail, every truck, Ghar/BeCafe) is **ported
+The selling text (BLOCK 6 Petro miles, fuel credit in detail, every truck, Ghar/Be Cafe) is **ported
 from the outbound agent as the user edited it on 2026-10-10** — keep the two in step: a change to one
 of those blocks in either prompt is a change to both.
 

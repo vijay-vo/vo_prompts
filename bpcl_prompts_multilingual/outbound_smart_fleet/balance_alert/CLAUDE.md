@@ -33,7 +33,7 @@ card not working, PIN, disputed fill, KYC change, lost card) — all self-servic
 
 **Full rewards and driver network sold** (user, 2026-10-10): the whole Petromiles catalogue incl.
 Amazon / Flipkart vouchers and movie tickets, servicing via OE tie-ups, where to use points, how to
-earn more; Ghar, BeCafe and the HelloBPCL pump locator sold as reasons to keep every truck at BPCL
+earn more; Ghar, Be Cafe and the HelloBPCL pump locator sold as reasons to keep every truck at BPCL
 (never as SmartFleet benefits or Petromiles spends).
 
 **Petro miles made big, credit first when cash is short, and BPCL on the road sold as its own item**
@@ -42,7 +42,7 @@ points table and pre-written "what it covers" lines (a tyre today with 23,600 le
 with 8,600 left; the expiring 9,200 alone = two ₹1,000 Amazon/Flipkart vouchers; with the bonus, two
 tyres; ≈ ₹12,150 as a wallet recharge, more than one truck's diesel for a day). **A customer with no
 money right now gets fuel credit first and fully**; the Petro miles wallet conversion comes only
-after credit, once, and Petro miles stay short for that customer. **Ghar, BeCafe, In & Out, mæk Quik
+after credit, once, and Petro miles stay short for that customer. **Ghar, Be Cafe, In & Out, mæk Quik
 and the Hello BPCL App** are now a basket item of their own with full details, and in the sales gate
 — before, they came up only if the owner mentioned drivers, so most calls skipped them.
 
@@ -54,7 +54,7 @@ The basket, in order (BLOCK 8), each with its own soft no / firm no:
 3. **Fuel credit** — "third time this month the wallet ran this low". Apply in the Hello BPCL for Business App.
 4. **Every truck on SmartFleet** — ask about the 2 quiet cards; sell free virtual cards for the 2
    trucks with none; reasons: Petromiles, visibility in the App, driver accident insurance, cardless OTP.
-5. **Bharat Petroleum on the road** — Ghar, BeCafe, In & Out, mæk Quik, Hello BPCL App, one per turn;
+5. **Bharat Petroleum on the road** — Ghar, Be Cafe, In & Out, mæk Quik, Hello BPCL App, one per turn;
    the yes is "I'll tell my drivers to stop there".
 
 Exception: **no money right now → fuel credit straight after the recharge, before Petromiles.**
@@ -107,7 +107,7 @@ only "the wallet is running low, please ask Suresh ji to recharge today", no fig
   travel.
 - Virtual card free, physical card ₹50; cardless fuelling by mobile OTP; accident insurance is a
   SmartFleet feature; lost card can be self-hotlisted. (A helpline exists, but the agent never gives it.)
-- Ghar truck stops and BeCafe exist (not SmartFleet benefits; sold as BPCL's network for drivers).
+- Ghar truck stops and Be Cafe exist (not SmartFleet benefits; sold as BPCL's network for drivers).
 
 **Demo values, NOT confirmed by BPCL (user's call 2026-10-10: keep them for the demo):**
 - ⚠️ **The bonus offer** — "₹5 lakh or more by 20 Oct 2026 → 5,000 bonus Petromiles". **Invented for
@@ -116,7 +116,7 @@ only "the wallet is running low, please ask Suresh ji to recharge today", no fig
   device ≈ 12,000, 10,000 points ≈ ₹2,500 off insurance or a service bill, ₹500 FASTag ≈ 2,000, ₹1,000
   Amazon/Flipkart voucher ≈ 4,000, two movie tickets ≈ 2,400, ₹250 mobile top-up ≈ 1,000; wallet
   conversion ≈ ₹0.25 per Petromile → 48,600 ≈ ₹12,150. All invented for the demo; not public.
-- ⚠️ Ghar "more than 150 centres" and its amenities, BeCafe's ATM / air / PUC / Wi-Fi, In & Out, mæk
+- ⚠️ Ghar "more than 150 centres" and its amenities, Be Cafe's ATM / air / PUC / Wi-Fi, In & Out, mæk
   Quik "6,000+ pumps": from BPCL's own pages and news, but per-outlet availability varies and whether
   mæk Quik handles heavy trucks is not confirmed (the prompt never promises it).
 - ⚠️ Adding a virtual card for a truck **from the Hello BPCL for Business App, ready in ≈15 minutes**
@@ -152,7 +152,7 @@ only "the wallet is running low, please ask Suresh ji to recharge today", no fig
   ("दो हज़ार छब्बीस", "दो हज़ार सत्ताईस"); phone numbers digit by digit with " - ".
 - "Bharat Petroleum" in full, never "BPCL", except the app name "Hello B P C L for Business App"
   (SmartFleet lives in the Business app, not the consumer HelloBPCL app). **"Smart Fleet" is always
-  two separate words in the prompt** (user, 2026-10-10), never "SmartFleet". "Petro miles" always two separate words in the prompt (user, 2026-10-10), never "Petromiles". "Fast Tag", "Ghar", "BeCafe".
+  two separate words in the prompt** (user, 2026-10-10), never "SmartFleet". "Petro miles" always two separate words in the prompt (user, 2026-10-10), never "Petromiles". "Fast Tag", "Ghar", "Be Cafe".
 - Closing line fixed, outbound form, carried in callhangup's preToolMessage: "धन्यवाद भारत पेट्रोलियम को
   अपना कीमती समय देने के लिए। आपका दिन शुभ हो।"
 
@@ -177,7 +177,7 @@ to the next topic with a recommendation, never asking what they want next or whe
 anything else — and no text on the closing turn); the **alert turn now ends with the ask to recharge today**; **CONNECT WHAT
 THEY SAY** (tired drivers / long trips → Ghar dormitories + driver insurance; past accident → Petro
 miles for servicing / tyre / battery / CV insurance; cash stuck → credit; real interest → stay on it);
-**emergency only when danger is happening now**; Ghar / BeCafe charges are never stated, free or paid;
+**emergency only when danger is happening now**; Ghar / Be Cafe charges are never stated, free or paid;
 the drivers' app is the Hello B P C L App; the insurance answer moves on to CV insurance with Petro
 miles. **The "hmm" / "अच्छा" filler turns come from the platform, not the prompt** (user, 2026-10-11),
 so the prompt has no filler rule.

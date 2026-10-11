@@ -14,7 +14,7 @@ All three share **one demo fleet and one demo day** — see "The shared demo sto
 ## What this case is (and the win)
 **A service line, not a sales line.** A stuck driver is not a buyer. Speed is the help: digits → read
 back → reason in one turn → what to do in the next. One small "for the road" extra (the Hello BPCL App
-pump locator, or Ghar / BeCafe) at most once, never to a driver in a hurry. **Persona is the same Urja**
+pump locator, or Ghar / Be Cafe) at most once, never to a driver in a hurry. **Persona is the same Urja**
 as `mak_lubricants` / the outbound agent (warm, affectionate, lively), tuned for a driver under pressure.
 
 ## Privacy — the rule that shapes the whole prompt (BLOCK 4 / 10)
@@ -53,7 +53,7 @@ fuel credit, carding every truck.
 Same sources and same ⚠️ demo list as [`balance_alert/CLAUDE.md`](../../outbound_smart_fleet/balance_alert/CLAUDE.md).
 Specific to this line:
 - Confirmed: per-card limits set by the owner ("ad hoc balance limits on cards"), self-blocking a lost
-  card, free virtual card, card P I N set by the member, Hello BPCL App pump locator, Ghar, BeCafe.
+  card, free virtual card, card P I N set by the member, Hello BPCL App pump locator, Ghar, Be Cafe.
 - ⚠️ Demo: a **daily limit resets the next day**; the owner **raises a card limit in the Hello BPCL
   for Business App**; a **blocked card cannot be unblocked**, only replaced; all the card data.
 
