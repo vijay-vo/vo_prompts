@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Fleet Omnichannel</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --ink: #1c1f24; --muted: #66707d; --line: #e2e5ea;
+    --voice: #1d4ed8; --voice-bg: #e8efff; --wa: #128c4a; --wa-out: #dcf8c6; --wa-in: #ffffff;
+    --mail: #9a3412; --mail-bg: #fff1e6; --bad: #b91c1c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --panel: #1a1e24; --ink: #e8eaed; --muted: #9aa3ae; --line: #2b313a;
+      --voice: #8fb0ff; --voice-bg: #1d2a47; --wa: #4cd38a; --wa-out: #1f3b2a; --wa-in: #232931;
+      --mail: #ffb27a; --mail-bg: #3a2516; --bad: #ff8a8a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+           padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  h1 { font-size: 18px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; }
+  main { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; padding: 16px;
+         max-width: 1200px; margin: 0 auto; }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+  h2 { font-size: 14px; margin: 0 0 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .event { margin: 10px 0; display: flex; flex-direction: column; }
+  .tag { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+  .card { border-radius: 10px; padding: 10px 12px; max-width: 92%; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .voice .card { background: var(--voice-bg); border-left: 4px solid var(--voice); max-width: 100%; }
+  .email .card { background: var(--mail-bg); border-left: 4px solid var(--mail); max-width: 100%; }
+  .wa.in { align-items: flex-start; } .wa.in .card { background: var(--wa-in); border: 1px solid var(--line); }
+  .wa.out { align-items: flex-end; } .wa.out .card { background: var(--wa-out); }
+  .wa.out .tag { text-align: right; }
+  .failed .card { outline: 2px solid var(--bad); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font: 13px/1.5 ui-monospace, Consolas, monospace; }
+  button, select, input { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line);
+                          background: var(--panel); color: var(--ink); }
+  button.danger { color: var(--bad); }
+  .empty { color: var(--muted); }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Smart Fleet: one customer, every channel</h1>
+    <div class="sub" id="who">Voice call → memory → WhatsApp and email</div>
+  </div>
+  <div class="controls">
+    <select id="picker" aria-label="Customer"></select>
+    <button class="danger" id="reset">Reset this customer</button>
+  </div>
+</header>
+<main>
+  <section><h2>Timeline</h2><div id="timeline" class="empty">Waiting for the first call…</div></section>
+  <section><h2>What the WhatsApp agent remembers</h2><pre id="memory" class="empty">—</pre></section>
+</main>
+<script>
+const params = new URLSearchParams(location.search);
+const token = params.get("token") || "";
+let phone = params.get("phone") || "";
+const q = token ? "?token=" + encodeURIComponent(token) : "";
+const LABELS = { rechargeDecision: "Recharge", rechargeAmount: "₹", rechargeWhen: "When",
+  petroMilesDecision: "Petro miles", fuelCreditDecision: "Fuel credit", newCardsDecision: "Cards",
+  customerMood: "Mood" };
+
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function when(iso) { return new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }); }
+
+async function loadCustomers() {
+  const r = await fetch("/customers" + q); if (!r.ok) return;
+  const list = await r.json(); const picker = document.getElementById("picker");
+  const current = picker.value; picker.replaceChildren();
+  for (const c of list) { const o = el("option", null, "+" + c.phone + " · " + (c.name || "")); o.value = c.phone; picker.append(o); }
+  if (!phone && list.length) phone = list[0].phone;
+  picker.value = phone || current;
+}
+
+function render(data) {
+  const t = document.getElementById("timeline"); t.replaceChildren(); t.className = "";
+  document.getElementById("who").textContent = (data.customer.name || "") + " · " + (data.customer.business || "") +
+    " · +" + data.customer.phone + (data.customer.do_not_contact ? " · DO NOT CONTACT" : "");
+  if (!data.timeline.length) { t.className = "empty"; t.textContent = "Nothing yet."; }
+  for (const e of data.timeline) {
+    let box;
+    if (e.channel === "voice") {
+      box = el("div", "event voice"); box.append(el("div", "tag", "📞 Voice call · " + when(e.created_at)));
+      const card = el("div", "card", e.text || "(no summary)"); const chips = el("div", "chips");
+      for (const [k, label] of Object.entries(LABELS)) {
+        const v = (e.data || {})[k]; if (v && v !== "none" && v !== "notDiscussed") chips.append(el("span", "chip", label + ": " + v));
+      }
+      card.append(chips); box.append(card);
+    } else if (e.channel === "email") {
+      box = el("div", "event email"); box.append(el("div", "tag", "✉️ Email sent · " + when(e.created_at)));
+      box.append(el("div", "card", (e.data && e.data.body) || e.text));
+    } else {
+      const dir = e.direction === "in" ? "in" : "out";
+      box = el("div", "event wa " + dir + (e.status === "failed" ? " failed" : ""));
+      const who = dir === "in" ? "Customer" : (e.kind === "template" ? "Smart Fleet (template)" : "Smart Fleet");
+      const status = e.status ? " · " + e.status + (e.status === "failed" && e.data && e.data.error ? " (" + e.data.error + ")" : "") : "";
+      box.append(el("div", "tag", "💬 " + who + " · " + when(e.created_at) + status));
+      box.append(el("div", "card", e.text));
+    }
+    t.append(box);
+  }
+  const m = document.getElementById("memory"); m.className = ""; m.textContent = data.agentMemory;
+}
+
+async function refresh() {
+  await loadCustomers();
+  if (!phone) return;
+  const r = await fetch("/customers/" + phone + q);
+  if (r.ok) render(await r.json());
+}
+
+document.getElementById("picker").addEventListener("change", e => { phone = e.target.value; refresh(); });
+document.getElementById("reset").addEventListener("click", async () => {
+  if (!phone || !confirm("Delete everything saved for +" + phone + "?")) return;
+  await fetch("/customers/" + phone + q, { method: "DELETE" }); phone = ""; location.reload();
+});
+refresh(); setInterval(refresh, 4000);
+</script>
+</body>
+</html>

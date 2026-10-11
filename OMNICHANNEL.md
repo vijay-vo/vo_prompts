@@ -60,7 +60,9 @@ decided on the platform later; the server handles any `callOutcome`.
 
 Python (FastAPI) in [server/](server/): webhook, SQLite memory, Meta WhatsApp Cloud API (free
 test number), Groq for the WhatsApp replies (any OpenAI-compatible API), Gmail SMTP for email.
-Setup: [server/README.md](server/README.md). Dry-run check: `server/smoke_test.py`.
+**Setup, step by step: [SETUP_GUIDE.md](SETUP_GUIDE.md).** Offline test: `server/smoke_test.py`;
+key check: `server/check_setup.py`; fake VoiceOwl call: `server/send_test_call.py`; live demo
+screen: `/demo?token=<ADMIN_TOKEN>`.
 
 ## The WhatsApp agent (step 5) — [server/prompts/whatsappAgent.txt](server/prompts/whatsappAgent.txt)
 
