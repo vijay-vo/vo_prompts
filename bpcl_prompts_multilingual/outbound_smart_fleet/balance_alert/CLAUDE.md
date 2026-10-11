@@ -203,6 +203,14 @@ file writes it, in Latin, never translated or retold. The owner line called the 
 he gave his name: it now asks the name or business first, never assumes it, and digits alone never
 verify anyone.
 
+## The ड़ / ढ़ sound (user, 2026-10-11) — all three agents
+She kept producing words with ड़ even after the first rule, and the TTS struggles with that sound in
+general. EVERY TURN rule 5 now steers by the **sound**, not by a word list: no Hindi word with ड़ or
+ढ़ in any form, with the replacements to use — added / credited / connected / linked, increase /
+raise, truck, बहुत / ज़्यादा, कुछ, करना होगा, अच्छा / great. Every quoted cue in the prompts that had
+the sound was rewritten, and the mirror-their-words rule now falls back to the English word (truck)
+when the caller's word has that sound.
+
 ## Not done yet
 - **Not tested on a live call.** Test: confirm → alert turn; ₹5 lakh recommendation → bonus → yes →
   App; "too much" (→ ₹1.5 lakh once); "already paid" (→ face value, 6 Oct is the last one held);
