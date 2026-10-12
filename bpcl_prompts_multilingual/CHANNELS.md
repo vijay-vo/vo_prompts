@@ -1881,6 +1881,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
+### XLIT-01 · Fixed lines are translated, never transliterated; another topic is never "something I cannot see" — IVRS, bpcl_lite_zip, CRC (2026-10-12)
+
+| | |
+|---|---|
+| **Why** | Live IVRS call: getConsumerDetails answered every part of the mobile number with "go on" spoken as English sound in Hindi script, and connectionServicesAgent, asked about a delivery, said it could not see the booking and delivery status and was sending the consumer to the "booking and delivery support agent", then said "let me" as English sound. Its §18 listed internal agent names (refillSupportAgent), which became the spoken "support agent". |
+| **Change** | Every FIXED LINES rule (15 agents per channel, onHold included): a quoted line is translated into what a native speaker says, never transliterated. getConsumerDetails and unregisteredComplaintAgent: "Go on." becomes "Yes, tell me the next digits."; getConsumerDetails also loses a duplicated block (a second HOW A TOOL WORKS / THE LOOP whose STEP 2 contradicted the ten-digit rule). The ten leaf agents with the switch-ban block get two rules after it: another topic is never something you cannot see, and no agent, desk, team or person is named; a checking line with no switchagent Result behind it is followed by the call with only "Yes, one moment.". connectionServicesAgent §18 lists topics, not agent names. |
+| **Not changed** | CC; the parked newConnectionAgent.txt (still names refillSupportAgent); other "go on" meaning anchors, covered by the FIXED LINES rule. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
