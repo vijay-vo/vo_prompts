@@ -178,11 +178,12 @@ is the reference for this contract. Do not reintroduce them.
 that is now the larger half of its job. Lite zip is the default for anyone asking for gas, a
 cylinder or a connection; the 14.2 kg closure is a **reactive** block that never opens a call and
 never travels without the lite zip pivot. It owns the product facts, the Q&A-versus-guided mode
-gate, the twelve-state Hello BPCL App flow, the dead ends, and the complaint gate. An earlier
-complaint's status goes from it straight to `unregisteredComplaintAgent` (§18A), and so does a
-complaint about money paid for a new connection that never came (§18); it never says it cannot
-check or register one. Every switch line follows its §3 `WHAT YOU SAY ON ANY switchagent TURN`
-block (CST-PORT-02).
+gate, the twelve-state Hello BPCL App flow and the dead ends. Since SYNC-01 (2026-10-12) it
+follows the Hindi CRC's Lite zip redesign: no complaint gate of its own (a real problem on an order
+routes per §19 like any other problem), no customer helpline anywhere, Mini named only on request.
+An earlier complaint's status and a complaint about money paid for a new connection that never
+came go straight to `unregisteredComplaintAgent` (§18A); it never says it cannot check or register
+one. Every switch line is a fixed line from its §3 `WHAT YOU SAY ON ANY switchagent TURN` block.
 
 **The fact set is `bpcl_lite_zip`'s, and it overrides everything older:** two sizes, 10 kg and 5 kg;
 **never** a price; **never** a four-hour promise — same day for a daytime order, next day 8am–8pm
