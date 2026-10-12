@@ -58,7 +58,7 @@ graph TD
 |---|---|---|---|
 | 1 | `getConsumerDetails` | [getConsumerDetails.txt](../prompts/getConsumerDetails/getConsumerDetails.txt) | Entry for unregistered callers. Captures mobile number, fetches record. |
 | 2 | `Default` | [Default.txt](../prompts/Default/Default.txt) | Greeting, emergency detection, FAQ, refill triage, routing. |
-| 3 | `routingAgent` | [routingAgent.txt](../prompts/routingAgent/routingAgent.txt) | Silent fallback hub. Classify → switch. Owns out-of-scope hangup. |
+| 3 | `routingAgent` | [routingAgent.txt](../prompts/routingAgent/routingAgent.txt) | Silent fallback hub. Classify → switch, never speaks. Unclear or out-of-scope → `genericInfoComplaintAgent`. |
 | 4 | `emergencyAgent` | [emergencyAgent.txt](../prompts/emergencyAgent/emergencyAgent.txt) | Gas hazards. Owns the call until the consumer is safe. |
 | 5 | `bookingEligibleAgent` | [bookingEligibleAgent.txt](../prompts/bookingAgent/bookingEligibleAgent.txt) | Eligible to book, but the attempt failed → suggest a working method. |
 | 6 | `bookingNonEligibilityAgent` | [bookingNonEligibilityAgent.txt](../prompts/bookingAgent/bookingNonEligibilityAgent.txt) | Booking blocked (gap, limit, KYC, blocked connection) → explain why. |
@@ -153,19 +153,11 @@ Every booking, delivery, and payment query goes through here. `Default` never an
 
 ## 5. `routingAgent` — the silent hub
 
-Every specialist's escape hatch. It is **invisible**: the previous agent already said "details देखती हूँ", so the consumer is mid-wait.
+Every specialist's escape hatch. It is **invisible and never speaks** (CHANNELS.md SCOPE-01, 2026-10-12): the previous agent has already said its fixed switch line, so the consumer is mid-wait.
 
-**Mode A — silent route (default).** Text = `"."`, `preToolMessage = "."`, consumer hears nothing. Used whenever intent is classifiable.
+**Every turn is one `switchagent` call with no text and no `preToolMessage`.** There is no spoken mode, no clarification, no out-of-scope ladder, and no `callhangup`.
 
-**Mode B — spoken (exception only).** Ambiguous intent, out-of-scope handling, non-LPG redirect, partial speech. Max 2 clarification attempts.
-
-**Out-of-scope ladder** — the only place in the system authorised to hang up on an unresolved call:
-
-1. Attempt 1 — "मैं इस विषय में सहायता नहीं कर सकती।" + ask for their LPG issue.
-2. Attempt 2 — *different phrasing* + ask again.
-3. Attempt 3 — ask once more → speak the exact closing line → `callhangup`.
-
-A valid LPG intent at **any** point aborts the ladder and routes silently.
+Unclear, partial, non-LPG and out-of-scope queries, and identity questions, go silently to `genericInfoComplaintAgent`, which talks to the consumer. A request for a person goes there too: `genericInfoComplaintAgent` holds `calltransfer` and makes the transfer itself (its T2 case); `routingAgent` holds no transfer.
 
 `routingAgent` never handles emergencies inline (switches to `emergencyAgent`), never fetches data, and never routes to `Default` or back to itself.
 
