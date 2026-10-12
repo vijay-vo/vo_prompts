@@ -1891,6 +1891,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
+### SCOPE-01 · Specialists switch out instead of "I don't have it"; routingAgent fully silent; activeDeliveryAgent never-say block — IVRS ONLY (2026-10-12)
+
+| | |
+|---|---|
+| **Why** | Live IVRS call after XLIT-01: connectionServicesAgent, asked about a delivery, opened with empathy and said it was connecting the consumer to "our concerned department"; the delivery agent then said it had no information on the delivery status and offered a complaint twice (refused both times), and said "one minute, I need to see your details" with no lookup behind it before giving the status it already had. |
+| **Change** | Every IVRS specialist that switches out (the ten leaf agents with the switch-ban block, plus newConnectionAgent_onHold) opens with YOUR SCOPE, AND THE ONE WAY OUT OF IT: another topic is never "I don't know / can't see / can't help" and never a complaint; the turn is one checking line plus switchagent to routingAgent, with no empathy sentence before it and no department, team, agent or person named; "let me check" never appears on a turn inside its own topic. routingAgent rewritten as a silent router: no spoken mode, no clarification, no out-of-scope ladder, no callhangup, no preToolMessage retry; unclear, non-LPG and identity turns go silently to genericInfoComplaintAgent, which already handles them. activeDeliveryAgent gets THREE THINGS YOU NEVER SAY for S-A to S-E: no "no delivery status", no complaint offer, no "let me check". |
+| **Divergence** | IVRS only, at the user's instruction: bpcl_lite_zip, CRC and CC keep the old routingAgent and have no SCOPE block until IVRS is confirmed working, then this is ported. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
