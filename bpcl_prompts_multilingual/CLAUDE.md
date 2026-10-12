@@ -129,7 +129,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 |---|---|
 | `getConsumerDetails` | Number capture + `bpcl_fetch_all_api`. Entry for unregistered callers. |
 | `Default` | Greeting, emergency interrupt, FAQ, triage, routing. Never hangs up. |
-| `routingAgent` | Silent mid-call re-router. Owns the out-of-scope hangup ladder. |
+| `routingAgent` | Silent mid-call re-router. Never speaks: every turn is a switchagent call with no text. Holds no callhangup and no transfer; anything unclear or out of scope goes silently to `genericInfoComplaintAgent` (CHANNELS.md SCOPE-01, 2026-10-12). |
 | `emergencyAgent` | Gas hazard. Owns the call absolutely while a hazard is live. |
 | `bookingEligibleAgent` | May book; the booking attempt failed. |
 | `bookingNonEligibilityAgent` | May not book; explain the blocker. |
