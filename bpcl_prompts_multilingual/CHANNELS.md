@@ -1923,6 +1923,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
+---
+
+### GAP-01 · A detail missing from the data is answered, not turned into a complaint offer; "what will you write" never mentions the system — IVRS ONLY (2026-10-13)
+
+| | |
+|---|---|
+| **Why** | Same live call as FAIL-01: paymentAgent, lacking the amount payable, said so and asked whether to register a complaint; asked what it would write, it said the consumer had asked for the amount and the system did not have it; then it asked permission a second time. The CASE B lines (own domain, record missing) told it to state the gap and then offer or go to the complaint escalation. |
+| **Change** | Complaint procedure steps 5 and 6 in the ten complaint agents: a missing detail is answered once and is not a complaint by itself; a complaint comes from the consumer asking or reporting something gone wrong, and when due it is the call, with no permission question; "what will you write" is the problem in the consumer's words, never the system or missing data. The CASE B lines in nine agents (and subsidyAgent's "not available, offer §19") now end on the answer, with a complaint only if the consumer asks. Not changed: bookingEligibleAgent's booking-method CASE B (a failed booking is the grievance), subsidyAgent's data dispute, unregisteredComplaintAgent. |
+| **Divergence** | IVRS only until confirmed live. |
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
