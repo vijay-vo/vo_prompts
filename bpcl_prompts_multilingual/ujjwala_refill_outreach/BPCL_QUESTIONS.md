@@ -1,13 +1,12 @@
 # Ujjwala Refill Outreach — open questions for BPCL
 
-Created 2026-10-13. Nothing is answered yet. Some of these may be answered by the client script
-once it is added to `docs/`.
+Created 2026-10-13. Items answered by the user on 2026-10-13 are marked; the rest are open.
 
 ## Call list & per-call data
-1. Which fields come with each call: name, consumer number, distributor name and phone, last refill
-   date, biometric authentication date, preferred language, state or district?
-2. Is the beneficiary's preferred language in the data, or should the agent detect it from the
-   first reply?
+1. ANSWERED (user): consumer name, consumer number, consumer address, distributor name and
+   address. No distributor phone, no last refill date.
+2. ANSWERED (user): the platform will send a language later; for now the greeting is Hindi and
+   Vaani follows the consumer's language from the first reply.
 3. Who does the agent ask for if someone other than the beneficiary answers (the beneficiary is
    usually the woman of the household)?
 
@@ -17,12 +16,13 @@ once it is added to `docs/`.
    house, connection not in use)? Is it a fixed list or free text?
 5. Should the agent only collect the reason, or also help: book a refill on the call, explain how to
    book, or register a complaint?
-6. Which subsidy and scheme facts may the agent state (subsidy per cylinder, refill cap per year,
-   5 kg option, payment options)? Only facts BPCL confirms will be used.
+6. Which subsidy and scheme facts may the agent state? For now: none (no amount, no refill cap).
+6a. BNPL: news reports say up to 600 rupees, zero interest, 100 rupees a week for six weeks, in some
+   states only. Please confirm the terms and the states. Until then Vaani says only the
+   questionnaire's wording. Is BNPL live for every distributor on the call list?
 
 ## Tools & wiring
-7. Which tools are available: callhangup only, or also a tool to save the reason or disposition,
-   refill booking, or complaint registration?
+7. ANSWERED (user): callhangup only. Post-call analysis plus an HTTP API push the data to BPCL.
 8. What post-call analysis fields does BPCL want (reason category, intent to refill, callback
    wanted, wrong number, language)?
-9. Retry and callback policy: can the agent offer a callback at a time the beneficiary chooses?
+9. ANSWERED (user): no callback time is asked; "we will call again" only.
