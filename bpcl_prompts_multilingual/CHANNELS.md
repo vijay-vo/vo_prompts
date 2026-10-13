@@ -1905,6 +1905,14 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
+### PAY-AMT-01 · paymentAgent says the amount written in handoffSummary, however unusual it looks — IVRS ONLY (2026-10-13)
+
+| | |
+|---|---|
+| **Why** | Live call: handoffSummary carried "The amount payable is 1."; paymentAgent told the consumer eight hundred and fifty-four rupees (a day earlier, one rupee and then one thousand one hundred and fifty). The model treated one rupee as a mistake and substituted a cylinder price it knows; RULE 8A had no line saying an unusual figure is still the figure. |
+| **Change** | One rule at the top of RULE 8A: the figure written in handoffSummary is the figure said, in words with the word for rupees, however small or unusual; a price known from anywhere else is never a source. |
+| **Divergence** | IVRS only until confirmed live; then bpcl_lite_zip, CRC and CC. |
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
