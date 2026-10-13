@@ -1905,7 +1905,7 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
-### PAY-AMT-01 · paymentAgent says the amount written in handoffSummary, however unusual it looks — IVRS ONLY (2026-10-13)
+### PAY-AMT-01 · paymentAgent says the amount written in handoffSummary, however unusual it looks — IVRS, then bpcl_lite_zip, CRC and CC (2026-10-13)
 
 | | |
 |---|---|
@@ -1913,7 +1913,7 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Change** | One rule at the top of RULE 8A: the figure written in handoffSummary is the figure said, in words with the word for rupees, however small or unusual; a price known from anywhere else is never a source. |
 | **Divergence** | IVRS only until confirmed live; then bpcl_lite_zip, CRC and CC. |
 
-### FAIL-01 · A failed complaint is "cannot register now, please call later", nothing about a senior team unless asked — IVRS ONLY (2026-10-13)
+### FAIL-01 · A failed complaint is "cannot register now, please call later", nothing about a senior team unless asked — IVRS, then bpcl_lite_zip, CRC and CC (2026-10-13)
 
 | | |
 |---|---|
@@ -1925,7 +1925,7 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
-### GAP-01 · A detail missing from the data is answered, not turned into a complaint offer; "what will you write" never mentions the system — IVRS ONLY (2026-10-13)
+### GAP-01 · A detail missing from the data is answered, not turned into a complaint offer; "what will you write" never mentions the system — IVRS, then bpcl_lite_zip, CRC and CC (2026-10-13)
 
 | | |
 |---|---|
@@ -1935,7 +1935,7 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
-### SAME-01 · Own topic never switched; one record, one description; the transfer-offer clause no longer says "I cannot connect you" — IVRS ONLY (2026-10-13)
+### SAME-01 · Own topic never switched; one record, one description; the transfer-offer clause no longer says "I cannot connect you" — IVRS, then bpcl_lite_zip, CRC and CC (2026-10-13)
 
 | | |
 |---|---|
@@ -1945,13 +1945,23 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 
 ---
 
-### ALL-01 · Today's fixes made general across every IVRS agent — IVRS ONLY (2026-10-13)
+### ALL-01 · Today's fixes made general across every IVRS agent — IVRS, then bpcl_lite_zip, CRC and CC (2026-10-13)
 
 | | |
 |---|---|
 | **Why** | The user: the issues fixed one agent at a time (PAY-AMT-01, GAP-01, SAME-01, the doubled checking line) exist across all agents. |
 | **Change** | SCOPE block in all eleven specialists gains A VALUE IS SAID AS IT IS WRITTEN (any amount, date or status in handoffSummary, however small, zero or unusual; nothing from elsewhere) and YOUR FIRST LINE STARTS WITH THE ANSWER (no checking line of its own after a switch). unregisteredComplaintAgent: an information gap is answered, not turned into a complaint offer; no permission question; "what will you write" is the problem in the consumer's words. subsidyAgent: OUTCOME G no longer offers a complaint, and its §19 is called complaint escalation, never office contact. Audited and left: every remaining "no option to connect" line sits inside a consumer-asks-for-a-person section. |
 | **Divergence** | IVRS only until confirmed live. |
+
+---
+
+### PORT-0113 · PAY-AMT-01, FAIL-01, GAP-01, SAME-01 and ALL-01 ported to bpcl_lite_zip, CRC and CC (2026-10-13)
+
+| | |
+|---|---|
+| **How** | bpcl_lite_zip: every changed agent file is the IVRS file; vaaniQA patched, keeping its channel label. CRC and CC: the IVRS diffs applied hunk by hunk; CC's older CASE B wordings and subsidyAgent lines ported by pattern; complaint steps 5 and 6 inserted after step 4 in the ten complaint agents. |
+| **Deliberately not ported to CRC and CC** | FAIL-01's failure paragraph, step 3's transfer clause and the vaaniQA C3c line: there a failed complaint is transfer moment T3, so offering the senior team is correct. |
+| **Also fixed, all four channels** | subsidyAgent's MISSING DATA, §13 and OUTCOME G lines still offered a complaint for absent data; they now give the answer, with a complaint only if the consumer asks. |
 
 ## 3. Confirmed defects — not intended differences
 
