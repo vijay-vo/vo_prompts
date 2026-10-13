@@ -1,0 +1,198 @@
+﻿Proposed Questionnaire for Telecalling of Nil Refill PMUY Customers
+A. Customer Identification
+To be pre-populated wherever possible rather than asked from the customer.
+Field
+	Details
+	Call Date
+	
+
+	Telecaller Name/ID
+	
+
+	Consumer No.
+	
+
+	Customer Name
+	
+
+	Distributor Name / Code
+	
+
+	Territory
+	
+
+	State
+	
+
+	Mobile No.
+	
+
+	Date of Last Refill
+	
+
+	No. of Refills since 01.04.2025
+	0
+	Call Attempt No.
+	1 / 2 / 3
+	________________
+
+
+B. Call Opening and Verification
+Suggested opening script
+“Namaskar. I am calling on behalf of Bharatgas regarding your LPG connection. Our records indicate that a refill has not been taken on this connection since 1 April 2025. We are contacting customers to understand whether they are facing any difficulty in obtaining LPG refills and whether any assistance can be provided.”
+
+
+Q1. Are we speaking with the LPG consumer / an adult member of the household?
+☐ Yes, customer
+☐ Yes, adult household member
+☐ Customer temporarily unavailable
+☐ Wrong number
+☐ Number not reachable/switched off
+☐ Customer has shifted
+☐ Customer deceased
+☐ Other: __________
+If the customer or household cannot be contacted, close the call with the appropriate disposition code.
+________________
+
+
+C. Core Question: Reason for Not Taking Refill
+Q2. What is the main reason you have not taken an LPG refill since 01.04.2025?
+Telecaller should first allow the customer to respond freely and then select the nearest category.
+Code
+	Reason
+	R01
+	Refill price / unable to arrange money at one time
+	R02
+	LPG consumption is low / cylinder still has gas
+	R03
+	Using firewood
+	R04
+	Using agricultural residue/crop waste
+	R05
+	Using cow dung cakes/other biomass
+	R06
+	Using electricity/induction
+	R07
+	Using another LPG connection/cylinder within household
+	R08
+	Family has temporarily migrated / house locked
+	R09
+	Permanently shifted to another place
+	R10
+	Customer/connection holder deceased
+	R11
+	Difficulty in booking refill
+	R12
+	Difficulty in getting cylinder delivered
+	R13
+	Distributor/service-related issue
+	R14
+	Mobile number/bank/Aadhaar/subsidy-related issue
+	R15
+	Safety concern / problem with stove, regulator or installation
+	R16
+	Customer does not presently require refill
+	R17
+	Customer does not wish to continue using LPG
+	R18
+	Other, specify: __________
+	Q3. Is there any second reason contributing to non-refill?
+Same coding may be used.
+((This distinction between primary and secondary reasons will be very useful subsequently. For example, affordability may be the primary reason, while use of firewood may be the coping mechanism.))
+________________
+
+
+D. Affordability and BNPL Module
+This section should preferably appear automatically if R01: affordability is selected, though BNPL may also be offered to any otherwise eligible/interested customer.
+Suggested telecaller intervention
+“If arranging the full refill amount at one time is a difficulty, a Buy Now Pay Later facility is available through Bharatgas under which eligible customers can avail financing for the refill. Would you like to know more about this option?”
+Q4. Is the customer interested in knowing about the BNPL/loan facility?
+☐ Yes
+☐ Maybe / wants more information
+☐ No
+If Yes/Maybe:
+“You may approach/contact your Bharatgas distributor for details and assistance regarding the facility. Availability and approval of the financing facility will be subject to the applicable terms and eligibility conditions.”
+
+
+Q5. Would you like the Bharatgas distributor to contact you regarding the facility?
+☐ Yes
+☐ No
+Q6. How soon are you likely to require an LPG refill?
+☐ Immediately / within 3 days
+☐ Within 7 days
+☐ Within 15 days
+☐ Within one month
+☐ Not decided
+☐ Do not require refill
+________________
+
+
+E. Other Assistance Required
+Q7. Is there any other assistance required from Bharatgas/distributor?
+☐ Assistance in booking refill
+☐ Delivery-related assistance
+☐ Distributor to contact customer
+☐ Mobile number update
+☐ Aadhaar/KYC related
+☐ Bank/subsidy-related
+☐ Safety/service assistance
+☐ Address/transfer related
+☐ Other: __________
+☐ No assistance required
+Q8. Would you like your Bharatgas distributor to contact you?
+☐ Yes
+☐ No
+If yes, record the reason/action required.
+________________
+
+
+F. Likelihood of Refill
+Q9. After today's discussion, are you likely to book an LPG refill?
+☐ Yes, within 3 days
+☐ Yes, within 7 days
+☐ Yes, within 15 days
+☐ Yes, within one month
+☐ Maybe
+☐ No
+Q10. If No/Maybe, what is preventing you from taking a refill?
+Free-text remarks: _________________________________________________________
+This is important because it measures the conversion potential of the intervention, not merely the reason for historical inactivity.
+________________
+
+
+G. Call Closure
+Suggested closing script
+“Thank you for your time and feedback. If you require an LPG refill or assistance, you may contact your Bharatgas distributor through the usual channels. If you have expressed interest in the Buy Now Pay Later facility, please approach your Bharatgas distributor for further details and assistance. Thank you.”
+________________
+
+
+H. Telecaller Disposition
+Immediately after the call, the telecaller should select one final outcome:
+Code
+	Call Outcome
+	C01
+	Customer contacted, likely to book refill
+	C02
+	Customer interested in BNPL
+	C03
+	Customer wants distributor callback
+	C04
+	Service issue requiring distributor action
+	C05
+	Customer using alternate cooking fuel
+	C06
+	Customer does not presently need refill
+	C07
+	Customer shifted/migrated
+	C08
+	Customer deceased
+	C09
+	Customer does not wish to continue
+	C10
+	Wrong number
+	C11
+	No response/not reachable
+	C12
+	Call back later
+	C13
+	Other

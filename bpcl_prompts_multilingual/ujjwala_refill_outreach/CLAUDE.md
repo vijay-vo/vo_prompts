@@ -32,5 +32,5 @@ prompt is built from that script.
 - `BPCL_QUESTIONS.md`: open points for BPCL.
 
 ## Not done yet
-- Client script not received yet.
+- Client questionnaire received 2026-10-13: `docs/Proposed Questionnaire for Nil Refill PMUY Customers.txt` (the .docx copy had the same text and was removed).
 - Prompt not written. Wait for the script and an explicit go-ahead.
