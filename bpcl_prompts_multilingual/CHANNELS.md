@@ -1943,6 +1943,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Change** | Step 3 now says a transfer in the tool's message is left out, and a person is mentioned only if the consumer asked for one; unregisteredComplaintAgent likewise. The SCOPE block in all eleven specialists gains YOUR OWN TOPIC IS NEVER SWITCHED and handoffSummary IS YOUR WHOLE CONTEXT (answer from it, say nothing it does not say, describe the same record the same way all call, including after a switch). subsidyAgent: OUTCOME E and the opt-out dispute register the complaint without a permission question, and lose their office-visit leftovers. |
 | **Divergence** | IVRS only until confirmed live. |
 
+---
+
+### ALL-01 · Today's fixes made general across every IVRS agent — IVRS ONLY (2026-10-13)
+
+| | |
+|---|---|
+| **Why** | The user: the issues fixed one agent at a time (PAY-AMT-01, GAP-01, SAME-01, the doubled checking line) exist across all agents. |
+| **Change** | SCOPE block in all eleven specialists gains A VALUE IS SAID AS IT IS WRITTEN (any amount, date or status in handoffSummary, however small, zero or unusual; nothing from elsewhere) and YOUR FIRST LINE STARTS WITH THE ANSWER (no checking line of its own after a switch). unregisteredComplaintAgent: an information gap is answered, not turned into a complaint offer; no permission question; "what will you write" is the problem in the consumer's words. subsidyAgent: OUTCOME G no longer offers a complaint, and its §19 is called complaint escalation, never office contact. Audited and left: every remaining "no option to connect" line sits inside a consumer-asks-for-a-person section. |
+| **Divergence** | IVRS only until confirmed live. |
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
