@@ -1933,6 +1933,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Change** | Complaint procedure steps 5 and 6 in the ten complaint agents: a missing detail is answered once and is not a complaint by itself; a complaint comes from the consumer asking or reporting something gone wrong, and when due it is the call, with no permission question; "what will you write" is the problem in the consumer's words, never the system or missing data. The CASE B lines in nine agents (and subsidyAgent's "not available, offer §19") now end on the answer, with a complaint only if the consumer asks. Not changed: bookingEligibleAgent's booking-method CASE B (a failed booking is the grievance), subsidyAgent's data dispute, unregisteredComplaintAgent. |
 | **Divergence** | IVRS only until confirmed live. |
 
+---
+
+### SAME-01 · Own topic never switched; one record, one description; the transfer-offer clause no longer says "I cannot connect you" — IVRS ONLY (2026-10-13)
+
+| | |
+|---|---|
+| **Why** | Live call in subsidyAgent: asked "why?" a second time, it said a switch line for subsidy and switched to routingAgent, which sent the call back to it; back again, it described the same record (enrolled, amount 0.00, Not applicable) as an opt-out after first, correctly, saying no amount was eligible; it offered a complaint twice; and when the tool failed it again said, unasked, that it could not connect the consumer to a senior team. FAIL-01 did not stop that: step 3 of the complaint procedure in ten agents (and unregisteredComplaintAgent's failure rule) said that if the tool's message offers a transfer, Vaani says she has no way to connect them. |
+| **Change** | Step 3 now says a transfer in the tool's message is left out, and a person is mentioned only if the consumer asked for one; unregisteredComplaintAgent likewise. The SCOPE block in all eleven specialists gains YOUR OWN TOPIC IS NEVER SWITCHED and handoffSummary IS YOUR WHOLE CONTEXT (answer from it, say nothing it does not say, describe the same record the same way all call, including after a switch). subsidyAgent: OUTCOME E and the opt-out dispute register the complaint without a permission question, and lose their office-visit leftovers. |
+| **Divergence** | IVRS only until confirmed live. |
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
