@@ -50,9 +50,9 @@ agent.
 someone will call back. The only future contact promised is the team acting on a registered
 complaint.
 
-**When the complaint tool itself fails** there is nothing left: the technical-failure line once,
-tell them there is no way to connect them to anyone, ask them to call again later, close after they
-respond.
+**When the complaint tool itself fails** there is nothing left: the technical-failure line once and
+a request to call again later, close after they respond. A person or a senior team is mentioned only
+if the consumer has asked for one (CHANNELS.md FAIL-01, 2026-10-13).
 
 Carried by the 11 agents that can register or route; `emergencyAgent`, `routingAgent`,
 `getConsumerDetails` and `Default` reference it rather than repeating it.
