@@ -1913,6 +1913,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Change** | One rule at the top of RULE 8A: the figure written in handoffSummary is the figure said, in words with the word for rupees, however small or unusual; a price known from anywhere else is never a source. |
 | **Divergence** | IVRS only until confirmed live; then bpcl_lite_zip, CRC and CC. |
 
+### FAIL-01 · A failed complaint is "cannot register now, please call later", nothing about a senior team unless asked — IVRS ONLY (2026-10-13)
+
+| | |
+|---|---|
+| **Why** | Live call: the complaint tool failed and paymentAgent said it could not register the complaint and, unasked, that it could not connect the consumer to the senior support team. The IF THE COMPLAINT TOOL HAS FAILED paragraph in ten agents told it to "tell them you have no way to connect them to anyone" on every failure. |
+| **Change** | That paragraph now says: once, from the tool's message, the complaint cannot be registered right now because of a technical problem, and please call again after some time; a person, a senior team or connecting them is mentioned only if the consumer asked for one on this call. vaaniQA C3c reports the unasked line; the IVRS CLAUDE.md Axis 1 note matches. |
+| **Divergence** | IVRS only until confirmed live. |
+
+---
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.
@@ -1933,13 +1943,6 @@ Fix these; do not record them as policy.
 
 ---
 
-### FAIL-01 · A failed complaint is "cannot register now, please call later", nothing about a senior team unless asked — IVRS ONLY (2026-10-13)
-
-| | |
-|---|---|
-| **Why** | Live call: the complaint tool failed and paymentAgent said it could not register the complaint and, unasked, that it could not connect the consumer to the senior support team. The IF THE COMPLAINT TOOL HAS FAILED paragraph in ten agents told it to "tell them you have no way to connect them to anyone" on every failure. |
-| **Change** | That paragraph now says: once, from the tool's message, the complaint cannot be registered right now because of a technical problem, and please call again after some time; a person, a senior team or connecting them is mentioned only if the consumer asked for one on this call. vaaniQA C3c reports the unasked line; the IVRS CLAUDE.md Axis 1 note matches. |
-| **Divergence** | IVRS only until confirmed live. |
 
 ## 4. Unclassified divergence — the audit backlog
 
