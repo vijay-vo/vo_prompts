@@ -40,8 +40,9 @@ callback and the disposition C01-C13. A separate HTTP API pushes that to BPCL, a
 the follow-up. So the prompt never names a code and never reads options out.
 
 ## Decisions taken with the user (2026-10-13)
-1. **Greeting in Hindi** (platform first message; the platform will later send a language and swap
-   it): "Namaskar, I am Vaani from Bharat Gas. Am I speaking with [consumer name]?" BPCL's long
+1. **Greeting** (user's line, kept as a fixed English line): "Namaste, I am Vaani speaking from
+   Bharat Petroleum. Am I speaking with [consumer name]?" Said in the call's opening language: Hindi
+   for now, another Indian language once the platform sends one (platform first message). BPCL's long
    opening is NOT in the greeting. The purpose is the next turn: "No gas refill has been taken on
    your connection since April two thousand twenty five. Is there some difficulty?" From the first
    reply, Vaani speaks the consumer's language.
@@ -67,8 +68,10 @@ the follow-up. So the prompt never names a code and never reads options out.
    distributor. **Shifted:** transfer to the new place through the distributor.
 10. **Booking help:** missed call 7718955555 first (no smartphone needed), then WhatsApp 18002243344
     ("Refill"), then the Hello BPCL App, one per turn, numbers in pieces (from IVRS bookingEligibleAgent).
-11. **Closing** in callhangup's preToolMessage only, with five closing lines (A normal, B distributor
-    will contact, C call again, D wrong number or refused, E after a death).
+11. **Closing** in callhangup's preToolMessage only, in the consumer's language. Every close ends with
+    the user's line "Thank you for giving your valuable time to Bharat Petroleum. Have a good day.";
+    B (distributor will contact), C (call again) and D (wrong number or refused) put one short clause
+    before it. E (after a death) drops "Have a good day" and starts with "Please take care."
 
 ## Learnings carried over from the other agents
 Fixed English lines translated, not transliterated (FIXED-01, XLIT-01); feminine self-reference;
