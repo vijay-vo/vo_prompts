@@ -71,7 +71,10 @@ the follow-up. So the prompt never names a code and never reads options out.
 11. **Closing** in callhangup's preToolMessage only, in the consumer's language. Every close ends with
     the user's line "Thank you for giving your valuable time to Bharat Petroleum. Have a good day.";
     B (distributor will contact), C (call again) and D (wrong number or refused) put one short clause
-    before it. E (after a death) drops "Have a good day" and starts with "Please take care."
+    before it. After a death, E (no distributor contact) and F (distributor will contact) repeat the
+    condolence ("Once again, I am very sorry for your loss. Please take care of yourself and your
+    family.") and drop "Have a good day". The condolence turn itself is "I am very sad to hear this.
+    I am very sorry for your loss.", said in plain village words.
 
 ## Learnings carried over from the other agents
 Fixed English lines translated, not transliterated (FIXED-01, XLIT-01); feminine self-reference;
