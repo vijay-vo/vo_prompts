@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### BNE-COMPLAINT-01 · bookingNonEligibilityAgent gets the COMPLAINT DETAILS line the other complaint agents carry — CRC only (2026-10-15)
+
+| | |
+|---|---|
+| **Axis** | Neither — one CRC agent brought level with connectionServicesAgent and subsidyAgent. |
+| **Source** | Live CRC call, 2026-10-14. K Y C block stated; the consumer said the distributor refuses to do it. Vaani said "मैं इसके लिए एक शिकायत दर्ज कर देती हूँ" as text, never called bpcl_create_complaint, and two turns later said it was registered with an invented number (सात - नौ - दो - आठ - तीन - चार - पांच - छह). |
+| **Cause** | The shared COMPLAINT TOOL block, RESOLUTION LADDER, TOOL RECOVERY and THE TELL are the same as in the other agents. What was missing is the agent's own COMPLAINT DETAILS line: its only complaint triggers were a dispute (Step 6), urgent need (Step 5 Path B) and a person (Step 7), so "the distributor will not do my K Y C" fitted none, and she improvised. |
+| **The rule now** | New BOOKING-BLOCK COMPLAINT DETAILS line in the agent's complaint parameters, worded like CONNECTION / SUBSIDY COMPLAINT DETAILS: once the problem is clear, register per COMPLAINT TOOL; on a clear yes that turn is the complaint-tool call; a person request is Step 7. It names the way forward not working (distributor refusing or failing to update K Y C, the app not letting them) as a grievance that already happened, registered on the turn they say it. |
+| **Deliberately NOT changed** | The shared COMPLAINT TOOL block and its retry rule, Steps 2 to 10, every other agent, CC, multilingual. |
+
+---
+
 ### VOICE-01 · Every agent prompt is written as "You", never "I" — both channels and lite_zip (2026-10-05)
 
 | | |
