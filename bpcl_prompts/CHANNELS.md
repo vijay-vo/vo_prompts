@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### UNREG-NAME-01 · unregisteredComplaintAgent answers the consumer's yes to the name with updateContact, every time — CRC only (2026-10-15)
+
+| | |
+|---|---|
+| **Axis** | Neither — a fix to one CRC agent on branch `crc-complaint-status`. |
+| **Source** | Live CRC call, 2026-10-14, and others the user reviewed: after "[name] — सही है?" → "Yes" / "सही है", Vaani sometimes called updateContact and sometimes went straight to "जी, अब अपने इलाक़े का pin code बताइए?". With no name recorded, bpcl_create_unregistered_complaint failed; she collected the name again, skipped the call again, and it failed again. |
+| **Cause** | The prompt described the right order, but the PIN question was written as the next line and nothing stopped her from speaking it on the "yes". |
+| **The rule now** | ① FIRST AFFIRMATIVE LOCKS IT: the very next turn is the updateContact call (English "yes" added to the affirmatives). ② The consumer's yes to the name has exactly one answer, the updateContact call, never words, on the first name and every corrected one. ③ NAME GATE in TOOL 2: before the PIN question, before get_pincode_data and before bpcl_create_unregistered_complaint, no updateContact message for the last confirmed name means this turn is updateContact, then she carries on without asking the name again. ④ The order lines in SECTION 5, the step list and the tools summary say the same. |
+| **Deliberately NOT changed** | No spoken "नाम नोट कर लिया" line (a line cannot make the call happen). No preToolMessage. Every other agent, main, CC, multilingual. |
+
+---
+
 ### BNE-COMPLAINT-01 · bookingNonEligibilityAgent gets the COMPLAINT DETAILS line the other complaint agents carry — CRC only (2026-10-15)
 
 | | |
