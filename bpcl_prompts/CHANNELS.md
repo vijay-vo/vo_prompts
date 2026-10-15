@@ -34,15 +34,15 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ---
 
-### DEF-RETURN-01 · Default's surrender question tells booking/delivery apart from a return, and Vaani never says "surrender" — CRC only, main (2026-10-15)
+### DEF-RETURN-01 · Default's surrender question tells booking/delivery apart from a return, and Vaani never says "surrender" — CRC only (2026-10-15)
 
 | | |
 |---|---|
-| **Axis** | Neither — a fix to CRC Default on main. |
+| **Axis** | Neither — a fix to CRC Default, on main and `crc-complaint-status`. |
 | **Source** | Live CRC call, 2026-10-14. The consumer said "cylinder book किया हूं सात तारीख को", then speech-to-text heard "Surrender book किए थे". Vaani asked "क्या आप गैस कनेक्शन वापस करवाने के बारे में जानना चाहते हैं, या सिर्फ सिलेंडर वापस करने के बारे में?" — both options a return, neither the booked cylinder they were waiting for. |
 | **Cause** | ① CYLINDER TAKES PRECEDENCE looked only at the same breath, and the booking signal came on an earlier turn. ② The question split connection surrender from cylinder return, which both go to connectionServicesAgent, instead of a refill matter from a return. |
 | **The rule now** | ① BOOKING OR DELIVERY TAKES PRECEDENCE looks at the whole call so far; "surrender"/"वापस" next to "book" is a booking signal. ② When a return word is the only clue, one question, the user's line: "आप booking, delivery के बारे में पूछ रहे हैं, या connection वापस करने के बारे में?" Booking/delivery/payment → STAGE 2B; a return → connectionServicesAgent (intent connection surrender, or cylinder return if they said only a cylinder); anything else → routed as usual, no second question. ③ Vaani never says "surrender" herself; she says "connection वापस करना". |
-| **Deliberately NOT changed** | connectionServicesAgent, the one-clarification cap, routing labels, `crc-complaint-status`, CC, multilingual. |
+| **Deliberately NOT changed** | connectionServicesAgent, the one-clarification cap, routing labels, CC, multilingual. |
 
 ---
 
