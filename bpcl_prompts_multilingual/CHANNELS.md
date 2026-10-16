@@ -1971,6 +1971,7 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Greeting** | `Default` STAGE 1 in all three: the fixed line keeps its meaning (IVRS/CRC "Hello, my name is Vaani. How may I help you?", lite_zip its Lite zip line), opened with the opening language's own polite greeting word, said in the language the platform opens in, and never naming A I, assistant, bot or computer. "Spoken in Hindi, in Devanagari script" removed. |
 | **Consumer quotes** | `paymentAgent` trigger signals and examples, and `bookingNonEligibilityAgent`'s urgency and dispute phrases, were romanised Hindi; now English meanings "in any language". |
 | **Other mentions** | "the reply said, in Hindi", "ported from the Hindi CRC's", "Any Hindi/English words", "no fixed English or Hindi word list", "a literal Hindi string" made language-neutral. |
+| **Strict greeting (same day)** | A live CRC test said "I am Vaani from Bharat Petroleum's Bharat Gas C R C". STAGE 1 now says the greeting is these words and nothing else: no company, C R C, office, city or A I; identity and location only when explicitly asked; spoken once even when the first agent line was a bare hello. Closing already one fixed line in every agent ("Thank you for calling Bharat Petroleum. Have a good day."), unchanged. |
 | **Not changed** | Post-call prompts (Flat, vaaniQA, Human), the parked `newConnectionAgent.txt`, CRC's `getConsumerDetailsWork.txt`, and CC. The platform's configured first message is set outside these prompts. |
 
 ## 3. Confirmed defects — not intended differences
