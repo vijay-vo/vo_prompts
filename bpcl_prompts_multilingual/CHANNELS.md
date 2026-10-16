@@ -1972,7 +1972,18 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Consumer quotes** | `paymentAgent` trigger signals and examples, and `bookingNonEligibilityAgent`'s urgency and dispute phrases, were romanised Hindi; now English meanings "in any language". |
 | **Other mentions** | "the reply said, in Hindi", "ported from the Hindi CRC's", "Any Hindi/English words", "no fixed English or Hindi word list", "a literal Hindi string" made language-neutral. |
 | **Strict greeting (same day)** | A live CRC test said "I am Vaani from Bharat Petroleum's Bharat Gas C R C". STAGE 1 now says the greeting is these words and nothing else: no company, C R C, office, city or A I; identity and location only when explicitly asked; spoken once even when the first agent line was a bare hello. Closing already one fixed line in every agent ("Thank you for calling Bharat Petroleum. Have a good day."), unchanged. |
+| **One-line closing** | newConnectionAgent_onHold §22 put a booking-done reminder on the closing turn; it now goes on the turn the booking is confirmed, so the closing turn is the closing line alone in every agent. |
 | **Not changed** | Post-call prompts (Flat, vaaniQA, Human), the parked `newConnectionAgent.txt`, CRC's `getConsumerDetailsWork.txt`, and CC. The platform's configured first message is set outside these prompts. |
+
+### PCA-ALIGN-01 · Post-call prompts brought in line with the live agents — IVRS, bpcl_lite_zip, CRC (2026-10-16)
+
+| | |
+|---|---|
+| **Why** | The post-call prompts had not changed in a long time while the agents had; they judged retired rules and missed current ones. |
+| **Flat** | Complaint turn, failure line, status checks, unregistered complaints, no callbacks, no booking by Vaani, Lite zip-first new connection, CRC transfer moments; stray "reason" line removed. fcr no longer counts a registered complaint as resolution. JSON unchanged. |
+| **vaaniQA** | Lite zip timing (no hour count), Lite zip first on blocked/extra refill, strict greeting said once, one-line closing, silence never ends the call, current number and PIN capture, new checks for status turns, switching out (SCOPE-01), values as written (PAY-AMT-01), same record same words (SAME-01), identity only when asked, translated not transliterated. JSON unchanged. |
+| **Human (CRC)** | Complaint, new-connection hold, Lite zip and LPG facts updated; rubric, checkpoints and JSON unchanged; callLanguage enum left pending a decision. |
+| **Open** | Lite zip four hours (client press note) vs live prompts; Voter ID; Mini 2 kg; Human's office-visit/callback latitude (PCA-02). |
 
 ## 3. Confirmed defects — not intended differences
 
