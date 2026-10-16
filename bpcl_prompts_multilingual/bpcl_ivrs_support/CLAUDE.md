@@ -200,9 +200,9 @@ one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it can
 state — and that agent reaches `routingAgent` only on the way back out.
 
 **Greeting (IVRS-GREET-01, 2026-09-29).** `Default` opens with a neutral fixed line that names no product:
-"नमस्ते, मेरा नाम वाणी है। मैं आपकी किस प्रकार सहायता कर सकती हूँ?" It is usually configured as the
-platform's first message, and it is the one turn not in the consumer's language, because they have
-not spoken yet. This line takes calls about any LPG topic. Lite zip is no longer the majority of its
+"Hello, my name is Vaani. How may I help you?" — since ML-NEUTRAL-01 (2026-10-16) an instruction in
+English only, opened with the language's own polite greeting word, said in the language the platform
+opens in, and never naming A I. It is usually configured as the platform's first message. This line takes calls about any LPG topic. Lite zip is no longer the majority of its
 calls, so the greeting no longer opens on it. Lite zip ownership (above) is unchanged: it is still
 what Vaani offers when a consumer cannot get gas. The Lite zip greeting now belongs to
 [`bpcl_lite_zip`](../bpcl_lite_zip/CLAUDE.md) (LZ-01), which is otherwise a copy of this channel.

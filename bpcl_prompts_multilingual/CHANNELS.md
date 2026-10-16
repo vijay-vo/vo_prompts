@@ -1963,6 +1963,16 @@ Live IVRS call, Hindi. The consumer read out ten digits in four pieces and heard
 | **Deliberately not ported to CRC and CC** | FAIL-01's failure paragraph, step 3's transfer clause and the vaaniQA C3c line: there a failed complaint is transfer moment T3, so offering the senior team is correct. |
 | **Also fixed, all four channels** | subsidyAgent's MISSING DATA, §13 and OUTCOME G lines still offered a complaint for absent data; they now give the answer, with a complaint only if the consumer asks. |
 
+### ML-NEUTRAL-01 · No language-specific text in the live agents; greeting is an instruction that never says A I — IVRS, bpcl_lite_zip, CRC (2026-10-16)
+
+| | |
+|---|---|
+| **Why** | A live CRC test opened with Vaani calling herself an A I. The user wants her to say only her name in the greeting, and to say she is a Virtual Voice A I Assistant only when asked (ID-01). The agents are multilingual, so nothing in them may point at one language. |
+| **Greeting** | `Default` STAGE 1 in all three: the fixed line keeps its meaning (IVRS/CRC "Hello, my name is Vaani. How may I help you?", lite_zip its Lite zip line), opened with the opening language's own polite greeting word, said in the language the platform opens in, and never naming A I, assistant, bot or computer. "Spoken in Hindi, in Devanagari script" removed. |
+| **Consumer quotes** | `paymentAgent` trigger signals and examples, and `bookingNonEligibilityAgent`'s urgency and dispute phrases, were romanised Hindi; now English meanings "in any language". |
+| **Other mentions** | "the reply said, in Hindi", "ported from the Hindi CRC's", "Any Hindi/English words", "no fixed English or Hindi word list", "a literal Hindi string" made language-neutral. |
+| **Not changed** | Post-call prompts (Flat, vaaniQA, Human), the parked `newConnectionAgent.txt`, CRC's `getConsumerDetailsWork.txt`, and CC. The platform's configured first message is set outside these prompts. |
+
 ## 3. Confirmed defects — not intended differences
 
 Fix these; do not record them as policy.

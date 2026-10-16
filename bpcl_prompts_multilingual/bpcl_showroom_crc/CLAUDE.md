@@ -193,11 +193,11 @@ Mini is named only when the consumer asks. `genericInfoComplaintAgent` no longer
 one". `routingAgent` **cannot** route to `unregisteredComplaintAgent` — it cannot see registration
 state — and that agent reaches `routingAgent` only on the way back out.
 
-**Greeting (GREET-02, 2026-10-16).** `Default` opens with the fixed line "Hello, I am Vaani. How can I
-help you?", written as an instruction in English only: the opening word is the language's own everyday
-polite greeting, the rest translated. It names no AI, no assistant and no office — Vaani says she is a
-Virtual Voice A I Assistant only when asked (ID-01). Usually configured as the platform's first message,
-in the language the platform opens in. This now differs from IVRS's greeting.
+**Greeting (ML-NEUTRAL-01, 2026-10-16).** `Default` opens with IVRS's line, "Hello, my name is Vaani. How
+may I help you?", written as an instruction in English only: the opening word is the language's own polite
+greeting, the rest translated, in the language the platform opens in. It never names A I, assistant or bot —
+Vaani says she is a Virtual Voice A I Assistant only when asked (ID-01). Usually configured as the platform's
+first message.
 
 **Post-call set (aligned to CRC 2026-09-23):** `postCallAnalysisFlat.txt` and `vaaniQA.txt`, and
 those two only. `postCallAnalysis.txt` was **deleted** — it still scored scheduled callbacks, which
