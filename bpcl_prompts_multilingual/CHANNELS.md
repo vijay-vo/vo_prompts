@@ -2038,3 +2038,15 @@ size gap cannot plausibly be explained by escalation and persona alone — the c
 certainly accumulated independent domain content there. `paymentAgent` is the more insidious case:
 near-identical length (217 vs 216) with 257 differing lines means the two were edited in place,
 separately, and no size signal will ever reveal it.
+
+### PORT-1022 · Five Hindi CRC fixes from main and crc-complaint-status ported — IVRS, bpcl_lite_zip, CRC (2026-10-22)
+
+| | |
+|---|---|
+| **Source** | Every commit on `main` and `crc-complaint-status` not yet carried here. TOOL-09 was already in via SYNC-01; the five below were not. |
+| **BNE-COMPLAINT-01** | `bookingNonEligibilityAgent`: new BOOKING-BLOCK COMPLAINT DETAILS line, worded like CONNECTION / SUBSIDY COMPLAINT DETAILS. The way forward not working (distributor will not update K Y C, the app will not let them) is a grievance registered on the turn they say it. Person request: Step 7, then NO HUMAN TRANSFER (IVRS, lite_zip) or T1 (CRC). |
+| **UNREG-NAME-01** | `unregisteredComplaintAgent`: the yes to the name (any language, or English "yes") is answered only by the updateContact call; NAME GATE before the PIN question, get_pincode_data and the complaint; step list and tools summary say the same. |
+| **DEF-RETURN-01** | `Default`: a booking or delivery signal anywhere in the call outranks a surrender/return word. Return-only clue → one fixed line, "Are you asking about a booking or delivery, or about returning your connection?"; booking/delivery/payment → STAGE 2B, a return → connectionServicesAgent. Vaani never says "surrender"; she says "returning the connection". |
+| **CSA-STATUS-01** | `connectionServicesAgent`: a connection-status fact in handoffSummary (Active, Inactive, Blocked or a named reason such as "Piped Natural Gas Connection") is the answer, spoken first, then C11 (P N G) or C6 (Blocked/Inactive). |
+| **GIC-MECH-01** | `genericInfoComplaintAgent`: new PATH 5 for mechanic visits, regulator, pipe/hose, installation, inspection and stopping B A S, registered as Reason others; Section 4 lines no longer promise registration; unauthorized booking points to PATH 3. Hindi example lines became one fixed English line. |
+| **Not changed** | CC, post-call prompts. |
