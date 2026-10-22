@@ -1,7 +1,7 @@
 # CHANNELS.md — the divergence ledger
 
 **Three channels since 2026-08-31:** `bpcl_contact_center` (CC), `bpcl_showroom_crc` (CRC), and
-`bpcl_ivrs_support` (IVRS — a copy of CC with no human transfer; see IVRS-01).
+`bpcl_ivrs_support` (now the folder `bpcl_contact_center`, CC-RENAME-01) (IVRS — a copy of CC with no human transfer; see IVRS-01).
 
 Every **intended** difference between `bpcl_contact_center` (CC) and `bpcl_showroom_crc` (CRC).
 
@@ -2057,3 +2057,9 @@ separately, and no size signal will ever reveal it.
 |---|---|
 | **Why** | The user said it is not needed. It had fallen behind IVRS since 2026-10-13. |
 | **What** | `bpcl_prompts_multilingual/bpcl_contact_center/` removed (24 files; recoverable from git history). The Hindi `bpcl_prompts_hindi/bpcl_contact_center/` is untouched. Older rows in this ledger and the CLAUDE.md files that mention CC describe the history and were not rewritten. |
+
+### CC-RENAME-01 · bpcl_ivrs_support folder renamed bpcl_contact_center (2026-10-22)
+
+| | |
+|---|---|
+| **What** | The folder `bpcl_ivrs_support/` is now `bpcl_contact_center/`, by the user's request after CC-DEL-01. Only the folder name and the doc links to it changed; every prompt is byte for byte the IVRS prompt, with no human transfer. Older rows that say `bpcl_ivrs_support` or IVRS mean this folder. |

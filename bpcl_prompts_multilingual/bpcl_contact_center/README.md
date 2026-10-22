@@ -1,4 +1,4 @@
-# bpcl_ivrs_support
+# bpcl_contact_center
 
 **IVRS self-service line.** A copy of `bpcl_contact_center` with one difference: **no human transfer.**
 A consumer who wants a person gets a registered complaint — that is the escalation, and nothing follows it.

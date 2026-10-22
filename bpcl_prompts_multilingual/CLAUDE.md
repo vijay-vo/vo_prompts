@@ -22,7 +22,7 @@ Commit deliberately — see "Change discipline" below.
 Both channels run the **same 15-agent topology** (CRC's 16th agent, `callTransferAgent`, was deleted by XFER-03), the same handoff contract, the same LPG domain
 facts, and the same Hindi/TTS voice rules. Those are shared truth and must not diverge.
 
-**Since 2026-09-24 (CHANNELS.md IVRS-PORT-01) `bpcl_ivrs_support` is the reference channel.** CC
+**Since 2026-09-24 (CHANNELS.md IVRS-PORT-01) `bpcl_ivrs_support` (folder renamed `bpcl_contact_center` on 2026-10-22, CC-RENAME-01) is the reference channel.** CC
 prompts are IVRS plus `calltransfer` (transfer text from the Hindi CRC on `main`), re-derived again on
 2026-09-29 (IVRS-SYNC-02). CRC prompts are CC's plus one more axis, identity (CRC-ID-01): Vaani
 speaks from the regional CRC office in `{{crcOfficeCity}}`, not the Mumbai HQ, and CRC keeps
@@ -47,7 +47,7 @@ bpcl_showroom_crc/
   CLAUDE.md              channel contract
   prompts/<agent>/*.txt
   docs/                  agent-workflow.md
-bpcl_ivrs_support/       copy of CC with NO human transfer (CHANNELS.md IVRS-01)
+bpcl_contact_center/      copy of CC with NO human transfer (CHANNELS.md IVRS-01)
   CLAUDE.md              channel contract
   prompts/<agent>/*.txt
   docs/

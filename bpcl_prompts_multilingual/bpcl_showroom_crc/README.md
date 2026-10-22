@@ -1,6 +1,6 @@
 # bpcl_showroom_crc
 
-**CRC channel.** `bpcl_ivrs_support` with two differences: **`calltransfer` exists**, and Vaani speaks
+**CRC channel.** `bpcl_contact_center` with two differences: **`calltransfer` exists**, and Vaani speaks
 from **the regional Bharat Petroleum CRC office in each city** (`{{crcOfficeCity}}`), not the Mumbai HQ. A
 consumer who wants a person gets a registered complaint first and, if they still want a person, a transfer.
 
@@ -87,5 +87,5 @@ named as routing targets in several prompts but **do not exist**.
 
 ## Sister channel
 
-[`bpcl_contact_center`](../bpcl_contact_center/) — identical to these except identity and the holiday list. [`bpcl_ivrs_support`](../bpcl_ivrs_support/)
+[`bpcl_contact_center`](../bpcl_contact_center/)
 is identical except for the transfer. Every intended difference is recorded in [../CHANNELS.md](../CHANNELS.md).

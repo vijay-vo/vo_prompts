@@ -1,4 +1,4 @@
-# bpcl_ivrs_support (IVRS) — channel contract
+# bpcl_contact_center (IVRS) — channel contract
 
 Bharat Petroleum's **IVRS support line**. Calls come in from the IVRS, and Vaani answers from the
 Bharat Petroleum Mumbai Headquarters office. It serves LPG consumers across India, in whatever

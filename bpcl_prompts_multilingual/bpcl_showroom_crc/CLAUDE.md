@@ -4,7 +4,7 @@ Bharat Petroleum's **showroom CRC channel**. Vaani speaks from the **Bharat Petr
 office in each city** (`{{crcOfficeCity}}`), a regional head office covering many districts and many
 distributors. She serves LPG consumers in whatever Indian language they speak.
 
-**Re-derived from [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md) on 2026-09-24 (IVRS-PORT-01) and
+**Re-derived from [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) on 2026-09-24 (IVRS-PORT-01) and
 again on 2026-09-29 (IVRS-SYNC-02).** Every prompt is [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md)'s
 (= IVRS plus `calltransfer`), with **one further difference: identity** (CRC-ID-01, 2026-09-29). The Mumbai
 Headquarters text is replaced by the CRC office text of the same agent in `bpcl_prompts/bpcl_showroom_crc` on
@@ -17,7 +17,7 @@ Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth. This file
 specific to this channel.**
 
 Sister channels: [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) — identical to these except identity and the
-holiday list — and [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md), which also has no transfer.
+holiday list — and [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md), which also has no transfer.
 
 **Porting rule for this channel:** a fix landing in IVRS lands here too, in the same session, and in
 `bpcl_contact_center`. Translate two axes. Where IVRS refuses a transfer, this channel carries the Hindi

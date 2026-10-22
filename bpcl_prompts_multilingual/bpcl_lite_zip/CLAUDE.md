@@ -1,16 +1,16 @@
 # bpcl_lite_zip — channel contract
 
 The **Bharat Gas Lite zip line.** Calls arrive from the IVRS, and Vaani answers from the
-**Bharat Petroleum Mumbai Headquarters office**, exactly as on [`bpcl_ivrs_support`](../bpcl_ivrs_support/CLAUDE.md).
+**Bharat Petroleum Mumbai Headquarters office**, exactly as on [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md).
 The difference is who calls: **most callers on this line are asking about Bharat Gas Lite zip.**
 
 **Since 2026-09-29 ([../CHANNELS.md](../CHANNELS.md) LZ-01) this channel is a copy of IVRS:** the same
 15 agents plus `unregisteredComplaintAgent`, the same post-call set, the same tools, the same
 escalation (no human transfer), the same persona and the same Lite zip ownership by
-`newConnectionAgent_onHold`. It was copied byte for byte from `bpcl_ivrs_support/prompts/` and
+`newConnectionAgent_onHold`. It was copied byte for byte from `bpcl_contact_center/prompts/` and
 `docs/`.
 
-**Read [`../bpcl_ivrs_support/CLAUDE.md`](../bpcl_ivrs_support/CLAUDE.md) first.** Every rule in it
+**Read [`../bpcl_contact_center/CLAUDE.md`](../bpcl_contact_center/CLAUDE.md) first.** Every rule in it
 applies here, except the differences listed below. This file does not repeat IVRS's contract, so the
 two cannot drift apart. Shared truth for every channel is in [../CLAUDE.md](../CLAUDE.md).
 
