@@ -2050,3 +2050,10 @@ separately, and no size signal will ever reveal it.
 | **CSA-STATUS-01** | `connectionServicesAgent`: a connection-status fact in handoffSummary (Active, Inactive, Blocked or a named reason such as "Piped Natural Gas Connection") is the answer, spoken first, then C11 (P N G) or C6 (Blocked/Inactive). |
 | **GIC-MECH-01** | `genericInfoComplaintAgent`: new PATH 5 for mechanic visits, regulator, pipe/hose, installation, inspection and stopping B A S, registered as Reason others; Section 4 lines no longer promise registration; unauthorized booking points to PATH 3. Hindi example lines became one fixed English line. |
 | **Not changed** | CC, post-call prompts. |
+
+### CC-DEL-01 · Multilingual bpcl_contact_center deleted (2026-10-22)
+
+| | |
+|---|---|
+| **Why** | The user said it is not needed. It had fallen behind IVRS since 2026-10-13. |
+| **What** | `bpcl_prompts_multilingual/bpcl_contact_center/` removed (24 files; recoverable from git history). The Hindi `bpcl_prompts_hindi/bpcl_contact_center/` is untouched. Older rows in this ledger and the CLAUDE.md files that mention CC describe the history and were not rewritten. |
