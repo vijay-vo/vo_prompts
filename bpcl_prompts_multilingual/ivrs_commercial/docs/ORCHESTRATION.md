@@ -10,7 +10,7 @@ Routing design for the 15 agents in `prompts/`.
 **The model decides the *topic*. Code decides the *agent*.**
 
 `Default` listens to the consumer and classifies the query into a coarse topic — booking,
-delivery, payment, subsidy. That is all it does. It cannot pick the final agent, because
+delivery, payment. That is all it does. It cannot pick the final agent, because
 `Default` is forbidden from calling any lookup tool (`Default.txt:50`) and therefore has no
 way to know whether this consumer is eligible to book.
 
@@ -40,9 +40,8 @@ gate is a pure function — `(topic, consumerPayload) → agentName`.
 | `eligibleDeliveryAgent` | No booking on record, consumer may book. |
 | `notEligibleDeliveryAgent` | No booking on record and consumer may not book. |
 | `paymentAgent` | Payment / refund / overcharge. |
-| `subsidyAgent` | Subsidy / DBTL. |
 | `connectionServicesAgent` | KYC, address, mobile, name, surrender, portability, PNG. |
-| `newConnectionAgent` | New connection / Ujjwala. |
+| `newConnectionAgent` | New commercial supply (commerciallpg.in request). |
 | `emergencyAgent` | Gas hazard. |
 | `genericInfoComplaintAgent` | Everything no senior owns. |
 
@@ -105,7 +104,6 @@ function gate(coarseIntent, session):
         BOOKING:             return resolveBooking(session)
         DELIVERY:            return resolveDelivery(session)
         PAYMENT:             return paymentAgent
-        SUBSIDY:             return subsidyAgent
         CONNECTION_SERVICES: return connectionServicesAgent
         GENERIC:             return genericInfoComplaintAgent
 ```
@@ -175,7 +173,7 @@ Leaf agent,                    callhangup
 chosen from real data
 ```
 
-`bpcl_fetch_all_api` returns the full consumer record — subsidy, booking, refill, payment.
+`bpcl_fetch_all_api` returns the full consumer record — booking, refill, payment.
 On success the gate re-runs **Stage B and Stage C** against the refreshed variables, so the
 leaf agent is chosen from real data rather than from what we guessed before we had it.
 
@@ -286,7 +284,7 @@ future; `postDeliveryAgent.txt:63` states its clear date is in the past.
 
 A leaf agent never picks the next agent itself. When the consumer changes subject, the leaf
 calls `switchagent(routingAgent)` and nothing else — every leaf prompt already enforces
-this (`paymentAgent.txt:66`, `subsidyAgent.txt:176`, and so on).
+this (`paymentAgent.txt:66` and so on).
 
 `routingAgent` re-classifies to a coarse topic and re-enters the same gate. It stays silent
 while doing it (Mode A: text = `"."`), so the consumer never hears the hop.

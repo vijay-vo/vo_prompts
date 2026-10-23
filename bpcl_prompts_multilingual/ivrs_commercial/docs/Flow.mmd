@@ -53,7 +53,6 @@ TOPIC{"Detected Intent"}
 TOPIC --> BOOK
 TOPIC --> DEL
 TOPIC --> PAY
-TOPIC --> SUB
 TOPIC --> CONN
 TOPIC --> GEN
 
@@ -126,16 +125,6 @@ PAYCHK -- No --> PAY2["paymentAgent<br/><br/>Fallback:<br/>{{RHcashMemoAmount0}}
 end
 
 %%========================
-%% SUBSIDY
-%%========================
-
-subgraph SUB["Subsidy"]
-
-SUB1["subsidyAgent<br/><br/>Uses:<br/>{{SDoptedOutStatus}}<br/>{{SDsubsidyAmountEligible0}}<br/>{{SDpaymentTransferStatus0}}<br/>{{SDsettlementDate0}}"]
-
-end
-
-%%========================
 %% CONNECTION SERVICES
 %%========================
 
@@ -167,7 +156,6 @@ ED --> LEAF
 NED --> LEAF
 PAY1 --> LEAF
 PAY2 --> LEAF
-SUB1 --> LEAF
 CS --> LEAF
 GI --> LEAF
 EMG --> LEAF
@@ -194,5 +182,5 @@ classDef endnode fill:#FDECEC,stroke:#BE123C,color:#881337
 class DEF,RA llm
 class FETCH,API api
 class REG,RESULT,TOPIC,B1,B2,B3,DS,D1,D2,D3,D4,PAYCHK,ACCEPT decision
-class BE,BNE,AD,PD,ED,NED,SUB1,CS,GI,EMG,NC,PAY1,PAY2,GCD agent
+class BE,BNE,AD,PD,ED,NED,CS,GI,EMG,NC,PAY1,PAY2,GCD agent
 class END,END1,END2,EXIT1,XFER endnode

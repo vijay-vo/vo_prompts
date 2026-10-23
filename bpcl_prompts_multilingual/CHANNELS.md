@@ -2063,3 +2063,19 @@ separately, and no size signal will ever reveal it.
 | | |
 |---|---|
 | **What** | The folder `bpcl_ivrs_support/` is now `bpcl_contact_center/`, by the user's request after CC-DEL-01. Only the folder name and the doc links to it changed; every prompt is byte for byte the IVRS prompt, with no human transfer. Older rows that say `bpcl_ivrs_support` or IVRS mean this folder. |
+
+### COMM-01 · ivrs_commercial created as a copy of bpcl_contact_center (2026-10-23)
+
+| | |
+|---|---|
+| **What** | `ivrs_commercial/` holds a byte-for-byte copy of `bpcl_contact_center/` (the domestic IVRS line) as the base for the commercial press-9 line. |
+| **Why** | The user: the commercial line uses everything the same; only the use case differs. |
+
+### COMM-02 · ivrs_commercial converted to commercial end to end (2026-10-23)
+
+| | |
+|---|---|
+| **What** | Every domestic-only topic removed from every prompt (subsidy, DBTL, PAHAL, Ujjwala, PMUY, 14.2 kg, household rule, refill limits, extra-refill block, new-connection hold, Lite zip, hotplate, Transfer Voucher, domestic booking numbers). `subsidyAgent` and `bpcl_get_subsidy_details` deleted. The parked domestic `newConnectionAgent.txt` deleted; `newConnectionAgent_onHold.txt` rewritten as the commercial new-supply agent `newConnectionAgent.txt` (commerciallpg.in). Commercial facts only from `ivrs_commercial/docs/COMMERCIAL_KB.md`, which is built from official sources. |
+| **Kept** | All machinery: tool calling, complaint and complaint-status flows, no human transfer, language and TTS rules, handoff contract, head office address. |
+| **User decisions** | No call transfer. No Commercial Manager numbers; escalation is a registered complaint. Payment methods same as domestic without subsidy. Nothing about domestic LPG priority. Booking limits not stated until discussed. Unconfirmed facts are left out of the prompts and reported to the user, never written as "Vaani does not know". |
+| **Not changed** | Every other channel. |

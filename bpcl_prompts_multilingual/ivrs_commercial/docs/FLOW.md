@@ -105,7 +105,6 @@ Detected Intent
       ├──────────── Booking
       ├──────────── Delivery
       ├──────────── Payment
-      ├──────────── Subsidy
       ├──────────── Connection Services
       └──────────── Generic Information & Complaint
 ```
@@ -222,40 +221,6 @@ Use              Use
 
 ---
 
-# Subsidy Flow
-
-```
-{{SDoptedOutStatus}} == "No" ?
-
-        │
- ┌──────┴────────────┐
- │                   │
-Yes                 No
- │                   │
- ▼                   ▼
-
-Consumer is enrolled
-for subsidy.
-
-Eligible Amount:
-{{SDsubsidyAmountEligible0}}
-
-Payment Status:
-{{SDpaymentTransferStatus0}}
-
-Credited On:
-{{SDsettlementDate0}}
-
-                    Consumer opted
-                    out from subsidy.
-
-                             │
-                             ▼
-                      subsidyAgent
-```
-
----
-
 # Connection Services Flow
 
 ```
@@ -330,13 +295,6 @@ callhangup()   routingAgent
 - `{{RHdeliveryDate0}}`
 - `{{RHcashMemoAmount0}}`
 
-## Subsidy
-
-- `{{SDoptedOutStatus}}`
-- `{{SDsubsidyAmountEligible0}}`
-- `{{SDpaymentTransferStatus0}}`
-- `{{SDsettlementDate0}}`
-
 ---
 
 # Data Source Priority
@@ -346,7 +304,6 @@ callhangup()   routingAgent
 | Booking | Consumer Details | None |
 | Delivery | Refill Status | Refill History |
 | Payment | Refill Status | Refill History |
-| Subsidy | Subsidy API | None |
 
 ---
 
