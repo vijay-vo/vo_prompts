@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### UNREG-TOOLS-01 · unregisteredComplaintAgent follows the bpcl_create_complaint method: line-1 directive for all three tools, no ready line after any tool — CRC only (2026-10-28)
+
+| | |
+|---|---|
+| **Axis** | Neither — a fix to one CRC agent, main only. |
+| **Source** | Three live CRC calls, 2026-10-27/28, Gemini 3.1 Flash Lite. ① After the district yes she said "जी, मैं आपकी शिकायत दर्ज कर देती हूँ।" with no bpcl_create_unregistered_complaint call, then spoke a complaint number on the next turn and repeated it in pieces. ② She spoke "आपका district दिल्ली है — सही है?" for PIN code 110073 with no get_pincode_data call, and the complaint then failed. ③ She went from the name yes straight to "जी, अब अपने इलाक़े का pin code बताइए?" with no updateContact call, despite UNREG-NAME-01. Tool keys confirmed to match the schema. |
+| **Cause** | [TOOL_CALLING.md](TOOL_CALLING.md) rules 2, 4 and 6. Each skipped tool had a quoted line in the prompt for the moment after it (the PIN question after updateContact, the district line after get_pincode_data), and the offer line was itself a registering announcement. She spoke the ready line instead of calling. Unlike every other complaint agent, unreg had no line-1 directive. |
+| **The rule now** | ① Line 1: COMPLAINT REGISTRATION — HIGHEST PRIORITY, naming the three tools in order, each the whole turn, each step waiting for the previous Result, invoke again if no Result. ② The offer-and-name anchors ask only for the name ("जी, शिकायत के लिए आपका नाम बताइए?"), with no "दर्ज कर देती हूँ". ③ The quoted PIN question and the quoted district line are removed (TOOL 2 and SECTION 8); the instruction to ask and to confirm stays, in her own words. ④ Removed: SECTION 5's "THE ORDER IS FIXED" block (line 1 replaces it), "never from your own knowledge of which district a PIN code belongs to", and the anti-fabrication "neat sequence" sentence (rules that name the unwanted behaviour). |
+| **Deliberately NOT changed** | The flow itself (offer-and-name → read-back → updateContact → PIN → get_pincode_data → district → complaint). The complaint-number repeat in three pieces (LONG NUMBER DELIVERY), a separate item. Every other agent, CC, multilingual. |
+
+---
+
 ### UNREG-NAME-01 · unregisteredComplaintAgent answers the consumer's yes to the name with updateContact, every time — CRC only (2026-10-15)
 
 | | |
