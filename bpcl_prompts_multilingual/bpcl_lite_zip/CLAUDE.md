@@ -57,6 +57,13 @@ reference, and every file there starts with a NOT DEPLOYED banner:
 Its Lite zip facts and its complaint order were already carried into IVRS's
 `newConnectionAgent_onHold` and `unregisteredComplaintAgent` on 2026-09-24. **Never deploy a legacy file.**
 
+## `genericInfoComplaintAgent_v2.txt` — a test candidate, NOT deployed (2026-10-28)
+
+`prompts/genericInfoComplaintAgent/genericInfoComplaintAgent.txt` **stays deployed and unchanged.**
+`genericInfoComplaintAgent_v2.txt` is byte for byte the IVRS test candidate (see
+[`../bpcl_contact_center/CLAUDE.md`](../bpcl_contact_center/CLAUDE.md) and [../CHANNELS.md](../CHANNELS.md)
+PORT-1028), because the two deployed files are identical too. Deploy it only when the user says so.
+
 ## Before you edit
 
 1. Never create `.bak` copies of prompt files. Edit in place.

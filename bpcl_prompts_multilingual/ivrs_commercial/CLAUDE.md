@@ -69,6 +69,19 @@ commerciallpg.in are never given.
   No commercial booking limit is stated: whether a booking is allowed comes only from data and tool
   Results.
 
+## `genericInfoComplaintAgent_v2.txt` — a test candidate, NOT deployed (2026-10-28)
+
+**`prompts/genericInfoComplaintAgent/genericInfoComplaintAgent.txt` stays deployed and unchanged.**
+`genericInfoComplaintAgent_v2.txt` is the restructured replica for testing, ported from the Hindi CRC's
+GIC-V2-01 ([../CHANNELS.md](../CHANNELS.md) PORT-1028) and built from the domestic IVRS v2 with this
+line's commercial content:
+- the routing list, switch lines and knowledge base of the deployed commercial file;
+- less weight registered directly;
+- nothing domestic: no extra-refill block, delivery O T P block, Lite zip, hotplate or B A S, and no
+  underweight verify step.
+
+It adds no fact that is not in the deployed file. Deploy it only when the user says so.
+
 ## Platform changes needed
 
 - De-register `subsidyAgent` and `bpcl_get_subsidy_details` for this line.

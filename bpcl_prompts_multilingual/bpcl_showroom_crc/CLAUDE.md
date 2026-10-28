@@ -172,6 +172,24 @@ is the reference for this contract. Do not reintroduce them.
   `complaintReason`. Its `complaintReason` is copied character for character from a nine-value
   backend list. No other agent may call any of those three tools.
 
+## `genericInfoComplaintAgent_v2.txt` — a test candidate, NOT deployed (2026-10-28)
+
+**`prompts/genericInfoComplaintAgent/genericInfoComplaintAgent.txt` stays deployed and unchanged.**
+`genericInfoComplaintAgent_v2.txt` beside it is a restructured replica for testing only, ported from
+the Hindi CRC's GIC-V2-01 ([../CHANNELS.md](../CHANNELS.md) PORT-1028). It keeps the deployed file's
+behaviour in one ordered flow, each rule stated once:
+- the line-1 directive, which also says the call is the whole turn and the next turn speaks the Result;
+- what is owned and what is routed;
+- the turn procedure: understand the incident → say what customerStatus shows → resolve or register →
+  a person per SENIOR TEAM TRANSFER (Tool 5, T1–T4);
+- one topic guide with reason phrases;
+- each tool once, with SCOPE-01's switch lines as the only switch lines;
+- the knowledge base.
+
+It keeps the CRC axes: the `{{crcOfficeCity}}` / `{{crcOfficeAddress}}` pair, `{{crcHolidayList}}`, and a
+failed complaint as T3. It uses the same injected variables as the deployed file. Deploy it only when
+the user says so. Until then, a fix to the deployed agent goes into v2 too, or the ledger says why not.
+
 ## Bharat Gas Lite zip — `newConnectionAgent` owns it (2026-09-24)
 
 `newConnectionAgent` (`newConnectionAgent_onHold.txt`) is the **Bharat Gas Lite zip specialist**, and
