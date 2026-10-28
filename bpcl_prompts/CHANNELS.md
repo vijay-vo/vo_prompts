@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### GIC-V2-01 · genericInfoComplaintAgent_v2.txt, a restructured replica for testing — CRC only (2026-10-28)
+
+| | |
+|---|---|
+| **Axis** | Neither — a test candidate beside one CRC agent, main only. |
+| **Status** | **`genericInfoComplaintAgent.txt` stays DEPLOYED and unchanged.** `genericInfoComplaintAgent_v2.txt` is for testing only until the user confirms it live. |
+| **Source** | Live CRC call, 2026-10-28: on an Ujjwala income-notice query (another specialist's topic, listed at line 401 of the original) Vaani announced the complaint, read the English complaintSummary aloud, said "bpcl_create_complaint टूल", and spoke a complaint number in the same turn. Long-running mixed failures on this agent before that. |
+| **Cause** | Size and duplication. 632 lines / 145 KB, about 300 uses of "never", the same rule stated two or three times (complaintSummary twice; RESOLUTION LADDER, READINESS GATE and COMPLAINT ESCALATION all deciding "is the query clear"), domain routing at line 401, and the registering-turn rule at line 278. |
+| **What v2 is** | 253 lines / 50 KB, same behaviour, one ordered flow: line 1 directive now also says the call is the whole turn, the two keys live only inside the call, and the next turn speaks the Result in Hindi as "शिकायत" (the point-3 fix). SECTION 2 puts what is owned and what is routed (Ujjwala and P M U Y notices named) right after identity. SECTION 5 is the turn procedure the user asked for: understand the actual issue (one open question) → tell the consumer what customerStatus shows that is relevant → resolve or register → transfer only per T1–T4. SECTION 6 is one topic guide with reason phrases; SECTION 7 holds each tool once (TOOL_CALLING.md shape, two keys, no outcome lines, no backticks); SECTION 9 is the knowledge base and zip. Rationale prose and repeated rules removed. |
+| **Deliberately NOT changed** | Policy: routing list, T1–T4, once-per-issue and two-per-call limits, underweight verification, O T P, extra-refill block, zip facts, reason list, closing line. The original file. Every other agent, CC, multilingual. |
+| **Open** | Specific-booking queries (booking exists, cylinder not arrived) still route before customerStatus is read, as in the original. The user may want v2 to tell the record first. |
+
 ### UNREG-DIST-01 · unregisteredComplaintAgent speaks the district and state only from the tool response — CRC only (2026-10-28)
 
 | | |
