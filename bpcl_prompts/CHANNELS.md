@@ -22,15 +22,16 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
-### UNREG-DIST-01 · unregisteredComplaintAgent speaks the district and state from the Result's named fields — CRC only (2026-10-28)
+### UNREG-DIST-01 · unregisteredComplaintAgent speaks the district and state only from the tool response — CRC only (2026-10-28)
 
 | | |
 |---|---|
 | **Axis** | Neither — a fix to one CRC agent, main only. |
 | **Source** | Live CRC call, 2026-10-28, after UNREG-TOOLS-01: get_pincode_data fired and returned Consumer Details District Name "Central Delhi", but Vaani confirmed "West Delhi, Delhi". A later call (PIN 497119) returned SURGUJA, Chhattisgarh and she spoke it correctly, so the Result does reach her. |
 | **Cause** | The prompt said only "the district the Result gave you". For a well-known Delhi PIN code her own idea of the district won over the Result. |
-| **The rule now** | TOOL 2 and SECTION 8 step 8 name the fields: the district spoken is the Result's Consumer Details District Name and the state its Consumer Details State Name, exactly as given, in Devanagari. A Result carrying those two fields is a resolved PIN code. |
-| **Deliberately NOT changed** | No sample district in the prompt. No rule against using her own knowledge (UNREG-TOOLS-01 removed that kind of rule). Every other agent, CC, multilingual. |
+| **The rule now** | TOOL 2: "The district and the state you speak are copied from the get_pincode_data Result, exactly as it gives them. The tool response is the only source for them." SECTION 8 step 8: the district is copied from the tool response exactly as given. |
+| **Revised same day** | The first version named the Result fields (Consumer Details District Name / State Name). Reverted: naming exact field names has made her guess values before. Replaced by the positive "the tool response is the only source" line above. |
+| **Deliberately NOT changed** | No sample district in the prompt. No list of what she must not use (own knowledge, guessing): such a line was in the prompt when she guessed दिल्ली, and UNREG-TOOLS-01 removed that kind of rule. Every other agent, CC, multilingual. |
 
 ---
 
