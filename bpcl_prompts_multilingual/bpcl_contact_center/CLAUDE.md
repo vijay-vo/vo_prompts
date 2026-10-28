@@ -152,7 +152,12 @@ PIN code → `get_pincode_data` → district → `bpcl_create_unregistered_compl
 turn — but each of the three tool turns is the call alone, with no spoken line (2026-09-24, and
 TOOL-PORT-01). The PIN code is collected in parts, like the complaint number, and sent only at
 exactly six digits; the issue in handoffSummary holds for the whole call, after a status check
-included (CST-PORT-02). Hindi CRC ported this agent from here (UNREG-03).
+included (CST-PORT-02). Hindi CRC ported this agent from here (UNREG-03). Since PORT-1028
+(2026-10-28, from the Hindi UNREG-TOOLS-01 and UNREG-DIST-01), line 1 is the `COMPLAINT
+REGISTRATION — HIGHEST PRIORITY` directive naming the three tools in order; the offer line asks only
+for the name; the PIN code question and the district confirmation are said in her own words, with no
+quoted line after either tool; and the district is copied from the `get_pincode_data` Result exactly
+as given.
 
 **Two complaint tools, split by whether we hold a record** (2026-09-24), and **one parameter
 vocabulary across both**: `complaintSummary` and `complaintReason`. The old `feedbackDescription`
