@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### UNREG-TOOLS-01 (lite_zip port) · lite_zip unregisteredComplaintAgent: line-1 directive, every data tool the call alone — lite_zip (2026-10-28)
+
+| | |
+|---|---|
+| **Axis** | Neither — the CRC UNREG-TOOLS-01 fix ported to `bpcl_lite_zip/unregisteredComplaintAgent.txt`, main. |
+| **Source** | CRC UNREG-TOOLS-01 (same day): live calls skipped all three tools while speaking the line the prompt held for that moment. lite_zip had the same shape, and worse: each of its three data tools was paired with a spoken line on the same turn (the pincode question with updateContact, a hold line with get_pincode_data, a registering line with bpcl_create_unregistered_complaint). That is the announcement [TOOL_CALLING.md](TOOL_CALLING.md) rule 2 forbids. |
+| **The rule now** | ① Line 1: COMPLAINT REGISTRATION — HIGHEST PRIORITY, naming updateContact → get_pincode_data → bpcl_create_unregistered_complaint, each the whole turn, each waiting for the previous Result, invoke again if no Result. ② The tool contract's rule 2: the three data tools are the call alone; switchagent and callhangup keep their line as text. ③ updateContact is the call alone; the pincode question comes on the next turn, after its Result, behind a NAME GATE. ④ get_pincode_data is the call alone (hold line removed); a successful Result is answered by the complaint call alone (registering line removed). ⑤ The name ask asks only for the name, for the complaint, with no "registering your complaint". ⑥ Removed: the "THE ORDER IS FIXED" block (line 1 replaces it), "REGISTERING LINE IS TERMINAL", the "if you catch yourself writing…" check, and the "neat sequence" sentence (rules that name the unwanted behaviour). |
+| **Deliberately NOT changed** | The lite_zip flow: no district confirmation step, and the pincode is still read back digit by digit. **UNREG-DIST-01 has no lite_zip counterpart**, since lite_zip never speaks the district (the pincode is never a serviceability check). Content beats stay, with no fixed lines. Default.txt, pcalitezip.txt. |
+
+---
+
 ### GIC-V2-01 · genericInfoComplaintAgent_v2.txt, a restructured replica for testing — CRC only (2026-10-28)
 
 | | |

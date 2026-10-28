@@ -216,8 +216,9 @@ Takes one parameter, `ConsumerDetailsConsumerName` — the name the caller confi
 Latin script, title case, no honorific. **This tool is the only thing that records the name**; the
 caller saying it records nothing.
 
-Called on the same turn the name is confirmed, with the pincode question as that turn's spoken text —
-so it costs no extra turn and needs no waiting line. It is **silent plumbing**: the caller is never
+The caller's yes to the name is answered by the call alone, with no text on that turn; the pincode
+question comes on the next turn, once its Result is back (CHANNELS.md UNREG-TOOLS-01, 2026-10-28 —
+it used to share a turn with the pincode question). It is **silent plumbing**: the caller is never
 told their name was saved or updated, and the tool is never named. Called once per name; a second call
 happens only if the caller corrects their name after it was already sent, and then with the corrected
 value. If no Result comes back, the call never fired — re-invoke it without re-asking the caller.
@@ -237,6 +238,12 @@ Takes one parameter, `pinCode` — the six digits the caller confirmed. Its two 
 - **Success** (`Get pincode data fetched successfully.`) → say **nothing** about it and go straight
   to the complaint tool. Calling `bpcl_create_unregistered_complaint` next is **mandatory**: a
   successful pincode fetch on its own has registered nothing.
+
+**All three data tools are the call alone (UNREG-TOOLS-01).** `updateContact`, `get_pincode_data` and
+`bpcl_create_unregistered_complaint` each take the whole turn with no text: no hold line, no
+"registering" line. The caller hears from Vaani again on the turn after the Result. Line 1 of the
+prompt is the `COMPLAINT REGISTRATION — HIGHEST PRIORITY` directive naming the three in order.
+`switchagent` and `callhangup` keep their line as text on the same turn.
 
 🚨 **The pincode is for the complaint and nothing else.** It is **never** a serviceability check.
 Neither agent may ever say whether Lite zip is available in a caller's area, name their city back at
