@@ -205,13 +205,13 @@ Process for taking New Connection
 Process to book the new connection through Website
 Status of new connection
 Non release of New Connection against waitlist
-10 kg Bharat Gas Lite Zip cylinder
+10 kg Bharatgas Lite Zip cylinder
 14.2 kg Subsidized domestic LPG connection
 19 kg commercial connection
 Industrial Cylinder (35/47.5/422 kg)
 ```
 
-⚠️ **There is no `others` value and no free text.** `10 kg Bharat Gas Lite Zip cylinder` is the
+⚠️ **There is no `others` value and no free text.** `10 kg Bharatgas Lite Zip cylinder` is the
 **default**, and it is the right phrase for nearly every complaint this channel files — including a
 5 kg Lite zip one, since no 5 kg phrase exists. The other eight are used only when the caller's
 complaint genuinely is about that topic.
