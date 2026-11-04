@@ -45,7 +45,7 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
 
    **No CRC tool but `callhangup` takes a `preToolMessage`.** The closing line used to be the agent's
    own text with the call on the same turn. The model also copied it into `callhangup`'s
-   `preToolMessage`, so the consumer heard "धन्यवाद भारत पेट्रोलियम को call करने के लिए…" twice
+   `preToolMessage`, so the consumer heard "धन्यवाद भारत पेट्रोलियम को कॉल करने के लिए…" twice
    (HANG-PTM-01, 2026-11). The `preToolMessage`-only close is the method that works on the
    multilingual PNG/LPG and Smart Fleet agents. The closing line is "धन्यवाद भारत पेट्रोलियम को
    call करने के लिए। आपका समय शुभ हो।" in every CRC agent. A `CALL ENDING — HIGHEST PRIORITY`
