@@ -81,7 +81,7 @@ customer *saying* their name nor a successful pincode fetch records or registers
 
 **Either agent can end the call, and both end it the same way** — the CRC close pattern: help with
 everything first, then ask whether any more help is needed **as a turn of its own**, and only on a
-"no" write the goodbye as text and call `callhangup` on that same turn, with no `preToolMessage`. The
+"no" write no text and call `callhangup` with the goodbye in its `preToolMessage` (HANG-PTM-01, 2026-11-04 — text plus a filled `preToolMessage` made the goodbye heard twice). The
 gate is the consumer's own last turn: a topic is finished only when their last turn carried nothing
 further. There is no turn cap and no forced close, and a call that never reaches the question is
 correct. Neither agent hangs up on a silence before the third rung of its silence ladder, in the same
@@ -115,7 +115,7 @@ This is the sharpest divergence from both other channels — a `calltransfer` bl
 **no valid translation here**; it simply has no equivalent.
 
 **Switching is invisible**, exactly as in CC and CRC: one short line as the agent's own **text**, no
-`preToolMessage` on any tool, nothing after the tool call, and never a word that reveals another
+`preToolMessage` on the switch, nothing after the tool call, and never a word that reveals another
 agent exists (transfer, connect, forward, team, department, specialist, agent).
 
 **The tool call is the action.** Both prompts carry the `FAILED TURN` / `RECOVERY` rule: a spoken
@@ -243,7 +243,7 @@ Takes one parameter, `pinCode` — the six digits the caller confirmed. Its two 
 `bpcl_create_unregistered_complaint` each take the whole turn with no text: no hold line, no
 "registering" line. The caller hears from Vaani again on the turn after the Result. Line 1 of the
 prompt is the `COMPLAINT REGISTRATION — HIGHEST PRIORITY` directive naming the three in order.
-`switchagent` and `callhangup` keep their line as text on the same turn.
+`switchagent` keeps its line as text on the same turn; `callhangup` takes no text and carries the goodbye in its `preToolMessage` (HANG-PTM-01).
 
 🚨 **The pincode is for the complaint and nothing else.** It is **never** a serviceability check.
 Neither agent may ever say whether Lite zip is available in a caller's area, name their city back at
