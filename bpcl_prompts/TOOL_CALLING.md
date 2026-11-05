@@ -41,10 +41,17 @@ Earlier forms of the same failure: CPL-11/12, CPL-17, CPL-19, TOOL-06, CPL-21, C
    | `bpcl_create_complaint`, `bpcl_create_unregistered_complaint` | The call alone. No text, no `preToolMessage` (TOOL-06). | Read the tool's message and do what it says in natural Hindi. Never read its English aloud (CPL-22). |
    | `bpcl_complaint_status` (CST-01) | The call alone, exactly like `bpcl_create_complaint`. No text, no `preToolMessage`. Only after the consumer has confirmed the number read back to them. | The status first, then the comment's progress, in natural Hindi. Never its English, and never a name, number or date out of the comment. Failure → a short apology and the number checked in the SMS; a different number is the second check (CST-08). Two per call. |
    | `calltransfer` | The call alone. No text, no `preToolMessage` (TOOL-07). | Success → nothing; the platform closes the call. Failure → say the team could not be reached, using only the window the Result gave. Once per call (XFER-05). |
-   | `callhangup` | The closing line as the agent's own text, with the call on the same turn. | No text (TOOL-08). |
+   | `callhangup` | No text; the closing line goes in `preToolMessage`, with the call alone (HANG-PTM-01). If no Result comes back, call it again the same way. | No text (TOOL-08). |
    | `switchagent` | A short anchor line as text, plus `agentName` and `handoffSummary`. | — |
 
-   **No CRC tool takes a `preToolMessage`.**
+   **No CRC tool but `callhangup` takes a `preToolMessage`.** The closing line used to be the agent's
+   own text with the call on the same turn. The model also copied it into `callhangup`'s
+   `preToolMessage`, so the consumer heard "धन्यवाद भारत पेट्रोलियम को कॉल करने के लिए…" twice
+   (HANG-PTM-01, 2026-11). The `preToolMessage`-only close is the method that works on the
+   multilingual PNG/LPG and Smart Fleet agents. The closing line is "धन्यवाद भारत पेट्रोलियम को
+   कॉल करने के लिए। आपका समय शुभ हो।" in every CRC agent. A `CALL ENDING — HIGHEST PRIORITY`
+   line sits right under the COMPLAINT REGISTRATION and COMPLAINT STATUS lines (line 3), or at
+   line 1 where there are none.
 
 4. **No scripted outcome lines.** The prompt holds no example Hindi line for complaint success,
    failure or already-registered. The model copied those lines *instead of* calling the tool
@@ -98,7 +105,7 @@ separated by `" - "`, never as one whole number or as an amount (NUM-01, NUM-08)
 Each of these has broken tool calling at least once:
 
 - A "registering" / "transferring" / "checking" line before or alongside an action tool.
-- `preToolMessage` on any CRC tool.
+- `preToolMessage` on any CRC tool except `callhangup`, and the closing line as text beside `callhangup` (HANG-PTM-01).
 - Example Hindi lines for any complaint or transfer outcome.
 - A warmth or empathy rule that can be satisfied by announcing the complaint.
 - Backticks, or `tool(key=value)` syntax, anywhere in a live prompt.
