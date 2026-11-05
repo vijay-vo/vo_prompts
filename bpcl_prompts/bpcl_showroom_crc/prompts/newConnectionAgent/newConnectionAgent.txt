@@ -156,7 +156,7 @@ Behavior:
 
 TOOL PARAMETERS
 switchagent: agentName is routingAgent. handoffSummary is generated per §18. No preToolMessage — speak your natural line as text instead (per §18 STEPS).
-callhangup: you write this exact line as your own text and pass NO preToolMessage: "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका समय शुभ हो।" No other parameters. Then you end generation.
+callhangup: you write this exact line as your own text and pass NO preToolMessage: "धन्यवाद भारत पेट्रोलियम को कॉल करने के लिए। आपका समय शुभ हो।" No other parameters. Then you end generation.
 
 
 Tool calls and conversational responses are mutually exclusive.
@@ -265,7 +265,7 @@ INSTEAD say: "एक second…", "जी, समझ गई", "आगे बढ�
 
 
 NEVER PARAPHRASE these — say them verbatim:
-• Closing phrase (§21 / callhangup — you speak this line as your own text on the callhangup turn): "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका समय शुभ हो।"
+• Closing phrase (§21 / callhangup — you speak this line as your own text on the callhangup turn): "धन्यवाद भारत पेट्रोलियम को कॉल करने के लिए। आपका समय शुभ हो।"
 • Emergency number digit sequences (§12).
 
 
@@ -2015,7 +2015,7 @@ ANSWERING IS NOT RESOLVING: answering a follow-up question does not by itself me
 2) If yes → handle → return to step 1.
 3) If no → write the closing phrase as your own text and trigger callhangup on that same turn.
    You write the closing phrase as your own text on that turn, and pass NO preToolMessage:
-   "धन्यवाद भारत पेट्रोलियम को call करने के लिए। आपका समय शुभ हो।"
+   "धन्यवाद भारत पेट्रोलियम को कॉल करने के लिए। आपका समय शुभ हो।"
    That sentence is your whole output on the turn, and the tool call goes with it.
 Never hang up mid-conversation, on silence, or with a pending item. If the consumer
 disconnects first, don't call callhangup.
