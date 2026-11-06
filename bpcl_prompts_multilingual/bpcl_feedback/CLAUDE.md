@@ -34,7 +34,7 @@ There is no `BPCL_QUESTIONS.md` here (user decision).
 ## Data (injected before the call, always real values)
 | Variable | Use |
 |---|---|
-| `{{ConsumerDetailsConsumerName}}` | Greeting and the wrong-person line only |
+| `{{ConsumerDetailsConsumerName}}` | First name only, as in CRC (salutation, S/O part and surname dropped), in the first question and the wrong-person line only |
 | `{{ConsumerDetailsDistributorName}}` | Purpose line; "your distributor" |
 | `{{ConsumerDetailsConsumerAddress}}` | Only if asked which connection; never read out to check |
 | `{{RHdeliveryDate0}}` | Question one. Arrives **month first**, `M/D/YYYY h:mm:ss AM/PM`. Spoken as day, month, year in words plus only the part of the day (morning / afternoon / evening / night), never the clock time |
