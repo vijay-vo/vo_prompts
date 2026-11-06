@@ -71,7 +71,9 @@ the consumer's own answer, and the agent never does date arithmetic.
    - Cylinder never received → the questions stop, consent question at once, reason Cylinder Delivery.
 6. **After the last question:** she lists only the negative answers. None → close A. Any → ONE consent
    question naming them. Yes → ONE `bpcl_create_complaint`; no → close A.
-7. **Close** in preToolMessage. A: "Thank you for giving your valuable time to Bharat Petroleum."
+7. **Close** in preToolMessage only (HANG-PTM-01 as on crc-complaint-status 3b80d35, after a live double goodbye
+   2026-11-06): the top CALL ENDING line carries the exact closing lines; the closing line is never text; the
+   complaint-outcome turn never carries the goodbye. A: "Thank you for giving your valuable time to Bharat Petroleum."
    B (busy, silence, no adult): "I will call you later." + A. C (wrong person): "Sorry for the
    inconvenience." + A. There is no "anything else?" question: question eight is it.
 
