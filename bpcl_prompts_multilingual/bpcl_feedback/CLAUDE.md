@@ -44,8 +44,11 @@ which may be a newer undelivered one. The booking date (`{{RHorderDate0}}`) is n
 the consumer's own answer, and the agent never does date arithmetic.
 
 ## The call
-1. **Greeting** (instructions, not a fixed line), in the language the platform sets: Vaani from Bharat
-   Petroleum, asks for the consumer by name.
+1. **Greeting split in two** (user, 2026-11-06). The platform's first message is static and carries only the
+   greeting and her name: "Namaste, I am Vaani speaking from Bharat Petroleum." (table below). The prompt's
+   first turn, after the consumer's first reply, is the fixed line "Am I speaking with [consumer name]?",
+   in the consumer's language (the greeting's language if the reply has none). The name stays out of the
+   platform message, so the prompt's name cleaning (salutation dropped, whole words in script) applies.
 2. **Who answered:** consumer or any adult of the household → carry on. Child → ask for an elder. Wrong
    person → "This number is registered under the name [consumer name]." then close C (or carry on if they
    turn out to be family). Busy → close B, no time asked.
@@ -66,6 +69,27 @@ the consumer's own answer, and the agent never does date arithmetic.
 7. **Close** in preToolMessage. A: "Thank you for giving your valuable time to Bharat Petroleum."
    B (busy, silence, no adult): "I will call you later." + A. C (wrong person): "Sorry for the
    inconvenience." + A. There is no "anything else?" question: question eight is it.
+
+## Platform first message, per language (static, no name)
+Spoken with each language's own greeting word. The second column is only what the prompt's first turn
+will say in that language, for checking; it is not configured anywhere.
+
+| Language | First message | First turn of the prompt |
+|---|---|---|
+| Hindi | नमस्ते, मैं भारत पेट्रोलियम से वाणी बोल रही हूँ। | क्या मेरी बात [name] जी से हो रही है? |
+| English | Hello, this is Vaani from Bharat Petroleum. | Am I speaking with [name]? |
+| Kannada | ನಮಸ್ಕಾರ, ನಾನು ಭಾರತ್ ಪೆಟ್ರೋಲಿಯಂನಿಂದ ವಾಣಿ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ. | ನಾನು [name] ಅವರೊಂದಿಗೆ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆಯೇ? |
+| Telugu | నమస్కారం, నేను భారత్ పెట్రోలియం నుండి వాణి మాట్లాడుతున్నాను. | నేను [name] గారితో మాట్లాడుతున్నానా? |
+| Tamil | வணக்கம், நான் பாரத் பெட்ரோலியத்திலிருந்து வாணி பேசுகிறேன். | நான் [name] அவர்களிடம் பேசுகிறேனா? |
+| Malayalam | നമസ്കാരം, ഞാൻ ഭാരത് പെട്രോളിയത്തിൽ നിന്ന് വാണിയാണ് സംസാരിക്കുന്നത്. | [name] ആണോ സംസാരിക്കുന്നത്? |
+| Odia | ନମସ୍କାର, ମୁଁ ଭାରତ ପେଟ୍ରୋଲିୟମରୁ ବାଣୀ କହୁଛି। | ମୁଁ କ'ଣ [name]ଙ୍କ ସହ କଥା ହେଉଛି? |
+| Marathi | नमस्कार, मी भारत पेट्रोलियममधून वाणी बोलत आहे. | मी [name] यांच्याशी बोलत आहे का? |
+| Gujarati | નમસ્તે, હું ભારત પેટ્રોલિયમમાંથી વાણી બોલું છું. | શું હું [name] સાથે વાત કરી રહી છું? |
+| Bengali | নমস্কার, আমি ভারত পেট্রোলিয়াম থেকে বাণী বলছি। | আমি কি [name]-এর সঙ্গে কথা বলছি? |
+| Punjabi | ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਜੀ, ਮੈਂ ਭਾਰਤ ਪੈਟਰੋਲੀਅਮ ਤੋਂ ਵਾਣੀ ਬੋਲ ਰਹੀ ਹਾਂ। | ਕੀ ਮੇਰੀ ਗੱਲ [name] ਜੀ ਨਾਲ ਹੋ ਰਹੀ ਹੈ? |
+
+Sarvam's standard speech recognition covers eleven languages; the four South Indian ones are Kannada, Telugu,
+Tamil and Malayalam. Have a native speaker check each line on the TTS voice before going live.
 
 ## Complaint rules
 - **Always ask consent first**, with the same consent question for every complaint. ONE complaint per call;
