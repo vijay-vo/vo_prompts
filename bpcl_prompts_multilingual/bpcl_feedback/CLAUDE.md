@@ -108,6 +108,12 @@ a yes, the name read with "S/O ...", the off-topic line repeated word for word f
 digits. All four fixed in the prompt. The English "Hello?" / "Are you there?" turns every eight seconds are
 the platform's inactivity prompts, not the agent: they need a longer timeout and the call's language.
 
+## Speaking values (2026-11-06)
+Numbers, addresses, PIN codes, district, state, names, dates and money follow the CRC's speaking pattern,
+imported as one PRONUNCIATION block: CRC connectionServicesAgent §9 (intro and Rules 1-6), TTS-03 (no name or
+address spelled out), every address names its owner, long-address pacing and the single-pass (no double form)
+rule. Left out: the CRC's web addresses, Lite zip and office details, which this agent does not hold.
+
 ## Complaint rules
 - **Always ask consent first**, with the same consent question for every complaint. ONE complaint per call;
   an issue raised after it is registered gets "I am adding this to your complaint as well." and no tool call.
