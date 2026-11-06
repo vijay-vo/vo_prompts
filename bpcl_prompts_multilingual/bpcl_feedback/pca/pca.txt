@@ -37,7 +37,7 @@ Infer the meaning, not the exact words: a yes, a no or a "not sure" in any langu
 If the consumer contradicts themselves, the latest clear answer wins.
 If an answer came out on its own before Vaani asked that question, it still counts as the answer.
 A general remark such as "everything was fine" answers only the question it was said in reply to; it never fills in a question that was not asked.
-If the call never reached a question, that field is "notAsked". If Vaani asked it and the consumer gave no answer to it, that field is "noAnswer".
+If the consumer gave no answer on a point — Vaani asked and they did not answer, or the call ended before that point — that field is "noAnswer".
 An adult of the household answering for the consumer counts exactly like the consumer.
 
 OUTPUT:
@@ -62,14 +62,13 @@ Return only a single valid JSON object in the exact structure below. It must be 
 FIELD DEFINITIONS
 
 THE SEVEN CHECK FIELDS — deliveryConfirmed, deliveryCheck, priceCheck, weightCheck, leakCheck, uniformCheck, addressCheck.
-Allowed values for each: "yes" | "no" | "not_sure" | "notAsked" | "noAnswer".
+Allowed values for each: "yes" | "no" | "notSure" | "noAnswer".
 Every value states something that happened on the call; none of them is a guess.
 "yes": the consumer said the delivery was fine on that point.
 "no": the consumer said it was not.
-"not_sure": Vaani asked, and the consumer answered that they did not know, did not remember, or were not sure.
-"notAsked": the call never reached this question and the consumer never spoke about this point on their own — they were busy, the wrong person, refused, hung up, or the questions stopped because the cylinder never reached them.
-"noAnswer": Vaani asked this question, but the consumer did not answer it — they talked about something else, went silent, the call dropped right after it, or their answer is too garbled to read.
-An answer the consumer gave on their own, before Vaani reached that question, counts as their answer: the field is "yes" or "no", never "notAsked".
+"notSure": the consumer answered that they did not know, did not remember, or were not sure.
+"noAnswer": the consumer gave no answer on this point — Vaani asked and they talked about something else, went silent or the answer is too garbled to read; or the call ended before this point because they were busy, the wrong person, refused, hung up, or the questions stopped because the cylinder never reached them.
+An answer the consumer gave on their own, before Vaani reached that question, counts as their answer: the field is "yes" or "no", never "noAnswer".
 
 deliveryConfirmed — question one: did the last cylinder actually reach them?
 "yes": the consumer confirmed they received it, even if they said the date was different. A different date alone is still "yes".
@@ -82,9 +81,8 @@ priceCheck — question three: did they pay only the price on record?
 Vaani says the price on record in her question; you compare the consumer's answer with that price, in whole rupees, ignoring paise.
 "yes": they said the same amount, a lower amount, or words meaning the same (the same, what was on the bill).
 "no": they said an amount higher than the price Vaani stated, or, whatever the amount, they said they gave extra, were asked for extra money, or paid anything on top for any reason at all — a tip, a delivery charge, a floor charge, rounding up.
-"not_sure": they did not remember, or gave only a rough figure such as about or around.
-"noAnswer": they answered something else, or the amount they said is too garbled to read.
-"notAsked": the call never reached question three.
+"notSure": they did not remember, or gave only a rough figure such as about or around.
+"noAnswer": they answered something else, the amount they said is too garbled to read, or the call ended before question three.
 
 weightCheck — question four: did the delivery person check the weight of the cylinder?
 "yes": weight was checked. "no": it was not.
@@ -114,26 +112,27 @@ Lines meaning "I have noted it" or "I am adding this to your complaint as well" 
 
 allQA
 Allowed values: "yes" | "no".
-"yes": every one of questions one to seven was answered — any answer counts, including "not sure" or "I do not remember". Question eight is not counted.
+"yes": every one of questions one to seven was answered — any answer counts, including "notSure" or "I do not remember". Question eight is not counted.
 "no": anything else — the call ended early, a question was never asked, a question was asked and not answered, the questions stopped because the cylinder never reached them, or the consumer refused, was busy, or was the wrong person.
 
 csat (Customer Satisfaction — Predicted)
 Allowed values: "1", "2", "3", "4", "5" only.
-One is the lowest satisfaction and five the highest. Vaani never asks for a rating: you predict it from the consumer's observable sentiment, tone, cooperation and overall experience in the transcript, both with the delivery and with this call.
-"5": cooperative and positive, the delivery was fine on every point, or they clearly expressed satisfaction or thanks.
-"4": cooperative and engaged, with at most a minor problem, or a problem for which a complaint was registered and the number given, and they stayed calm.
-"3": neutral, minimal or indifferent answers, a partial or inconclusive call, or a problem raised calmly with no complaint.
-"2": reluctant or dissatisfied, raised several problems or showed frustration, or a complaint they wanted failed (a failed complaint is capped at "2").
-"1": angry, hostile, refused to engage, hung up abruptly, or the cylinder never reached them and they were upset.
-A wrong number, a busy consumer or a refusal with no sentiment shown is "3". A registered complaint never raises the score on its own; it is a next step, not a resolution.
-Base the rating strictly on what is observable in the transcript; never assume sentiment that is not evident.
+One is the lowest satisfaction and five the highest. Vaani never asks for a rating: you predict it from the consumer's observable tone and cooperation on this call.
+START FROM A HIGH SCORE. This is an outbound feedback call, and most consumers do not pick up or talk to such calls at all. A consumer who stays on the line and answers is already cooperating and giving their time, and that is the main thing you score. Short or plain answers are normal on a phone call and are never a sign of dissatisfaction. A problem with the delivery is the distributor's, not this call's: reporting it calmly does not lower the score.
+"5": the consumer took part and stayed polite or friendly, whether or not they reported problems, and whether or not a complaint was registered. This is the normal score for a completed call.
+"4": the consumer took part but was brief, a little impatient or in a hurry, mildly unhappy about the delivery, or the call ended before all the questions; or the complaint they wanted could not be registered and they stayed calm.
+"3": the consumer was clearly irritated or reluctant for much of the call, or upset that the cylinder never reached them, but did not get angry.
+"2": the consumer was clearly angry or frustrated with Bharat Petroleum, the distributor or the call.
+"1": only for a consumer who was abusive or hostile throughout.
+A busy consumer, a wrong number or a polite refusal is "4". A call that dropped at the start with nothing said is "4". You never lower the score for silence, short answers, a reported problem or an early end alone.
+Base the rating on what is observable in the transcript; when you are between two scores, choose the higher one.
 
 summary
 One plain English paragraph of forty to eighty words. No line breaks, bullet points or headings.
 Cover, in order: who answered (the consumer or a household member), the answer to each question that was asked, any problem or suggestion they raised, whether a complaint was registered, declined or failed, and how the call ended. Mention the consumer's mood only if it stood out. Write it so a manager reading it in ten seconds knows what happened. Do not quote the call's language; describe it in English. Never add a detail that was not said. If the transcript is empty or has no customer turns, write "No transcript available for this call." and nothing more.
 
 callResult
-Allowed values: "complaintRegistered" | "complaintFailed" | "issueReported" | "feedbackCaptured" | "feedbackIncomplete" | "callbackLater" | "feedbackRefused" | "wrongNumber" | "dscn"
+Allowed values: "complaintRegistered" | "complaintFailed" | "issueReported" | "feedbackCaptured" | "feedbackIncomplete" | "callbackLater" | "feedbackRefused" | "wrongNumber" | "disconnected"
 Return ONE value: the FINAL outcome of the call. DECIDE THIS LAST, after reading the whole transcript end to end, and never settle on the first matching event.
 Value definitions:
 - "complaintRegistered": a complaint was registered on this call. Use it only when complaintRegistered is "yes".
@@ -144,15 +143,15 @@ Value definitions:
 - "callbackLater": before the questions started, the consumer, or whoever answered, was busy or asked to be called later, no adult of the household was available, or the line went silent and Vaani said she will call later.
 - "feedbackRefused": the consumer did not want to give feedback, or did not want this call, and the questions never started.
 - "wrongNumber": the person who answered was not the consumer and not of the consumer's household.
-- "dscn": the call disconnected before any question was asked, with none of the above — the greeting got no real reply, or the call dropped at the start.
+- "disconnected": the call disconnected before any question was asked, with none of the above — the greeting got no real reply, or the call dropped at the start.
 PRIORITY ORDER, when more than one outcome happened in the same call:
-complaintRegistered > complaintFailed > issueReported > feedbackCaptured > feedbackIncomplete > callbackLater > feedbackRefused > wrongNumber > dscn
+complaintRegistered > complaintFailed > issueReported > feedbackCaptured > feedbackIncomplete > callbackLater > feedbackRefused > wrongNumber > disconnected
 Apply the ladder only after reading the whole call. A call where the cylinder never reached the consumer is "complaintRegistered", "complaintFailed" or "issueReported", never "feedbackIncomplete". A call cut short by a gas leak happening during the call is scored on the rest of the ladder like any other call; a gas leak happening now is never a complaint.
 
 ANALYSIS INSTRUCTIONS:
 Read the entire transcript thoroughly before generating the output.
 Do not fabricate or assume any information not present in the transcript or the metadata.
-For the seven check fields, use only the consumer's answers: "notAsked" where the call never reached the question, "noAnswer" where it was asked and not answered. Never guess "yes" or "no".
+For the seven check fields, use only the consumer's answers, and "noAnswer" where they gave none. Never guess "yes" or "no".
 For complaintRegistered, rely only on Vaani's explicit statement of a completed registration.
 For callResult, apply the priority order strictly and choose only one value.
 For issue, count words strictly: minimum two, maximum five.
