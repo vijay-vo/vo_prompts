@@ -51,10 +51,10 @@ Return only a single valid JSON object in the exact structure below. It must be 
   "uniformCheck": "",
   "addressCheck": "",
   "issue": "",
-  "summary": "",
-  "csat": "",
-  "allQA": "",
   "complaintRegistered": "",
+  "allQA": "",
+  "csat": "",
+  "summary": "",
   "callResult": ""
 }
 
@@ -97,9 +97,16 @@ When there is more than one problem, the label names the one that comes FIRST in
 Examples of the shape: "cylinder never received", "delivery boy asked extra money", "leak test not done", "no home delivery", "delivery was late", "delivery boy not in uniform".
 When no problem was reported, return "no issue reported". When the questions were never reached, return "feedback not taken".
 
-summary
-One plain English paragraph of forty to eighty words. No line breaks, bullet points or headings.
-Cover, in order: who answered (the consumer or a household member), the answer to each question that was asked, any problem or suggestion they raised, whether a complaint was registered, declined or failed, and how the call ended. Mention the consumer's mood only if it stood out. Write it so a manager reading it in ten seconds knows what happened. Do not quote the call's language; describe it in English. Never add a detail that was not said. If the transcript is empty or has no customer turns, write "No transcript available for this call." and nothing more.
+complaintRegistered
+Allowed values: "yes" | "no".
+"yes" ONLY for a completed registration stated after the fact: Vaani said, in any language, that the complaint has been registered, normally with a complaint number read out digit by digit. On the turn a complaint is actually registered Vaani says nothing; the outcome comes on her next line.
+"no" in every other case: no complaint was asked for or attempted; the consumer declined it; Vaani said only that she will register it or is registering it (an intention is not an outcome); or the complaint did not go through. A LATER FAILURE CANCELS AN EARLIER CLAIM: if Vaani said the complaint could not be registered because of a technical problem, return "no". Read the whole transcript and let the last thing said about the complaint win.
+Lines meaning "I have noted it" or "I am adding this to your complaint as well" are not a registration on their own.
+
+allQA
+Allowed values: "yes" | "no".
+"yes": every one of questions one to seven was answered — any answer counts, including "not sure" or "I do not remember". Question eight is not counted.
+"no": anything else — the call ended early, a question was never asked, a question was asked and not answered, the questions stopped because the cylinder never reached them, or the consumer refused, was busy, or was the wrong person.
 
 csat (Customer Satisfaction — Predicted)
 Allowed values: "1", "2", "3", "4", "5" only.
@@ -112,16 +119,9 @@ One is the lowest satisfaction and five the highest. Vaani never asks for a rati
 A wrong number, a busy consumer or a refusal with no sentiment shown is "3". A registered complaint never raises the score on its own; it is a next step, not a resolution.
 Base the rating strictly on what is observable in the transcript; never assume sentiment that is not evident.
 
-allQA
-Allowed values: "yes" | "no".
-"yes": every one of questions one to seven was answered — any answer counts, including "not sure" or "I do not remember". Question eight is not counted.
-"no": anything else — the call ended early, a question was never asked, a question was asked and not answered, the questions stopped because the cylinder never reached them, or the consumer refused, was busy, or was the wrong person.
-
-complaintRegistered
-Allowed values: "yes" | "no".
-"yes" ONLY for a completed registration stated after the fact: Vaani said, in any language, that the complaint has been registered, normally with a complaint number read out digit by digit. On the turn a complaint is actually registered Vaani says nothing; the outcome comes on her next line.
-"no" in every other case: no complaint was asked for or attempted; the consumer declined it; Vaani said only that she will register it or is registering it (an intention is not an outcome); or the complaint did not go through. A LATER FAILURE CANCELS AN EARLIER CLAIM: if Vaani said the complaint could not be registered because of a technical problem, return "no". Read the whole transcript and let the last thing said about the complaint win.
-Lines meaning "I have noted it" or "I am adding this to your complaint as well" are not a registration on their own.
+summary
+One plain English paragraph of forty to eighty words. No line breaks, bullet points or headings.
+Cover, in order: who answered (the consumer or a household member), the answer to each question that was asked, any problem or suggestion they raised, whether a complaint was registered, declined or failed, and how the call ended. Mention the consumer's mood only if it stood out. Write it so a manager reading it in ten seconds knows what happened. Do not quote the call's language; describe it in English. Never add a detail that was not said. If the transcript is empty or has no customer turns, write "No transcript available for this call." and nothing more.
 
 callResult
 Allowed values: "complaintRegistered" | "complaintFailed" | "issueReported" | "feedbackCaptured" | "feedbackIncomplete" | "callbackLater" | "feedbackRefused" | "wrongNumber" | "dscn"
