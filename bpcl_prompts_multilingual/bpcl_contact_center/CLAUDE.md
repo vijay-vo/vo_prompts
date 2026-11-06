@@ -110,8 +110,9 @@ breaks, start at its §4 checklist. What it means here:
   complaint about to be registered is never the "next step" a warm sentence carries.
 - **No scripted outcome lines.** No success line, no "four-beat" line, no "two turns" block: the
   outcome is whatever the tool's message says, in the consumer's language.
-- **`callhangup` takes no parameters.** The closing line is the agent's own text with the call on
-  the same turn — never in a `preToolMessage`, and no other key.
+- **`callhangup` takes one parameter, `preToolMessage`** (HANG-PTM-01, 2026-11-05). The agent writes
+  no text on that turn and the closing line goes only in `preToolMessage`; if no Result comes back it
+  invokes callhangup again the same way, and if a Result comes back it produces no text.
 - **`bpcl_create_complaint` carries exactly `complaintSummary` + `complaintReason`**, stated as a
   closed set in every COMPLAINT TOOL block; `bpcl_create_unregistered_complaint` adds only
   `ConsumerDetailsConsumerName`. The platform schemas match these keys (client, 2026-09-29).
@@ -143,9 +144,9 @@ success and failure lines after deciding the outcome by looking for a number in 
   here. It says so honestly and stays with the consumer.
 - **No message, no complaint.** Once per issue; if any message reported failure, no further call
   for any issue; never more than two calls per call.
-- **`callhangup` follows the same shape** — the closing line is the agent's **own text** on that
-  turn, no `preToolMessage`. **No tool in this channel takes a `preToolMessage`** any more, with
-  one exception: a `switchagent` retry after a platform failure.
+- **`callhangup` is the one tool that takes a `preToolMessage`** (HANG-PTM-01) — the closing line,
+  with no text on that turn. No other tool in this channel takes one, apart from the `switchagent`
+  retry after a platform failure and the `bpcl_fetch_all_api` wait line in `getConsumerDetails`.
 
 **`unregisteredComplaintAgent`** runs the `bpcl_lite_zip` desk's order — name → `updateContact` →
 PIN code → `get_pincode_data` → district → `bpcl_create_unregistered_complaint`, each step its own
@@ -275,8 +276,8 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
      injected data. Insider phrasing becomes third-party phrasing.
    - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
      language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
-     fixed closing string becomes the agent's own closing text, composed in the call's language,
-     on the `callhangup` turn — never a `preToolMessage`.
+     fixed closing string becomes the fixed closing line, said in the call's language, carried
+     only in the `preToolMessage` of the `callhangup` turn (HANG-PTM-01) with no text on that turn.
 
 ---
 

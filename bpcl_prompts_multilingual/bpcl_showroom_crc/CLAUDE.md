@@ -4,14 +4,17 @@ Bharat Petroleum's **showroom CRC channel**. Vaani speaks from the **Bharat Petr
 office in each city** (`{{crcOfficeCity}}`), a regional head office covering many districts and many
 distributors. She serves LPG consumers in whatever Indian language they speak.
 
-**Re-derived from [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) on 2026-09-24 (IVRS-PORT-01) and
-again on 2026-09-29 (IVRS-SYNC-02).** Every prompt is [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md)'s
-(= IVRS plus `calltransfer`), with **one further difference: identity** (CRC-ID-01, 2026-09-29). The Mumbai
-Headquarters text is replaced by the CRC office text of the same agent in `bpcl_prompts/bpcl_showroom_crc` on
-`main`, translated into the multilingual form, and `{{crcHolidayList}}` stays (HOL-01). Everything else — the
-topology, the handoff contract, the LPG domain facts, the multilingual rule, the complaint method, the
-Bharat Gas Lite zip ownership, the neutral greeting, the post-call set — is IVRS's, word for word, and must
-not diverge.
+**This channel follows the Hindi CRC that runs in production, on `crc-complaint-status`** (HSYNC-01,
+2026-11-05). Every prompt here was walked line by line against the Hindi CRC prompt of the same agent
+and brought to the same behaviour: flow, rules, gates, limits, tool method, complaint and complaint-status
+procedure, handoff handling, the top lines (COMPLAINT REGISTRATION, COMPLAINT STATUS, CALL ENDING) and
+`getConsumerDetails` (rebuilt from `getConsumerDetailsDeployed.txt`). It was derived from
+[`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) before that (IVRS-PORT-01, IVRS-SYNC-02,
+CRC-ID-01). What stays multilingual-only is written in fixed English lines said in the consumer's
+language, with no Indian script, plus the multilingual rules the Hindi CRC lacks (YOUR SCOPE and its
+fixed switch lines, the feminine-gender line, SEAM-01, CLOSE-01) where they do not contradict it. Where
+they do contradict it, the Hindi behaviour won; the open case is GAP-01 (a missing detail), applied
+unevenly and still to be decided.
 
 Read [../CLAUDE.md](../CLAUDE.md) first — it holds the shared truth. This file holds **only what is
 specific to this channel.**
@@ -19,10 +22,10 @@ specific to this channel.**
 Sister channels: [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md) — identical to these except identity and the
 holiday list — and [`bpcl_contact_center`](../bpcl_contact_center/CLAUDE.md), which also has no transfer.
 
-**Porting rule for this channel:** a fix landing in IVRS lands here too, in the same session, and in
-`bpcl_contact_center`. Translate two axes. Where IVRS refuses a transfer, this channel carries the Hindi
-CRC's transfer line for the same agent. Where IVRS speaks as the Mumbai Headquarters, this channel speaks
-as the CRC in `{{crcOfficeCity}}`, in the Hindi CRC's words for the same agent.
+**Porting rule for this channel:** a fix landing in the Hindi CRC on `crc-complaint-status` lands here
+in the same session, translated into the multilingual form (fixed English lines, no Indian script), and
+in `bpcl_contact_center`, `bpcl_lite_zip` and `ivrs_commercial` as each channel's policy allows. Hindi
+transfer text stays here (T1-T4); the other three channels carry their no-transfer handling instead.
 
 ---
 
@@ -106,8 +109,9 @@ breaks, start at its §4 checklist. What it means here:
   complaint about to be registered is never the "next step" a warm sentence carries.
 - **No scripted outcome lines.** No success line, no "four-beat" line, no "two turns" block: the
   outcome is whatever the tool's message says, in the consumer's language.
-- **`callhangup` takes no parameters.** The closing line is the agent's own text with the call on
-  the same turn — never in a `preToolMessage`, and no other key.
+- **`callhangup` takes one parameter, `preToolMessage`** (HANG-PTM-01, 2026-11-05). The agent writes
+  no text on that turn and the closing line goes only in `preToolMessage`; if no Result comes back it
+  invokes callhangup again the same way, and if a Result comes back it produces no text.
 - **`bpcl_create_complaint` carries exactly `complaintSummary` + `complaintReason`**, stated as a
   closed set in every COMPLAINT TOOL block; `bpcl_create_unregistered_complaint` adds only
   `ConsumerDetailsConsumerName`. The platform schemas match these keys (client, 2026-09-29).
@@ -138,9 +142,9 @@ success and failure lines after deciding the outcome by looking for a number in 
   If the message says to offer a transfer, that offer is T3 in `SENIOR TEAM TRANSFER`.
 - **No message, no complaint.** Once per issue; if any message reported failure, no further call
   for any issue; never more than two calls per call.
-- **`callhangup` follows the same shape** — the closing line is the agent's **own text** on that
-  turn, no `preToolMessage`. **No tool in this channel takes a `preToolMessage`** any more, with
-  one exception: a `switchagent` retry after a platform failure.
+- **`callhangup` is the one tool that takes a `preToolMessage`** (HANG-PTM-01) — the closing line,
+  with no text on that turn. No other tool in this channel takes one, apart from the `switchagent`
+  retry after a platform failure and the `bpcl_fetch_all_api` wait line in `getConsumerDetails`.
 
 **`unregisteredComplaintAgent`** runs the `bpcl_lite_zip` desk's order — name → `updateContact` →
 PIN code → `get_pincode_data` → district → `bpcl_create_unregistered_complaint`, each step its own
@@ -274,8 +278,8 @@ change those files. Also [FLOW.md](docs/FLOW.md), [Flow.mmd](docs/Flow.mmd),
      Headquarters text becomes that CRC text.
    - **Language.** CRC is Hindi with a fixed Devanagari script rule. IVRS speaks whichever Indian
      language the consumer speaks. Every hard-coded Hindi line becomes a meaning anchor, and a
-     fixed closing string becomes the agent's own closing text, composed in the call's language,
-     on the `callhangup` turn — never a `preToolMessage`.
+     fixed closing string becomes the fixed closing line, said in the call's language, carried
+     only in the `preToolMessage` of the `callhangup` turn (HANG-PTM-01) with no text on that turn.
 
 ---
 

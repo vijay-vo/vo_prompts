@@ -129,7 +129,7 @@ Both channels. `agentName` values passed to `switchagent` must come from this li
 |---|---|
 | `getConsumerDetails` | Number capture + `bpcl_fetch_all_api`. Entry for unregistered callers. |
 | `Default` | Greeting, emergency interrupt, FAQ, triage, routing. Never hangs up. |
-| `routingAgent` | Silent mid-call re-router. Never speaks: every turn is a switchagent call with no text. Holds no callhangup and no transfer; anything unclear or out of scope goes silently to `genericInfoComplaintAgent` (CHANNELS.md SCOPE-01, 2026-10-12). |
+| `routingAgent` | Mid-call re-router, synced from the Hindi CRC (HSYNC-01, 2026-11-05, superseding the silent-only SCOPE-01 router): silent switch by default, spoken only to clarify an unclear request, redirect a non-LPG one, answer who-are-you, or run the three-attempt out-of-scope ladder that ends with `callhangup`. No transfer in contact_center, lite_zip and ivrs_commercial; CRC may call `calltransfer` once per call. The platform must expose `callhangup` to it (and `calltransfer` in CRC). |
 | `emergencyAgent` | Gas hazard. Owns the call absolutely while a hazard is live. |
 | `bookingEligibleAgent` | May book; the booking attempt failed. |
 | `bookingNonEligibilityAgent` | May not book; explain the blocker. |
@@ -186,8 +186,9 @@ else on the next turn. The agent's own spoken line is never evidence a tool ran;
 and CC-PORT-02. `bpcl_create_complaint` and `calltransfer` are **the call alone**: no text on that
 turn, and what the agent says next comes only from the Result (for the complaint tool, from its
 message — CPL-22). `switchagent` carries one short line as the agent's own text on the same turn.
-`callhangup` carries the closing line as the agent's own text on the same turn. A line in both
-places makes the consumer hear it twice; a line with no call behind it did nothing.
+`callhangup` takes no text and carries the closing line in its `preToolMessage` (HANG-PTM-01,
+2026-11-05). A line in both places makes the consumer hear it twice; a line with no call behind it did
+nothing.
 
 **Switching is invisible.** Never reveal that other agents, teams, experts, or systems exist.
 Forbidden on a `switchagent` turn: transfer, connect, specialist, agent, team, department, desk,
