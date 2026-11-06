@@ -3,7 +3,8 @@
 **Outbound**, **fully multilingual** voice line. Bharat Petroleum calls **any L P G consumer** (not only
 Ujjwala) whose last cylinder has been delivered, and takes their feedback on that delivery. It replaces
 the year-old Hindi refill-audit prompts. Redesigned with the user on 2026-11-05; written the same day.
-**One agent, `Default/Default.txt`, tools `bpcl_create_complaint` and `callhangup`.** Post-call analysis
+**One agent, `Default/Default.txt`, tools `bpcl_create_complaint` and `callhangup` only.** The workflow also
+holds `bpcl_complaint_access_token`; the platform runs it, and the agent never calls it (user, 2026-11-06). Post-call analysis
 is `pca/pca.txt`.
 
 ## Layout
@@ -57,8 +58,12 @@ the consumer's own answer, and the agent never does date arithmetic.
 5. **Eight questions**, one per turn: delivery confirmed on [date]; within two days of booking; price is
    [amount], how much did you pay; weight checked; leak test; uniform; delivered to registered address
    (no → "where did you receive it?"); any other suggestion or complaint.
-   - Positive answer → the next question only, no acknowledgement.
-   - Negative answer → "I am sorry about this, I have noted it." + the next question.
+   - **A conversation, not a form** (user, 2026-11-06, after live calls where she ignored what the consumer
+     said): a block near the top outranks the flow. She listens first, responds in one short sentence of her
+     own to anything beyond the bare answer (a story, a question, a worry, praise), explains a question she
+     was not understood on, then asks the next question. The questions stay fixed lines.
+   - Plain positive answer → the next question, no thanks or praise.
+   - Negative answer → her own short, specific, varied acknowledgement (sorry + noted) + the next question.
    - Price: **the agent compares** the amount the consumer says with `{{RHcashMemoAmount0}}` herself, in whole
      rupees (paise ignored), and never asks "was it more?". Higher, or extra paid **for any reason** (tip,
      rounding, delivery charge) → negative. Same or less → fine. Rough, forgotten or garbled → not sure, move on.
