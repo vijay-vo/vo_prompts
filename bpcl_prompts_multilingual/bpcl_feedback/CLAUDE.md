@@ -143,7 +143,8 @@ Brand: Bharat Petroleum throughout.
 
 ## Post-call analysis (`pca/pca.txt`)
 Flat JSON, 13 fields: `deliveryConfirmed`, `deliveryCheck`, `priceCheck`, `weightCheck`, `leakCheck`,
-`uniformCheck`, `addressCheck` (yes / no / not_sure / unknown, "yes" = fine), `issue` (2–5 word label,
+`uniformCheck`, `addressCheck` (yes / no / not_sure / notAsked / noAnswer, "yes" = fine;
+no "unknown": every value states what happened, never a guess — user, 2026-11-06), `issue` (2–5 word label,
 same priority order; "no issue reported" / "feedback not taken"), `summary` (English paragraph), `csat`
 (1–5, predicted, never asked), `allQA` (yes only if questions one to seven all answered), `complaintRegistered`,
 `callResult`.

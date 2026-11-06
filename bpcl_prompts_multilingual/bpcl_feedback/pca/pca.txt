@@ -36,7 +36,8 @@ HOW TO READ THE ANSWERS
 Infer the meaning, not the exact words: a yes, a no or a "not sure" in any language, in any phrasing, counts the same.
 If the consumer contradicts themselves, the latest clear answer wins.
 If an answer came out on its own before Vaani asked that question, it still counts as the answer.
-If Vaani asked a question and the consumer did not answer it, or the call ended before it was asked, that field is "unknown".
+A general remark such as "everything was fine" answers only the question it was said in reply to; it never fills in a question that was not asked.
+If the call never reached a question, that field is "notAsked". If Vaani asked it and the consumer gave no answer to it, that field is "noAnswer".
 An adult of the household answering for the consumer counts exactly like the consumer.
 
 OUTPUT:
@@ -61,8 +62,14 @@ Return only a single valid JSON object in the exact structure below. It must be 
 FIELD DEFINITIONS
 
 THE SEVEN CHECK FIELDS — deliveryConfirmed, deliveryCheck, priceCheck, weightCheck, leakCheck, uniformCheck, addressCheck.
-Allowed values for each: "yes" | "no" | "not_sure" | "unknown".
-"yes" always means the delivery was fine on that point; "no" always means it was not. "not_sure" means the consumer answered but did not know or did not remember. "unknown" means it was never asked, never answered, or cannot be determined from the transcript.
+Allowed values for each: "yes" | "no" | "not_sure" | "notAsked" | "noAnswer".
+Every value states something that happened on the call; none of them is a guess.
+"yes": the consumer said the delivery was fine on that point.
+"no": the consumer said it was not.
+"not_sure": Vaani asked, and the consumer answered that they did not know, did not remember, or were not sure.
+"notAsked": the call never reached this question and the consumer never spoke about this point on their own — they were busy, the wrong person, refused, hung up, or the questions stopped because the cylinder never reached them.
+"noAnswer": Vaani asked this question, but the consumer did not answer it — they talked about something else, went silent, the call dropped right after it, or their answer is too garbled to read.
+An answer the consumer gave on their own, before Vaani reached that question, counts as their answer: the field is "yes" or "no", never "notAsked".
 
 deliveryConfirmed — question one: did the last cylinder actually reach them?
 "yes": the consumer confirmed they received it, even if they said the date was different. A different date alone is still "yes".
@@ -75,7 +82,9 @@ priceCheck — question three: did they pay only the price on record?
 Vaani says the price on record in her question; you compare the consumer's answer with that price, in whole rupees, ignoring paise.
 "yes": they said the same amount, a lower amount, or words meaning the same (the same, what was on the bill).
 "no": they said an amount higher than the price Vaani stated, or, whatever the amount, they said they gave extra, were asked for extra money, or paid anything on top for any reason at all — a tip, a delivery charge, a floor charge, rounding up.
-"not_sure": they did not remember, gave only a rough figure such as about or around, or the amount they said is too garbled to read.
+"not_sure": they did not remember, or gave only a rough figure such as about or around.
+"noAnswer": they answered something else, or the amount they said is too garbled to read.
+"notAsked": the call never reached question three.
 
 weightCheck — question four: did the delivery person check the weight of the cylinder?
 "yes": weight was checked. "no": it was not.
@@ -143,7 +152,7 @@ Apply the ladder only after reading the whole call. A call where the cylinder ne
 ANALYSIS INSTRUCTIONS:
 Read the entire transcript thoroughly before generating the output.
 Do not fabricate or assume any information not present in the transcript or the metadata.
-For the seven check fields, use only the consumer's answers, and "unknown" where there is none.
+For the seven check fields, use only the consumer's answers: "notAsked" where the call never reached the question, "noAnswer" where it was asked and not answered. Never guess "yes" or "no".
 For complaintRegistered, rely only on Vaani's explicit statement of a completed registration.
 For callResult, apply the priority order strictly and choose only one value.
 For issue, count words strictly: minimum two, maximum five.
