@@ -56,7 +56,10 @@ the consumer's own answer, and the agent never does date arithmetic.
    (no → "where did you receive it?"); any other suggestion or complaint.
    - Positive answer → the next question only, no acknowledgement.
    - Negative answer → "I am sorry about this, I have noted it." + the next question.
-   - Paid more **for any reason** (tip, rounding, delivery charge) is negative. Paid less is fine.
+   - Price: **the agent compares** the amount the consumer says with `{{RHcashMemoAmount0}}` herself, in whole
+     rupees (paise ignored), and never asks "was it more?". Higher, or extra paid **for any reason** (tip,
+     rounding, delivery charge) → negative. Same or less → fine. Rough, forgotten or garbled → not sure, move on.
+     She never states the difference (comparing is allowed; adding or subtracting is not). Decided 2026-11-06.
    - Cylinder never received → the questions stop, consent question at once, reason Cylinder Delivery.
 6. **After the last question:** she lists only the negative answers. None → close A. Any → ONE consent
    question naming them. Yes → ONE `bpcl_create_complaint`; no → close A.
@@ -122,5 +125,3 @@ district/state code tables (unreliable for an LLM, and not needed now complaints
 
 ## Not done yet
 - Not tested on a live call.
-- Open: how the agent judges "paid more" when the consumer gives only an amount (under discussion
-  2026-11-06).

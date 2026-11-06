@@ -72,9 +72,10 @@ deliveryCheck — question two: did it reach them within two days of booking?
 "yes": they said it came within two days. "no": they said it took longer. Judge only on what the consumer said; never calculate it from dates.
 
 priceCheck — question three: did they pay only the price on record?
-"yes": they said they paid the same amount, that amount, or LESS.
-"no": they said they paid more, gave extra, were asked for extra money, or paid anything on top for any reason at all — a tip, a delivery charge, a floor charge, rounding up. If they stated an amount and then agreed, when Vaani asked, that it was more than the price on record, that is "no".
-If they only stated an amount and it was never made clear whether it was more, use "not_sure".
+Vaani says the price on record in her question; you compare the consumer's answer with that price, in whole rupees, ignoring paise.
+"yes": they said the same amount, a lower amount, or words meaning the same (the same, what was on the bill).
+"no": they said an amount higher than the price Vaani stated, or, whatever the amount, they said they gave extra, were asked for extra money, or paid anything on top for any reason at all — a tip, a delivery charge, a floor charge, rounding up.
+"not_sure": they did not remember, gave only a rough figure such as about or around, or the amount they said is too garbled to read.
 
 weightCheck — question four: did the delivery person check the weight of the cylinder?
 "yes": weight was checked. "no": it was not.
