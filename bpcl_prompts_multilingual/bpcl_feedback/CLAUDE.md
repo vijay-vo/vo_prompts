@@ -98,6 +98,16 @@ will say in that language, for checking; it is not configured anywhere.
 Sarvam's standard speech recognition covers eleven languages; the four South Indian ones are Kannada, Telugu,
 Tamil and Malayalam. Have a native speaker check each line on the TTS voice before going live.
 
+## Language (live failure, 2026-11-06)
+A Malayalam consumer ("Athe", then Malayalam script on every turn) got Hindi for the whole call: she kept the
+language of her own earlier turns. Fixed with a top-of-file LANGUAGE — HIGHEST PRIORITY line and a rewritten
+LANGUAGE block: the language is decided again before every turn from the consumer's latest words; her own
+turns and the opening language never decide it; one-word replies carry a language (athe, aamaa, avunu, houdu,
+ho, haan); a reply with no language keeps the current one. Same call also showed: a yes ("athe") not taken as
+a yes, the name read with "S/O ...", the off-topic line repeated word for word five times, and Devanagari
+digits. All four fixed in the prompt. The English "Hello?" / "Are you there?" turns every eight seconds are
+the platform's inactivity prompts, not the agent: they need a longer timeout and the call's language.
+
 ## Complaint rules
 - **Always ask consent first**, with the same consent question for every complaint. ONE complaint per call;
   an issue raised after it is registered gets "I am adding this to your complaint as well." and no tool call.
@@ -143,14 +153,18 @@ Brand: Bharat Petroleum throughout.
 
 ## Post-call analysis (`pca/pca.txt`)
 Flat JSON, 13 fields: `deliveryConfirmed`, `deliveryCheck`, `priceCheck`, `weightCheck`, `leakCheck`,
-`uniformCheck`, `addressCheck` (yes / no / not_sure / notAsked / noAnswer, "yes" = fine;
-no "unknown": every value states what happened, never a guess — user, 2026-11-06), `issue` (2–5 word label,
+`uniformCheck`, `addressCheck` (yes / no / notSure / noAnswer, "yes" = fine;
+no "unknown" and no "notAsked": Vaani must ask every question, so a missing answer is "noAnswer" — user, 2026-11-06), `issue` (2–5 word label,
 same priority order; "no issue reported" / "feedback not taken"), `summary` (English paragraph), `csat`
 (1–5, predicted, never asked), `allQA` (yes only if questions one to seven all answered), `complaintRegistered`,
 `callResult`.
 
 `callResult` ladder: complaintRegistered > complaintFailed > issueReported > feedbackCaptured >
-feedbackIncomplete > callbackLater > feedbackRefused > wrongNumber > dscn.
+feedbackIncomplete > callbackLater > feedbackRefused > wrongNumber > disconnected.
+
+`csat` is scored high on purpose (user, 2026-11-06): a consumer who stays on an outbound feedback call is
+already cooperating. "5" is the normal score for a completed polite call even with problems reported; a busy,
+wrong-number or polite-refusal call is "4"; "1" only for abuse; between two scores, the higher.
 
 Removed from the old PCA: rating, reason, feedbackDate, districtName, billingState, billingCity and the
 district/state code tables (unreliable for an LLM, and not needed now complaints are registered on the call).
