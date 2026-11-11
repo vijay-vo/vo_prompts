@@ -76,6 +76,10 @@ the consumer's own answer, and the agent never does date arithmetic.
    complaint-outcome turn never carries the goodbye. A: "Thank you for giving your valuable time to Bharat Petroleum."
    B (busy, silence, no adult): "I will call you later." + A. C (wrong person): "Sorry for the
    inconvenience." + A. There is no "anything else?" question: question eight is it.
+   - **preToolMessage is translated** (live failure, 2026-11-11): "set to exactly … never paraphrased" before an
+     English quote made her copy the English into preToolMessage on every call (and add the goodbye as Hindi
+     text too). The three callhangup lines now say the closing line is translated into the consumer's language
+     and script, because preToolMessage is spoken aloud.
 
 ## Platform first message, per language (static, no name)
 Spoken with each language's own greeting word. The second column is only what the prompt's first turn
