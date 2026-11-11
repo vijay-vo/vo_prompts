@@ -80,6 +80,10 @@ the consumer's own answer, and the agent never does date arithmetic.
      English quote made her copy the English into preToolMessage on every call (and add the goodbye as Hindi
      text too). The three callhangup lines now say the closing line is translated into the consumer's language
      and script, because preToolMessage is spoken aloud.
+   - **Everything on the hangup turn goes in preToolMessage** (live double goodbye, 2026-11-11): a wrong-person
+     close answered a question as text, put the goodbye in text, then put it in preToolMessage too. Text is now
+     empty on that turn; an answer goes at the start of preToolMessage. Closing line C carries a meaning hint for
+     "inconvenience" after it was translated as "disagreement".
 
 ## Platform first message, per language (static, no name)
 Spoken with each language's own greeting word. The second column is only what the prompt's first turn
