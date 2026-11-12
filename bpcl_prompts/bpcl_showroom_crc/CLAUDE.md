@@ -19,8 +19,8 @@ translating the two axes below.
 > gave the tool to every routing-capable agent instead. The *when* is unchanged; the *how* is not.
 
 **`calltransfer` is held and invoked by every routing-capable agent**: the ten complaint-capable
-leaves, `newConnectionAgent_onHold`, `routingAgent`, and `getConsumerDetails`. There is no transfer
-agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
+leaves, `unregisteredComplaintAgent`, `newConnectionAgent_onHold` and `routingAgent`. `getConsumerDetails`
+holds none since GCD-06 (2026-10-06). There is no transfer agent and nothing to switch to. `Default` and `emergencyAgent` still carry an explicit
 *"`calltransfer` — NOT AUTHORIZED"* clause.
 
 **`{{crcOfficeNumber}}` is deleted.** It was removed from all 13 prompts and from `vaaniQA` on
@@ -44,10 +44,8 @@ she offers one only at the four moments below.
 
 **Never re-ask someone who already asked.** *"किसी और से बात करवाओ"* **is** the request — asking
 *"क्या मैं आपकी call senior team से connect कर दूँ?"* back at them costs a turn and reads as
-stalling. The confirming question belongs in exactly two places, both where Vaani is the one raising
-it: **T3**, and `getConsumerDetails`' no-data closing in `getConsumerDetailsLive.txt` /
-`getConsumerDetails.txt`. The unregistered-number stage (`getConsumerDetails-unreg.txt`) has no such
-closing — see UNREG-03 below.
+stalling. The confirming question belongs in exactly one place, where Vaani is the one raising it:
+**T3**. `getConsumerDetails` has no closing of its own any more — see GCD-06 below.
 
 > **REVISED 2026-09-14 — CHANNELS.md TOOL-07.** `calltransfer` is now called with **no `preToolMessage` and no text** — there is no transfer announcement at all. `callhangup` carries the closing line as the agent's **own text**, with the call on the same turn; if a `callhangup` Result comes back, the agent produces no text (TOOL-08, 2026-09-15). No agent ever speaks a tool name — a complaint is only "complaint" or "शिकायत" (TOOL-08). The next paragraph describes the superseded XFER-03 shape.
 
@@ -157,6 +155,15 @@ the complaint; CRC does not. We register and say the team will call — nothing 
 **Complaint already registered this call?** Never register a second one for the same issue, and
 never treat a later "senior से बात कराओ" as a new complaint — answer from the tool's earlier message.
 
+**An earlier complaint is checked, not re-registered blind (CHANNELS.md CST-01, 2026-10-05).** The ten
+complaint agents and `unregisteredComplaintAgent` hold `bpcl_complaint_status` (one key, `complaintNumber`)
+and one identical `COMPLAINT STATUS` block. When the consumer asks about an earlier complaint, or a complaint
+is due and they say they already complained, Vaani asks for the number (or points to the SMS), reads it back,
+makes the call alone, then gives the status first and the comment second — never the comment's English, names,
+numbers or dates. A new complaint follows only when the consumer asks, accepts one offer after being unhappy,
+or no status could be found while the problem still stands. Up to three checks per call, one per different complaint number, each a real call (CST-09). `Default` is unchanged and
+routes on the problem. Design: [docs/COMPLAINT_STATUS_PLAN.md](docs/COMPLAINT_STATUS_PLAN.md).
+
 ### What triggers it
 
 - **Escalation** — the consumer asks for a human, a person, a specialist, a senior, or a callback.
@@ -178,20 +185,15 @@ never treat a later "senior से बात कराओ" as a new complaint �
 - **A truly out-of-scope query** stays with `routingAgent`'s hangup ladder. No complaint.
 - **A live gas hazard.** `emergencyAgent` is fully carved out — no complaint, no escalation block,
   no closing, while the hazard is live.
-- **No consumer record.** `getConsumerDetails` still has no complaint tool — with no record there is
-  nothing to attach a complaint to. **It now holds `calltransfer`, and no `switchagent` at
-  all** (never `routingAgent`, never `Default`, never a specialist). Its no-data closing
-  is: *"I can't help without your record, our senior team can — क्या मैं आपकी call connect कर दूँ?"*
-  → on yes, switch; on no, `callhangup`. The three-piece dictation loop is **retired** and the office
-  hours line with it (../CHANNELS.md XFER-01, superseding GCD-03 and GCD-04's hours clause).
-- **No consumer record, on the unregistered-number stage — REVISED 2026-09-28, ../CHANNELS.md
-  UNREG-03.** `getConsumerDetails-unreg.txt` holds **no `calltransfer` and no `callhangup`**: it
-  looks up at most two numbers and, after the second empty fetch, says nothing — the platform
-  switches to **`unregisteredComplaintAgent`**, which answers from its knowledge base, registers
-  through **`bpcl_create_unregistered_complaint`** against a confirmed name and PIN-code district,
-  and transfers per T1–T4 if the consumer still wants a person. The platform switches only on two
-  failed fetches, so "no registered number" is asked again for any number the consumer uses, and a
-  consumer with no second number has the first one fetched again silently.
+- **No consumer record — ../CHANNELS.md GCD-06 (2026-10-06), on UNREG-03's flow.** `getConsumerDetails`
+  holds **no complaint tool, no `calltransfer`, no `callhangup` and no `switchagent`**. It looks up at
+  most two numbers ("no registered number" or a refusal is asked again for any number the consumer
+  uses; a consumer with no second number has the first one fetched again silently) and, after the
+  second empty fetch, says nothing: the platform switches to **`unregisteredComplaintAgent`**, which
+  answers from its knowledge base, registers through **`bpcl_create_unregistered_complaint`** against
+  a confirmed name and PIN-code district, and transfers per T1–T4 if the consumer still wants a
+  person. The old no-data closing (senior-team offer, `calltransfer` or `callhangup`, XFER-01) is gone
+  with the files that carried it.
 
 ### Who can register, and the one routing hop
 
@@ -300,7 +302,8 @@ wrong; the factual naming it was rewritten to is also fine, so nothing needs rev
 
 ## Channel-specific inventory
 
-**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `validatecontactno`,
+**Tools:** `switchagent`, `callhangup`, `bpcl_create_complaint`, `bpcl_complaint_status` (held by the ten
+complaint agents and `unregisteredComplaintAgent`, CST-01), `validatecontactno`,
 `bpcl_fetch_all_api`, plus `bpcl_get_subsidy_details`, `bpcl_get_refill_history`,
 `bpcl_get_consumer_details`, `bpcl_check_refill_status`, and **`calltransfer` — held by every
 routing-capable agent and invoked by it directly** (XFER-03); forbidden by name in `Default` and
@@ -337,25 +340,21 @@ CC is next opened. Every `promptQA` reference in ledger rows dated before that d
 ⚠️ **Nothing in the prompts points at the filename, so the platform's post-call config must be
 repointed** — if that is missed, CRC's QA analyser silently stops running.
 
-**`getConsumerDetails` now holds `calltransfer` and no `switchagent`** (XFER-03). It is also the
-**deployed** entry prompt again — `getConsumerDetailsLive.txt` ships (corrected 2026-09-14, TOOL-07; `getConsumerDetails.txt` is kept in step with it), `getConsumerDetails_MultiToolVersion.txt`
-is the QA-environment tool-testing prompt, and `getConsumerDetails_MobileVersion.txt` is **deleted**
-(git history only, along with `prompts/callTransferAgent/`).
-Its exits are: data found → stop speaking, the platform resumes the call into `Default`; no data →
-tell the consumer their record isn't available, offer to connect them to the senior team, and either
-call `calltransfer` on a yes or `callhangup` on a no. That platform-owned hop into
-`Default` is still described by no prompt — see the open items below.
-
-**`getConsumerDetails-unreg.txt` is the unregistered-number stage** (UNREG-03, 2026-09-28) — the
-prompt used where a no-record consumer is to reach `unregisteredComplaintAgent`. It is Live's loop
-with a different ending: at most two fetches, no `calltransfer`, no `callhangup`, and silence after
-the second empty fetch while the platform switches. It and `getConsumerDetailsLive.txt` are **not**
-two stages of one call and are never kept in step with each other — a Live fix to the capture loop
-(STEP 1–7) should be ported to `-unreg` by hand; the endings differ on purpose.
+**`getConsumerDetails` is one prompt: `getConsumerDetails.txt`** (GCD-06, 2026-10-06) — the former
+`getConsumerDetails-unreg.txt` (UNREG-03), renamed unchanged. It holds `validatecontactno` and
+`bpcl_fetch_all_api` only, both invoked silently, and speaks only after a Result. Its exits:
+data found → stop speaking, the platform resumes the call into `Default`; first empty fetch → one
+request for another number; second empty fetch → silence, the platform switches to
+`unregisteredComplaintAgent`. **Deleted (git history only):** `getConsumerDetailsLive.txt` and the old
+`getConsumerDetails.txt` (both ended in a senior-team offer and `callhangup`),
+`getConsumerDetails_MobileVersion.txt` and `prompts/callTransferAgent/`. There is no
+`getConsumerDetails_MultiToolVersion.txt` in this repo. Both platform-owned hops — into `Default` and
+into `unregisteredComplaintAgent` — are described by no prompt; see the open items below.
+⚠️ **The platform's `getConsumerDetails` agent must point at this prompt.**
 **`unregisteredComplaintAgent`** — tools `updateContact`, `get_pincode_data`,
-`bpcl_create_unregistered_complaint`, `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
-topic after its own work is done) and `callhangup`. Its SECTION 4 is still pre-ZIP-04 (see
-UNREG-03's open item).
+`bpcl_create_unregistered_complaint`, `bpcl_complaint_status` (CST-01), `calltransfer`, `switchagent` (→ `routingAgent` only, for a new
+topic after its own work is done) and `callhangup`. Its SECTION 4 Lite zip block was brought to the
+Lite zip redesign below on 2026-10-06 (no price, no four hours, Lite zip alone, Mini only on request).
 
 **Docs:** [agent-workflow.md](docs/agent-workflow.md) — the full navigation map for all 15 prompts.
 §11 lists known gaps, and they are worth reading before any routing change.
@@ -369,8 +368,9 @@ reopening date, no stated reason. Full policy in [../CHANNELS.md](../CHANNELS.md
 
 **Two files sit side by side in `prompts/newConnectionAgent/`:**
 
-- **`newConnectionAgent_onHold.txt` — DEPLOYED.** The live prompt. Informs, offers Bharat Gas Mini
-  (5 kg), handles commercial and "already applied", never guides an application.
+- **`newConnectionAgent_onHold.txt` — DEPLOYED.** The live prompt. Since 2026-10-06 it is the **Bharat
+  Gas Lite zip specialist** (see the banner below): Lite zip by default, the closure only on demand and
+  always with Lite zip, commercial and "already applied" handled, never guides an application.
 - **`newConnectionAgent.txt` — PARKED, DO NOT SHIP.** The original 2,033-line apply journey,
   retained **unchanged** because there is no version control and it is the only copy. Do not edit
   it, do not port fixes into it, do not delete it.
@@ -380,7 +380,7 @@ config change nothing in the prompts can enforce. If it was missed, the full app
 
 **This agent does not escalate on the hold topic** — a deliberate exception to Axis 1. A prospective
 consumer has no record, so there is nothing to attach a complaint to, and no complaint could reopen
-connections. It holds the consumer itself: restate calmly, offer Mini once, close. Never promise a
+connections. It holds the consumer itself: restate calmly, put Lite zip in front of them once, close. Never promise a
 person, a callback, a complaint, or an office visit. A genuinely different problem still routes.
 
 **Not affected, and must never get the hold message:** commercial connections, Bharat Gas Mini,
@@ -390,7 +390,44 @@ second/additional cylinder, portability, and the city-shift Transfer Voucher pat
 **CC is deliberately behind on this** — client decision. It is a recorded gap, not a design
 difference. See NC-01.
 
-> 🛑 **READ CHANNELS.md ZIP-04 (2026-09-09) FIRST — it reverses parts of every ZIP row below.**
+> 🛑 **LITE ZIP REDESIGN (2026-10-06) — READ THIS FIRST. It supersedes ZIP-04 and every ZIP row below
+> wherever they disagree.** Ported into this Hindi CRC from the multilingual branch's Lite zip design
+> (`multilingual-vijay-contact-center`, IVRS commits of 2026-09-24, carried into its CRC by IVRS-SYNC-02),
+> which the client named the full truth for Lite zip. Written in this channel's Hindi, not multilingual.
+> Not recorded in CHANNELS.md, by the user's instruction.
+> - **`newConnectionAgent_onHold` owns Lite zip end to end.** Lite zip is its default for anyone asking
+>   for gas, a cylinder or a connection; the 14.2 kg closure is reactive (§8-HOLD) and never travels
+>   without Lite zip. It holds Z1–Z19, the Q&A-versus-guided gate (§15), the 12-state Hello BPCL App flow
+>   (§16), the three dead ends (§17) and the answer-versus-real-problem split (§18). A real problem on an
+>   order is routed through `routingAgent` like any other problem. **REVISED 2026-10-08 (CST-11, user
+>   instruction):** an earlier complaint's status, and a complaint about money already paid for a new
+>   connection that never came, now switch straight to **`unregisteredComplaintAgent`** (§19A) — the
+>   old "no switch to `unregisteredComplaintAgent`" decision is withdrawn for those two cases only.
+> - **NCOH-SYNC-01 (2026-10-08):** onHold took SEAM-01, CLOSE-01, the closing rules, the emergency block,
+>   TOOLS-01 and a set of small rules from the multilingual CRC onHold (see CHANNELS.md). SEAM-02 and the
+>   §5 listening rules were left out by choice.
+> - **No helpline anywhere in onHold** (§13-N deleted, dead ends end on "check the App again later"):
+>   Vaani is the help on this line.
+> - **Never four hours, or any hour count.** Daytime order: same day. Evening/night order (6pm–6am):
+>   next day, 8am–8pm.
+> - **App only**, paid online in advance. The distributor route and the 11-step walkthrough in other
+>   agents are gone.
+> - **Lite zip alone is what is offered** when a consumer cannot get gas (the hold, the extra-refill
+>   block, a booking they may not make). **Bharat Gas Mini is named only if the consumer asks** (Ujjwala
+>   callers who ask: Mini first). **Exception: `bookingNonEligibilityAgent` offers both, Lite zip first
+>   as the recommendation, then Mini** (client decision 2026-10-06).
+> - **Other agents keep a short Lite zip block, answer from it and keep the call.** A clear wish to
+>   take, book or refill one, or be guided through the App, switches to `routingAgent`, which routes it
+>   to `newConnectionAgent`. `Default` gives one short answer and routes; `genericInfoComplaintAgent`
+>   no longer owns "how to get one".
+> - **Unknowns:** price, city, stock, warranty — the softer "App or your distributor" line, zip only.
+> - **Limits:** domestic 2 a month and 2 at a time, only if asked (the commercial/industrial limit is
+>   no longer stated).
+> - **Refill vs New Connection:** always one question ("खाली सिलेंडर है exchange करने के लिए?"), never
+>   assumed.
+> - Post-call (`vaaniQA`, `postCallAnalysisFlat`, `postCallAnalysisHuman`) score this design.
+
+> 🛑 **READ CHANNELS.md ZIP-04 (2026-09-09) NEXT — it reverses parts of every older ZIP row below.**
 > The standalone `bpcl_lite_zip/litezipAgent.txt` KB was merged in, client ruling that it wins on
 > facts while CRC keeps its channel layer (Hindi only, 1906 → `emergencyAgent`, tools, complaint
 > protocol, no office visit). What changed: ZIP has **two sizes, 10 kg and 5 kg** (ZIP-02's
@@ -479,13 +516,11 @@ references back in — see CHANNELS.md ZIP-01.
 - **CS-01 (fixed)** — the third-party phrasing leak in `connectionServicesAgent.txt` (§7-D fallback
   and C12 examples) is corrected; distributor details are now named factually rather than as
   "आपके distributor".
-- **GCD-01 (stale)** — this note referenced a `getConsumerDetails_v2.txt` that no longer exists in
-  this workspace; only `getConsumerDetails.txt` is present. Remove this item if a future pass
-  confirms it stays gone.
 - **DOC-01** — [agent-workflow.md](docs/agent-workflow.md) §7 links to `customerStatus-spec.md`,
   which does not exist in this workspace. CC has `CUSTOMER_STATUS_SPEC.md`; CRC has no counterpart.
-- **The undocumented `getConsumerDetails` → `Default` hop** (agent-workflow.md §11.3) — works only
-  if the platform owns that transition. Worth confirming with the platform team.
+- **The undocumented `getConsumerDetails` hops** (agent-workflow.md §11.3) — into `Default` on data
+  found, and into `unregisteredComplaintAgent` after two empty fetches. Both work only if the platform
+  owns those transitions. Worth confirming with the platform team.
 - **Four prompts unreachable by name** (§11.4): `bookingNonEligibilityAgent`, `postDeliveryAgent`,
   `eligibleDeliveryAgent`, `notEligibleDeliveryAgent` are never a `switchagent` target anywhere.
   They work only if the platform resolves the family name to the right variant from backend state.
@@ -498,10 +533,8 @@ references back in — see CHANNELS.md ZIP-01.
   and the office-hours window where one exists — the failure branch is written against it and names
   no window without it; close the call itself on a **successful** transfer, since the agent
   deliberately calls no tool there; and de-register `callTransferAgent`, whose prompt is deleted.
-- **`getConsumerDetails_MultiToolVersion` still carries the `{{crcOfficeNumber}}` dictation closing**
-  (NUM-04's twelve-digit flow) while being the QA prompt for a channel where that variable does not
-  exist. Its no-data ending needs porting to `getConsumerDetails.txt`'s `calltransfer` ending before
-  QA can exercise the shipped flow.
+- **QA environment:** `getConsumerDetails_MultiToolVersion.txt` is not in this repo. QA should
+  exercise the shipped `getConsumerDetails.txt` (GCD-06).
 - **`postCallAnalysisHuman.txt` — CLOSED 2026-08-13 (../CHANNELS.md PCA-02).** It is genuinely the
   human-agent analyser: two people talking, no Vaani. Fully rewritten for that subject and given four
   flat root scores for the human-QA dashboard (`riskEscalationIndex`, `customerEffortScore`,
