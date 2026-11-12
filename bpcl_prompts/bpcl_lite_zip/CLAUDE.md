@@ -63,7 +63,7 @@ distributor.
 `unregisteredComplaintAgent` — and `callhangup`. It holds no complaint tool and registers nothing
 itself.
 
-`unregisteredComplaintAgent` holds **five**: `updateContact`, `get_pincode_data`,
+`unregisteredComplaintAgent` holds **six** (`bpcl_complaint_status` added by CHANNELS.md CST-05, its BLOCK 5A): `updateContact`, `get_pincode_data`,
 `bpcl_create_unregistered_complaint`, `switchagent` (one legal target: `Default`), and `callhangup`.
 
 **Its three data tools run in a fixed order, and each one enables the next:**
@@ -271,7 +271,6 @@ pincode. **`Default` still never asks for a pincode at all.** Only the complaint
   commercial or industrial connection outside Lite zip, or alongside the App at a dead end. Never for
   a new-connection question, never for an emergency, and never for a debited payment — that last one
   is a complaint.
-- **No double form.** Never a word and its translation together; TTS reads a bracketed pair twice.
 
 ---
 
