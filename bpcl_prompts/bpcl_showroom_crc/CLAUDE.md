@@ -12,6 +12,16 @@ translating the two axes below.
 
 ---
 
+## Known-good version — agent workflow v1.193
+
+Before the 2026-11-12 changes (commit `2eb1130`, which copied this folder from `crc-complaint-status`),
+the CRC's overall functionality was working fine, with **agent workflow v1.193**. The last commit
+before those changes is `29bfc72` (2026-11-04). If a regression shows up after 2026-11-12, this is the
+version to compare against and fall back to.
+
+---
+
+
 ## Axis 1 — Escalation: the complaint comes first, then a transfer. Still no office visit.
 
 > **REVISED 2026-08-11 — see [../CHANNELS.md](../CHANNELS.md) XFER-03.** This channel used to have
