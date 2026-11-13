@@ -14,10 +14,10 @@ translating the two axes below.
 
 ## Known-good version — agent workflow v1.193
 
-Before the 2026-11-12 changes (commit `2eb1130`, which copied this folder from `crc-complaint-status`),
-the CRC's overall functionality was working fine, with **agent workflow v1.193**. The last commit
-before those changes is `29bfc72` (2026-11-04). If a regression shows up after 2026-11-12, this is the
-version to compare against and fall back to.
+The CRC state at the end of the 2026-11-04 commits (last one `29bfc72`, GCD-PTM-01) is the **final
+version**, working perfectly with **agent workflow v1.193**. The 2026-11-12 changes (`2eb1130`, which
+copied this folder from `crc-complaint-status`) came after it. If a regression shows up, compare
+against `29bfc72` and fall back to it, publishing workflow v1.193.
 
 ---
 
