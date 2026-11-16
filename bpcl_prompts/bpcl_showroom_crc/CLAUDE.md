@@ -12,7 +12,15 @@ translating the two axes below.
 
 ---
 
-## Known-good version — agent workflow v1.193
+## Known-good version — main @ 304a0f6 (confirmed 2026-11-16)
+
+The CRC prompts on main at `304a0f6` (content from `2eb1130`, copied from `crc-complaint-status`)
+are **confirmed working completely fine** by the user on 2026-11-16, including `bpcl_create_complaint`
+(no hallucinated calls or numbers). The one open issue is duplicate complaints when the consumer keeps
+interrupting; duplicates are being blocked on the platform side, and any prompt change for it is built on
+top of this version. If a regression shows up, compare against `304a0f6` first.
+
+### Earlier known-good — agent workflow v1.193
 
 The CRC state at the end of the 2026-11-04 commits (last one `29bfc72`, GCD-PTM-01) is the **final
 version**, working perfectly with **agent workflow v1.193**. The 2026-11-12 changes (`2eb1130`, which
