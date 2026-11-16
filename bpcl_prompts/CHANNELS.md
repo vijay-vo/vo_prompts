@@ -22,6 +22,17 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### PCA-06 · Post-call analysers brought in line with the current CRC prompts — CRC only (2026-11-16)
+
+| | |
+|---|---|
+| **Axis** | Neither. `vaaniQA.txt` and `postCallAnalysisFlat.txt` only; `postCallAnalysisHuman.txt` scores human staff and is untouched. Output JSON shapes unchanged. **CC not ported.** |
+| **vaaniQA** | ① **C3d rewritten for CPL-28**: one complaint call per call, success or failure; a second registration on any subject is reported at the highest severity (seen as a second number or a second outcome); the fresh-worded "noted" turn after a registered complaint is correct, and so is not registering a different problem. The old rule (second complaint for a different subject correct, "added the detail to the complaint" correct) is gone. ② New **F11** in the confirmed-correct list for the noted turn. ③ **C3c-LOOP**: the two-per-call limit and the "switchagent to calltransfer" T3 path removed. ④ **C13**: the three-step silence ladder that ended the call is replaced by what every agent does — one presence check, wait, never hang up on silence. ⑤ **A13**: "points them to the office" becomes the App / website / own distributor pointer (F7). ⑥ **C8**: routingAgent and emergencyAgent also hold no complaint tool. ⑦ **C3b**: the success wording follows the tool's message (CPL-22). |
+| **Flat** | `complaintRegistered`: the noted line never counts as a registration or a second complaint. |
+| **⚠️ Limit** | The QA transcript carries no tool Results, so an untold Result or a repeat call whose outcome was never spoken cannot be seen; duplicates show only when a second outcome is spoken. |
+
+---
+
 ### CPL-28 · One complaint call per agent: a consumer who kept interrupting got six duplicate complaints — CRC only, CC pending (2026-11-16)
 
 | | |
