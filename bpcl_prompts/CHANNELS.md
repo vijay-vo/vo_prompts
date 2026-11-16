@@ -22,6 +22,19 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### CPL-28 · One complaint call per agent: a consumer who kept interrupting got six duplicate complaints — CRC only, CC pending (2026-11-16)
+
+| | |
+|---|---|
+| **Axis** | Neither — **shared truth**. All ten `bpcl_create_complaint` agents plus `unregisteredComplaintAgent` (`bpcl_create_unregistered_complaint`). `genericInfoComplaintAgent_v2.txt` (test only) not touched. **CC not ported.** |
+| **Source** | Live call 12-11-2026, `postDeliveryAgent`, a "Less weight" grievance: 9 complaint calls in about 52 seconds, 6 Results, 6 separate complaints at BPCL. Every Result was in the agent's history; the consumer kept talking over the agent and each new piece of speech was taken as a fresh reason to register. The first Result was never spoken. |
+| **The rule now** | ① Line 1: the tool is invoked one time only; once a Result of it is in the conversation, success or failure, it is never invoked again. ② `ONCE PER ISSUE` (per issue, max two calls) is replaced by **ONE COMPLAINT, ONE CALL**: decided only by whether a Result is visible in the conversation, never by memory or counting. ③ **THE OUTCOME IS SPOKEN FIRST**: an untold Result is told on the next turn, whatever the consumer said. ④ After success, anything the consumer adds (detail, repetition, a new problem) is **noted, not registered**: the meaning of "जी, आपकी ये बात भी मैंने नोट कर ली है।", paraphrased freshly each time, said as already done, no complaint number repeated unless asked, no tool call. ⑤ **A failure is only what a Result says**: no Result is not a failure (TOOL RECOVERY calls it); after a failure Result there is no retry, T3 as before. ⑥ TOOL RECOVERY never re-invokes the complaint tool once its Result is in the conversation. ⑦ Every "two complaints per call" limit and "second complaint for a different issue" line is rewritten to match. |
+| **Deliberately NOT changed** | No rule about other agents (one agent cannot see another's prompt; cross-agent repeats judged ~0.1%). In practice the earlier Result is visible in history, so a later agent also sees the tool as finished. Duplicate protection on the server is the platform's and is not described in any prompt. |
+| **Known-good base** | main @ `304a0f6`, confirmed working completely fine 2026-11-16. |
+| **⚠️ Open** | Untested live. **CC not ported.** |
+
+---
+
 ### UNREG-TOOLS-01 (lite_zip port) · lite_zip unregisteredComplaintAgent: line-1 directive, every data tool the call alone — lite_zip (2026-10-28)
 
 | | |

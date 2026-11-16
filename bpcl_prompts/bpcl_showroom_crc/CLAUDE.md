@@ -163,8 +163,9 @@ forced close, and a call that never reaches it is correct.
 > could not be registered and offer to transfer the call."* Every complaint agent carries one identical
 > `COMPLAINT TOOL — THE WHOLE PROCEDURE` block: **call** (nothing said before or with it) → **read the
 > message** → **do what it says, in natural Hindi, never reading its English aloud** → no message means
-> nothing is registered, so call. Once per issue; never again after a failure on the call; never more
-> than two calls. A failure message's transfer offer is T3. **Do not re-add example Hindi lines for any
+> nothing is registered, so call. **One call only (CHANNELS.md CPL-28, 2026-11-16):** once any Result of
+> the tool is in the conversation, success or failure, it is never called again; what the consumer adds
+> after success is noted in fresh words with no tool call; no retry after a failure. A failure message's transfer offer is T3. **Do not re-add example Hindi lines for any
 > complaint outcome** — they were what the model copied instead of calling the tool.
 
 **No callback time is ever captured.** CC asks the consumer for a callback slot and writes it into
