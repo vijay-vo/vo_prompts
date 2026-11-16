@@ -22,6 +22,18 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### PCA-07 · Flat's fcr and csat scored the customer's problem, not Vaani's service — CRC only (2026-11-16)
+
+| | |
+|---|---|
+| **Axis** | Neither. `postCallAnalysisFlat.txt` only. Output JSON and allowed values unchanged. **CC and multilingual not ported.** |
+| **Source** | User, from months of live CRC transcripts: well-handled calls kept getting low fcr and csat. |
+| **Diagnosis** | A CRC caller almost always arrives with a problem the distributor did not fix, and the best this contact can give is often a complaint number. fcr needed "answered to their satisfaction" AND "no remaining dissatisfaction"; csat "2" included "raised complaints, showed frustration", "5" needed the issue fully resolved, and "do not assume sentiment" pushed every call without an explicit thank-you to "3". csat was never aligned with the PCA-03 sentiment rewrite. |
+| **The rule now** | ① **fcr = did this contact deliver the best outcome it could**: yes for an answer, a complaint with its number, a true policy answer, a complaint status, a correct pointer, a completed action; no only when the service fell short (no answer/pointer/complaint, a due complaint missing or failed, wrong information, a duplicate complaint, nothing delivered). Mood does not decide it. Transfers stay "no". ② **csat is a first-match ladder** (1, 2, 5, 4, 3): the subject never lowers it; the end weighs most; "ठीक है" and a normal goodbye are a good close; a silent platform end is not penalised; "4" is the normal score for a well-handled call; "3" is not a default. ③ **Consistency**: positive + fcr yes ≥ 4; angry ≤ 2; negative ≤ 3. ④ CONTEXT no longer says number capture offers a transfer (stale since UNREG-03). |
+| **⚠️ Open** | Not yet checked against a sample of real calls; compare score distributions before and after. |
+
+---
+
 ### PCA-06 · Post-call analysers brought in line with the current CRC prompts — CRC only (2026-11-16)
 
 | | |
