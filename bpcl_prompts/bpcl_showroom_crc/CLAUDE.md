@@ -359,8 +359,10 @@ CC is next opened. Every `promptQA` reference in ledger rows dated before that d
 ⚠️ **Nothing in the prompts points at the filename, so the platform's post-call config must be
 repointed** — if that is missed, CRC's QA analyser silently stops running.
 
-**`getConsumerDetails` is one prompt: `getConsumerDetails.txt`** (GCD-06, 2026-10-06) — the former
-`getConsumerDetails-unreg.txt` (UNREG-03), renamed unchanged. It holds `validatecontactno` and
+**`getConsumerDetails` is one prompt: `getConsumerDetails.txt`** — since 2026-11-16 this is the
+prompt actually published on the platform, formerly `getConsumerDetailsDeployed.txt` (added 4bc1a23,
+GCD-PTM-01 in 29bfc72), renamed unchanged. `getConsumerDetailsLive.txt`, `getConsumerDetails-unreg.txt`
+and the older `getConsumerDetails.txt` were deleted the same day (git history only). It holds `validatecontactno` and
 `bpcl_fetch_all_api` only, both invoked silently, and speaks only after a Result. Its exits:
 data found → stop speaking, the platform resumes the call into `Default`; first empty fetch → one
 request for another number; second empty fetch → silence, the platform switches to
