@@ -43,18 +43,13 @@ why me, and how long will this take. The opener has to answer all three, briefly
 
 **The call itself is the demo.** VoiceOwl sells voice AI, and the prospect is talking
 to VoiceOwl's voice AI right now. Several AI-SDR vendors use the same move: the
-prospect experiences the product before the meeting. Possible uses:
+prospect experiences the product before the meeting.
 
-- Say openly early on that this is VoiceOwl's AI agent: "I'm VoiceOwl's AI
-  assistant, and booking calls like this one is exactly what we build."
-- Turn curiosity into the reason to meet: "If this call is working for you, the demo
-  shows how it would sound for your customers."
-- Disclosure is honest and, in our case, is also the pitch. Vendors report that open
-  disclosure helps rapport more than it hurts, and India's TRAI is looking at AI
-  voice-call rules (not final yet), so disclosing up front is also the safe choice.
-
-This is the strongest idea in this research. Whether and how to use it is an open
-decision (see OPEN_QUESTIONS.md).
+Decided 2026-11-17: the agent says it is an AI **only when asked**. So the idea is
+used at that moment: when the prospect asks "is this a bot?", the honest yes becomes
+the pitch ("Yes, and that's exactly what we build. This call is the demo."). See
+DESIGN.md section 4. Legal check on AI disclosure abroad is still open (DESIGN.md
+section 9).
 
 ---
 
@@ -185,13 +180,76 @@ Never argue, never repeat the pitch, and never push past the second "no".
 
 1. Lead with context and the reason for the call, then the name.
 2. Never ask "is this a bad time?" or "how have you been?".
-3. Disclose that it's VoiceOwl's AI early and use that as the hook: the call is the
-   demo.
+3. Say it's VoiceOwl's AI only when asked, and turn that moment into the hook: the
+   call is the demo.
 4. Sell a short, low-pressure demo, not the product.
 5. Offer two real slots from Google Calendar; read the booking back once.
 6. One short answer per objection; close politely after the second no.
 7. Send WhatsApp and email confirmation immediately; consider reminders.
 8. Keep the whole call under two minutes and each sentence under 15 words.
+
+---
+
+## 7. Round 2 (2026-11-17): what the popular sales creators actually do
+
+Note: Instagram reels and YouTube videos cannot be watched by the research tools.
+This section uses the written versions of the most-followed creators' material: the
+30 Minutes to President's Club (30MPC) YouTube/podcast scripts, Sarah Brazier's
+script (one of the best-known SDRs on LinkedIn/YouTube), Jeremy Miner (NEPQ, one of
+the biggest sales accounts on Instagram/YouTube), Jason Bay, and Gong's call data.
+
+### Sarah Brazier's four stages (30MPC)
+
+1. **Open with personality** — a pattern interrupt, not a script voice.
+   "Look, I know nobody likes a cold call... can I have a couple of seconds to tell
+   you why I'm calling? Then you can tell me if I should go kick rocks."
+2. **Confirm their current state** — show you know their world and check it.
+   "Typically when I talk to sales leaders, they do X and Y. Does that sound about
+   accurate?"
+3. **Show the problem they don't see** — one little-known problem with how they do
+   it today, then "Has that ever happened to you?" and "Tell me more about that."
+   **No pitch yet.**
+4. **Book** — only after they agree there's a problem: tie the solution to *their*
+   words in one sentence, then a low-friction ask: "Would that warrant a longer
+   conversation?"
+
+Her objection rule: objections are emotional reactions to being called, not logic.
+Agree and push away lightly, then ask a question that uses what you know about them.
+"Not interested" gets humour: "All good, you'd have called me if you were!"
+
+### Delivery matters more than the words (Brazier, 30MPC, Close, Miner)
+
+- "Word choice doesn't really make a difference" if the structure is right.
+- **Speak slowly** (calm confidence). **No up-tones** on statements (rising pitch
+  sounds eager and unsure). **Laugh off tough objections** (shows you're
+  comfortable).
+- Miner: a salesy tone triggers the prospect's defence within seconds. Sound
+  curious and slightly detached ("not even sure this is a fit"), never needy.
+- Monotone is the biggest failure: it tells the prospect they can tune out.
+- For a voice agent these become voice/TTS settings plus prompt rules: short
+  sentences, calm pace, genuine-sounding questions, light humour.
+
+### Problem language beats product language
+
+- One report: selling the meeting with problem-based language succeeded 16% of the
+  time vs 5.5% with buzzwords (single secondary source).
+- Jason Bay: name the pain the role has, not features. If the prospect fits, don't
+  ask *whether* they want a meeting; move straight to *when*.
+- Template from Mailshake: "Most [roles] I talk to tell me they're trying to do one
+  of three things... does that sound like you at all?"
+
+### What VoiceOwl's own site gives us as hooks (voiceowl.ai, read 2026-11-17)
+
+- "Close more calls with voice virtual agents with human-like experience."
+- Claims: 135+ languages and dialects; 200M+ customer interactions; 60% operational
+  cost reduction; 10x more meaningful conversations; 5x revenue growth; proof of
+  concept in 48–72 hours, launch within a week.
+- Products: Generate (outbound lead generation), Verify (lead verification), Connect
+  (past IVR and gatekeepers, hand-off to humans), Qualify (real-time lead
+  qualification); contact-centre automation.
+- Industries: ABM, BFSI, NBFC, database, demand generation, e-commerce, recruitment,
+  logistics. Compliance: HIPAA, PCI, FERPA, GDPR, DPDPA.
+- Which claims the agent may say on a call needs sales-team sign-off (DESIGN.md).
 
 ---
 
@@ -216,3 +274,10 @@ Never argue, never repeat the pitch, and never push past the second "no".
 - Regal — AI agent ethics and disclosure timing: https://regal.ai/blog/ai-agent-ethics-disclosure-timing
 - Bar & Bench — TRAI's crackdown on spam calls and AI-driven telemarketing: https://www.barandbench.com/view-point/trais-crackdown-on-spam-calls-and-ai-driven-telemarketing
 - TRAI press release No. 11 of 2025 (140 / 1600 series): https://cms.trai.gov.in/sites/default/files/2025-02/PR_No.11of2025.pdf
+- 30MPC — Sarah Brazier's cold call script: https://blog.contactout.io/wp-content/uploads/2023/10/Sarah-Brazier-Cold-Call-Script.pdf
+- Summary of Cold Calling Sucks (Farrokh, Cegelski): https://www.shortform.com/summary/cold-calling-sucks-and-thats-why-it-works-summary-armand-farrokh-and-nick-cegelski
+- Jeremy Miner on calling leads (video summary): https://recapio.com/digest/how-to-call-leads-the-right-way-prospecting-warm-leads-by-jeremy-miner
+- Sales Gravy — leading with curiosity on cold calls: https://salesgravy.com/how-leading-with-curiosity-on-cold-calls-builds-trust/
+- Mailshake — 5-step B2B cold calling technique: https://mailshake.com/blog/cold-calling/
+- Close — cold call tonality: https://www.close.com/blog/cold-call-voice
+- VoiceOwl website: https://voiceowl.ai
