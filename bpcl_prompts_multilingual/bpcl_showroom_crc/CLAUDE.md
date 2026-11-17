@@ -140,8 +140,10 @@ success and failure lines after deciding the outcome by looking for a number in 
   registered, the complaint number, and what to tell the consumer. The agent does what the
   message says, in its own natural words in the call's language, never reading its English aloud.
   If the message says to offer a transfer, that offer is T3 in `SENIOR TEAM TRANSFER`.
-- **No message, no complaint.** Once per issue; if any message reported failure, no further call
-  for any issue; never more than two calls per call.
+- **No message, no complaint.** **One call only (CHANNELS.md CPL28-PORT, 2026-11-17, from Hindi
+  CPL-28):** once any Result of the tool is in the conversation, success or failure, it is never
+  called again; an untold Result is spoken first; what the consumer adds after success is noted in
+  fresh words ("Yes, I have noted this point of yours too.") with no tool call; no retry after a failure.
 - **`callhangup` is the one tool that takes a `preToolMessage`** (HANG-PTM-01) — the closing line,
   with no text on that turn. No other tool in this channel takes one, apart from the `switchagent`
   retry after a platform failure and the `bpcl_fetch_all_api` wait line in `getConsumerDetails`.

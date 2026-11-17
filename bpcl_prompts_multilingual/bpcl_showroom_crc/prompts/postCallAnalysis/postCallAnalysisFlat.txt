@@ -61,6 +61,7 @@ CRITICAL INSTRUCTION: Do not infer or assume complaint registration if it is not
 ONLY A COMPLETED REGISTRATION COUNTS. The agent saying she is about to register, or is registering right now, is an intention and not an outcome. Lines meaning "I am registering your complaint", "I will register the complaint", "please wait a minute", in any language, and anything else in the present or future tense are NOT registration. Return "yes" only for a completed registration stated after the fact — a line meaning "it has been registered" or "it has been lodged", in any language — and normally carrying a complaint number the agent reads out digit by digit. On the turn a complaint is actually registered the agent says nothing at all; the outcome comes on her next line, from what the complaint tool told her. A complaint registered for a caller who has no record on our system, after they gave their name, PIN code and district, counts exactly the same as any other.
 A LATER FAILURE CANCELS AN EARLIER CLAIM. Read the whole transcript before deciding, and let the last thing the agent said about the complaint win. If the complaint did not go through — a line meaning "the complaint cannot be registered right now because of a technical problem, please call again after some time", in any language, or any equivalent apology about a technical problem — nothing was registered, whether or not she then offered to connect them to the senior team. Return "no". The same applies if she told the customer to register it themselves, or to come to the office and register it there: that is an instruction to the customer, not an action she took.
 AN EARLIER COMPLAINT'S STATUS IS NOT A REGISTRATION. The agent can check what has happened to a complaint the customer made before: she asks for its number, reads it back, and tells them its status — that it is being worked on, or that it was closed. None of that registers anything, and a complaint number she reads back from what the customer said is not a new one. Return "yes" only when a NEW complaint was registered on this call. A status check that found nothing — a short apology and a request to check the number in the S M S they received when that complaint was registered — is not a failed complaint either, because no complaint was attempted.
+A "NOTED" LINE IS NOT A REGISTRATION. Each call registers one complaint. After it is registered, the agent answers anything more the customer says with a line meaning she has noted it too — "Yes, I have noted this point of yours too.", in any language, or a rewording. That line registers nothing: it never turns "no" into "yes", and it never counts as a second complaint.
 
 callTransferred
 Allowed values: "yes" or "no" only.
@@ -155,32 +156,41 @@ Extract any specific monetary amount discussed (e.g., cylinder price, subsidy am
 
 fcr (First Contact Resolution)
 Allowed values: "yes" or "no" only.
-Determine whether the customer's issue was resolved in this call — meaning the customer got what they needed.
-Return "yes" if:
-- The customer's query was answered to their satisfaction, AND
-- The customer got the action or next step they needed (the answer they asked for, whether and how they can book, an earlier complaint's status, the Bharat Gas Lite zip process or a walkthrough in the Hello B P C L App, safety steps and the helpline on a gas emergency), AND
-- The customer did not express remaining dissatisfaction or unresolved concerns at the end of the call.
-Return "no" if:
-- The customer still had unresolved concerns after the call, OR
-- The agent could not provide the information or action needed, OR
-- The customer explicitly expressed dissatisfaction with the outcome.
-CRITICAL INSTRUCTION FOR fcr: fcr = "yes" means the customer's IMMEDIATE need was met during this call. It does NOT require the underlying issue to be 100% solved.
-A TRANSFERRED CALL IS ALWAYS fcr = "no". First contact resolution means the issue was settled on this contact without being handed to anyone else, so a call that ended in a transfer is excluded by definition. There is also nothing to observe: the transcript stops at the moment the transfer succeeds, so whether the senior team resolved anything is unknown, and "yes" would be asserting something the transcript cannot show. The same applies to a FAILED transfer — the customer asked for a person and did not get one. The "immediate need was met" instruction above is about an answer versus a complete fix; it never licenses "yes" on a transferred call. A call is fcr "yes" when the issue was settled on this contact; a registered complaint is not settlement, because the resolution still lies ahead with the team.
+FCR ASKS ONE THING: DID THIS CONTACT DELIVER THE BEST OUTCOME IT COULD? It judges what the customer received from this call, not whether their underlying problem is fixed. Most customers who reach this CRC already have a problem their distributor did not solve — a late cylinder, a missing subsidy, money taken — and on most of those calls the best this contact can give is a registered complaint with its number. Their problem still being there when the call ends is expected, and it is never a reason for "no".
+Return "yes" when the call ended with any of these:
+- their question answered from what the agent holds;
+- a complaint registered, with its complaint number given;
+- a true answer the customer cannot change, told plainly — new standard connections closed, a booking the record does not allow — with what is available instead where there is one;
+- an earlier complaint's status told;
+- a correct pointer for something the agent does not hold — the Hello B P C L App, the website, their own distributor — when that is all this channel can give;
+- the Bharat Gas Lite zip process explained, or a walkthrough in the Hello B P C L App;
+- safety steps and the 1906 helpline given on a gas emergency;
+- a booking or other action completed.
+Return "no" only when the service fell short:
+- the customer's question got no answer, no pointer and no complaint;
+- a complaint was plainly due and none was registered, or the registration failed;
+- the agent gave wrong information or contradicted herself;
+- the same complaint was registered more than once (two complaint numbers in one call);
+- the call ended before the customer got anything at all.
+THE CUSTOMER'S MOOD DOES NOT DECIDE THIS FIELD. A customer still upset about the late cylinder after getting a complaint number is "yes"; customerSentiment and csat carry the mood.
+A TRANSFERRED CALL IS ALWAYS fcr = "no". First contact resolution means the issue was settled on this contact without being handed to anyone else, so a call that ended in a transfer is excluded by definition. There is also nothing to observe: the transcript stops at the moment the transfer succeeds, so whether the senior team resolved anything is unknown, and "yes" would be asserting something the transcript cannot show. The same applies to a FAILED transfer — the customer asked for a person and did not get one. The "best outcome" test above never licenses "yes" on a transferred call.
 NEW STANDARD CONNECTIONS ARE CLOSED — TELLING THE CUSTOMER SO IS A RESOLVED CALL. New standard 14.2 kg domestic connections, Ujjwala included, are currently closed. There is no reopening date and no known reason, and a question about the closure is not a complaint. A plain request for a new connection is taken as a Bharat Gas Lite zip request from the start; the closure is said only when the customer asks for the standard connection, asks about the closure or about an application they already made, or turns Lite zip down, and it is always said together with Bharat Gas Lite zip as the route that is open. So when the customer wanted a new connection and the agent helped them with Lite zip, or clearly told them the standard one is closed and offered Lite zip in the same turn, that IS the correct and complete outcome — return fcr "yes", whether or not they chose to take Lite zip. Do not mark it "no" merely because the customer did not get a standard connection, no complaint was registered, or nobody promised to call back. Return "no" only if the agent failed to tell them plainly, stated the closure and stopped without offering Lite zip, guided them to apply anyway, sent them to an office or a distributor to apply, invented a reopening date or a reason, or left the topic hanging with no answer at all. A customer who paid money for a new connection that never came, or who asks about a complaint they already made, has a grievance and not a closure question: score it like any other complaint or status check.
 
 csat (Customer Satisfaction — Predicted)
 Allowed values: "1", "2", "3", "4", "5" only.
-1 represents the lowest customer satisfaction and 5 represents the highest. Predict the score from the customer's observable sentiment, tone, level of cooperation, and overall experience as reflected in the transcript.
-Scoring guidelines:
-"5" - Customer was cooperative, positive, issue fully resolved, expressed gratitude or clear satisfaction. Agent was empathetic and helpful.
-"4" - Customer was cooperative and engaged. Issue was resolved or escalated with a clear next step (e.g., complaint registered, complaint number given digit by digit, and the customer told our team will make contact). Neutral to positive sentiment.
-"3" - Customer was neutral, gave minimal responses, was indifferent, or the resolution was partial. Some help was provided but gaps remain. Also use this if the call was inconclusive.
-"2" - Customer was reluctant, expressed dissatisfaction, raised complaints, showed frustration, or was largely uncooperative. Issue remained mostly unresolved.
-"1" - Customer was angry, hostile, refused to engage entirely, hung up abruptly, or the interaction was very negative. Major dissatisfaction.
+Predict how this customer would rate the SERVICE they got on this call, from how they behaved and what they received. The rule from customerSentiment holds here too: THE SUBJECT OF THE CALL IS NOT THE SCORE. A customer calling about a late cylinder or money taken is unhappy about their situation on almost every call that reaches us; frustration about the problem itself never lowers csat. What lowers it is how they reacted to US, and whether the service fell short.
+WEIGHT THE END. How they left matters most. An ordinary close — a word meaning "okay" or "alright" in any language, a normal goodbye, or simply ending once they had what they needed — is a good close. Many customers rarely say an explicit thank-you, and its absence is not dissatisfaction. A call ended by the platform or a dropped line after the customer had what they needed, with no hostility before it, is scored on what came before; the silent end never lowers it.
+READ DOWN AND STOP AT THE FIRST ROW THAT MATCHES:
+"1" — hostility aimed at the agent or at Bharat Petroleum that is still there in the middle or at the end: abuse, shouting, threats, sarcasm, a person demanded in anger; or the service clearly failed and they left angry.
+"2" — no hostility, but plainly dissatisfied with US at the close: rejecting the answer, saying it is useless or that nobody helps, pushing the same point after it was handled; or the service fell short (fcr "no") and they left unhappy with it.
+"5" — they got the best outcome this call could give (fcr "yes") AND showed thanks, relief or clear satisfaction — lines meaning "thank you", "very good" or "you helped me well", in any language.
+"4" — they got the best outcome this call could give (fcr "yes") and closed settled: cooperative, took the answer, ordinary close. THIS IS THE NORMAL SCORE FOR A WELL-HANDLED CALL, including a grievance call that ended with a complaint number and a customer still unhappy about their cylinder but calm with the agent, and a true policy answer they accepted.
+"3" — genuinely mixed: partial help, a flat customer with nothing to read either way, a call too short or garbled to show anything, or fcr "no" with no dissatisfaction shown towards us.
+"3" IS NOT A SAFE DEFAULT. Reach it only when the rows above genuinely do not fit, never because you were unsure.
+CONSISTENCY — CHECK BEFORE YOU ANSWER: customerSentiment "positive" with fcr "yes" is never below "4". customerSentiment "angry" is never above "2". customerSentiment "negative" is never above "3".
 SCORING A TRANSFERRED CALL. A transfer happens only when the customer STILL wanted a person after the agent had helped and, where needed, registered, when they asked to be called back, or when the complaint tool failed and they said yes to her offer — so by construction they were not satisfied with what the agent could do, but they asked for something and got it. Predict from their observable tone as always, within these bounds: "3" is the default; "4" when they stayed cooperative and positive and the transfer came promptly on their first ask; "2" or "1" when they had to ask repeatedly, were angry, or repeated themselves many times before it happened. NEVER "5" on a transferred call — 5 requires a resolved issue and expressed satisfaction, and nothing was resolved on this call.
 A FAILED TRANSFER SCORES LOWER, capped at "2" — the customer asked for a person and did not get one — and "1" if they were angry or the call ended badly. A transfer never RAISES the score on its own; it is a route, not a resolution.
-A FAILED COMPLAINT SCORES LOWER, capped at "2" — the customer raised something and left with nothing recorded — and "1" if they were angry or the call ended badly. A registered complaint never RAISES the score on its own; it is a next step, not a resolution.
-CRITICAL INSTRUCTION FOR csat: Base the rating strictly on customer behavior, responses, and sentiment observable in the transcript. Do not assume sentiment that is not evident.
+A FAILED COMPLAINT SCORES LOWER, capped at "2" — the customer raised something and left with nothing recorded — and "1" if they were angry or the call ended badly.
 
 callResult
 Allowed values: "callTransferred" | "complaintRegistered" | "complaintFailed" | "issueResolved" | "unresolved"
@@ -210,10 +220,10 @@ ANALYSIS INSTRUCTIONS:
 Read the entire transcript thoroughly before generating the output.
 Do not fabricate or assume any information not present in the transcript or metadata.
 For complaintRegistered, rely only on explicit statements by the agent about registering a complaint, case, or request.
-For csat, base the rating strictly on customer behavior, responses, and sentiment observable in the transcript.
+For csat, base the rating on how the customer treated the call and what they received — never on how bad their problem was.
 For callResult, apply the priority order strictly and choose only one value.
 For issue, count words strictly — minimum 2, maximum 5, no exceptions.
-For fcr, remember that "immediate need met" is the standard, not "underlying issue 100% resolved".
+For fcr, judge whether this contact delivered the best outcome it could, not whether the underlying problem is fixed.
 Return only the JSON object. Do not add any surrounding text, explanation, note, or markdown formatting.
 
 
