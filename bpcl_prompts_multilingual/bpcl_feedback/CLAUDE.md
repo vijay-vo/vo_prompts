@@ -90,7 +90,7 @@ the consumer's own answer, and the agent never does date arithmetic.
    2026-11-06): the top CALL ENDING line carries the exact closing lines; the closing line is never text; the
    complaint-outcome turn never carries the goodbye. A: "Thank you for giving your valuable time to Bharat Petroleum."
    B (busy, silence, no adult): "I will call you later." + A. C (wrong person): "Sorry for the
-   inconvenience." + A. There is no "anything else?" question: question eight is it.
+   inconvenience." + A. There is no "anything else?" question: question nine is it.
    - **preToolMessage is translated** (live failure, 2026-11-11): "set to exactly … never paraphrased" before an
      English quote made her copy the English into preToolMessage on every call (and add the goodbye as Hindi
      text too). The three callhangup lines now say the closing line is translated into the consumer's language
