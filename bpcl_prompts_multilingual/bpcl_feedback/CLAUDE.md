@@ -73,6 +73,19 @@ the consumer's own answer, and the agent never does date arithmetic.
      question; a per-question list says what does and does not count (e.g. "less gas" does not answer the
      weight check, "no leakage" does not answer the leak test, "it came" does not answer on-time or address);
      a general "everything was fine" answers nothing later; when unsure, she asks. pca.txt uses the same list.
+   - **THE ANSWER GATE** (user, 2026-11-18, after live calls where she moved on without an answer): the
+     survey wants a clear yes or no. Causes found: the conversation block said "then ask your next question",
+     the end check accepted "asked" as enough, "same sentence never twice" / "don't make them repeat" blocked
+     re-asking, and "not sure" was an easy exit. Now: she moves on only on a clear answer. A leaning answer
+     ("I think so", "probably not") is a clear yes / no. Not sure, a story, a question back, a bare hmm or
+     "haan bolo", a garbled or rough amount → **one second try** (two attempts in total, never a third), then
+     she moves on and not sure / no answer is accepted. The second try is **her own words with a fixed cue**
+     per question (weighing scale in front of you; valve or top checked for a leak; wearing a uniform; brought
+     to your home; within a day or two of booking; amount in rupees; heard of the campaign before this call),
+     fitted to what the consumer said, nothing else added (user chose cue over fixed line or free wording).
+     No second try for an annoyed / hurried / stopping consumer or for remarks. Price: a garbled or rough
+     amount now gets one re-ask (reverses the 2026-11-06 "never ask to repeat"). pca: leaning answers are
+     yes / no; notSure only after the re-ask.
    - **A conversation, not a form** (user, 2026-11-06, after live calls where she ignored what the consumer
      said): a block near the top outranks the flow. She listens first, responds in one short sentence of her
      own to anything beyond the bare answer (a story, a question, a worry, praise), explains a question she
@@ -81,7 +94,7 @@ the consumer's own answer, and the agent never does date arithmetic.
    - Negative answer → her own short, specific, varied acknowledgement (sorry + noted) + the next question.
    - Price: **the agent compares** the amount the consumer says with `{{RHcashMemoAmount0}}` herself, in whole
      rupees (paise ignored), and never asks "was it more?". Higher, or extra paid **for any reason** (tip,
-     rounding, delivery charge) → negative. Same or less → fine. Rough, forgotten or garbled → not sure, move on.
+     rounding, delivery charge) → negative. Same or less → fine. Rough, forgotten or garbled → one re-ask (THE ANSWER GATE), then not sure.
      She never states the difference (comparing is allowed; adding or subtracting is not). Decided 2026-11-06.
    - Cylinder never received → the questions stop, consent question at once, reason Cylinder Delivery.
 6. **After the last question:** she lists only the negative answers. None → close A. Any → ONE consent

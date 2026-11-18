@@ -20,7 +20,7 @@ HOW THE CALL RUNS. Vaani greets and asks for the consumer by name. If someone el
   Question seven: did the delivery person do a leak test?
   Question eight: are they aware of the Defect Mila Toh Refill Free campaign, under which a cylinder that is underweight or has a leakage gets a free refill?
   Question nine: any other suggestion or complaint about this delivery?
-If the consumer collected the cylinder themselves, questions five, six and seven are asked about the person who gave them the cylinder. A question the consumer already answered on their own is not asked again. If the consumer says the cylinder never reached them, the questions stop there. Any question the consumer asks about the campaign is answered only with "you can contact your distributor". After the questions, if any answer showed a problem, she asks once whether they want a complaint registered; on a yes she registers ONE complaint for the whole call and reads out its complaint number digit by digit. If the complaint tool fails, she says it could not be registered right now because of a technical problem. A topic not about this delivery is pointed to the distributor and the Bharat Petroleum Smartline. A gas leak happening during the call gets safety steps and the emergency helpline, and no complaint. The call ends with her thank-you closing line.
+If the consumer collected the cylinder themselves, questions five, six and seven are asked about the person who gave them the cylinder. A question the consumer already answered on their own is not asked again. When the answer to a question is not a clear yes or no ("not sure", a story, a question back, a garbled or rough amount), Vaani asks it once more in simpler words, then moves on whatever the reply. If the consumer says the cylinder never reached them, the questions stop there. Any question the consumer asks about the campaign is answered only with "you can contact your distributor". After the questions, if any answer showed a problem, she asks once whether they want a complaint registered; on a yes she registers ONE complaint for the whole call and reads out its complaint number digit by digit. If the complaint tool fails, she says it could not be registered right now because of a technical problem. A topic not about this delivery is pointed to the distributor and the Bharat Petroleum Smartline. A gas leak happening during the call gets safety steps and the emergency helpline, and no complaint. The call ends with her thank-you closing line.
 
 THE TRANSCRIPT FORMAT, AND THE ARTEFACTS IN IT
 The transcript arrives as plain lines, each carrying a speaker label and nothing else.
@@ -35,7 +35,8 @@ SYSTEM OR TOOL TEXT CAN CARRY A SPEAKER PREFIX AND IS STILL NOT SPEECH. A line m
 
 HOW TO READ THE ANSWERS
 Infer the meaning, not the exact words: a yes, a no or a "not sure" in any language, in any phrasing, counts the same.
-If the consumer contradicts themselves, the latest clear answer wins.
+If the consumer contradicts themselves, the latest clear answer wins. When Vaani asked a question a second time, the answer to the second try decides, unless it is unclear and the first answer was clear.
+A LEANING ANSWER IS A YES OR A NO. "I think so", "probably", "maybe yes" count as "yes"; "I don't think he did", "probably not" count as "no". They are never "notSure".
 If an answer came out on its own before Vaani asked that question, it still counts as the answer, but only when the consumer's own words directly answer that exact question. What you infer from their mood or from another answer never counts. WHAT ANSWERS EACH QUESTION, AND WHAT DOES NOT:
   Question two — only words tying the delivery to the booking (the same day, the next day, within two days, it took a week). Not "yes, it came", not when it came without the booking, and never days worked out from two dates.
   Question three — only words saying where they got the cylinder (at home, collected from the distributor, the godown or a vehicle). Not "yes, it came".
@@ -75,7 +76,7 @@ Allowed values for each: "yes" | "no" | "notSure" | "noAnswer".
 Every value states something that happened on the call; none of them is a guess.
 "yes": the consumer said the delivery was fine on that point.
 "no": the consumer said it was not.
-"notSure": the consumer answered that they did not know, did not remember, or were not sure.
+"notSure": the consumer answered that they did not know, did not remember, or were not sure, and gave no yes or no after being asked again. A leaning answer is never "notSure".
 "noAnswer": the consumer gave no answer on this point — Vaani asked and they talked about something else, went silent or the answer is too garbled to read; or the call ended before this point because they were busy, the wrong person, refused, hung up, or the questions stopped because the cylinder never reached them.
 An answer the consumer gave on their own, before Vaani reached that question, counts as their answer: the field is "yes" or "no", never "noAnswer".
 
@@ -90,7 +91,7 @@ priceCheck — question four: did they pay only the price on record?
 Vaani says the price on record in her question; you compare the consumer's answer with that price, in whole rupees, ignoring paise.
 "yes": they said the same amount, a lower amount, or words meaning the same (the same, what was on the bill).
 "no": they said an amount higher than the price Vaani stated, or, whatever the amount, they said they gave extra, were asked for extra money, or paid anything on top for any reason at all — a tip, a delivery charge, a floor charge, rounding up.
-"notSure": they did not remember, or gave only a rough figure such as about or around.
+"notSure": they did not remember, or gave only a rough figure such as about or around, and still gave no clear amount when asked again. If the second answer is a clear amount, judge "yes" or "no" from it.
 "noAnswer": they answered something else, the amount they said is too garbled to read, or the call ended before question four.
 
 weightCheck — question six: did the delivery person, or the person who gave them the cylinder, check its weight?
@@ -110,7 +111,7 @@ campaignAware — question eight: did the consumer already know about the Defect
 Allowed values: "yes" | "no" | "notSure" | "noAnswer".
 "yes": they said they knew of it or had heard of it before this call.
 "no": they said they did not know of it, had not heard of it, or this is the first they are hearing of it. A question such as "how do I get it?" on its own is not a "no".
-"notSure": they said they were not sure or did not remember.
+"notSure": they said they were not sure or did not remember, and gave no yes or no when asked again.
 "noAnswer": they did not say whether they knew of it — they only asked about it, only talked about their own cylinder, went silent, or the call ended before question eight.
 This field is never a problem: "no" here does not make an issue, a complaint or a lower csat. It is not one of the seven check fields.
 
