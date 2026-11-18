@@ -38,7 +38,7 @@ There is no `BPCL_QUESTIONS.md` here (user decision).
 | `{{ConsumerDetailsDistributorName}}` | Purpose line; "your distributor" |
 | `{{ConsumerDetailsConsumerAddress}}` | Only if asked which connection; never read out to check |
 | `{{RHdeliveryDate0}}` | Question one. Arrives **month first**, `M/D/YYYY h:mm:ss AM/PM`. Spoken as day, month, year in words plus only the part of the day (morning / afternoon / evening / night), never the clock time |
-| `{{RHcashMemoAmount0}}` | Question three, in rupees in words |
+| `{{RHcashMemoAmount0}}` | Question four, in rupees in words |
 
 **Refill History, not Refill Status** (user, 2026-11-05): `RefillStatus*` describes the latest booking,
 which may be a newer undelivered one. The booking date (`{{RHorderDate0}}`) is not used: lateness is
@@ -55,9 +55,24 @@ the consumer's own answer, and the agent never does date arithmetic.
    turn out to be family). Busy → close B, no time asked.
 3. **Purpose and consent.** Refusal or anger → close A.
 4. **Recording notice**, once, on the turn after consent, with question one.
-5. **Eight questions**, one per turn: delivery confirmed on [date]; within two days of booking; price is
-   [amount], how much did you pay; weight checked; leak test; uniform; delivered to registered address
-   (no → "where did you receive it?"); any other suggestion or complaint.
+5. **Nine questions**, one per turn, in this order (user, 2026-11-18): delivery confirmed on [date]; within
+   two days of booking; delivered to registered address (no → "where did you receive it?"); price is
+   [amount], how much did you pay; uniform; weight checked; leak test; Defect Mila Toh Refill Free campaign;
+   any other suggestion or complaint. The order groups the delivery (when, where, price), then the delivery
+   person, then the safety checks, and puts the campaign straight after weight and leak test, which it is about.
+   - **Campaign question** (user, 2026-11-18): "Are you aware of the Defect Mila Toh Refill Free campaign,
+     under which you get a free refill if your cylinder is underweight or has a leakage?" Any answer is a plain
+     answer, never an issue. Every question about the campaign gets "For this, you can contact your
+     distributor." **with no distributor name** (the consumer knows it, and the purpose line already said it).
+     No campaign details until BPCL supplies them. The campaign name is a fixed name, kept as it sounds in
+     every language.
+   - **Self-collected cylinder:** questions five to seven are still asked, about "the person who gave you the
+     cylinder" (user, 2026-11-18).
+   - **ALREADY ANSWERED** (user, 2026-11-18): a question the consumer already answered is never asked again,
+     but Gemini 3.1 Flash Lite guesses, so the bar is strict: their own words must directly answer that exact
+     question; a per-question list says what does and does not count (e.g. "less gas" does not answer the
+     weight check, "no leakage" does not answer the leak test, "it came" does not answer on-time or address);
+     a general "everything was fine" answers nothing later; when unsure, she asks. pca.txt uses the same list.
    - **A conversation, not a form** (user, 2026-11-06, after live calls where she ignored what the consumer
      said): a block near the top outranks the flow. She listens first, responds in one short sentence of her
      own to anything beyond the bare answer (a story, a question, a worry, praise), explains a question she
@@ -166,11 +181,13 @@ Brand: Bharat Petroleum throughout.
 - "Hello?" mid-questions → repeat the current question in fewer words.
 
 ## Post-call analysis (`pca/pca.txt`)
-Flat JSON, 13 fields: `deliveryConfirmed`, `deliveryCheck`, `priceCheck`, `weightCheck`, `leakCheck`,
+Flat JSON, 14 fields: `deliveryConfirmed`, `deliveryCheck`, `priceCheck`, `weightCheck`, `leakCheck`,
 `uniformCheck`, `addressCheck` (yes / no / notSure / noAnswer, "yes" = fine;
-no "unknown" and no "notAsked": Vaani must ask every question, so a missing answer is "noAnswer" — user, 2026-11-06), `issue` (2–5 word label,
+no "unknown" and no "notAsked": Vaani must ask every question, so a missing answer is "noAnswer" — user, 2026-11-06),
+`campaignAware` (question eight, yes / no / notSure / noAnswer; never a problem; key added after `addressCheck`
+so the existing keys keep their order — user, 2026-11-18), `issue` (2–5 word label,
 same priority order; "no issue reported" / "feedback not taken"), `summary` (English paragraph), `csat`
-(1–5, predicted, never asked), `allQA` (yes only if questions one to seven all answered), `complaintRegistered`,
+(1–5, predicted, never asked), `allQA` (yes only if questions one to eight all answered; remarks not counted), `complaintRegistered`,
 `callResult`.
 
 `callResult` ladder: complaintRegistered > complaintFailed > issueReported > feedbackCaptured >
