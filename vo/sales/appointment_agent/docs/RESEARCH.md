@@ -253,6 +253,168 @@ Agree and push away lightly, then ask a question that uses what you know about t
 
 ---
 
+## 8. Round 3 (2026-11-18): 31 YouTube transcripts read in full
+
+Source: the three videos the sales team recommended, plus 28 more from the same
+channels and related ones (list at the end of this section). Transcripts are
+auto-captions, read in full. Quotes below are short and taken from them. Creators
+disagree with each other in places; where they do, both sides are shown.
+
+Videos the sales team recommended:
+- Brandon Mulrenin, "I found the best cold calling script of all time"
+- Dan Lok, "Best Cold Call Secrets - Joker Calls Batman"
+- Connor Murray, "Common Cold Call Objections and How To Overcome Them"
+
+### 8.1 Opening the call
+
+| Idea | Who | Exact line / rule | Fit for us |
+|---|---|---|---|
+| **Don't open with "Is this John?" or "How are you?"** | Dan Lok, Connor Murray, Sales Feed, Miner | "The minute you say that, right there they know it's a cold call." Confirming the name causes "fight or flight." | Yes. State the name as a greeting ("Hi {{firstName}}, it's Neil from VoiceOwl"), never ask "is this...?" |
+| **Context first, then the permission ask** | 30MPC, Jason Bay, Gong | "I just finished reading your press release... I know I'm calling totally out of the blue. Do you mind if I take one minute?" Bay (contact-centre case): "Was on the FAQ page and I noticed that you're pushing customers a lot to self-serve... You got a minute for me to share why I called you specifically?" | Yes. Best fit. Our lead source gives the context. |
+| **Warm / form-fill leads: don't say "this is a sales call"** | Jeremy Miner | "You asked us to call you back, looks like you responded to the ad about [END RESULT, not the product]." Then: "What was it that made you want to look into this further?" Avoid: "is this a good time", "do you have two minutes", "how are you doing today". | Yes. Separate branch for website and event leads. |
+| **Honest permission, double-permission fallback** | Brandon Mulrenin | "I'll be up front. I'm a realtor. Do you want to hang up, or can I ask you one quick question?" If vague: "Give me 30 seconds. Let me tell you why I called, and then you can decide if we need to have this conversation. Fair enough?" | Yes, but the time limit is only the fallback, not the first breath. |
+| **Never a countdown in the first breath** | Miner, Josh Braun | Miner names "full disclosure, this is a cold call, give me 2 minutes, then you can judge" as an opener that still mostly fails. Braun calls "Can I have 27 seconds to tell you why I called" the pushy, attached tone. | Drop "twenty seconds" from the first line. Counter-view: Bay and Sales Feed endorse blunt permission openers. |
+| **Low-pressure help-me-out** | Josh Braun | "We've never spoken and I know you weren't expecting my call, but I was hoping you could help me out for a moment." Claims a 70-90% yes. | Yes. Simple words, works across cultures. |
+| **A concrete outcome inside 30 seconds** | Hormozi, Pavlo, Connor Cahill | Hormozi: trust is built in the "first 7 seconds"; "blow their minds in under 30 seconds." Pavlo: "an AI employee that can book you four to five estimates... Is that something you would even want?" | Yes, with claims VoiceOwl can really make. Our draft reached value too late (stage 4). |
+| **Name the problem, not the product** | Bay, 30MPC, Mailshake | Bay: "speaking with a lot of contact center leaders... they want to reduce the cost to serve, but... How does that resonate with you?" Cites 16% vs 5.5% (problem language vs buzzwords). | Yes. |
+
+### 8.2 The first question after the opener
+
+- **Ask a current-state question with named options (ABC), not a yes/no.**
+  Braun: "after hours when calls come in, how are you getting back in touch with
+  those people? ... returning voicemail... automated texts?" Brandon: "Most people
+  I talk to tell me A or B. Is that the same for you, or something else?"
+  This avoids "Is that about right?" and "Has that happened?" (yes/no, leading).
+- **Elicitation:** make a guess they can correct. Braun: "Oh, you've probably looked
+  into AI dispatchers" gets "they didn't work out for us."
+- **Negative presumptive questions** (Brandon: "I get the feeling you're going to tell
+  me you're never moving, am I right?") work in English for him, but even he called
+  one "a tongue twister." For non-native listeners and other languages, the meaning
+  depends on understanding that "no" means yes. Avoid in a worldwide agent. Use the
+  simple forms: ABC, and "would there be any downside to...?"
+- **"Would you be opposed...?"** (Miner, Braun) has the same problem across languages.
+  Use "Would it make sense to...?" (Braun's own transition line).
+
+### 8.3 Asking for the meeting: the creators disagree
+
+| Approach | Who | Lines |
+|---|---|---|
+| **Two concrete times straight away** | Connor Murray, Connor Cahill (AI agency, live), Kai Stone (live) | "I got an opening at 4:00 and 5:30 p.m. today. Do either of those work?" and "I have 3:00 and 5:00." Both worked on camera. |
+| **Day first, then time** | Pavlo (AI agency, live) | "Do you have some time tomorrow, or Monday or Tuesday?" Then "what time Monday is best?" "We'll talk in your time zone." |
+| **One decision at a time: interest first, time second** | 30MPC, Brandon, Braun | 30MPC: "are you free at 10 or 2?" asks several decisions at once; first "are you open to learning more?" In their one booked live call, times came only after the yes. Braun: "Would it make sense for you to invest 20 or 30 minutes... so you could see how it works?" |
+| **Future-pace, then one slot** | Brandon | "Let's pretend we met and you got what you wanted... would there be any downside to getting together for 20 minutes? I'm not asking you to make a decision." Then "I could do Wednesday evening, would that work?" |
+| **Pencil it in** | Brandon | "Let's not commit to anything. Why don't we tentatively put this time down? We could totally reset it." If they pencil it in, it is real. |
+| **Calendar hold they can decline** | 30MPC (Armand) | "I'll send the email, let's put five minutes on the calendar, you can totally decline the event." |
+
+Common to all: get a yes to the meeting before the time talk, say how long it is
+(15 to 30 minutes), give a reason or takeaway, confirm time zone and where to send
+the link. "Don't dillydally" once they say yes (Connor Murray). "Don't burn the
+popcorn": stop talking once interest peaks (Braun).
+
+### 8.4 Objections
+
+Two rules that all creators share: **agree first, never argue**, and **sell the
+meeting, not the product.** Connor Murray: answer instantly with no pause ("that's
+actually why I was reaching out...") because hesitation kills the booking.
+Brandon's ARP: Agree ("that makes sense"), Respond with empathy and permission
+("before you hang up, can I ask one thing?"), Pivot to a "would there be any downside"
+question. Dan Lok: never ask "why are you not interested?"
+
+| Objection | Lines found |
+|---|---|
+| **Not interested** | Braun: "That's okay. I know you didn't ask me to call you. Before I hang up, if I'm not overstepping, is it because my timing is off, or is this completely irrelevant?" 30MPC: "I should have figured you'd have something in place... is it X, Y, or just that you hate cold calls?" Connor Murray: make them give a specific objection ("is that because you already work with someone, or the team has no bandwidth?"). Dan Lok: "Before I get off the phone, what might have to happen before you begin looking for a different ___?" |
+| **Send me an email** | Braun: "What's your email address? ... just so I don't do you a disservice by sending irrelevant information, would it be okay if I asked a couple of questions first?" 30MPC: "Can I ask one question to make sure what I send isn't totally irrelevant?" Then "fifteen minutes would show you faster than any PDF." Fallback: the declinable calendar hold. |
+| **We already have someone / solution** | Connor Murray: "we work with customers of X all the time... briefly introduce you to my team." 30MPC: agree, then one "trap question", then "open to a look just so you know what's out there?" Sales Feed: "Have you tried to solve this before? What did you try? Did it work?" Brandon: "would a second opinion be a horrible idea?" |
+| **Busy / bad time** | Connor Murray: "I assumed this was a busy time for you... so when you do have that bandwidth we'll be ready... maybe Wednesday or Thursday?" Pavlo: "book sometime next week, if you're busy just shoot me a text and we can reschedule." Real life conflicts (travelling, lunch with family): exit gracefully, agree a callback, leave a calendar hold. 30MPC: "the way you exit determines the way you get to walk back in." |
+| **Call me later / in six months** | Braun: mirror ("later this week?"), then "would it make sense to put some time on the calendar so we're not playing phone tag?" Miner: don't say "sure, when works best?" (puts you in chase mode). Dan Lok: don't offer "should I call you next week?" |
+| **How did you get my number?** | Braun: answer plainly, no apology, name the source. If they're upset: "Seems like it was inappropriate for me to call on this number." 30MPC: honest answer, then go back to the opener. The made-up referral stories (Kai, Cahill) are lies and are not usable. |
+| **What does it cost?** | Connor Cahill: "It's a little bit variable depending on how many calls... I could break it all down on a Google Meet." Pavlo: "I would love to just show you, it makes way more sense than me trying to explain." Cahill's rule: "Don't get into price. Get him to book that call." |
+| **Not my area / not the decision-maker** | 30MPC: "just so I make sure I don't call the wrong person again... who would be the right person?" Brazier: "People in your role usually have an input. Are you responsible for that?" Braun: "Anybody else you'd like to invite?" |
+| **Wrong person** | Braun: "Sounds like I must have come through to the wrong person. Would it make sense to tell me who might be best to talk to?" |
+| **"Is this a robot?" / distrust of AI** | Pavlo's prospect said he didn't "trust the machines." Pavlo agreed on what the AI cannot do, then pitched the rest. |
+
+How many tries? Connor Murray: "get two nos", then sell the time a second time.
+Pavlo persisted through four or five deflections and still booked. Everyone stops
+at once for a real conflict, hostility or "do not call."
+
+### 8.5 Getting people to actually show up (Jason Bay)
+
+Bay cites about 56% average show rate and 70-80% for the best reps. His five moves:
+1. **Get the invite accepted on the call:** "Would you mind hitting accept on that
+   real quick? I'll give you a couple of seconds."
+2. **Restate the purpose as their problem, not "a demo."** The meeting needs an offer
+   worth their time: "a demo of your product is just not enough."
+3. **Talk up the person running the meeting** ("seven, eight years of experience
+   working with... brands like yours"). People are less likely to bail on a human
+   they've heard about.
+4. **Tell them exactly what confirmation they'll get and when.**
+5. **Do a little discovery before the ask.** The longer the conversation, the more
+   likely they book and show up.
+
+Show-rate data (vendor blogs, directional only): average B2B demo no-show 20-30%;
+same-day bookings about 7% no-show vs about 25% for 7+ days out; reminders at 24 h,
+1 h and 15 min claimed to give a 68-78% show rate. Retell suggests 72 h, 24 h and
+2 h reminders for appointments. Takeaway: **offer the earliest slots first**, and
+keep the 24 h / 1-2 h reminders already agreed.
+
+### 8.6 Voice delivery and worldwide use
+
+- Miner: sound curious and low-pressure; avoid "Hi, my name is X with Y, the reason
+  I called is..." because it raises the guard. (A "confused old man" tone and "it's
+  just..." phrasing do not suit an AI voice.)
+- Hormozi: "about 85% is the delivery", and 30MPC: tone beats words. For a voice
+  agent that is TTS speed, pauses and short sentences.
+- Bay: Europe, the Middle East and Africa may expect more formal pleasantries than
+  the US "skip the how-are-you." General etiquette guides: formal titles and surnames
+  in Germany and parts of East Asia; namaste still common in India; in Japan an
+  unsolicited call is a bigger step and relationship comes first; Brazil and Italy
+  are more personal. Sources are mostly general etiquette articles, not sales
+  research; treat as rough guidance and confirm with the sales team.
+- Idioms that translate badly and should not appear: "roll the dice", "tossed
+  around", "kick rocks", "triple backflip", "barking up the wrong tree".
+
+### 8.7 What does not transfer to our agent
+
+- **Every pretext or invented story.** Fake referrals ("my friend recommended you",
+  "Julie Becker gave me your number"), "sorry, you broke up there", "it said you were
+  closed", "I called and no one answered." These are lies, and a lie from an AI that
+  is later found out cannot be recovered.
+- **Human-timing humour and self-deprecation:** laughing at objections, "I can't speak
+  English today", "I'm not as popular as I thought", "it's probably ridiculous for me
+  to even call." From an AI they sound odd.
+- **"Have you heard our name tossed around?"** It scores 11.24% for human callers but
+  works by acting as if the prospect should know you. Use only a real social-proof line
+  (a named customer or industry) that sales approves.
+- **Familiar-tone tricks** (Miner's "it's it's Jeremy... Jeremy Miner") that make the
+  prospect think they already know you: misleading.
+- **"Just so no one from my team calls you again"** is only honest if the platform
+  really stops calling (the do-not-call flag in post-call analysis does that).
+- **Stating a price or "talking about money up front"** (Dan Lok, Kai Stone). The
+  agent knows no pricing.
+- **Dan Lok's "avoid cold calling"** advice is about strategy, not the call itself. His
+  point still holds for us: when the lead came from a form or event, call like you are
+  getting back to them.
+
+### 8.9 Videos read
+
+Recommended by the sales team:
+- Brandon Mulrenin, I found the best cold calling script of all time: https://www.youtube.com/watch?v=BrBL0YoPSBo
+- Dan Lok, Best Cold Call Secrets - Joker Calls Batman: https://www.youtube.com/watch?v=sJAN2HcE_Sw
+- Connor Murray, Common Cold Call Objections and How To Overcome Them: https://www.youtube.com/watch?v=jcn9Endg410
+
+Same channels and related:
+- Brandon Mulrenin: LXHLhZnzzUs (best opener no one talks about), Sq30kQss7TE (worst opening script), aYF-fTMBzAI (best way to start a cold call), a5aDMvBKVDQ (stop dancing around the appointment), UpJTKm4bfxw (the only objection system)
+- Connor Murray: 0hYAqlpzPwE (ultimate guide 2026), OYbrxkYeWoA (first 10 seconds), guU2kWvqwwo (confident tone), iafo36ZWwWA (live role play), 6ketTEn2AxU (value statement)
+- 30 Minutes to President's Club: 2vivv2HeiBU (masterclass with live calls), MRJS6nEKjcI (best way to open), vkj_1-NB8YQ (permission opener with a twist), 4Gwt4w4Ran4 (objection handling), cw_RyIGCjRE (reverse pitch)
+- Jeremy Miner: pjf5uhOMcTc (mastering cold calling), il2p-OD4Res (2026 techniques), W-WHmvBtjlc (calling leads the right way)
+- Josh Braun: EKr0bYFsNrU (first 30 seconds), 0GJlotgjj04 (live "I'm not interested"), fwyxBrj4m-8 (exact script + 7 objections, Chris Bussing)
+- Jason Bay (Outbound Squad): Z6EYVb6S2m0 (5 openers), yLK4x_vQRDg (connect rates and meetings that show up)
+- Dan Lok: J3Yl1p8FAaM, d0mwebxFxBc, 4JPD-HoMOFw; Alex Hormozi via Glencoco: jvFLW5EClgk; Sales Feed: 4OweikRF7bg
+- AI-agency live cold calls (they sell AI like we do): Pavlo CfMJ01KP_ns, Connor Cahill yOMqTCblP4A, Kai Stone tU52nLIUz8Y
+All at https://www.youtube.com/watch?v=<id>
+
+---
+
 ## Sources
 
 - Gong — best and worst cold call openers (300M calls): https://www.gong.io/resources/labs/the-best-and-worst-cold-call-openers-backed-by-data-from-300m-calls/

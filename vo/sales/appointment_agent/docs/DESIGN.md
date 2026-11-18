@@ -45,80 +45,87 @@ go-ahead. Research behind each point: RESEARCH.md.
 
 ---
 
-## 3. Call flow [Proposed]
+## 3. Call flow [Proposed, revised 2026-11-18 after the YouTube transcripts]
 
-Built on Sarah Brazier's four stages (30MPC), cut to a short call. Target: booked
-inside about two minutes. Example lines are for discussion only; they are not the
-prompt, and the real lines get written per language.
+Built on Sarah Brazier's four stages (30MPC), reordered with what the 31 transcripts
+showed (RESEARCH.md section 8). Target: booked inside about two minutes. Example
+lines are for discussion only; they are not the prompt, and the real lines get
+written per language. What changed from the first draft is listed in section 10.
 
-### Stage 0 — Who picked up (first turn)
+### Stage 0 — Greeting (platform first message)
 
-Platform first message: "Hi, is this {{firstName}}?"
-- Yes → stage 1.
-- Gatekeeper / wrong person → ask for {{firstName}} or a better time to reach them;
-  never pitch to a gatekeeper.
-- Voicemail → see section 6.
+A statement, not a question: "Hi {{firstName}}, it's Neil from VoiceOwl."
+Dan Lok, Connor Murray and 30MPC all say "Is this John?" and "How are you?" mark a
+cold call at once. If it is the wrong person they say so; then ask for the right
+person or a better time, and never pitch to a gatekeeper. Voicemail: section 6.
 
-### Stage 1 — The opener: earn the next 30 seconds (the first 8 seconds)
+### Stage 1 — Context, then permission (the first 8 seconds)
 
-Three parts, said together in one breath:
-1. **Name + one line of context** (why *them*), from the lead source if we have it.
-2. **Honest pattern interrupt.**
-3. **Permission with a time limit**, handing them control.
+Three branches by {{leadSource}}.
 
-Example with context (website / event / LinkedIn):
-> "Hey {{firstName}}, Neil from VoiceOwl. You checked us out at {{leadContext}}...
-> I'll be honest, this is a sales call. Can I take twenty seconds to tell you why I
-> called, and you tell me if it's worth another minute?"
+Warm lead (website form, event; they already know us). No "this is a sales call":
+> "You asked about a demo on our website, so I'm getting back to you... I saw you were
+> looking at {{leadContext}}. What made you look into it?"
+Then the short value line (stage 2).
 
-Example without context (cold list):
-> "Hey {{firstName}}, Neil from VoiceOwl. I know, nobody loves a call out of the
-> blue. Give me twenty seconds to tell you why I picked {{company}}, and then you
-> decide if I hang up. Fair?"
+Cold or LinkedIn lead. Context first, then a soft ask. No countdown in the first breath:
+> "Hi {{firstName}}, it's Neil from VoiceOwl. I know you weren't expecting my call...
+> I work with {{role}}s on one thing, getting to every new lead within a minute. Can I
+> tell you why I called you specifically?"
 
-Why: context first + reason for the call + permission are the three
-best-performing elements in Gong's data; the honest line and "you decide" hand back
-control and kill the hang-up reflex. Never "is this a bad time?" or "how are you
-today?".
+If the answer is vague ("depends...", "what is this?"), the fallback is Brandon's
+double permission:
+> "Give me thirty seconds to say why I called, and then you decide if we should talk.
+> Fair?"
 
-### Stage 2 — Their current state (one question)
+Why: context first and the reason for the call are the best-performing parts in
+Gong's data. Miner and Braun say a timed promise in the first breath lowers trust,
+so the time limit is the fallback, not the opener. Never "is this a bad time?", never
+"how are you?" (formality varies by country, see section 7).
 
-Show we know their world; ask them to confirm. Line picked by role/industry:
-> "Most {{role}}s I talk to tell me the same thing: lead lists keep growing, but
-> the team can only call so many people a day. Is that about right for you?"
+### Stage 2 — One value line, then one open question
 
-### Stage 3 — The problem they don't see (no pitch yet)
+A concrete outcome in under 30 seconds (Hormozi, Pavlo, Bay), in problem language,
+not product language:
+> "We build voice agents that call every new lead within a minute, in their own
+> language, and book the meeting. Most sales teams tell us one of three things:
+> leads get called too late, too few get called, or only in one language. Which is
+> closest to you?"
 
-> "The catch is, the leads you don't reach in the first few minutes mostly go cold.
-> Has that happened at {{company}}?"
-Then listen. One follow-up: "Tell me more about that."
-(Problem lines per audience are in section 5. The speed-to-lead fact, 21x within 5
-minutes, is the strongest hook because it's true for nearly every sales team.)
+Rules: an open or A-B-C question, never "Is that about right?" (yes/no, leading).
+Keep silent after it. Do not use negative presumptive questions ("you're probably
+never...right?") because they are ambiguous in other languages.
 
-### Stage 4 — Tie it to their words and book
+### Stage 3 — Hear their problem, then agree there is one
 
-One sentence of solution using what *they* just said, then go straight to *when*,
-not *whether* (Jason Bay):
-> "That's exactly what we fix. Our voice agents call every lead in under a minute,
-> in their own language, around the clock. Let me get you a quick fifteen minutes
-> with our team so you can hear it for yourself. I have Tuesday at eleven or
-> Wednesday at four, your time. Which works better?"
+Listen. One follow-up in their words: "Tell me more about that." Optionally one guess
+they can correct: "You've probably tried a dialer already?" Do not pitch yet. If
+nothing in what they say is a problem, do not push; thank them and close.
 
-If the prospect is lukewarm, soften to the low-friction version:
-> "Would a fifteen-minute look be worth it, just so you know what's out there?"
+### Stage 4 — Interest first, then time (one decision at a time)
 
-### Stage 5 — Confirm and close
+30MPC and Brandon: first agree to meet, then pick a time. Connor Cahill and Pavlo
+close faster with two slots, and it worked live. The merge:
+1. **Tie the meeting to their words** (Bay: a "demo" is not enough of a reason):
+   > "That's the exact thing we fix. Would it make sense to spend fifteen minutes
+   > with our team and hear it work in your customers' language?"
+2. On yes, immediately two concrete slots (earliest first):
+   > "I have Tuesday at eleven or Wednesday at four, your time. Which works better?"
+3. Hesitant ("let me check")? Pencil it in (Brandon): "Let's put a time down, you can
+   move it." The calendar invite is declinable. If both slots fail: ask which day
+   suits them, check that day, offer two.
+Not "Would you be opposed...?": it is ambiguous across languages. Use "Would it make
+sense to...?".
+
+### Stage 5 — Confirm, and get them to show up (Jason Bay)
 
 1. Read back once: day, date, time, "your time".
-2. Email: confirm without reading the full address aloud: "I'll send the Google
-   Meet invite to your email at {{emailDomain}}. Is that the right one?"
-   - Different email → book with the one on file and say the WhatsApp message lets
-     them reply with the right one (no spelling on the call). [Proposed — needs
-     platform support, see section 9.]
-3. Book (tool). Then: "You'll get the details on WhatsApp and email. When the
-   invite arrives, could you accept it so it's in your calendar?" (a small spoken
-   commitment improves show-up).
-4. Close warm and short.
+2. Name the host: "{{demoHost}} from our team will run it. They've set this up for
+   many {{industry}} teams." (people don't bail on a person they've heard of)
+3. Email: confirm the one on file by its domain, not letter by letter.
+4. Book (tool). Google sends the invite to the prospect right away. Ask: "You'll see
+   the invite in your email now. Could you accept it so it's in your calendar?"
+5. "You'll also get the details on WhatsApp and email." Close warm and short.
 
 ---
 
@@ -134,26 +141,38 @@ the sales team on the demo, or close politely.
 
 ---
 
-## 5. Objections: conversational, built to book [Proposed]
+## 5. Objections: conversational, built to book [Proposed, revised 2026-11-18]
 
-Rule set (30MPC "Mr. Miyagi" + Brazier):
-1. **Agree** first, lightly, with some humour. Never argue.
-2. **Ask one question** to find the real reason.
+The agent should sound like it is thinking with them, not reciting. All the creators
+agree on three rules (30MPC "Miyagi", Brandon's ARP, Connor Murray):
+1. **Agree first, answer at once, no apology.** A pause kills the booking. Never
+   argue with the reason.
+2. **Ask one question** to find the real reason. Never "why not?".
 3. **Sell the 15-minute look, not the product**, tied to what they just said.
-4. **Two rounds maximum** on the same call. A clear second no, or "don't call me",
-   closes politely (post-call analysis marks it).
 
-| They say | Neil's direction |
+How long to keep trying: Connor Murray's rule is **"get two nos"**: sell the meeting
+twice. Pavlo kept going through four or five deflections and still booked, so while
+the prospect stays friendly and engaged the agent may keep asking questions. Stop at
+once on: a hard no after two tries, hostility, "do not call", or a real-life
+conflict (travelling, family, in a meeting). Then exit gracefully, agree a callback,
+and mark it.
+
+| They say | Direction (sources in RESEARCH.md 8.4) |
 |---|---|
-| "Not interested." | "All good, you'd have called *us* if you were!" Then: "Is it just not a priority, or do you already have something for this?" Real reason → round 2. |
-| "Send me an email." | "Happy to. So I don't send you something useless, what's your biggest headache with calls right now?" → "Honestly, fifteen minutes would show you faster than any PDF whether it's relevant." Offer two slots. |
-| "We already have a solution / a call centre." | "Makes sense, most teams we talk to do." Ask how happy they are with it (a 6 or a 10 out of 10?). → "Then fifteen minutes just to compare, keeps your current setup honest." |
-| "Busy / in a meeting." | "No problem. Two seconds: can I book fifteen minutes later this week instead?" Else ask for a callback time. |
-| "Call me in six months." | "Fair, timing's everything. Fifteen minutes now means you'll know your options when the time comes." If no, ask the month and close. |
-| "What does it cost?" | "That depends on your volumes, and I'm not the right one for numbers. The team covers exactly that in the demo." Offer slots. |
-| "How did you get my number?" | Fixed honest line per lead source (sales team to provide). |
-| "I'm not the decision-maker." | "Totally get it. People in your role usually have a big say in this though. Who else should join the fifteen minutes?" Book them + note the colleague. |
-| Product questions | One or two short, true answers from the approved facts (section 7), then: "The demo shows that live." |
+| "Not interested." | "That's okay, you didn't ask me to call. Before I go: is the timing off, or is this just not relevant?" (Braun). A real reason goes to round 2. |
+| "Send me an email." | "Happy to. So I don't send something useless, how do you handle {{problem}} today?" Then: "fifteen minutes shows you faster than any PDF." Last resort: a declinable calendar hold. |
+| "We already have a solution." | "Makes sense, most teams we talk to do. Have you tried to solve {{problem}} before? What did you try?" Then "a quick look, just so you know what's out there." Do not claim to work with their vendor. |
+| "Busy / in a meeting." | Answer fast: "No problem. Would later this week suit, fifteen minutes?" Real conflict: callback time, then calendar hold. |
+| "Call me later / in six months." | Mirror: "Later this week?" Then: "Would it make sense to put fifteen minutes on the calendar now so we're not playing phone tag? You can move it." |
+| "What does it cost?" | "It depends on your volumes, and I'm not the right person for numbers. The team goes through it in the demo." (Cahill: "Get him to book that call.") |
+| "How did you get my number?" | Plain, no apology, named source: "{{leadSourceSpoken}}". If upset: "It seems I shouldn't have called on this number; I'll make sure you're not called again." (sales team to provide per source) |
+| "Not my area / not the decision-maker." | "Who should I be talking to about that?" and "Anybody else you'd like to invite?" Book them and note the colleague. |
+| "Is this a robot / an AI?" | Section 4. Pavlo's tip for a distrustful prospect: agree on what an AI can't do, then pitch the rest. |
+| Product questions | One or two short, true answers from the approved facts, then "The demo shows that live." |
+
+Not allowed (all come from the videos but fail for an agent): invented referrals or
+stories, "I called earlier and no one answered", jokes that need a human laugh,
+self-deprecating lines, idioms, naming a vendor of theirs we don't know.
 
 ---
 
@@ -181,7 +200,10 @@ Rule set (30MPC "Mr. Miyagi" + Brazier):
 | {{role}} | Picks the problem line | Optional (generic line if missing) |
 | {{industry}} | Picks the problem line | Optional |
 | {{leadSource}} | website / event / linkedin / cold / other | Yes |
-| {{leadContext}} | e.g. event name, page they visited | Optional |
+| {{leadContext}} | e.g. event name, page they visited (the context line in stage 1) | Optional; strongly recommended |
+| {{leadSourceSpoken}} | One honest sentence for "how did you get my number", per source | Yes (sales team) |
+| {{demoHost}} | Name of the sales person who runs the demo (the show-rate move in stage 5) | Optional |
+| {{formality}} | informal / formal (greeting and pleasantries by country) | Optional, derived from country |
 | {{country}} | Language default, greeting style | Yes |
 | {{timezone}} | IANA, e.g. Asia/Kolkata, America/New_York. Slots are spoken in the prospect's local time | Yes |
 | {{language}} | Starting language | Yes (or derived from country) |
@@ -207,7 +229,8 @@ Input:
 - `excludeSlotIds` — optional, slots already offered and refused
 
 Output: up to **two** free 15-minute slots inside the next 15 days, inside
-working hours (see section 9), each with:
+working hours (see section 9), **the two earliest first** (vendor data: same-day
+bookings no-show about 7%, 7+ days out about 25%), each with:
 - `slotId`
 - `startUtc`
 - `spokenLabel` — in the prospect's local time and words, e.g. "Tuesday the
@@ -221,11 +244,15 @@ Empty list = nothing free for that request.
 Input: `slotId`, `firstName`, `lastName`, `company`, `email`, `timezone`, `notes`
 (one line: pain mentioned, colleague to invite).
 
+Optional input: `tentative: true` for a penciled-in slot (Brandon's tactic), which
+the prospect can decline.
+
 Output: `booked: true` + `spokenLabel` + `meetLink`, or `booked: false` +
 `reason: slot_taken | error`.
 
 The calendar event adds the prospect as a guest, so Google itself emails the Meet
-invite. The platform then sends WhatsApp + email after the call.
+invite right away (during the call), so the agent can ask them to accept it now.
+The platform then sends WhatsApp + email after the call.
 
 ---
 
@@ -258,3 +285,35 @@ invite. The platform then sends WhatsApp + email after the call.
     notInterested / doNotCall / wrongPerson / gatekeeper / voicemail / failed),
     slotStartUtc, email, emailCorrection, objection, painMentioned, colleagueToInvite,
     callbackTime, interestLevel, askedIfAI, language.
+12. **Demo take-home** — Bay: "a demo of your product is just not enough". What do
+    they get out of the 15 minutes? Idea: hear the agent speaking their customers'
+    language (VoiceOwl claims 135+). Does the sales team agree, or is there a
+    tailored demo or audit?
+13. **Demo host name** — a named sales person to talk up in stage 5.
+14. **Social proof** — which real customers or industries may the agent mention?
+    ("We work with teams like yours in BFSI" must be true.)
+15. **Invite timing** — confirm that the Google invite really goes out when
+    bookDemo runs, so the prospect can accept it during the call.
+16. **Tentative booking** — OK to book a penciled-in slot the prospect can decline?
+17. **Objection rounds** — Connor Murray's "two nos", with more tries while the
+    prospect stays friendly (Pavlo)? Proposed in section 5.
+18. **Formality by country** — a short formal greeting in Europe, the Middle East and
+    East Asia, a brisk one in the US, namaste-style in India? Which countries come
+    first, and does the sales team want different openers per region?
+
+---
+
+## 10. What changed from the first draft (2026-11-18)
+
+| First draft | Now | Why (RESEARCH.md 8) |
+|---|---|---|
+| "Hi, is this {{firstName}}?" | "Hi {{firstName}}, it's Neil from VoiceOwl." | Dan Lok, Connor Murray, 30MPC: confirming the name marks a cold call. |
+| Always "honest, this is a sales call, give me twenty seconds" | Three branches: warm lead (no "sales call"), cold lead (context, then soft ask), and the thirty-second line only as fallback | Miner, Braun: a timed promise in the first breath lowers trust. 30MPC: context first. |
+| Value reached at stage 4 | One value line in stage 2 | Hormozi, Pavlo, Bay: a concrete outcome in under 30 seconds. |
+| "Is that about right?" / "Has that happened?" | Open A-B-C question | Yes/no leading questions raise the guard (Braun, Brandon, 30MPC). |
+| Two slots straight after the pitch | Get a yes to "fifteen minutes, would it make sense?", then two slots | 30MPC, Brandon: one decision at a time. Cahill, Pavlo, Kai: two slots work once they want to meet. |
+| "Would you be opposed...?" ideas | "Would it make sense to...?" | Negative questions are ambiguous in other languages. |
+| Max two objection rounds | "Two nos", longer while engaged, stop on hard conflicts | Connor Murray, Pavlo. |
+| Confirm, then close | Name the host, ask them to accept the invite, say what confirmation comes | Jason Bay show-rate moves. |
+| Slots in any order | Earliest two first | Same-day bookings no-show far less (vendor data). |
+| (nothing) | Banned: invented referrals, human-timing jokes, self-deprecation, idioms | They fail for an AI and a worldwide audience. |
