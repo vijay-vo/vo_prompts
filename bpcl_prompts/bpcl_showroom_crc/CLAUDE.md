@@ -155,6 +155,23 @@ further — no question, no new fact, no fresh grievance. A registered complaint
 resolved. **If they never wind down, the question is never asked**: there is no turn cap and no
 forced close, and a call that never reaches it is correct.
 
+**CLS-04 (2026-11-18) — why CLS-03 still fired, and the structural fix.** A live activeDeliveryAgent
+call asked the close question nine times while the consumer was still venting. The rule was right
+but outvoted: about a dozen answer paths per agent ended with *"You go to close check"*, which the
+model ran as the next step of the same turn; a *"fully resolved"* line survived in most files; the
+gate paragraphs were pasted far from the close section in several; booking Step 8/9 scripted an
+acknowledgement **plus** the close question on one turn; and `Default`'s FAQ examples ended with
+*"कुछ और बताऊँ?"*. Now: every answer path ends the turn (*"That is the whole turn; you stop and wait"*),
+each agent has **one** gate block inside its close section (`THE CLOSE QUESTION ANSWERS THE CONSUMER'S
+WIND-DOWN…`, including *asked too early means wait, not ask again* and *your own earlier turns are
+never a pattern*), the per-turn rules say the close question is never part of an answer, and
+`Default`'s examples carry no trailing question. **Do not re-add "go to close check" to a path.**
+Same commit: **acknowledge the feeling once per issue** — later turns start from the consumer's new
+detail, and a reworded *"समझ सकती हूँ"* is still the once; and **a missing delivery date is not news**
+— DATE ABSENT is spoken only when the consumer asks when / which date. The routingAgent out-of-scope
+ladder and emergencyAgent's non-LPG line keep their close question by design. Not yet ported to CC
+or multilingual.
+
 > **REVISED 2026-09-17 — CHANNELS.md CPL-22.** There are **no fixed complaint lines any more** — no
 > success line, no already-registered line, no failure line. The tool returns only a **message**
 > (no `caseId`/`caseNumber`) that says what happened and what to tell the consumer, e.g.
