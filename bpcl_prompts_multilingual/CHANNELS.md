@@ -2064,6 +2064,13 @@ separately, and no size signal will ever reveal it.
 |---|---|
 | **What** | The folder `bpcl_ivrs_support/` is now `bpcl_contact_center/`, by the user's request after CC-DEL-01. Only the folder name and the doc links to it changed; every prompt is byte for byte the IVRS prompt, with no human transfer. Older rows that say `bpcl_ivrs_support` or IVRS mean this folder. |
 
+### UNWANTED-BOOKING-01 · An unwanted booking routes to the delivery family — bpcl_showroom_crc and ivrs_commercial (2026-11-19)
+
+| | |
+|---|---|
+| **Problem** | Default's Example 10 routed an unwanted booking and its cancellation to genericInfoComplaintAgent, while Default's own rules, routingAgent and genericInfoComplaintAgent sent it to "the booking family", which is no agent name. The agent that actually handles both is activeDeliveryAgent (Path F cancelling, Path G a booking the consumer did not make), and genericInfoComplaintAgent hands booking records back as the delivery family's. |
+| **Now** | Example 10 routes to activeDeliveryAgent, which the platform resolves to the right delivery agent from the booking on record. Every "booking family" in Default, routingAgent and genericInfoComplaintAgent reads "the delivery family (activeDeliveryAgent)". contact_center and lite_zip not changed (user scope). |
+
 ### COMM-SYNC-01 · ivrs_commercial brought up to the multilingual Showroom CRC (2026-11-19)
 
 | | |
@@ -2072,7 +2079,7 @@ separately, and no size signal will ever reveal it.
 | **What changed** | Fourteen files. The complaint tool is called one time only, an untold Result is spoken first, what the customer adds after success is noted with no tool call, no retry after failure, and only a Result gives a number (CPL-28, CPL-29). The close question waits for the customer's wind-down, with one gate block per close section; answer paths end the turn; empathy once per issue; a missing date only when asked (CLS-04). bookingNonEligibilityAgent takes BNE-01. postCallAnalysisFlat: the noted line is not a registration, fcr is the best outcome this contact could give, csat weights the end. vaaniQA: new F14 (the noted line is required), C3c-LOOP, C3d, C8, C15, C28 for one complaint call per call. |
 | **Channel policy kept** | No transfer: every CRC "T3 in SENIOR TEAM TRANSFER" became the file's own no-transfer failure handling. Nothing domestic: the O T P branch edits and the Lite zip / Mini hunks had no counterpart and were skipped, and the O T P example was dropped from the noted-turn sentence (COMMERCIAL_KB.md holds no delivery O T P process). Commercial complaintReason lists unchanged. Default's CLOSE-01 already stayed on the line, so a2599f5 needed nothing. |
 | **Also** | BAS (the domestic auto booking) removed from Default and routingAgent: it is not in COMMERCIAL_KB.md. Default's Example 10 is now an unwanted booking. |
-| **Not changed** | genericInfoComplaintAgent_v2.txt (not deployed). Default's Example 10 still routes an unwanted booking to genericInfoComplaintAgent while its rules send it to the booking family; the same split exists in CRC and contact_center. |
+| **Not changed** | genericInfoComplaintAgent_v2.txt (not deployed). Default's Example 10 routing was fixed separately (UNWANTED-BOOKING-01). |
 
 ### COMM-01 · ivrs_commercial created as a copy of bpcl_contact_center (2026-10-23)
 
