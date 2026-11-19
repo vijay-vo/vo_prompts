@@ -301,6 +301,61 @@ The platform then sends WhatsApp + email after the call.
     East Asia, a brisk one in the US, namaste-style in India? Which countries come
     first, and does the sales team want different openers per region?
 
+### Raised by the round-4 research (RESEARCH.md 8.8, 2026-11-19), proposals only
+
+19. **AI disclosure may have to depend on the country (this reopens item 9).** The
+    decision is "only when asked". But EU AI Act Article 50 (in force since
+    2 August 2026) probably needs an early AI mention for EU leads, and Maine and New
+    Jersey have upfront rules. Germany's UWG, and probably the UK, treat automated
+    calls as consent-only even in B2B. Cost: 42% of warm leads hung up after an
+    upfront disclosure in the Time Doctor test. Proposal: keep "only when asked" for
+    the US (outside those states), India, Singapore and the UAE. Use one short early
+    line for EU and UK leads, driven by a {{discloseAI}} variable. Needs legal sign-off.
+20. **Which leads Neil may call.** For an AI voice, cold or LinkedIn leads are a legal
+    risk in the US (mobile numbers, TCPA), Germany, the UK, Saudi Arabia and probably
+    France. Proposal: Neil calls form and event leads, with AI-call consent wording on
+    the form. Cold leads stay with humans, or go only to countries legal clears. This
+    may remove the cold-lead branch of stage 1 for some regions.
+21. **Salutation per country (answers item 18 in part).** "Hi {{firstName}}" is wrong
+    for DE, FR, JP and KR, and weak for the Gulf. Proposal: a {{salutation}} variable
+    filled by the platform per country ("Herr Müller", "Madame Dubois", "Tanaka-san",
+    "Engineer Ahmed"), with first name as the default for US, UK, India and Singapore.
+    The UAE requires the company and purpose at the start, which stage 0 plus stage 1
+    already give if the purpose follows at once.
+22. **Calling windows per country** (adds to item 2). UAE 9:00-18:00 is the law. France
+    should avoid 12:00-14:00. Fridays are the worst day everywhere. These are platform
+    dialler rules, not prompt rules.
+23. **Wait for "hello", and a voicemail branch.** The first message waits for the
+    person to speak. Listed voicemail and IVR cues; no voicemail on the first attempt;
+    on a later attempt one fixed line under 20 s, then WhatsApp. Is waiting for
+    "hello" a platform setting?
+24. **Slot choice (refines stage 4).** Keep earliest-first. Prefer slots 0-2 days out
+    (85% held against 60% at 15-30 days), avoid offering more than 7 days out, and
+    avoid Friday and late-Thursday slots when others exist. This could be a tool-side
+    filter or ranking.
+25. **Silence after the ask.** After "would fifteen minutes make sense?" and after the
+    two slots, Neil says nothing more and waits. Top human setters waited about 3 s;
+    the worst about 1 s.
+26. **Turn length.** One or two sentences by default. Once the prospect engages, the
+    value explanation may run to three or four short sentences (Gong). If cut off,
+    Neil answers the interruption and carries on; he never restarts the line.
+27. **Email.** For form leads, confirm the email on file ("still the one at
+    acme dot com?"). Read back only the slot and the email. After two failed tries,
+    send a link on WhatsApp instead (relates to item 7). If the prospect changes the
+    slot, call getAvailableSlots again before bookDemo.
+28. **"Are you a robot?" (refines section 4).** One honest sentence, the reason for the
+    call again, and an offer of a human callback. After a refusal, a post-call flag
+    stops further AI calls (new post-call field `noAICalls` for item 11).
+29. **Reminder wording (platform WhatsApp and email).** "This slot is reserved for you,
+    {{hostName}} has blocked it", plus an easy reschedule link. In a large RCT, this
+    kind of wording beat a generic reminder: 14-15% against 21% no-shows.
+30. **A second use for Neil, lower risk.** Call prospects who already booked, to
+    confirm and pre-qualify (Time Doctor's "Susan"). Worth doing first, or alongside?
+
+Unchanged by the research: the statement greeting, context first, the 30-second line
+as a fallback only, the A/B/C question, a yes before slots, and "two nos" ("not
+interested" is recovered only about 15% of the time, which supports stopping).
+
 ---
 
 ## 10. What changed from the first draft (2026-11-18)

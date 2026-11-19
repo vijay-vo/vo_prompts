@@ -395,6 +395,176 @@ keep the 24 h / 1-2 h reminders already agreed.
   point still holds for us: when the lead came from a form or event, call like you are
   getting back to them.
 
+### 8.8 Round 4 (2026-11-19): voice-AI vendor guides, practitioner write-ups, law, etiquette, show rates
+
+This is the written-source research that was cut off by a usage limit on 2026-11-18,
+now run in full. It draws on about 25 new sources. Vendor guidance and show-rate data
+are strong. Practitioner write-ups are thin, because Reddit threads were not reachable
+directly. Etiquette rests on etiquette guides, not outcome data. [vendor] marks a number
+that comes from a company selling the tool. All legal points need review by counsel.
+
+**Voice-AI vendor guidance**
+- Vapi prompting guide: "Keep responses to one or two sentences maximum", "Ask only
+  one question at a time", never offer more than three options. On interruption:
+  "Stop talking, listen, respond." On silence: wait 10-15 s, ask "still there?" once,
+  then end. Times are spoken as words ("two fifteen in the afternoon"). Its booking
+  example offers two slots. It reads back only what must be exact (time, name
+  spelling, email), never the qualification answers.
+  https://docs.vapi.ai/prompting-guide
+- Vapi voicemail: list the cues ("leave a message", "at the tone", "beep",
+  "unavailable", IVR "press 1") and keep the message under 30 s with who, why and the
+  next step. The first message waits for the person to speak.
+  https://docs.vapi.ai/tools/voicemail-tool ,
+  https://docs.vapi.ai/outbound-campaigns/voicemail-and-call-screening
+- Retell voicemail: hang up rather than leave a message on a first attempt when a retry
+  is planned. Keep any voicemail under 20 s and follow it with a text. Machine
+  detection during a long opener hurts calls a person answers.
+  https://retellai.com/blog/5-best-voicemail-practices-when-using-ai-voice-agents ,
+  https://community.retellai.com/t/outbound-voicemail-detection-cant-fix-it-without-breaking-live-answers-conversation-flow-agent/3365
+- Retell prompt guide: one question per step, wait for the answer, read the booking
+  back ending "Is that correct?". If the caller changes the slot, check availability
+  again before booking. https://docs.retellai.com/build/prompt-engineering-guide
+- ElevenLabs prompt guide: hard rules go under a "Guardrails" heading. Before a tool
+  with consequences, confirm and wait for the yes. Tool parameters state the written
+  format (an email as a real address, not "at" and "dot").
+  https://elevenlabs.io/docs/eleven-agents/best-practices/prompting-guide
+- PolyAI on barge-in: it happens in 15-20% of calls [vendor]. "A false barge-in is more
+  damaging than a missed one." After an interruption, answer it and carry on; do not
+  restart the line. https://poly.ai/blog/barge-in-voice-ai-interruption-handling
+- Email capture by voice (Famulor, AssemblyAI): recognition is better when the email
+  question is the turn just before. The fallback order is spell and read back, then
+  send a link by text. Phonetic alphabets can sound garbled. No independent data.
+  https://www.famulor.io/blog/email-capture-via-ai-voice-agent-the-complete-guide-to-accurate-data-and-optimized-processes ,
+  https://assemblyai.com/blog/conversation-context-voice-agents
+- Retell on refusals: when asked "am I talking to a robot?", answer honestly, restate
+  the reason and ask to continue. When they want a person, offer a human callback. A
+  refusal should stop further AI calls. "A rep who catches a dodge has every reason
+  to hang up." https://www.retellai.com/blog/ai-caller-refusal-human-handoff
+- Gong: in successful human cold calls the longest rep monologue ran 37-53 s, against
+  25 s in failed calls (Gong's own figures vary by year). Once the prospect engages,
+  the value explanation can run three or four short sentences.
+  https://www.gong.io/blog/cold-call-stats
+
+**Practitioner write-ups**
+- Time Doctor field test (a sales director's talk) is the most candid source found.
+  AI agents called warm inbound leads and disclosed they were AI up front. About 70%
+  of calls produced no meeting and no real conversation. **42% hung up once they
+  understood it was an AI**, and most of the rest asked for a human. A second agent,
+  which only confirmed demos already booked, was the easier use case.
+  https://community.mindstone.com/annotate/article_B17CGIZUhqyBfMln73
+- A Reddit thread, summarised secondhand: 12-15 real conversations per 100 AI calls
+  against 3-4 manual. Short scripts beat full discovery, and off-script moments felt
+  "clunky". https://superintelligentsales.beehiiv.com/p/the-promise-and-pitfalls-of-ai-cold-calling
+- "500 real cold calls" (human roofing setters). The top setter converted 23.7% with
+  78% script adherence, while the worst converted 11.2% with 93%. The top setter paused
+  about 1.8 s before replying and waited 3.1 s after asking for the booking; the worst
+  waited 0.7 s and 1.1 s. There were 43 distinct objections against 15 in the playbook,
+  and "not interested" was recovered only about 15% of the time.
+  https://dev.to/gamlin/how-we-built-an-ai-voice-agent-from-500-real-cold-calls-23jg
+- For calibration only [vendor]: 4,312 dials gave 129 meetings in 5 days, about 19% of
+  conversations (https://opmai.beehiiv.com/p/4-312-dials-in-5-days-here-s-what-happened-f579).
+  The human baseline from Belkins is a 9.9% connect rate and 4.6% conversation to
+  meeting (https://belkins.io/blog/cold-calling-benchmarks). Close says cold outbound
+  is hard for AI and needs an escape hatch to a human
+  (https://www.close.com/blog/do-ai-voice-agents-work).
+
+**How people react to AI callers**
+- Surveys [vendor]: 22% hang up immediately when an AI identifies itself (Answering
+  Service Care, 2,000 US adults), 29% (AnswerConnect/OnePoll, 6,000 adults), and about
+  11% with 30% asking for a human (Metrigy). The real warm-lead test above saw 42%.
+  Plan for 20-40% early drop after a disclosure.
+
+**Law by region (needs counsel; summaries of legal press)**
+- **US:** the FCC's February 2024 ruling puts AI voices under the TCPA's
+  artificial-voice rules, so mobile numbers need consent (prior express written
+  consent for telemarketing). The FCC's August 2024 proposal for upfront AI disclosure
+  is not known to be final. Among states, Utah requires disclosure only if asked,
+  Maine requires it up front where a bot could mislead, and New Jersey up front when
+  selling goods or real estate.
+  https://www.mayerbrown.com/en/insights/publications/2024/02/fcc-declares-authority-and-intent-to-regulate-ai-generated-calls-under-the-tcpa ,
+  https://www.globalpolicywatch.com/2024/08/fcc-proposes-new-consent-and-disclosure-rules-for-ai-generated-calls-and-texts/ ,
+  https://www.ibtimes.com/ai-sales-agents-wont-tell-you-theyre-bots-most-states-they-dont-have-3807692
+- **EU:** Article 50(1) of the AI Act has applied since 2 August 2026. People must be
+  told they are talking to an AI unless it is obvious, and a human-sounding voice is
+  unlikely to count as obvious. "Only if asked" probably does not comply for EU leads.
+  https://www.traverssmith.com/knowledge/knowledge-container/is-it-a-bot-eu-ai-act-transparency-rules-take-effect-2-august-2026/ ,
+  https://datamatters.sidley.com/2026/06/24/eu-ai-act-transparency-obligations-preparing-for-compliance-by-2-august-2026/
+- **Germany:** under §7(2) no. 2 UWG, automated advertising calls need prior explicit
+  consent even in B2B. Commentary sees no exemption for AI.
+  https://www.knowlee.ai/de/blog/ki-kaltakquise-deutschland ,
+  https://www.it-recht-kanzlei.de/lg-kleve-telefonwerbung-mutmassliche-einwilligung.html
+- **France:** from 11 August 2026, B2C cold calls need consent, while B2B stays opt-out.
+  The consumer calling window is weekdays 10-13 and 14-20.
+  https://cnil.fr/fr/prospection-commerciale-par-telephone-hors-automate-dappel-quelles-sont-les-regles
+- **UK:** live B2B calls are allowed unless the number is on TPS or CTPS. Automated
+  marketing calls need consent, and whether conversational AI counts as automated is
+  unsettled.
+  https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/business-to-business-marketing/
+- **UAE:** Cabinet Decision 56/2024 allows calls only 9:00-18:00 local time. It requires
+  the company name and purpose at the start, TDRA approval, recording and the DNC
+  register, with fines up to AED 150k.
+  https://www.morganlewis.com/fr/blogs/sourcingatmorganlewis/2024/07/telemarketing-in-an-evolving-legal-landscape-uae-adopts-regulations-on-telemarketing-activities
+- **Saudi Arabia:** promotional calls need prior opt-in and must stop at once on
+  withdrawal. Calling hours were not found.
+  https://tamimi.com/law-update-articles/congratulations-youre-a-winner-new-anti-spam-regulations-in-saudi-arabia
+- **India:** the February 2025 TCCCPR amendment requires robo-call disclosure and the
+  140 series. An AI-specific rule is still under consideration. TRAI PR 119/2026
+  ("A2P calls") is an image-only PDF and was not read; check it. (Sources in the list
+  below.)
+
+**Etiquette by country (etiquette guides, no outcome data)**
+- **Germany:** Herr or Frau plus surname, Dr. where it applies, the formal "Sie", and
+  the company plus name first.
+  https://www.brainguide.de/Formality-is-good-form ,
+  https://trykaiwa.com/blog/german-phone-call-basics-realistic
+- **France:** "Bonjour Madame/Monsieur" and the formal "vous". Skipping the greeting
+  reads as rude. Avoid 12:00-14:00.
+  https://www.expatica.com/fr/working/employment-basics/french-business-culture-102491
+- **UK:** first names are fine. 8:30-10:00 and 16:00-17:30 are strong windows (one
+  vendor source).
+  https://www.mapsleads.co/blog/cold-calling-best-time-of-day
+- **UAE and Saudi Arabia:** a title (Doctor, Engineer) plus first name, and early in the
+  day. https://www.talaera.com/blog/working-with-saudi-arabian-clients
+- **Japan:** "osewa ni natte orimasu", then company and name, and surname plus -san or
+  -sama. Never "moshi moshi". https://cotoacademy.com/make-phone-call-japanese/
+- **Korea:** surname plus title plus "-nim", and no first names unless invited.
+  https://cibtvisas.com/blog/business-etiquette-south-korea
+- **Singapore:** title plus surname until invited.
+  https://cibtvisas.com/blog/business-etiquette-singapore
+- **India:** Sir or Ma'am by default, and first names are common in tech.
+- ZoomInfo (1.4M calls): Wednesday beats Tuesday in Europe, the Middle East and Asia,
+  and Friday is worst everywhere.
+  https://salestechstar.com/guest-authors/cracking-the-cold-call-code-best-times-according-to-1-4-million-calls/
+
+**Show rates**
+- Growth Cab (1,380 B2B meetings booked by cold calls, mostly Italy and the EU,
+  observational):
+
+  | Booked this far ahead | Meetings held |
+  |---|---|
+  | 0-2 days | 85.4% |
+  | 3-7 days | 77.6% |
+  | 8-14 days | 70.1% |
+  | 15-30 days | 60.3% |
+  | 30+ days | 58.5% |
+
+  Wednesday meetings were held most often (76.2%); Thursday and Friday had the most
+  no-shows (18.5% and 22.2%). C-level prospects no-show more.
+  https://www.growthcab.com/b2b-meeting-show-rate-study
+- Reply.io (about 2,900 inbound demos; figures via secondary citations) found the
+  same direction: no-shows of 6.9% same day, 9.6% next day and 23% for 8+ days out.
+  https://reply.io/fight-demo-no-shows/
+- Reminder-wording RCT (healthcare, 161,587 appointments): a generic SMS had a 21.1%
+  no-show rate. Better wordings were "others are waiting for this slot" at 14.2% and
+  stated cost at 15.3%. A personal request did no better than generic.
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC7310733/
+- No B2B data was found on asking the prospect to accept the invite during the call.
+  There is only weak support from a secondhand GP study (patients who wrote their own
+  appointment card missed 18% fewer).
+
+**Not found:** Bland, Synthflow, Air.ai, Sierra and 11x had nothing usable. There is no
+AI-call data by region and no Saudi calling hours.
+
 ### 8.9 Videos read
 
 Recommended by the sales team:
