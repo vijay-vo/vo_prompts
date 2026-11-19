@@ -22,6 +22,14 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### TTS-JOD-01 · "जोड़" is no longer banned — CRC only (2026-11-19)
+
+| | |
+|---|---|
+| **Axis** | Neither. Voice/TTS rule. **CC and multilingual not changed.** |
+| **Source** | User: the agent may now speak "जोड़". |
+| **The rule now** | Every "never say जोड़ — use connect" instruction is removed from the CRC prompts (Default, emergencyAgent, connectionServicesAgent, getConsumerDetails, unregisteredComplaintAgent, newConnectionAgent_onHold, paymentAgent's English-word list, genericInfoComplaintAgent_v2) and from the CRC README and agent-workflow.md. No replacement line was added. "जोड़ती" stays in the switch-turn forbidden lists: that rule hides a hand-off and has nothing to do with TTS. The parked `newConnectionAgent.txt` is untouched. Root CLAUDE.md §4's "Never say जोड़" now holds for CC only. |
+
 ### PCA-07 · Flat's fcr and csat scored the customer's problem, not Vaani's service — CRC only (2026-11-16)
 
 | | |

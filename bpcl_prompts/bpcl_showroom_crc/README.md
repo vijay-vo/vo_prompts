@@ -81,7 +81,7 @@ no hop and no destination. Nothing ever routes back to `Default`.
   personally looking at, and never names a team, a department or another agent. The one place
   "transfer" may be said is the `calltransfer` tool's own `preToolMessage`.
 - **Voice/TTS:** Hindi only, 1–2 sentences per turn, one question per turn. "भारत पेट्रोलियम" in
-  full, never "BPCL". Never say टंकी or जोड़. Never speak a raw digit or a `{{variable}}`.
+  full, never "BPCL". Never say टंकी. Never speak a raw digit or a `{{variable}}`.
   Complaint numbers use English digit words separated by `" - "`.
 - `bpcl_fetch_all_api` is callable by `getConsumerDetails` and nothing else — every other prompt
   that mentions it does so in a blocker forbidding the call.
