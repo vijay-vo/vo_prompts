@@ -2101,6 +2101,15 @@ separately, and no size signal will ever reveal it.
 | **Not changed** | Closing lines (still "Thank you for calling Bharat Petroleum. Have a good day." and the existing newConnectionAgent line). The post-call analysers and vaaniQA, to be updated from these prompts next. The legacy lite_zip files. `bpcl_feedback`. |
 | **Open** | GAP-01 (a missing in-domain detail: answer once, complaint only if asked) was applied unevenly; the Hindi behaviour (go to complaint escalation) won in most agents. The platform must give `routingAgent` `callhangup` in all four channels, and `calltransfer` in CRC. Facts the commercial KB lacks (office timing, delivery O T P, weight tolerance, the five-year mechanic inspection, K Y C submission) are not in the commercial prompts. |
 
+### CLS04-PORT · Hindi CRC CLS-04 from main ported — bpcl_showroom_crc only (2026-11-19)
+
+| | |
+|---|---|
+| **Source** | `main` 3b29932 (CLS-04): a live call asked the close question nine times while the consumer was still venting, repeated the same empathy line about five times, and volunteered a missing delivery date. |
+| **What changed** | Thirteen prompts. Answer paths that ended with "go to close check" now end the turn ("That is the whole turn; you stop and wait"). Each close section has one gate block: the close question answers the consumer's wind-down ("okay", "understood", "that's all", a thank-you, a goodbye) and never ends an answer; a complaint number does not close the issue; asked too early means wait; own earlier turns are never a pattern; if they never wind down it is never asked. The old ANSWERING IS NOT RESOLVING / WHEN THE CLOSE QUESTION IS ALLOWED / A REGISTERED COMPLAINT IS NOT A RESOLVED TOPIC paragraphs are gone; this channel's CLOSE-01 paragraph is kept beside the new gate. Empathy is acknowledged once per issue in any wording or language. DATE ABSENT is spoken only when the consumer asks when. Booking Step 8/9 and Default's FAQ answers no longer pair an answer with the close question. |
+| **Also** | CPL29-PORT's "a noted turn is not a wind-down either" sentence, held back for lack of this section, is now added in all eleven complaint agents. |
+| **Open** | Pre-existing, not changed: Default's CLOSE-01 still says "move to the closing line and callhangup", though Default never ends the call. |
+
 ### TTS-JOD-01-PORT · "जोड़" no longer banned — bpcl_showroom_crc only (2026-11-19)
 
 | | |
@@ -2114,7 +2123,7 @@ separately, and no size signal will ever reveal it.
 |---|---|
 | **Source** | `main` f45ed1c (CPL-29). A live Hindi CRC call met two grievances after its one complaint by saying it was registering them and speaking made-up numbers with no tool call: about ten path lines per agent said "register" with no condition. |
 | **What changed** | All ten bpcl_create_complaint agents and unregisteredComplaintAgent: the HIGHEST PRIORITY line says one call outranks every register instruction and only a Result gives a number; AFTER A SUCCESSFUL RESULT covers grievances another path would register, and the noted turn has no registering words, no number and no close question; the O T P non-delivery branch (four agents) registers only with no Result yet; activeDeliveryAgent Path B's reassurance is the whole turn and the push past it notes once a complaint exists. |
-| **Not ported** | Hindi CPL-29's "a noted turn is not a wind-down either" sentence sits on CLS-04's close section, which this channel does not have yet. bpcl_contact_center, bpcl_lite_zip, ivrs_commercial. |
+| **Not ported** | bpcl_contact_center, bpcl_lite_zip, ivrs_commercial. |
 
 ### CPL28-PORT · Hindi CRC fixes of 2026-11-16 from main ported — bpcl_showroom_crc only (2026-11-17)
 
