@@ -22,6 +22,13 @@ persona lines only. That is roughly what a correctly-maintained shared agent sho
 
 ## 2. Intended differences
 
+### UNWANTED-BOOKING-01 · An unwanted booking routes to the delivery family — CRC only (2026-11-19)
+
+| | |
+|---|---|
+| **Problem** | Default's Example 10 routed an unwanted (BAS) booking and its cancellation to genericInfoComplaintAgent, while Default's rules, routingAgent and genericInfoComplaintAgent sent it to "the booking family", which is no agent name. activeDeliveryAgent owns both (Path F cancelling, Path G a booking the consumer did not make). |
+| **Now** | Example 10 routes to activeDeliveryAgent, which the platform resolves to the right delivery agent from the booking on record; every "booking family" reads "the delivery family (activeDeliveryAgent)". CC not changed (user scope). Ported the same day to multilingual CRC and ivrs_commercial. |
+
 ### TTS-JOD-01 · "जोड़" is no longer banned — CRC only (2026-11-19)
 
 | | |
