@@ -144,6 +144,10 @@ success and failure lines after deciding the outcome by looking for a number in 
   CPL-28):** once any Result of the tool is in the conversation, success or failure, it is never
   called again; an untold Result is spoken first; what the consumer adds after success is noted in
   fresh words ("Yes, I have noted this point of yours too.") with no tool call; no retry after a failure.
+  **CPL29-PORT (2026-11-19, from Hindi CPL-29):** every path that says "register" is spent once a
+  Result exists, and only a Result gives a number; the noted turn has no registering words, no number
+  and no close question; the O T P non-delivery branch registers only with no Result yet;
+  activeDeliveryAgent Path B's reassurance is the whole turn.
 - **`callhangup` is the one tool that takes a `preToolMessage`** (HANG-PTM-01) — the closing line,
   with no text on that turn. No other tool in this channel takes one, apart from the `switchagent`
   retry after a platform failure and the `bpcl_fetch_all_api` wait line in `getConsumerDetails`.

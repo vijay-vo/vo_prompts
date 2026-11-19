@@ -2101,6 +2101,14 @@ separately, and no size signal will ever reveal it.
 | **Not changed** | Closing lines (still "Thank you for calling Bharat Petroleum. Have a good day." and the existing newConnectionAgent line). The post-call analysers and vaaniQA, to be updated from these prompts next. The legacy lite_zip files. `bpcl_feedback`. |
 | **Open** | GAP-01 (a missing in-domain detail: answer once, complaint only if asked) was applied unevenly; the Hindi behaviour (go to complaint escalation) won in most agents. The platform must give `routingAgent` `callhangup` in all four channels, and `calltransfer` in CRC. Facts the commercial KB lacks (office timing, delivery O T P, weight tolerance, the five-year mechanic inspection, K Y C submission) are not in the commercial prompts. |
 
+### CPL29-PORT · Hindi CRC CPL-29 from main ported — bpcl_showroom_crc only (2026-11-19)
+
+| | |
+|---|---|
+| **Source** | `main` f45ed1c (CPL-29). A live Hindi CRC call met two grievances after its one complaint by saying it was registering them and speaking made-up numbers with no tool call: about ten path lines per agent said "register" with no condition. |
+| **What changed** | All ten bpcl_create_complaint agents and unregisteredComplaintAgent: the HIGHEST PRIORITY line says one call outranks every register instruction and only a Result gives a number; AFTER A SUCCESSFUL RESULT covers grievances another path would register, and the noted turn has no registering words, no number and no close question; the O T P non-delivery branch (four agents) registers only with no Result yet; activeDeliveryAgent Path B's reassurance is the whole turn and the push past it notes once a complaint exists. |
+| **Not ported** | Hindi CPL-29's "a noted turn is not a wind-down either" sentence sits on CLS-04's close section, which this channel does not have yet. bpcl_contact_center, bpcl_lite_zip, ivrs_commercial. |
+
 ### CPL28-PORT · Hindi CRC fixes of 2026-11-16 from main ported — bpcl_showroom_crc only (2026-11-17)
 
 | | |
