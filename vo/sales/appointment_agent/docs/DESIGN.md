@@ -16,7 +16,8 @@ go-ahead. Research behind each point: RESEARCH.md.
 | Language | Multilingual: the agent speaks the prospect's language. |
 | Persona | Male voice. Other details decided by Claude (section 2). |
 | AI disclosure | Only when the prospect asks. Reconfirmed 2026-11-19 after the round-4 research (legal check for EU/UK stays open, item 19). |
-| Demo host | Hussain, Sales Head (decided 2026-11-19). Neil names him in stage 5. |
+| Demo host | Hussain, Sales Head (decided 2026-11-19). Neil names Hussain in stage 4 and 5. |
+| Opener | Sample B (context first, then "Can I tell you why I called you specifically?") with sample C's thirty-second line as the fallback when the prospect is guarded (decided 2026-11-19, CALL_EXAMPLES.md). |
 | Opening | Must be engaging and lead to booking. The opener is the most important part. |
 | Demo | 15 minutes, Google Meet link from the calendar event, run by the sales team. |
 | Calendar | One shared Google Calendar (sales team). Any free time there in the next 15 days is bookable. |
@@ -373,3 +374,44 @@ interested" is recovered only about 15% of the time, which supports stopping).
 | Confirm, then close | Name the host, ask them to accept the invite, say what confirmation comes | Jason Bay show-rate moves. |
 | Slots in any order | Earliest two first | Same-day bookings no-show far less (vendor data). |
 | (nothing) | Banned: invented referrals, human-timing jokes, self-deprecation, idioms | They fail for an AI and a worldwide audience. |
+
+---
+
+## 11. Prompt and PCA written (2026-11-19)
+
+Files: `default/default.txt` (the agent) and `pca/pca.txt` (post-call analysis, flat JSON,
+17 fields). Both are plain text, in the second person, with fixed English lines that Neil
+speaks in the prospect's language. Tool turns follow TOOL_CALLING.md: bookDemo is the call
+alone; getAvailableSlots carries a short wait line in preToolMessage only; the closing line
+goes in callhangup's preToolMessage only.
+
+Choices made while writing (change any of them on request):
+- **Website or event leads** get B's shape with an honest first sentence ("You looked at
+  VoiceOwl [lead context], so I wanted to reach you personally") instead of "I know you
+  weren't expecting my call", which would be untrue for them.
+- **Voicemail:** no message, hang up (section 6). The retry is the platform's job.
+- **Product facts** are kept to what the sample calls already said (calls new leads within
+  a minute, in their language, books the meeting, many languages). The 135+ languages and
+  the other website figures stay out until sales approves them (item 5).
+- **No recording notice** in the prompt (item 10 still open).
+- **Callback:** Neil says "I'll make a note to call you then"; the PCA captures
+  callbackTime. Re-dialling is the platform's job (item 8).
+- **Email:** confirmed by its domain; a new one is spelled back; after two failed tries Neil
+  books with the email on file and writes "email needs correcting" into notes.
+
+Check on the platform before the first test call:
+1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
+   getAvailableSlots: timezone, partOfDay, preferredDate, excludeSlotIds; the Result has
+   slotId and spokenLabel. bookDemo: slotId, email, notes; the Result says booked with a
+   spokenLabel, or not booked with slot taken or error. If the tools you built use other
+   names or keys, tell me and I'll change the prompt to match.
+2. **Variables injected:** firstName, company, role, industry, leadSource, leadContext,
+   leadSourceSpoken, email, emailDomain, timezone, language, currentDate, currentWeekday.
+3. **First message:** "Hi {{firstName}}, it's Neil from VoiceOwl.", played after the
+   prospect says hello, in {{language}}.
+4. **preferredDate** asks the model to work out a date from today's date and a day name
+   (light date maths). If the tool can take the prospect's words ("next Friday") instead,
+   that is safer.
+5. **The Google invite** should reach the prospect the moment bookDemo runs, since Neil asks
+   them to accept it during the call (item 15).
+6. **Voice:** a male TTS voice, at a calm pace.
