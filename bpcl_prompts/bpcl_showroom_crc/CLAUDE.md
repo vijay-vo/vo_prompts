@@ -185,6 +185,17 @@ or multilingual.
 > after success is noted in fresh words with no tool call; no retry after a failure. A failure message's transfer offer is T3. **Do not re-add example Hindi lines for any
 > complaint outcome** — they were what the model copied instead of calling the tool.
 
+**CPL-29 (2026-11-19) — the one call held, but "register" paths faked a second and third complaint.** A live
+activeDeliveryAgent call registered once correctly, then answered two later grievances (O T P given but no
+delivery; distributor diverting gas) with "शिकायत के रूप में दर्ज कर रही हूँ" and made-up numbers, no tool
+call. Cause: about ten path lines per agent say "you register it per COMPLAINT TOOL" with no condition, so the
+path's order to register beat the one-call rule and the number was invented. Now, in all eleven complaint
+agents: the HIGHEST PRIORITY line says one-call outranks every register instruction and only a Result gives a
+number; AFTER A SUCCESSFUL RESULT covers grievances another path would register, and its noted turn carries
+no registering words, no number and no close question; the O T P non-delivery branch is conditioned on no
+Result yet; activeDeliveryAgent Path B's reassurance is the whole turn. The noted line stays "जी, आपकी ये बात
+भी मैंने नोट कर ली है।" (user choice). Main only; multilingual not ported.
+
 **No callback time is ever captured.** CC asks the consumer for a callback slot and writes it into
 the complaint; CRC does not. We register and say the team will call — nothing is scheduled.
 
