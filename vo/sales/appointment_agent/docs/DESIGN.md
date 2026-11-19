@@ -15,7 +15,8 @@ go-ahead. Research behind each point: RESEARCH.md.
 | Reach | Worldwide. |
 | Language | Multilingual: the agent speaks the prospect's language. |
 | Persona | Male voice. Other details decided by Claude (section 2). |
-| AI disclosure | Only when the prospect asks. |
+| AI disclosure | Only when the prospect asks. Reconfirmed 2026-11-19 after the round-4 research (legal check for EU/UK stays open, item 19). |
+| Demo host | Hussain, Sales Head (decided 2026-11-19). Neil names him in stage 5. |
 | Opening | Must be engaging and lead to booking. The opener is the most important part. |
 | Demo | 15 minutes, Google Meet link from the calendar event, run by the sales team. |
 | Calendar | One shared Google Calendar (sales team). Any free time there in the next 15 days is bookable. |
@@ -289,7 +290,7 @@ The platform then sends WhatsApp + email after the call.
     they get out of the 15 minutes? Idea: hear the agent speaking their customers'
     language (VoiceOwl claims 135+). Does the sales team agree, or is there a
     tailored demo or audit?
-13. **Demo host name** — a named sales person to talk up in stage 5.
+13. ~~**Demo host name**~~ Decided: Hussain, Sales Head (section 1).
 14. **Social proof** — which real customers or industries may the agent mention?
     ("We work with teams like yours in BFSI" must be true.)
 15. **Invite timing** — confirm that the Google invite really goes out when
