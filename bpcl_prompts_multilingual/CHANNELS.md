@@ -2101,6 +2101,13 @@ separately, and no size signal will ever reveal it.
 | **Not changed** | Closing lines (still "Thank you for calling Bharat Petroleum. Have a good day." and the existing newConnectionAgent line). The post-call analysers and vaaniQA, to be updated from these prompts next. The legacy lite_zip files. `bpcl_feedback`. |
 | **Open** | GAP-01 (a missing in-domain detail: answer once, complaint only if asked) was applied unevenly; the Hindi behaviour (go to complaint escalation) won in most agents. The platform must give `routingAgent` `callhangup` in all four channels, and `calltransfer` in CRC. Facts the commercial KB lacks (office timing, delivery O T P, weight tolerance, the five-year mechanic inspection, K Y C submission) are not in the commercial prompts. |
 
+### TTS-JOD-01-PORT · "जोड़" no longer banned — bpcl_showroom_crc only (2026-11-19)
+
+| | |
+|---|---|
+| **Source** | `main` ff92721 (TTS-JOD-01): the agent may now say "जोड़". |
+| **What changed** | The English-only prompts already carried no such ban. Removed from getConsumerDetailsWork.txt and docs/agent-workflow.md, with no replacement line. "जोड़ती" stays in the switch-turn forbidden list (hides a hand-off, not a TTS rule). The parked Hindi newConnectionAgent.txt is untouched, as on main. Other channels unchanged. |
+
 ### CPL29-PORT · Hindi CRC CPL-29 from main ported — bpcl_showroom_crc only (2026-11-19)
 
 | | |

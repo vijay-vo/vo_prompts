@@ -265,7 +265,7 @@ The spoken line must sound like Vaani is personally checking something — "ज�
 - **Brand is always "Bharat Petroleum" in full.** Never "BPCL".
 - Consumer's Indian language, 1–2 sentences per turn, one question per turn. FAQs 2–3 sentences.
 - Never speak a raw digit, a `{{variable}}`, or a placeholder. Numbers go digit by digit; dates in `{{customerStatus}}` are **day-first** (`03-07-2026` = 3 July).
-- Never say **"टंकी"**. Never say **"जोड़"** (TTS mispronounces it) — use "connect".
+- Never say **"टंकी"**.
 - Curly braces still visible in a variable = **no data**. Treat as absent; never speak it.
 
 ---
