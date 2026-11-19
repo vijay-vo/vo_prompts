@@ -2064,6 +2064,16 @@ separately, and no size signal will ever reveal it.
 |---|---|
 | **What** | The folder `bpcl_ivrs_support/` is now `bpcl_contact_center/`, by the user's request after CC-DEL-01. Only the folder name and the doc links to it changed; every prompt is byte for byte the IVRS prompt, with no human transfer. Older rows that say `bpcl_ivrs_support` or IVRS mean this folder. |
 
+### COMM-SYNC-01 · ivrs_commercial brought up to the multilingual Showroom CRC (2026-11-19)
+
+| | |
+|---|---|
+| **Source** | Every multilingual Showroom CRC change after HSYNC-01 (2026-11-05/06): 0f844cb (CPL-28, BNE-01, PCA-06, PCA-07), 1eb53a4 (CPL-29), 586fd93 (CLS-04), a2599f5 (Default CLOSE-01). e4ffabd (the जोड़ ban) needed nothing: these prompts carry no Indian script. |
+| **What changed** | Fourteen files. The complaint tool is called one time only, an untold Result is spoken first, what the customer adds after success is noted with no tool call, no retry after failure, and only a Result gives a number (CPL-28, CPL-29). The close question waits for the customer's wind-down, with one gate block per close section; answer paths end the turn; empathy once per issue; a missing date only when asked (CLS-04). bookingNonEligibilityAgent takes BNE-01. postCallAnalysisFlat: the noted line is not a registration, fcr is the best outcome this contact could give, csat weights the end. vaaniQA: new F14 (the noted line is required), C3c-LOOP, C3d, C8, C15, C28 for one complaint call per call. |
+| **Channel policy kept** | No transfer: every CRC "T3 in SENIOR TEAM TRANSFER" became the file's own no-transfer failure handling. Nothing domestic: the O T P branch edits and the Lite zip / Mini hunks had no counterpart and were skipped, and the O T P example was dropped from the noted-turn sentence (COMMERCIAL_KB.md holds no delivery O T P process). Commercial complaintReason lists unchanged. Default's CLOSE-01 already stayed on the line, so a2599f5 needed nothing. |
+| **Also** | BAS (the domestic auto booking) removed from Default and routingAgent: it is not in COMMERCIAL_KB.md. Default's Example 10 is now an unwanted booking. |
+| **Not changed** | genericInfoComplaintAgent_v2.txt (not deployed). Default's Example 10 still routes an unwanted booking to genericInfoComplaintAgent while its rules send it to the booking family; the same split exists in CRC and contact_center. |
+
 ### COMM-01 · ivrs_commercial created as a copy of bpcl_contact_center (2026-10-23)
 
 | | |
