@@ -20,7 +20,7 @@ go-ahead. Research behind each point: RESEARCH.md.
 | Opener | Sample B (context first, then "Can I tell you why I called you specifically?") with sample C's thirty-second line as the fallback when the prospect is guarded (decided 2026-11-19, CALL_EXAMPLES.md). |
 | Opening | Must be engaging and lead to booking. The opener is the most important part. |
 | Demo | 15 minutes, Google Meet link from the calendar event, run by the sales team. |
-| Calendar | One shared Google Calendar (sales team). Any free time there in the next 15 days is bookable. |
+| Calendar | One shared Google Calendar (sales team). Any free time there in the next 7 days is bookable. |
 | Tools | HTTP tools on the VoiceOwl platform, built by the user: check availability, book appointment. |
 | Prospect email | Already in the lead data. |
 | Slots | Offer two. If both refused, ask what they prefer and check that. |
@@ -231,7 +231,7 @@ Input:
 - `partOfDay` — optional: morning / afternoon / evening
 - `excludeSlotIds` — optional, slots already offered and refused
 
-Output: up to **two** free 15-minute slots inside the next 15 days, inside
+Output: up to **two** free 15-minute slots inside the next 7 days, inside
 working hours (see section 9), **the two earliest first** (vendor data: same-day
 bookings no-show about 7%, 7+ days out about 25%), each with:
 - `slotId`

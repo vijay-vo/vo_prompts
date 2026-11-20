@@ -16,10 +16,11 @@ Responses:
   or `{"booked":false,"reason":"slot_taken"}` or `{"booked":false,"reason":"error"}`
 
 ## Rules built in
-- Slots are 15 minutes, on the hour and half hour, inside the sales team's hours (IST 9 AM to
+- Slots are 15 minutes, every quarter hour (:00, :15, :30, :45), back to back, inside the sales team's hours (IST 9 AM to
   11 PM, Monday to Friday) AND the prospect's own 9 AM to 7 PM, Monday to Friday.
-- At least 2 hours' notice, up to 15 days ahead, earliest first, the second offer at least two
-  hours after the first. `AVOID_FRIDAY=1` skips the prospect's Fridays when other days exist (off).
+- At least 10 minutes' notice (a call at 3:00 PM can book 3:15 PM), up to 7 days ahead, earliest
+  first. The second offer is the first free slot at least 60 minutes after the first, else at
+  least 30 minutes after it, else the next free slot. `AVOID_FRIDAY=1` skips the prospect's Fridays when other days exist (off).
 - A slotId is signed, so the model cannot invent one. Booking re-checks the calendar first.
 - Booking creates the event with a Google Meet link and emails the invite at once
   (`sendUpdates=all`). A retried booking of the same slot and email answers "booked" again

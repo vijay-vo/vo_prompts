@@ -10,8 +10,9 @@ export function config(env) {
     workStart: n('WORK_START_HOUR', 9) * 60, workEnd: n('WORK_END_HOUR', 23) * 60,
     workDays: (env.WORK_DAYS || '1,2,3,4,5').split(',').map(Number),
     prospectStart: n('PROSPECT_START_HOUR', 9) * 60, prospectEnd: n('PROSPECT_END_HOUR', 19) * 60,
-    slotMin: n('SLOT_MINUTES', 15), gridMin: n('GRID_MINUTES', 30), bufferMin: n('BUFFER_MINUTES', 0),
-    noticeMin: n('MIN_NOTICE_MINUTES', 120), windowDays: n('WINDOW_DAYS', 15), gapHours: n('SECOND_SLOT_GAP_HOURS', 2),
+    slotMin: n('SLOT_MINUTES', 15), gridMin: n('GRID_MINUTES', 15), bufferMin: n('BUFFER_MINUTES', 0),
+    noticeMin: n('MIN_NOTICE_MINUTES', 10), windowDays: n('WINDOW_DAYS', 7),
+    gapsMin: (env.SECOND_SLOT_GAPS_MINUTES || '60,30').split(',').map(Number),
     avoidFriday: env.AVOID_FRIDAY === '1',
     secret: env.SLOT_SECRET || 'dev-secret-change-me',
   };
@@ -55,14 +56,16 @@ export function candidates({ busy, tz, now, cfg, partOfDay, preferredDate, exclu
   return out;
 }
 // Earliest first; with AVOID_FRIDAY=1, skip the prospect's Fridays when other days exist. The
-// second offer is at least gapHours after the first so the two choices are really different.
+// second offer is the first free slot at least gapsMin[0] after the first (60 minutes), else at
+// least gapsMin[1] (30 minutes), and so on; failing all, the next free slot.
 export function pickTwo(list, cfg) {
   if (!list.length) return [];
   const noFri = cfg.avoidFriday ? list.filter(c => c.wd !== 5) : list;
   const pool = noFri.length ? noFri : list;
   const a = pool[0];
-  // No slot that far apart (e.g. the caller asked for one evening): offer the next free one instead.
-  const b = pool.find(c => c.startMs >= a.startMs + cfg.gapHours * 60 * MIN) || pool.find(c => c.startMs > a.startMs);
+  let b;
+  for (const g of cfg.gapsMin) if (!b) b = pool.find(c => c.startMs >= a.startMs + g * MIN);
+  b ||= pool.find(c => c.startMs > a.startMs);
   return b ? [a, b] : [a];
 }
 export async function getSlots({ google, cfg, body, now = Date.now() }) {

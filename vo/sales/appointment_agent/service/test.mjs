@@ -26,7 +26,7 @@ for (const tz of ['Asia/Kolkata', 'America/New_York', 'Europe/London', 'Asia/Dub
 }
 const a = (await call('/slots', { timezone: 'Asia/Kolkata' })).j.slots;
 assert.equal(a.length, 2);
-assert.ok(Date.parse(a[1].startUtc) - Date.parse(a[0].startUtc) >= 2 * 3600000, 'two slots 2h apart');
+assert.ok(Date.parse(a[1].startUtc) - Date.parse(a[0].startUtc) >= 3600000, 'two slots 1h apart');
 const ex = (await call('/slots', { timezone: 'Asia/Kolkata', excludeSlotIds: [a[0].slotId] })).j.slots;
 assert.notEqual(ex[0].slotId, a[0].slotId);
 const morning = (await call('/slots', { timezone: 'Asia/Kolkata', partOfDay: 'afternoon' })).j.slots;
@@ -49,6 +49,14 @@ import { pickTwo, config } from './slots.mjs';
 const cfgT = config({});
 const near = pickTwo([{ startMs: 0, wd: 2 }, { startMs: 30 * 60000, wd: 2 }], cfgT);
 assert.equal(near.length, 2, 'fallback offers a second, closer slot');
-const far = pickTwo([{ startMs: 0, wd: 2 }, { startMs: 30 * 60000, wd: 2 }, { startMs: 3 * 3600000, wd: 2 }], cfgT);
-assert.equal(far[1].startMs, 3 * 3600000, 'the 2h gap is still preferred');
+const q = (m) => ({ startMs: m * 60000, wd: 2 });
+assert.equal(pickTwo([q(0), q(15), q(30), q(60)], cfgT)[1].startMs, 60 * 60000, '60 minutes apart preferred');
+assert.equal(pickTwo([q(0), q(15), q(30), q(45)], cfgT)[1].startMs, 30 * 60000, 'then 30 minutes apart');
+assert.equal(pickTwo([q(0), q(15)], cfgT)[1].startMs, 15 * 60000, 'then the next free slot');
+// Calling at 3:00 PM IST on a free weekday offers 3:15 PM first, then 4:15 PM.
+import { candidates } from './slots.mjs';
+const now3 = Date.parse('2026-11-23T09:30:00Z'); // Monday 3:00 PM IST
+const c3 = pickTwo(candidates({ busy: [], tz: 'Asia/Kolkata', now: now3, cfg: cfgT }), cfgT);
+assert.equal(new Date(c3[0].startMs).toISOString(), '2026-11-23T09:45:00.000Z', '3:15 PM first');
+assert.equal(new Date(c3[1].startMs).toISOString(), '2026-11-23T10:45:00.000Z', '4:15 PM second');
 console.log('fallback tests passed');

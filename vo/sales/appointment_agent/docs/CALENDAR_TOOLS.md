@@ -57,10 +57,10 @@ timezone maths. The service has two routes:
 
 **POST /slots** (getAvailableSlots)
 1. Input: `timezone`, optional `partOfDay`, `preferredDate`, `excludeSlotIds`.
-2. Read busy times with one freeBusy call for now to now + 15 days.
-3. Cut candidate 15-minute slots on a fixed grid (for example on the hour and half hour) inside
+2. Read busy times with one freeBusy call for now to now + 7 days.
+3. Cut candidate 15-minute slots on a fixed grid (every quarter hour: :00, :15, :30, :45) inside
    the sales team's working hours AND inside the prospect's local 9:00-19:00, from a minimum
-   notice (for example 2 hours) onward. Drop busy times and `excludeSlotIds`.
+   notice (10 minutes) onward. Drop busy times and `excludeSlotIds`.
 4. Rank: earliest first (DESIGN.md item 24: 0-2 days out show up most, avoid Friday and
    late Thursday when other slots exist). Apply `partOfDay` and `preferredDate`.
 5. Return up to two: `slotId`, `startUtc`, `spokenLabel` in English words in the prospect's
