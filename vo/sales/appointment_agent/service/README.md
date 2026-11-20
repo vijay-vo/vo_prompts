@@ -5,8 +5,11 @@ never by the model. Plain Node 20, no packages to install.
 
 | Platform tool | Route | Body the platform sends |
 |---|---|---|
-| getAvailableSlots | `POST /slots` | `timezone` (from {{timezone}}), and from the model: `partOfDay`, `preferredDate`, `excludeSlotIds` |
-| bookDemo | `POST /book` | from the model: `slotId`, `email`, `notes`; injected by the platform: `timezone`, `firstName`, `lastName`, `company` |
+| getAvailableSlots | `POST /slots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
+| bookDemo | `POST /book` | from the model: `slotId`, `bookingNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
+
+Every reply carries an `instruction` for the model. A booked reply also has `prospectTime`, `salesTime`,
+`startUtc`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
 
 Every request needs the header `x-api-key: <API_KEY from .env>`.
 

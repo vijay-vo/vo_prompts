@@ -57,7 +57,7 @@ written per language. What changed from the first draft is listed in section 10.
 
 ### Stage 0 — Greeting (platform first message)
 
-A statement, not a question: "Hi {{firstName}}, it's Tanya from VoiceOwl."
+A statement, not a question: "Hi {{fname}}, it's Tanya from VoiceOwl."
 Dan Lok, Connor Murray and 30MPC all say "Is this John?" and "How are you?" mark a
 cold call at once. If it is the wrong person they say so; then ask for the right
 person or a better time, and never pitch to a gatekeeper. Voicemail: section 6.
@@ -72,7 +72,7 @@ Warm lead (website form, event; they already know us). No "this is a sales call"
 Then the short value line (stage 2).
 
 Cold or LinkedIn lead. Context first, then a soft ask. No countdown in the first breath:
-> "Hi {{firstName}}, it's Tanya from VoiceOwl. I know you weren't expecting my call...
+> "Hi {{fname}}, it's Tanya from VoiceOwl. I know you weren't expecting my call...
 > I work with {{role}}s on one thing, getting to every new lead within a minute. Can I
 > tell you why I called you specifically?"
 
@@ -198,7 +198,7 @@ self-deprecating lines, idioms, naming a vendor of theirs we don't know.
 
 | Variable | Use | Required? |
 |---|---|---|
-| {{firstName}} | Greeting | Yes |
+| {{fname}} | Greeting | Yes |
 | {{company}} | Opener, problem line | Yes |
 | {{role}} | Picks the problem line | Optional (generic line if missing) |
 | {{industry}} | Picks the problem line | Optional |
@@ -226,10 +226,13 @@ out labels. LLMs are unreliable at date arithmetic and timezone conversion.
 ### getAvailableSlots
 
 Input:
-- `timezone` — prospect's IANA timezone
-- `preferredDate` — optional, YYYY-MM-DD in the prospect's timezone
-- `partOfDay` — optional: morning / afternoon / evening
-- `excludeSlotIds` — optional, slots already offered and refused
+- `timezone` — prospect's IANA timezone (added by the platform)
+- `preferredDay` — optional: today, tomorrow or a weekday name; the service works out the date in
+  the prospect's timezone (changed 2026-11-20, was preferredDate)
+- `preferredTime` — optional: morning / afternoon / evening, or an exact time such as 16:00
+  (changed 2026-11-20, was partOfDay)
+- excludeSlotIds removed 2026-11-20: copying long ids back was a hallucination risk, and a new
+  check always carries a new preference.
 
 Output: up to **two** free 15-minute slots inside the next 7 days, inside
 working hours (see section 9), **the two earliest first** (vendor data: same-day
@@ -240,12 +243,14 @@ bookings no-show about 7%, 7+ days out about 25%), each with:
   nineteenth, eleven in the morning". Language: English label, or one per call
   language? (section 9)
 
-Empty list = nothing free for that request.
+Empty list = nothing free for that request. Every Result also carries an `instruction`: an English
+note to the model saying what happened and what to do next (added 2026-11-20).
 
 ### bookDemo
 
-Input: `slotId`, `firstName`, `lastName`, `company`, `email`, `timezone`, `notes`
-(one line: pain mentioned, colleague to invite).
+Input: `slotId` and `bookingNotes` from the model (one line: pain mentioned, colleague to invite);
+`fname`, `lname`, `company`, `email`, `timezone` added by the platform. Full mapping:
+PLATFORM_SETUP.md.
 
 Optional input: `tentative: true` for a penciled-in slot (Brandon's tactic), which
 the prospect can decline.
@@ -319,7 +324,7 @@ The platform then sends WhatsApp + email after the call.
     France. Proposal: Tanya calls form and event leads, with AI-call consent wording on
     the form. Cold leads stay with humans, or go only to countries legal clears. This
     may remove the cold-lead branch of stage 1 for some regions.
-21. **Salutation per country (answers item 18 in part).** "Hi {{firstName}}" is wrong
+21. **Salutation per country (answers item 18 in part).** "Hi {{fname}}" is wrong
     for DE, FR, JP and KR, and weak for the Gulf. Proposal: a {{salutation}} variable
     filled by the platform per country ("Herr Müller", "Madame Dubois", "Tanaka-san",
     "Engineer Ahmed"), with first name as the default for US, UK, India and Singapore.
@@ -365,7 +370,7 @@ interested" is recovered only about 15% of the time, which supports stopping).
 
 | First draft | Now | Why (RESEARCH.md 8) |
 |---|---|---|
-| "Hi, is this {{firstName}}?" | "Hi {{firstName}}, it's Tanya from VoiceOwl." | Dan Lok, Connor Murray, 30MPC: confirming the name marks a cold call. |
+| "Hi, is this {{fname}}?" | "Hi {{fname}}, it's Tanya from VoiceOwl." | Dan Lok, Connor Murray, 30MPC: confirming the name marks a cold call. |
 | Always "honest, this is a sales call, give me twenty seconds" | Three branches: warm lead (no "sales call"), cold lead (context, then soft ask), and the thirty-second line only as fallback | Miner, Braun: a timed promise in the first breath lowers trust. 30MPC: context first. |
 | Value reached at stage 4 | One value line in stage 2 | Hormozi, Pavlo, Bay: a concrete outcome in under 30 seconds. |
 | "Is that about right?" / "Has that happened?" | Open A-B-C question | Yes/no leading questions raise the guard (Braun, Brandon, 30MPC). |
@@ -405,18 +410,17 @@ Choices made while writing (change any of them on request):
 
 Check on the platform before the first test call:
 1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
-   getAvailableSlots: timezone, partOfDay, preferredDate, excludeSlotIds; the Result has
-   slotId and spokenLabel. bookDemo: slotId, email, notes; the Result says booked with a
-   spokenLabel, or not booked with slot taken or error. If the tools you built use other
+   getAvailableSlots: preferredDay, preferredTime (timezone added by the platform); the Result
+   has slots (slotId, spokenLabel) and an instruction. bookDemo: slotId, bookingNotes; the
+   Result says booked with a spokenLabel, or not booked with slot_taken or error, and an
+   instruction. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
-2. **Variables injected (2026-11-20):** firstName, company, industry, priorContext, timezone,
-   defaultLanguage, currentDate, currentWeekday. Not Available when unknown. The platform adds the
-   lead's email to the bookDemo request itself.
-3. **First message:** "Hi {{firstName}}, it's Tanya from VoiceOwl.", played after the
-   prospect says hello, in {{language}}.
-4. **preferredDate** asks the model to work out a date from today's date and a day name
-   (light date maths). If the tool can take the prospect's words ("next Friday") instead,
-   that is safer.
+2. **Variables injected (2026-11-20):** fname, company, industry, priorContext, defaultLanguage.
+   Not Available when unknown. The platform adds timezone, email, fname, lname and company to the
+   tool requests itself (PLATFORM_SETUP.md).
+3. **First message:** "Hi {{fname}}, it's Tanya from VoiceOwl.", played after the
+   prospect says hello, in {{defaultLanguage}}.
+4. **Dates:** done 2026-11-20. The model passes a day as a word; the service resolves it.
 5. **The Google invite** should reach the prospect the moment bookDemo runs, since Tanya asks
    them to accept it during the call (item 15).
 6. **Voice:** a young female TTS voice, at a calm pace.

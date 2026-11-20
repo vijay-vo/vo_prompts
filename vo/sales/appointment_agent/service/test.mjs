@@ -27,19 +27,20 @@ for (const tz of ['Asia/Kolkata', 'America/New_York', 'Europe/London', 'Asia/Dub
 const a = (await call('/slots', { timezone: 'Asia/Kolkata' })).j.slots;
 assert.equal(a.length, 2);
 assert.ok(Date.parse(a[1].startUtc) - Date.parse(a[0].startUtc) >= 3600000, 'two slots 1h apart');
-const ex = (await call('/slots', { timezone: 'Asia/Kolkata', excludeSlotIds: [a[0].slotId] })).j.slots;
-assert.notEqual(ex[0].slotId, a[0].slotId);
-const morning = (await call('/slots', { timezone: 'Asia/Kolkata', partOfDay: 'afternoon' })).j.slots;
+assert.match(a[0].slotId, /^[0-9a-z]+-[0-9a-f]{6}$/, 'short slotId');
+assert.ok(a[0].slotId.length <= 14, 'slotId at most 14 characters');
+assert.match((await call('/slots', { timezone: 'Asia/Kolkata' })).j.instruction, /^Two times are free: .+ Offer both/);
+const morning = (await call('/slots', { timezone: 'Asia/Kolkata', preferredTime: 'afternoon' })).j.slots;
 for (const s of morning) assert.ok(parts(Date.parse(s.startUtc), 'Asia/Kolkata').h >= 12 && parts(Date.parse(s.startUtc), 'Asia/Kolkata').h < 16);
 
 assert.equal((await call('/book', { timezone: 'Asia/Kolkata', slotId: 'forged', email: 'a@b.com' })).j.reason, 'error');
 assert.equal((await call('/book', { timezone: 'Asia/Kolkata', slotId: a[0].slotId, email: 'not-an-email' })).j.reason, 'error');
-const b1 = await call('/book', { timezone: 'Asia/Kolkata', slotId: a[0].slotId, email: 'priya@brightloans.com', firstName: 'Priya', company: 'BrightLoans', notes: 'weekend leads' });
-assert.equal(b1.j.booked, true); assert.ok(b1.j.meetLink.startsWith('https://meet.google.com/')); assert.equal(b1.j.spokenLabel, a[0].spokenLabel);
+const b1 = await call('/book', { timezone: 'Asia/Kolkata', slotId: a[0].slotId, email: 'priya@brightloans.com', fname: 'Priya', lname: 'Not Available', company: 'BrightLoans', bookingNotes: 'weekend leads' });
+assert.equal(b1.j.booked, true); assert.match(b1.j.instruction, /^The demo is booked for /); assert.match(b1.j.prospectTime, /^\w+day, \d+ \w+ \d{4}, \d+:\d\d (AM|PM) \(Asia\/Kolkata\)$/); assert.ok(b1.j.meetLink.startsWith('https://meet.google.com/')); assert.equal(b1.j.spokenLabel, a[0].spokenLabel);
 const retry = await call('/book', { timezone: 'Asia/Kolkata', slotId: a[0].slotId, email: 'priya@brightloans.com' });
 assert.equal(retry.j.booked, true, 'retried booking answers booked');
 const b2 = await call('/book', { timezone: 'Asia/Kolkata', slotId: a[0].slotId, email: 'other@x.com' });
-assert.deepEqual(b2.j, { booked: false, reason: 'slot_taken' });
+assert.equal(b2.j.booked, false); assert.equal(b2.j.reason, 'slot_taken'); assert.match(b2.j.instruction, /just taken/);
 const after = (await call('/slots', { timezone: 'Asia/Kolkata' })).j.slots;
 assert.ok(!after.some(s => s.slotId === a[0].slotId), 'booked slot no longer offered');
 console.log('\nall tests passed'); srv.close();
@@ -60,3 +61,24 @@ const c3 = pickTwo(candidates({ busy: [], tz: 'Asia/Kolkata', now: now3, cfg: cf
 assert.equal(new Date(c3[0].startMs).toISOString(), '2026-11-23T09:45:00.000Z', '3:15 PM first');
 assert.equal(new Date(c3[1].startMs).toISOString(), '2026-11-23T10:45:00.000Z', '4:15 PM second');
 console.log('fallback tests passed');
+
+// Day words resolve in the prospect's timezone; exact times give the nearest free slots.
+import { resolveDay, parseTime, signSlot, verifySlot } from './slots.mjs';
+const mon3 = Date.parse('2026-11-23T09:30:00Z'); // Monday 3:00 PM IST, Monday 4:30 AM New York
+assert.equal(resolveDay('today', 'Asia/Kolkata', mon3, cfgT), '2026-11-23');
+assert.equal(resolveDay('tomorrow', 'Asia/Kolkata', mon3, cfgT), '2026-11-24');
+assert.equal(resolveDay('Wednesday', 'America/New_York', mon3, cfgT), '2026-11-25');
+assert.equal(resolveDay('monday', 'Asia/Kolkata', mon3, cfgT), '2026-11-30', 'a weekday name means its next date after today');
+const lateIst = Date.parse('2026-11-23T19:00:00Z'); // Tuesday 12:30 AM IST, still Monday 2:00 PM in New York
+assert.equal(resolveDay('today', 'America/New_York', lateIst, cfgT), '2026-11-23', "today is the prospect's today");
+assert.equal(resolveDay('Not Available', 'Asia/Kolkata', mon3, cfgT), null);
+assert.deepEqual(parseTime('16:00'), { minute: 960 }); assert.deepEqual(parseTime('evening'), { part: 'evening' }); assert.deepEqual(parseTime('4 PM'), {});
+const id = signSlot(mon3, 's'); assert.equal(verifySlot(id, 's'), mon3); assert.equal(verifySlot(id.toUpperCase(), 's'), mon3); assert.equal(verifySlot(id.slice(0, -1) + '0', 's') === mon3 && id.slice(-1) !== '0', false);
+const g2 = makeGoogle({ GOOGLE_MOCK: '1' });
+const { getSlots } = await import('./slots.mjs');
+const at4 = await getSlots({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Kolkata', preferredDay: 'tomorrow', preferredTime: '16:00' }, now: mon3 });
+assert.equal(at4.slots[0].spokenLabel, 'tomorrow, four in the evening', 'exact time offered when free');
+assert.equal(at4.slots.length, 2);
+const sat = await getSlots({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Kolkata', preferredDay: 'saturday' }, now: mon3 });
+assert.equal(sat.slots.length, 0); assert.match(sat.instruction, /Monday to Friday/);
+console.log('day and time tests passed');

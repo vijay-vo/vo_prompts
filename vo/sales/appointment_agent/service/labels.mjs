@@ -51,3 +51,9 @@ export function spokenLabel(startMs, tz, nowMs = Date.now()) {
   if (p.h === 12 && p.mi === 0) return `${day}, twelve noon`;
   return `${day}, ${time} ${periodOf(p.h)}`;
 }
+
+// Written form for messages and the CRM, in the given timezone: "Monday, 23 November 2026, 3:00 PM".
+export function writtenTime(ms, tz) {
+  const p = parts(ms, tz);
+  return `${WEEKDAYS[p.wd]}, ${p.d} ${MONTHS[p.mo - 1]} ${p.y}, ${p.h % 12 || 12}:${String(p.mi).padStart(2, '0')} ${p.h < 12 ? 'AM' : 'PM'}`;
+}

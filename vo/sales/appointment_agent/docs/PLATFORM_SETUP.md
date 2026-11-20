@@ -1,6 +1,6 @@
 # Platform setup: contact upload, call variables, tool mapping, after-call messages
 
-Written 2026-11-20 from the current files: default/default.txt (agent), pca/pca.txt (post-call analysis),
+Updated 2026-11-20 from the current files: default/default.txt (agent), pca/pca.txt (post-call analysis),
 service/server.mjs and service/slots.mjs (booking service). Field names below must match exactly.
 
 ---
@@ -9,134 +9,158 @@ service/server.mjs and service/slots.mjs (booking service). Field names below mu
 
 | Column | Required | Example | Used for |
 |---|---|---|---|
-| phone | yes | +919876543210 | the number to dial (platform field) |
-| firstName | yes | Priya | agent variable `{{firstName}}`; greeting; closing lines; /book |
-| lastName | no | Sharma | sent to /book (name on the calendar invite) |
-| company | no | BrightLoans Financial Services Pvt Ltd | agent variable `{{company}}`; /book. Tanya says only the short name |
-| industry | no | lending | agent variable `{{industry}}` |
-| email | yes | priya@brightloans.com | sent to /book (invite goes here); never read out |
-| timezone | yes | Asia/Kolkata | agent variable `{{timezone}}`; every /slots and /book call |
-| defaultLanguage | yes | English | agent variable `{{defaultLanguage}}`; language the call opens in |
-| priorContext | yes | First call to them. Sales head at a lending company. | agent variable `{{priorContext}}` |
+| Contact | yes | +919876543210 | the number to dial |
+| fname | yes | Priya | agent `{{fname}}`; /book; PCA |
+| lname | no | Sharma | /book (name on the calendar invite) |
+| company | no | BrightLoans Financial Services Pvt Ltd | agent `{{company}}`; /book; PCA. Tanya says only the short name |
+| industry | no | lending | agent `{{industry}}` |
+| email | yes | priya@brightloans.com | /book (the invite goes here); PCA. Never read out on the call |
+| timezone | yes | Asia/Kolkata | added by the platform to /slots and /book |
+| defaultLanguage | yes | English | agent `{{defaultLanguage}}`: the language the call opens in |
+| priorContext | yes | First call to them. Sales head at a lending company. | agent `{{priorContext}}`; PCA |
 
 Rules:
 - Any value you do not have is the text `Not Available`. Never leave a cell empty.
-- `timezone` must be an IANA name (Asia/Kolkata, America/New_York, Europe/London). Not "IST" or "EST".
-  A wrong value makes the booking service return 400, so Tanya cannot offer times.
-- `email` must be a real address (something@something.something). If it is Not Available, the booking fails.
-- `priorContext` is always filled. Two examples:
-  - First call: `First call to them. Sales head at a lending company, filled the website form about
-    delivery-update calls.`
-  - Follow-up: `Spoke with Rohit from our sales team on 12 November. They need inbound support in Hindi and
-    Tamil and CRM updates after each call. Concern: data security. Agreed next step: a demo.`
-  Plain English, a few sentences, no instructions. Do not put budget or internal ratings in it.
+- `timezone` must be an IANA name (Asia/Kolkata, America/New_York, Europe/London), not "IST" or "EST".
+  A wrong value makes the service answer 400, and Tanya cannot offer times.
+- `email` must be a real address, or every booking for that contact fails.
+- `priorContext` is plain English, a few sentences, no instructions, no budget or internal ratings. Examples:
+  - First call: `First call to them. Sales head at a lending company, filled the website form about delivery-update calls.`
+  - Follow-up: `Spoke with Rohit from our sales team on 12 November. They need inbound support in Hindi and Tamil and CRM updates after each call. Concern: data security. Agreed next step: a demo.`
 
 Example CSV:
 
 ```
-phone,firstName,lastName,company,industry,email,timezone,defaultLanguage,priorContext
+Contact,fname,lname,company,industry,email,timezone,defaultLanguage,priorContext
 +919876543210,Priya,Sharma,BrightLoans Financial Services Pvt Ltd,lending,priya@brightloans.com,Asia/Kolkata,English,First call to them. Sales head at a lending company.
-+12125550147,Daniel,Brooks,Harbor Lending,lending,daniel@harborlending.com,America/New_York,English,Not Available
++12125550147,Daniel,Not Available,Harbor Lending,lending,daniel@harborlending.com,America/New_York,English,Not Available
 ```
 
 ---
 
-## 2. Variables the platform fills when the call starts (agent prompt)
+## 2. Agent prompt variables (5)
 
-| Variable in the prompt | Comes from | Example |
+| In the prompt | From | Example |
 |---|---|---|
-| `{{firstName}}` | contact: firstName | Priya |
-| `{{company}}` | contact: company | BrightLoans Financial Services Pvt Ltd |
-| `{{industry}}` | contact: industry | lending |
-| `{{priorContext}}` | contact: priorContext | First call to them. Sales head at a lending company. |
-| `{{timezone}}` | contact: timezone | Asia/Kolkata |
-| `{{defaultLanguage}}` | contact: defaultLanguage | English |
-| `{{currentDate}}` | the platform, computed at dial time in the prospect's timezone, as YYYY-MM-DD | 2026-11-23 |
-| `{{currentWeekday}}` | the platform, same moment and timezone | Monday |
+| `{{fname}}` | contact fname | Priya |
+| `{{company}}` | contact company | BrightLoans Financial Services Pvt Ltd |
+| `{{industry}}` | contact industry | lending |
+| `{{defaultLanguage}}` | contact defaultLanguage | English |
+| `{{priorContext}}` | contact priorContext | First call to them. Sales head at a lending company. |
 
-Eight variables. `currentDate` and `currentWeekday` are not columns in the upload; the platform works them out
-for each call. Greeting (first message): `Hi {{firstName}}, it's Tanya from VoiceOwl.`, played after the prospect
-says hello, in `{{defaultLanguage}}`.
+No date variables in the agent. `{{system.current_date}}` and `{{system.current_day_of_week}}` are the platform's
+own clock, which can be a different day from the prospect's (a call to New York at 1 AM IST Tuesday is still
+Monday there). So Tanya passes a day as a word ("tomorrow", "wednesday") and the service works out the date in the
+prospect's own timezone.
+
+Greeting (first message): `Hi {{fname}}, it's Tanya from VoiceOwl.`, played after the prospect says hello, in
+`{{defaultLanguage}}`.
 
 ---
 
 ## 3. Tool 1: getAvailableSlots
 
-Method and URL: `POST https://<your-ngrok-or-host>/slots`
-Headers: `x-api-key: <API_KEY from .env>` and `content-type: application/json`
+`POST https://<your-host>/slots`, headers `x-api-key: <API_KEY>` and `content-type: application/json`.
 
-| Body key | Who sets it | Value |
+| Body key | Set by | Value |
 |---|---|---|
-| timezone | platform, fixed | `{{timezone}}` (required) |
-| partOfDay | model, only when the prospect said it | morning / afternoon / evening |
-| preferredDate | model, only when the prospect named a day | 2026-11-25 |
-| excludeSlotIds | model, slots already offered and refused | ["MTc5...", "MTc5..."] |
+| timezone | platform, from the contact | Asia/Kolkata (required) |
+| preferredDay | model, only when the prospect named a day | today, tomorrow, monday ... friday (saturday, sunday answer "weekdays only") |
+| preferredTime | model, only when the prospect named a time | morning, afternoon, evening, or an exact time in 24-hour form such as 16:00 |
 
-Example sent for a first check: `{"timezone":"Asia/Kolkata"}`
+preToolMessage: `Let me check the calendar.`
 
-Example Result (the model reads this):
+Examples the service receives:
+- No preference: `{"timezone":"Asia/Kolkata"}`
+- "Tomorrow at 4 PM?": `{"timezone":"Asia/Kolkata","preferredDay":"tomorrow","preferredTime":"16:00"}`
+  The 4:00 PM slot comes first when free, then the nearest other free slot.
+- "Wednesday afternoon": `{"timezone":"America/New_York","preferredDay":"wednesday","preferredTime":"afternoon"}`
+
+Result (what the model reads):
 
 ```json
 {"slots":[
- {"slotId":"MTc5NTQyMjYwMDAwMC4xOGZhN2E5M2JmZWZmZTNl","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
- {"slotId":"MTc5NTQyNjIwMDAwMC5mZjRkZWNiYjRjOTA2OWM2","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}
-]}
+ {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
+ {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
+ "instruction":"Two times are free: today, two in the afternoon, or today, three in the afternoon, the prospect's time. Offer both and ask which works better."}
 ```
 
-An empty `{"slots":[]}` means nothing free for that request. preToolMessage: `Let me check the calendar.`
+Other instructions the model can get:
+- One slot: `One time is free: Wednesday, twelve noon, the prospect's time. Offer it and ask if it works.`
+- None: `No time is free for that request. Ask which other day or time in the next seven days suits them.`
+- Weekend asked: `Demos are Monday to Friday only. Ask which weekday in the next seven days suits them.`
+- Service or Google down: `The calendar could not be checked. Tell the prospect our team will send them times on WhatsApp.`
 
 ---
 
 ## 4. Tool 2: bookDemo
 
-Method and URL: `POST https://<your-ngrok-or-host>/book`, same two headers.
+`POST https://<your-host>/book`, same headers. No preToolMessage.
 
-| Body key | Who sets it | Value | Required by the service |
+| Body key | Set by | Value | Required |
 |---|---|---|---|
-| slotId | model | exactly the chosen slot's slotId | yes |
-| notes | model | one English line: their problem, any colleague, any email request, or "none" | no |
-| email | platform, from the contact | priya@brightloans.com | yes (valid address) |
+| slotId | model | the chosen slot's slotId, e.g. htdbu-31f5ca | yes |
+| bookingNotes | model | one English line: their problem, any colleague, any email request, or "none" | no |
+| email | platform, from the contact | priya@brightloans.com | yes |
 | timezone | platform, from the contact | Asia/Kolkata | yes |
-| firstName | platform, from the contact | Priya | no |
-| lastName | platform, from the contact | Sharma | no |
+| fname | platform, from the contact | Priya | no |
+| lname | platform, from the contact | Sharma | no |
 | company | platform, from the contact | BrightLoans Financial Services Pvt Ltd | no |
-
-Tanya passes only slotId and notes. The platform adds the other five from the contact record. No preToolMessage
-on this tool.
 
 Example the service receives:
 
 ```json
-{"slotId":"MTc5NTQyNjIwMDAwMC5mZjRkZWNiYjRjOTA2OWM2","notes":"weekend leads wait until Monday, half are lost",
- "email":"priya@brightloans.com","timezone":"Asia/Kolkata","firstName":"Priya","lastName":"Sharma",
+{"slotId":"htdbu-31f5ca","bookingNotes":"weekend leads wait until Monday, half are lost",
+ "email":"priya@brightloans.com","timezone":"Asia/Kolkata","fname":"Priya","lname":"Sharma",
  "company":"BrightLoans Financial Services Pvt Ltd"}
 ```
 
-Results:
-- Booked: `{"booked":true,"spokenLabel":"today, three in the afternoon","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"..."}`
-- Slot taken: `{"booked":false,"reason":"slot_taken"}`
-- Error: `{"booked":false,"reason":"error"}`
+Result when booked:
 
-The calendar event is titled `VoiceOwl demo: Priya Sharma, BrightLoans Financial Services Pvt Ltd` and Google emails the
-invite, with the Meet link, to the prospect at once.
+```json
+{"booked":true,"spokenLabel":"today, three in the afternoon",
+ "instruction":"The demo is booked for today, three in the afternoon, the prospect's time, and the invite is in their email now. Confirm it and ask them to accept the invite while you are on the call.",
+ "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
+ "salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
+ "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"bc64c442..."}
+```
+
+- Slot taken: `{"booked":false,"reason":"slot_taken","instruction":"That time was just taken. Check the calendar again, then offer the new times."}`
+- Error: `{"booked":false,"reason":"error","instruction":"The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again."}`
+
+**Save two fields from this reply as call variables for the PCA:** `prospectTime` → `bookedTime`, and
+`meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
+
+Timezones: Google stores one moment in time (startUtc). The service writes it in the prospect's timezone
+(`prospectTime`, used in messages) and in the sales team's (`salesTime`, for your CRM). Google shows the event in
+each person's own calendar timezone by itself. Nobody converts anything by hand.
 
 ## 5. Tool 3: callhangup
 
-Platform tool. No parameters. The closing line goes in its preToolMessage (set by the prompt).
+Platform tool, no parameters. The closing line goes in its preToolMessage (the prompt sets it).
 
 ---
 
-## 6. After the call: post-call analysis (PCA)
+## 6. After the call: PCA
 
-Inputs the platform gives the PCA: the transcript, `{{callStartDate}}`, `{{callStartTime}}`, `{{firstName}}`,
-`{{company}}`, `{{email}}`, `{{priorContext}}`.
+Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{{fname}}`, `{{company}}`,
+`{{email}}`, `{{priorContext}}`, `{{bookedTime}}`, `{{meetLink}}`.
 
-Output: one flat JSON. Example for the booked call:
+### Where each detail comes from
+
+| Detail | Most reliable source |
+|---|---|
+| Booked day and time, Meet link | bookDemo reply (`prospectTime`, `meetLink`), saved as call variables, then given to the PCA |
+| Booked or not, slot taken, error | bookDemo reply (`booked`, `reason`); the PCA's `callResult` agrees with it |
+| Invite accepted | only what the prospect said on the call (PCA `inviteAccepted`). Google's own accept status needs a later check by `eventId` (not built) |
+| Problem, objections, interest, callback time, colleague, do-not-call | the conversation (PCA) |
+
+### PCA output, example for a booked call
 
 ```json
 {
  "callResult": "booked",
- "bookedSlot": "today, three in the afternoon, prospect time",
+ "bookedSlot": "Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "inviteAccepted": "yes",
  "painPoint": "slowResponse",
  "painDetail": "weekend leads wait until Monday, half are lost",
@@ -149,58 +173,40 @@ Output: one flat JSON. Example for the booked call:
  "noAICalls": "no",
  "doNotCall": "no",
  "language": "English",
- "summary": "Priya answered, ... (40 to 80 words)",
- "whatsappMessage": "Hi Priya, thanks for your time. Your fifteen-minute VoiceOwl demo with Hussain, our Sales Head, is booked for today at 3:00 PM, your time, on Google Meet. The slot is reserved for you, and the Meet link is in the calendar invite sent to your email. He will show you how an agent can handle weekend leads that wait until Monday. Tanya, VoiceOwl",
- "emailSubject": "Your VoiceOwl demo is booked for today at 3:00 PM",
- "emailMessage": "Hi Priya,\n\nThanks for your time today. Your fifteen-minute VoiceOwl demo with Hussain, our Sales Head, is booked for today at 3:00 PM, your time, on Google Meet. The slot is reserved for you.\n\nThe Google Meet link is in the calendar invite we sent to your email. In the demo, Hussain will show you how a VoiceOwl agent can handle weekend leads that wait until Monday.\n\nTanya, VoiceOwl"
+ "summary": "Priya answered ... (40 to 80 words)",
+ "whatsappMessage": "Hi Priya, thanks for your time. Your fifteen-minute VoiceOwl demo with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM, your time, on Google Meet. The slot is reserved for you. Join here: https://meet.google.com/abc-defg-hij. Hussain will show you how an agent handles weekend leads that wait until Monday. Tanya, VoiceOwl",
+ "emailSubject": "Your VoiceOwl demo is booked for Monday, 23 November, 3:00 PM",
+ "emailMessage": "Hi Priya,\n\nThanks for your time today. Your fifteen-minute VoiceOwl demo with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM, your time, on Google Meet. The slot is reserved for you.\n\nJoin here: https://meet.google.com/abc-defg-hij. The link is also in the calendar invite we sent you. Hussain will show you how a VoiceOwl agent handles weekend leads that wait until Monday.\n\nTanya, VoiceOwl"
 }
 ```
 
 ### Where each field goes
 
-| PCA field | Send it to | Notes |
+| PCA field | Send to | Notes |
 |---|---|---|
-| whatsappMessage | WhatsApp message body, to the contact's phone | send only when it is not "none" |
-| emailSubject | Email subject line, to the contact's email | send only when it is not "none" |
-| emailMessage | Email body, to the contact's email | plain text; `\n\n` is a paragraph break, convert to a blank line (or `<br><br>` in HTML) |
-| callResult | CRM status / next action | booked, bookingFailed, doNotCall, callbackLater, notInterested, gatekeeper, wrongNumber, voicemail, disconnected |
-| bookedSlot, inviteAccepted | CRM / dashboard | the demo time and whether they accepted the invite |
-| painPoint, painDetail, mainObjection, interestLevel | CRM notes for the sales team | slowResponse, tooManyCalls, language, other, none |
-| colleagueToInvite | sales follow-up | someone to add by hand |
-| callbackTime | callback scheduling | text in the prospect's own words, not a date |
-| doNotCall, noAICalls | suppression list | "yes" means never call again, or only a human may call |
-| summary | CRM call note | one paragraph |
-| language | CRM / future calls | the language the prospect spoke |
+| whatsappMessage | WhatsApp, free text, to Contact | send only when not "none" |
+| emailSubject | email subject, to email | send only when not "none" |
+| emailMessage | email body, to email | `\n\n` is a paragraph break |
+| callResult | CRM status | booked, bookingFailed, doNotCall, callbackLater, notInterested, gatekeeper, wrongNumber, voicemail, disconnected |
+| bookedSlot, inviteAccepted | CRM | |
+| painPoint, painDetail, mainObjection, objectionCount, interestLevel | CRM notes for sales | painPoint: slowResponse, tooManyCalls, language, other, none |
+| colleagueToInvite | sales follow-up | |
+| callbackTime | callback scheduling | the prospect's own words, not a date |
+| doNotCall, noAICalls | suppression list | "yes": never call again / only a human may call |
+| summary, language | CRM | |
 
-### When messages are sent
-
-The PCA writes messages in three cases only, all other calls give "none" in all three fields:
-1. callResult is booked: confirmation of the demo.
-2. The booking failed or no slot was free and Tanya said the team will send times: "the team will send you a couple of times".
-3. The prospect asked for information by email and no booking was made: a short VoiceOwl note and the demo offer.
-
-Never sent: doNotCall or noAICalls is "yes".
-
-The platform rule: `if whatsappMessage != "none" then send it`, and the same for the email pair. The Meet link is not
-in the messages. It is in the Google invite, which Google sends at booking.
-
-### WhatsApp templates (check with your provider)
-A business-started WhatsApp message to someone who has not messaged you in the last 24 hours usually has to use a
-template approved in advance, not free text. If so, make one template with one variable, `Hi, {{1}}`, and put
-`whatsappMessage` in `{{1}}`; or tell us the template and we change the PCA to output its variable values.
-Email has no such limit.
+Messages are written in three cases only: booked; booking failed or no slot (the team will send times); information
+asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "none" in all three fields.
 
 ---
 
 ## 7. Check list before the first test call
 
-1. Contact row has all nine columns, with Not Available where unknown, and a valid `timezone` and `email`.
-2. Agent variables: exactly the eight in section 2. Remove role, leadSource, leadContext, leadSourceSpoken,
-   emailDomain, and rename language to defaultLanguage.
-3. getAvailableSlots body: `timezone` fixed from the contact; the other three from the model.
-4. bookDemo body: model's `slotId` and `notes`, plus `email`, `timezone`, `firstName`, `lastName`, `company` added
-   by the platform.
-5. Both tools: URL, `x-api-key` header, JSON content type.
-6. PCA: add the three message fields to the mapping; drop emailStatus and correctedEmail; painPoint values are
-   slowResponse, tooManyCalls, language, other, none.
+1. Upload columns: Contact, fname, lname, company, industry, email, timezone, defaultLanguage, priorContext.
+   Not Available where unknown; valid timezone and email.
+2. Agent variables: fname, company, industry, defaultLanguage, priorContext. Nothing else.
+3. getAvailableSlots: timezone added by the platform; preferredDay and preferredTime from the model.
+4. bookDemo: slotId and bookingNotes from the model; email, timezone, fname, lname, company added by the platform.
+5. Save bookDemo's `prospectTime` and `meetLink` as call variables `bookedTime` and `meetLink` for the PCA.
+6. PCA inputs as in section 6; three message fields mapped; emailStatus and correctedEmail gone.
 7. Server and ngrok running; test the URL from Postman first.

@@ -1,6 +1,6 @@
 // Slot maths: all date, time and timezone work lives here, never in the model.
 import crypto from 'node:crypto';
-import { parts, spokenLabel, localDateString } from './labels.mjs';
+import { parts, spokenLabel, localDateString, writtenTime } from './labels.mjs';
 
 const MIN = 60000;
 export function config(env) {
@@ -17,18 +17,20 @@ export function config(env) {
     secret: env.SLOT_SECRET || 'dev-secret-change-me',
   };
 }
+// A slotId is short so the model copies it reliably: the start minute in base 36, a dash, and
+// 6 hex characters of an HMAC with SLOT_SECRET, e.g. "tqd3s0-1a2b3c". The model cannot invent one.
 export function signSlot(startMs, secret) {
-  const sig = crypto.createHmac('sha256', secret).update(String(startMs)).digest('hex').slice(0, 16);
-  return Buffer.from(`${startMs}.${sig}`).toString('base64url');
+  const m = Math.round(startMs / MIN).toString(36);
+  return `${m}-${crypto.createHmac('sha256', secret).update(m).digest('hex').slice(0, 6)}`;
 }
 export function verifySlot(slotId, secret) {
-  try {
-    const [ms, sig] = Buffer.from(String(slotId), 'base64url').toString().split('.');
-    const startMs = Number(ms);
-    if (!Number.isFinite(startMs) || signSlot(startMs, secret) !== slotId) return null;
-    return startMs;
-  } catch { return null; }
+  const m = String(slotId || '').trim().toLowerCase().split('-')[0];
+  if (!/^[0-9a-z]+$/.test(m)) return null;
+  const startMs = parseInt(m, 36) * MIN;
+  return Number.isFinite(startMs) && signSlot(startMs, secret) === String(slotId).trim().toLowerCase() ? startMs : null;
 }
+// Values the platform sends for unknown details count as absent.
+export const clean = (v) => { const t = String(v ?? '').trim(); return /^(|null|undefined|not available|n\/a)$/i.test(t) ? '' : t; };
 const within = (p, from, to, cfg, days) => {
   const m = p.h * 60 + p.mi;
   return days.includes(p.wd) && m >= from && m + cfg.slotMin <= to;
@@ -38,13 +40,12 @@ export function overlapsBusy(startMs, endMs, busy, bufferMin) {
   const b = bufferMin * MIN;
   return busy.some(x => startMs < x.end + b && endMs + b > x.start);
 }
-export function candidates({ busy, tz, now, cfg, partOfDay, preferredDate, exclude = [] }) {
+export function candidates({ busy, tz, now, cfg, partOfDay, preferredDate }) {
   const out = [];
   const first = Math.ceil((now + cfg.noticeMin * MIN) / (cfg.gridMin * MIN)) * cfg.gridMin * MIN;
   const last = now + cfg.windowDays * 86400000;
   for (let s = first; s < last; s += cfg.gridMin * MIN) {
     const e = s + cfg.slotMin * MIN;
-    if (exclude.includes(s)) continue;
     const sp = parts(s, cfg.salesTz), pp = parts(s, tz);
     if (!within(sp, cfg.workStart, cfg.workEnd, cfg, cfg.workDays)) continue;
     if (!within(pp, cfg.prospectStart, cfg.prospectEnd, cfg, [1, 2, 3, 4, 5])) continue;
@@ -68,34 +69,79 @@ export function pickTwo(list, cfg) {
   b ||= pool.find(c => c.startMs > a.startMs);
   return b ? [a, b] : [a];
 }
+const DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+// preferredDay (today, tomorrow or a weekday name) becomes a date in the PROSPECT's timezone, so the
+// model never works out a date. A weekday name means its next date after today, within the window.
+export function resolveDay(day, tz, now, cfg) {
+  const d = clean(day).toLowerCase();
+  if (!d) return null;
+  if (d === 'today') return localDateString(now, tz);
+  if (d === 'tomorrow') return localDateString(now + 86400000, tz);
+  const wd = DAYS.indexOf(d);
+  if (wd < 0) return null;
+  for (let k = 1; k <= cfg.windowDays; k++) if (parts(now + k * 86400000, tz).wd === wd) return localDateString(now + k * 86400000, tz);
+  return null;
+}
+// preferredTime: morning / afternoon / evening, or an exact time HH:MM (24-hour, prospect's time).
+export function parseTime(t) {
+  const v = clean(t).toLowerCase();
+  if (['morning', 'afternoon', 'evening'].includes(v)) return { part: v };
+  const m = v.match(/^(\d{1,2}):(\d{2})$/);
+  if (m && +m[1] < 24 && +m[2] < 60) return { minute: +m[1] * 60 + +m[2] };
+  return {};
+}
 export async function getSlots({ google, cfg, body, now = Date.now() }) {
-  const exclude = (body.excludeSlotIds || []).map(id => verifySlot(id, cfg.secret)).filter(x => x !== null);
+  const tz = body.timezone;
+  const day = clean(body.preferredDay).toLowerCase();
+  const date = resolveDay(day, tz, now, cfg);
+  const time = parseTime(body.preferredTime);
   const busy = await google.busy(now, now + (cfg.windowDays + 1) * 86400000);
-  const list = candidates({ busy, tz: body.timezone, now, cfg, partOfDay: body.partOfDay, preferredDate: body.preferredDate, exclude });
-  const picked = pickTwo(list, cfg);
-  return { slots: picked.map(c => ({ slotId: signSlot(c.startMs, cfg.secret), startUtc: new Date(c.startMs).toISOString(), spokenLabel: spokenLabel(c.startMs, body.timezone, now) })) };
+  const list = candidates({ busy, tz, now, cfg, partOfDay: time.part, preferredDate: date || undefined });
+  let picked;
+  if (time.minute !== undefined) {
+    // An exact time: the free slot nearest to it first (the time itself when free), then the next nearest.
+    // With no day named, nearer days win: each day further away counts as a full day of distance.
+    const dist = (c) => { const p = parts(c.startMs, tz); return Math.abs(p.h * 60 + p.mi - time.minute) + (date ? 0 : (c.startMs - now) / 86400000 * 1440); };
+    picked = [...list].sort((a, b) => dist(a) - dist(b) || a.startMs - b.startMs).slice(0, 2);
+  } else picked = pickTwo(list, cfg);
+  const slots = picked.map(c => ({ slotId: signSlot(c.startMs, cfg.secret), startUtc: new Date(c.startMs).toISOString(), spokenLabel: spokenLabel(c.startMs, tz, now) }));
+  let instruction;
+  if (slots.length === 2) instruction = `Two times are free: ${slots[0].spokenLabel}, or ${slots[1].spokenLabel}, the prospect's time. Offer both and ask which works better.`;
+  else if (slots.length === 1) instruction = `One time is free: ${slots[0].spokenLabel}, the prospect's time. Offer it and ask if it works.`;
+  else if (day === 'saturday' || day === 'sunday') instruction = 'Demos are Monday to Friday only. Ask which weekday in the next seven days suits them.';
+  else instruction = 'No time is free for that request. Ask which other day or time in the next seven days suits them.';
+  return { slots, instruction };
 }
 export async function bookSlot({ google, cfg, body, now = Date.now() }) {
+  const fail = { booked: false, reason: 'error', instruction: 'The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again.' };
   const startMs = verifySlot(body.slotId, cfg.secret);
-  if (startMs === null || startMs < now) return { status: 400, out: { booked: false, reason: 'error' } };
+  if (startMs === null || startMs < now) return { status: 400, out: fail };
   const endMs = startMs + cfg.slotMin * MIN;
+  const label = spokenLabel(startMs, body.timezone, now);
+  const ok = (ev) => ({ booked: true, spokenLabel: label,
+    instruction: `The demo is booked for ${label}, the prospect's time, and the invite is in their email now. Confirm it and ask them to accept the invite while you are on the call.`,
+    prospectTime: `${writtenTime(startMs, body.timezone)} (${body.timezone})`,
+    salesTime: `${writtenTime(startMs, cfg.salesTz)} (${cfg.salesTz})`,
+    startUtc: new Date(startMs).toISOString(), meetLink: ev.hangoutLink || '', eventId: ev.id });
+  const slotKey = signSlot(startMs, cfg.secret);
+  const id = crypto.createHash('sha256').update(`${slotKey}|${String(body.email).toLowerCase()}`).digest('hex').slice(0, 40);
   const busy = await google.busy(startMs - 1, endMs + 1);
-  const id = crypto.createHash('sha256').update(`${body.slotId}|${String(body.email).toLowerCase()}`).digest('hex').slice(0, 40);
   if (overlapsBusy(startMs, endMs, busy, 0)) {
     // A retry of a booking that already went through finds its own event: answer booked again.
     const own = await google.get(id);
-    if (own && own.status !== 'cancelled') return { status: 200, out: { booked: true, spokenLabel: spokenLabel(startMs, body.timezone, now), meetLink: own.hangoutLink || '', eventId: own.id } };
-    return { status: 200, out: { booked: false, reason: 'slot_taken' } };
+    if (own && own.status !== 'cancelled') return { status: 200, out: ok(own) };
+    return { status: 200, out: { booked: false, reason: 'slot_taken', instruction: 'That time was just taken. Check the calendar again, then offer the new times.' } };
   }
-  const name = [body.firstName, body.lastName].filter(Boolean).join(' ').trim();
+  const company = clean(body.company), notes = clean(body.bookingNotes);
+  const name = [clean(body.fname), clean(body.lname)].filter(Boolean).join(' ');
   const who = name || String(body.email).split('@')[0];
   const res = await google.insert({
     id, startMs, endMs, email: body.email, displayName: name || undefined,
-    summary: `VoiceOwl demo: ${who}${body.company ? `, ${body.company}` : ''}`,
-    description: [body.company ? `Company: ${body.company}` : '', body.notes ? `Notes: ${body.notes}` : ''].filter(Boolean).join('\n'),
+    summary: `VoiceOwl demo: ${who}${company ? `, ${company}` : ''}`,
+    description: [company ? `Company: ${company}` : '', notes && notes.toLowerCase() !== 'none' ? `Notes: ${notes}` : ''].filter(Boolean).join('\n'),
     requestId: id,
   });
   let ev = res.event;
-  for (let i = 0; i < 3 && !ev.hangoutLink; i++) { await new Promise(s => setTimeout(s, 1000)); ev = await google.get(id); }
-  return { status: 200, out: { booked: true, spokenLabel: spokenLabel(startMs, body.timezone, now), meetLink: ev.hangoutLink || '', eventId: ev.id || id } };
+  for (let i = 0; i < 3 && !ev.hangoutLink; i++) { await new Promise(s => setTimeout(s, 1000)); ev = (await google.get(id)) || ev; }
+  return { status: 200, out: ok({ ...ev, id: ev.id || id }) };
 }
