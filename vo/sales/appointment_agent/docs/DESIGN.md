@@ -410,7 +410,7 @@ Check on the platform before the first test call:
    spokenLabel, or not booked with slot taken or error. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
 2. **Variables injected:** firstName, company, role, industry, leadSource, leadContext,
-   leadSourceSpoken, email, timezone, language, currentDate, currentWeekday.
+   leadSourceSpoken, email, priorContext, timezone, language, currentDate, currentWeekday.
 3. **First message:** "Hi {{firstName}}, it's Tanya from VoiceOwl.", played after the
    prospect says hello, in {{language}}.
 4. **preferredDate** asks the model to work out a date from today's date and a day name
