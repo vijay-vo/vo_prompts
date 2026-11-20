@@ -83,6 +83,12 @@ The platform sends an `x-api-key` header, which the service checks.
 
 ## 3. What you do, step by step (own calendar first)
 
+Updated 2026-11-20: the calendar is on Google Workspace (voiceowl.ai), so the consent screen is
+**Internal** (no app review, no 7-day expiry), the OAuth client is a **Desktop app**, and the
+service runs locally first. The exact steps are in `service/README.md`, which replaces steps 2 to 4
+and 7 below.
+
+
 1. **Google Cloud:** create a project, open APIs & Services, enable **Google Calendar API**.
 2. **OAuth consent screen:** User type External (or Internal if the calendar is on your own
    Workspace). Add the scopes `.../auth/calendar.freebusy` and `.../auth/calendar.events.owned`
@@ -105,7 +111,12 @@ The platform sends an `x-api-key` header, which the service checks.
 10. **Later:** move to the sales team's calendar by changing the calendar id and the token owner.
     Moving to a shared team calendar means the sales team's Hussain account authorises once.
 
-## 4. Gaps between the prompt and these tools (to settle before building)
+## 4. Gaps between the prompt and these tools
+
+Settled 2026-11-20: the platform can add request parameters, so it injects `timezone`,
+`firstName`, `lastName` and `company` into bookDemo, and `timezone` into getAvailableSlots. No
+prompt change. Sales hours: IST 9 AM to 11 PM.
+
 
 - **Lead fields on booking.** The prompt's bookDemo passes only `slotId`, `email`, `notes`. The
   event title needs the name and company ("Demo: Priya Sharma, BrightLoans"). Either the platform

@@ -1,0 +1,44 @@
+// VoiceOwl demo-booking tools. Two routes: POST /slots (getAvailableSlots), POST /book (bookDemo).
+import http from 'node:http';
+import fs from 'node:fs';
+import { makeGoogle } from './google.mjs';
+import { config, getSlots, bookSlot } from './slots.mjs';
+import { validTz } from './labels.mjs';
+
+function loadEnv() {
+  const env = { ...process.env };
+  try {
+    for (const line of fs.readFileSync(new URL('./.env', import.meta.url), 'utf8').split('\n')) {
+      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+      if (m && !(m[1] in env)) env[m[1]] = m[2].replace(/^["']|["']$/g, '');
+    }
+  } catch {}
+  return env;
+}
+export function makeApp(env, google = makeGoogle(env)) {
+  const cfg = config(env);
+  return async (req, res) => {
+    const send = (code, obj) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(obj)); };
+    try {
+      if (req.method === 'GET' && req.url === '/health') return send(200, { ok: true });
+      if (!env.API_KEY || req.headers['x-api-key'] !== env.API_KEY) return send(401, { error: 'unauthorized' });
+      if (req.method !== 'POST' || !['/slots', '/book'].includes(req.url)) return send(404, { error: 'not found' });
+      let raw = ''; for await (const c of req) { raw += c; if (raw.length > 1e5) return send(413, { error: 'too large' }); }
+      const body = raw ? JSON.parse(raw) : {};
+      console.log(new Date().toISOString(), req.url, JSON.stringify({ ...body, email: body.email ? '***' : undefined }));
+      if (!validTz(body.timezone)) return send(400, { error: 'timezone must be an IANA name such as Asia/Kolkata' });
+      if (req.url === '/slots') return send(200, await getSlots({ google, cfg, body }));
+      if (!body.slotId || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email || '')) return send(400, { booked: false, reason: 'error' });
+      const r = await bookSlot({ google, cfg, body });
+      return send(r.status, r.out);
+    } catch (e) {
+      console.error('ERROR', e.message);
+      return send(req.url === '/book' ? 200 : 500, req.url === '/book' ? { booked: false, reason: 'error' } : { error: 'server error' });
+    }
+  };
+}
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const env = loadEnv();
+  const port = Number(env.PORT || 8787);
+  http.createServer(makeApp(env)).listen(port, () => console.log(`booking tools on :${port}${env.GOOGLE_MOCK === '1' ? ' (MOCK calendar)' : ''}`));
+}
