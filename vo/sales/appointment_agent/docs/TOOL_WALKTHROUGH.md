@@ -37,7 +37,7 @@ violation, and the booking would fail anyway, because the service only accepts s
 ## Call 1: India
 
 Prospect: Priya Sharma, BrightLoans, Mumbai. Lead data from the platform: `firstName=Priya`,
-`company=BrightLoans`, `industry=lending`, `timezone=Asia/Kolkata`, `language=English`,
+`company=BrightLoans`, `industry=lending`, `timezone=Asia/Kolkata`, `defaultLanguage=English`,
 `currentDate=2026-11-23`, `currentWeekday=Monday`, `priorContext=First call to them. Sales head at a
 lending company, number from a purchased business list.` The platform also holds `lastName=Sharma` and
 `email=priya@brightloans.com` for the booking; the model never sees them.
@@ -224,7 +224,7 @@ call.
 ## Call 2: US (New York)
 
 Prospect: Daniel Brooks, Harbor Lending, New York. Lead data: `firstName=Daniel`,
-`company=Harbor Lending`, `industry=lending`, **`timezone=America/New_York`**, `language=English`,
+`company=Harbor Lending`, `industry=lending`, **`timezone=America/New_York`**, `defaultLanguage=English`,
 `currentDate=2026-11-23`, `currentWeekday=Monday`, `priorContext=First call to them.` The platform
 holds `lastName=Brooks` and `email=daniel@harborlending.com` for the booking.
 
