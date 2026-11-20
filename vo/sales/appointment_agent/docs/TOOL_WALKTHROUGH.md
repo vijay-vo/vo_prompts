@@ -178,7 +178,7 @@ POST https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceD
 {
  "id": "<40-character id>",
  "summary": "VoiceOwl demo: Priya Sharma, BrightLoans",
- "description": "Booked by the VoiceOwl phone agent.\nCompany: BrightLoans\nNotes: weekend leads wait until Monday, half are lost",
+ "description": "Company: BrightLoans\nNotes: weekend leads wait until Monday, half are lost",
  "start": {"dateTime": "2026-11-23T10:30:00.000Z"},
  "end":   {"dateTime": "2026-11-23T10:45:00.000Z"},
  "attendees": [{"email": "priya@brightloans.com", "displayName": "Priya Sharma"}],

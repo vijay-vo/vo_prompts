@@ -88,7 +88,7 @@ export async function bookSlot({ google, cfg, body, now = Date.now() }) {
   const res = await google.insert({
     id, startMs, endMs, email: body.email, displayName: name || undefined,
     summary: `VoiceOwl demo: ${who}${body.company ? `, ${body.company}` : ''}`,
-    description: [`Booked by the VoiceOwl phone agent.`, body.company ? `Company: ${body.company}` : '', body.notes ? `Notes: ${body.notes}` : ''].filter(Boolean).join('\n'),
+    description: [body.company ? `Company: ${body.company}` : '', body.notes ? `Notes: ${body.notes}` : ''].filter(Boolean).join('\n'),
     requestId: id,
   });
   let ev = res.event;
