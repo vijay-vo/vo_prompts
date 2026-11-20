@@ -48,5 +48,6 @@ export function spokenLabel(startMs, tz, nowMs = Date.now()) {
   let time = words(h12);
   if (p.mi === 5 || p.mi < 10 && p.mi > 0) time += ` oh ${words(p.mi)}`;
   else if (p.mi > 0) time += ` ${words(p.mi)}`;
+  if (p.h === 12 && p.mi === 0) return `${day}, twelve noon`;
   return `${day}, ${time} ${periodOf(p.h)}`;
 }
