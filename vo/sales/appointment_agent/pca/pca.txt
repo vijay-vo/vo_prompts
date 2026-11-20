@@ -5,7 +5,7 @@ One. The call transcript: the full conversation between the agent (Tanya) and th
 Two. {{callStartDate}} and {{callStartTime}}: when the call started.
 Three. {{firstName}}, {{company}} and {{email}}: the lead the call was made to.
 Four. {{priorContext}}: what our sales team knew about the prospect before the call, including any earlier conversations with them. It is background only: never report it as something said on this call.
-If any input arrives empty, as the word null, or as visible curly braces, treat it as absent and never guess it.
+If any input arrives as Not Available, empty, as the word null, or as visible curly braces, treat it as absent and never guess it.
 
 CONTEXT:
 This is an OUTBOUND call. VoiceOwl builds custom voice AI agents that hold real phone conversations for businesses in any industry, on calls coming in and calls going out. Tanya, a voice A I agent with a young female persona, calls a business lead anywhere in the world, in the lead's language, to book a fifteen-minute Google Meet demo with Hussain, VoiceOwl's Sales Head.
