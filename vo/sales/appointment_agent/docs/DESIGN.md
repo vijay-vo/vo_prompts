@@ -14,9 +14,9 @@ go-ahead. Research behind each point: RESEARCH.md.
 | Who we call | Anyone VoiceOwl's services could help. Leads come mixed: website, events, LinkedIn, cold lists, others. Sales team to confirm the source per lead. |
 | Reach | Worldwide. |
 | Language | Multilingual: the agent speaks the prospect's language. |
-| Persona | Male voice. Other details decided by Claude (section 2). |
+| Persona | Female: Tanya, a young woman (user, 2026-11-20, replacing the male Neil). Most calls go to the US and India. Other details decided by Claude (section 2). |
 | AI disclosure | Only when the prospect asks. Reconfirmed 2026-11-19 after the round-4 research (legal check for EU/UK stays open, item 19). |
-| Demo host | Hussain, Sales Head (decided 2026-11-19). Neil names Hussain in stage 4 and 5. |
+| Demo host | Hussain, Sales Head (decided 2026-11-19). Tanya names Hussain in stage 4 and 5. |
 | Opener | Sample B (context first, then "Can I tell you why I called you specifically?") with sample C's thirty-second line as the fallback when the prospect is guarded (decided 2026-11-19, CALL_EXAMPLES.md). |
 | Opening | Must be engaging and lead to booking. The opener is the most important part. |
 | Demo | 15 minutes, Google Meet link from the calendar event, run by the sales team. |
@@ -35,11 +35,12 @@ go-ahead. Research behind each point: RESEARCH.md.
 
 ## 2. Persona [Proposed]
 
-- **Name: Neil.** Short, one syllable, easy to say and hear in any language and
-  accent, and not tied to one country. Alternatives: Adam, Ryan, Arjun.
+- **Name: Tanya** (user, 2026-11-20). Female, a young woman. Chosen because it is an
+  everyday name in both the US and India, where most calls go, and is easy to say and
+  hear worldwide. It replaced Neil (male); Bard was tried and dropped.
 - **Role, if asked:** "I'm on the team at VoiceOwl." No job title on a cold call.
-- **Character:** a calm, curious peer, not a salesman. Warm, a little playful,
-  never needy. He sounds like he is checking whether there's a fit, not pushing.
+- **Character:** a calm, curious peer, not a salesperson. Warm, a little playful,
+  never needy. She sounds like she is checking whether there's a fit, not pushing.
 - **Delivery** (from RESEARCH.md section 7): calm pace, statements end flat or
   down (no eager up-tone), questions sound genuinely curious, short sentences
   (under 15 words), light humour on objections. Part of this is TTS voice
@@ -56,7 +57,7 @@ written per language. What changed from the first draft is listed in section 10.
 
 ### Stage 0 — Greeting (platform first message)
 
-A statement, not a question: "Hi {{firstName}}, it's Neil from VoiceOwl."
+A statement, not a question: "Hi {{firstName}}, it's Tanya from VoiceOwl."
 Dan Lok, Connor Murray and 30MPC all say "Is this John?" and "How are you?" mark a
 cold call at once. If it is the wrong person they say so; then ask for the right
 person or a better time, and never pitch to a gatekeeper. Voicemail: section 6.
@@ -71,7 +72,7 @@ Warm lead (website form, event; they already know us). No "this is a sales call"
 Then the short value line (stage 2).
 
 Cold or LinkedIn lead. Context first, then a soft ask. No countdown in the first breath:
-> "Hi {{firstName}}, it's Neil from VoiceOwl. I know you weren't expecting my call...
+> "Hi {{firstName}}, it's Tanya from VoiceOwl. I know you weren't expecting my call...
 > I work with {{role}}s on one thing, getting to every new lead within a minute. Can I
 > tell you why I called you specifically?"
 
@@ -213,7 +214,7 @@ self-deprecating lines, idioms, naming a vendor of theirs we don't know.
 
 Plus an **approved facts list** for product questions (from voiceowl.ai: 135+
 languages, 200M+ interactions, 60% cost reduction, proof of concept in 48–72 hours,
-launch in a week, compliance list). Sales team to approve which ones Neil may say.
+launch in a week, compliance list). Sales team to approve which ones Tanya may say.
 
 ---
 
@@ -260,19 +261,19 @@ The platform then sends WhatsApp + email after the call.
 
 ## 9. Still open (needs the user or the sales team)
 
-1. **Persona name** — Neil OK?
+1. ~~**Persona name**~~ Decided: Tanya, female (2026-11-20).
 2. **Working hours** — free calendar time in the sales team's timezone (IST?) may
    fall at night for a prospect in the US. Should the tool also filter to the
    prospect's working hours (e.g. 9 am–7 pm their time)? Recommended: yes.
 3. **Which variables the lead data really carries** (section 7). Without
    {{timezone}} the agent cannot offer correct times.
 4. **"How did you get my number?"** — answer per lead source (sales team).
-5. **Approved claims** — which VoiceOwl facts Neil may say (sales team).
+5. **Approved claims** — which VoiceOwl facts Tanya may say (sales team).
 6. **Spoken slot labels** — tool returns them per language, or English labels that
-   Neil translates? Recommended: tool returns date/time parts, Neil speaks them in
+   Tanya translates? Recommended: tool returns date/time parts, Tanya speaks them in
    the call language using fixed rules (as the BPCL agents do for dates).
 7. **Wrong email on file** — is a WhatsApp "reply with your email" flow possible on
-   the platform? If not, Neil spells it back on the call.
+   the platform? If not, Tanya spells it back on the call.
 8. **Callbacks** — when the prospect says "call me tomorrow", does the platform
    re-dial at a time from the post-call analysis?
 9. **AI disclosure abroad — legal check.** Disclosure only when asked is the
@@ -313,9 +314,9 @@ The platform then sends WhatsApp + email after the call.
     upfront disclosure in the Time Doctor test. Proposal: keep "only when asked" for
     the US (outside those states), India, Singapore and the UAE. Use one short early
     line for EU and UK leads, driven by a {{discloseAI}} variable. Needs legal sign-off.
-20. **Which leads Neil may call.** For an AI voice, cold or LinkedIn leads are a legal
+20. **Which leads Tanya may call.** For an AI voice, cold or LinkedIn leads are a legal
     risk in the US (mobile numbers, TCPA), Germany, the UK, Saudi Arabia and probably
-    France. Proposal: Neil calls form and event leads, with AI-call consent wording on
+    France. Proposal: Tanya calls form and event leads, with AI-call consent wording on
     the form. Cold leads stay with humans, or go only to countries legal clears. This
     may remove the cold-lead branch of stage 1 for some regions.
 21. **Salutation per country (answers item 18 in part).** "Hi {{firstName}}" is wrong
@@ -336,11 +337,11 @@ The platform then sends WhatsApp + email after the call.
     avoid Friday and late-Thursday slots when others exist. This could be a tool-side
     filter or ranking.
 25. **Silence after the ask.** After "would fifteen minutes make sense?" and after the
-    two slots, Neil says nothing more and waits. Top human setters waited about 3 s;
+    two slots, Tanya says nothing more and waits. Top human setters waited about 3 s;
     the worst about 1 s.
 26. **Turn length.** One or two sentences by default. Once the prospect engages, the
     value explanation may run to three or four short sentences (Gong). If cut off,
-    Neil answers the interruption and carries on; he never restarts the line.
+    Tanya answers the interruption and carries on; she never restarts the line.
 27. **Email.** For form leads, confirm the email on file ("still the one at
     acme dot com?"). Read back only the slot and the email. After two failed tries,
     send a link on WhatsApp instead (relates to item 7). If the prospect changes the
@@ -351,7 +352,7 @@ The platform then sends WhatsApp + email after the call.
 29. **Reminder wording (platform WhatsApp and email).** "This slot is reserved for you,
     {{hostName}} has blocked it", plus an easy reschedule link. In a large RCT, this
     kind of wording beat a generic reminder: 14-15% against 21% no-shows.
-30. **A second use for Neil, lower risk.** Call prospects who already booked, to
+30. **A second use for Tanya, lower risk.** Call prospects who already booked, to
     confirm and pre-qualify (Time Doctor's "Susan"). Worth doing first, or alongside?
 
 Unchanged by the research: the statement greeting, context first, the 30-second line
@@ -364,7 +365,7 @@ interested" is recovered only about 15% of the time, which supports stopping).
 
 | First draft | Now | Why (RESEARCH.md 8) |
 |---|---|---|
-| "Hi, is this {{firstName}}?" | "Hi {{firstName}}, it's Neil from VoiceOwl." | Dan Lok, Connor Murray, 30MPC: confirming the name marks a cold call. |
+| "Hi, is this {{firstName}}?" | "Hi {{firstName}}, it's Tanya from VoiceOwl." | Dan Lok, Connor Murray, 30MPC: confirming the name marks a cold call. |
 | Always "honest, this is a sales call, give me twenty seconds" | Three branches: warm lead (no "sales call"), cold lead (context, then soft ask), and the thirty-second line only as fallback | Miner, Braun: a timed promise in the first breath lowers trust. 30MPC: context first. |
 | Value reached at stage 4 | One value line in stage 2 | Hormozi, Pavlo, Bay: a concrete outcome in under 30 seconds. |
 | "Is that about right?" / "Has that happened?" | Open A-B-C question | Yes/no leading questions raise the guard (Braun, Brandon, 30MPC). |
@@ -380,7 +381,7 @@ interested" is recovered only about 15% of the time, which supports stopping).
 ## 11. Prompt and PCA written (2026-11-19)
 
 Files: `default/default.txt` (the agent) and `pca/pca.txt` (post-call analysis, flat JSON,
-17 fields). Both are plain text, in the second person, with fixed English lines that Neil
+17 fields). Both are plain text, in the second person, with fixed English lines that Tanya
 speaks in the prospect's language. Tool turns follow TOOL_CALLING.md: bookDemo is the call
 alone; getAvailableSlots carries a short wait line in preToolMessage only; the closing line
 goes in callhangup's preToolMessage only.
@@ -394,9 +395,9 @@ Choices made while writing (change any of them on request):
   a minute, in their language, books the meeting, many languages). The 135+ languages and
   the other website figures stay out until sales approves them (item 5).
 - **No recording notice** in the prompt (item 10 still open).
-- **Callback:** Neil says "I'll make a note to call you then"; the PCA captures
+- **Callback:** Tanya says "I'll make a note to call you then"; the PCA captures
   callbackTime. Re-dialling is the platform's job (item 8).
-- **Email:** confirmed by its domain; a new one is spelled back; after two failed tries Neil
+- **Email:** confirmed by its domain; a new one is spelled back; after two failed tries Tanya
   books with the email on file and writes "email needs correcting" into notes.
 
 Check on the platform before the first test call:
@@ -407,11 +408,11 @@ Check on the platform before the first test call:
    names or keys, tell me and I'll change the prompt to match.
 2. **Variables injected:** firstName, company, role, industry, leadSource, leadContext,
    leadSourceSpoken, email, emailDomain, timezone, language, currentDate, currentWeekday.
-3. **First message:** "Hi {{firstName}}, it's Neil from VoiceOwl.", played after the
+3. **First message:** "Hi {{firstName}}, it's Tanya from VoiceOwl.", played after the
    prospect says hello, in {{language}}.
 4. **preferredDate** asks the model to work out a date from today's date and a day name
    (light date maths). If the tool can take the prospect's words ("next Friday") instead,
    that is safer.
-5. **The Google invite** should reach the prospect the moment bookDemo runs, since Neil asks
+5. **The Google invite** should reach the prospect the moment bookDemo runs, since Tanya asks
    them to accept it during the call (item 15).
-6. **Voice:** a male TTS voice, at a calm pace.
+6. **Voice:** a young female TTS voice, at a calm pace.
