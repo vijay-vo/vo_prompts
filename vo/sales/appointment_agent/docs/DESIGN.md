@@ -186,7 +186,7 @@ self-deprecating lines, idioms, naming a vendor of theirs we don't know.
 - **"Hello?" / silence:** repeat the last line, shorter.
 - **No free slots on the chosen day:** offer the nearest two.
 - **Slot taken between check and booking:** apologise, offer the next two.
-- **Tool fails:** "Our team will send you a couple of times on WhatsApp", close;
+- **Tool fails:** "Our team will send you the details on email and WhatsApp", close;
   analysis marks it.
 - **Prospect switches language:** switch with them for the rest of the call.
 - **Wants to reschedule mid-call:** rebook once.

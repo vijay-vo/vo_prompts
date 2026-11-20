@@ -93,7 +93,7 @@ Every instruction starts with `Success:` or `Failure:`. All of them:
 | One slot | `Success: One time is free: Wednesday, twelve noon. Offer it and ask if it works.` |
 | Nothing free | `Failure: No time is free for that request. Ask which other day or time in the next seven days suits them.` |
 | Weekend asked | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
-| Service or Google down | `Failure: The calendar could not be checked. Tell the prospect our team will send them times on WhatsApp.` |
+| Service or Google down | `Failure: The calendar could not be checked. Tell the prospect our team will send them the details on email and WhatsApp.` |
 
 ---
 
@@ -130,7 +130,7 @@ Result when booked:
 ```
 
 - Slot taken: `{"booked":false,"reason":"slot_taken","instruction":"Failure: That time was just taken. Check the calendar again and offer the new times."}`
-- Error: `{"booked":false,"reason":"error","instruction":"Failure: The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again."}`
+- Error: `{"booked":false,"reason":"error","instruction":"Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again."}`
 
 **Save two fields from this reply as call variables for the PCA:** `prospectTime` → `bookedTime`, and
 `meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.

@@ -76,9 +76,9 @@ export const SAY = {
   booked: (a) => `Success: The demo is booked for ${a}. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.`,
   none: 'Failure: No time is free for that request. Ask which other day or time in the next seven days suits them.',
   weekend: 'Failure: Demos are Monday to Friday only. Ask which weekday suits them.',
-  calendarDown: 'Failure: The calendar could not be checked. Tell the prospect our team will send them times on WhatsApp.',
+  calendarDown: 'Failure: The calendar could not be checked. Tell the prospect our team will send them the details on email and WhatsApp.',
   taken: 'Failure: That time was just taken. Check the calendar again and offer the new times.',
-  bookError: 'Failure: The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again.',
+  bookError: 'Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again.',
 };
 const DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 // preferredDay (today, tomorrow or a weekday name) becomes a date in the PROSPECT's timezone, so the
