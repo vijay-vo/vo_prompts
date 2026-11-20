@@ -1,6 +1,6 @@
 # Gmail for the after-call email
 
-Updated 2026-11-20. The after-call email goes out through **our service's `POST /email` route**, the same
+Updated 2026-11-20. The after-call email goes out through **our service's `POST /sendGmail` route**, the same
 service that books demos. The platform calls it with one HTTP tool, sending the PCA's `emailSubject` and
 `emailMessage`. The service swaps the refresh token in `.env` for a short-lived bearer token and sends the
 mail through the Gmail API. Google secrets stay in `.env` and never go into the platform.
@@ -47,7 +47,7 @@ An old token made before the Gmail scopes were added keeps working for Calendar 
 ## 4. Test the route
 
 ```bash
-curl -s -X POST https://<your-ngrok-host>/email \
+curl -s -X POST https://<your-ngrok-host>/sendGmail \
   -H "x-api-key: <API_KEY>" -H "content-type: application/json" \
   -d '{"to":"you@example.com","subject":"VoiceOwl test email","body":"Hi,\n\nThis is a test.\n\nTanya, VoiceOwl"}'
 ```
@@ -55,11 +55,11 @@ curl -s -X POST https://<your-ngrok-host>/email \
 Expected: `{"sent":true,"toolResponse":"Success: The email was sent.","messageId":"18c..."}` and the email in
 the inbox. The server log shows the subject and `"to":"***"`.
 
-## 5. The platform HTTP tool (sendEmail)
+## 5. The platform HTTP tool (sendGmail)
 
 | Part | Value |
 |---|---|
-| Method and URL | `POST https://<your-host>/email` |
+| Method and URL | `POST https://<your-host>/sendGmail` |
 | Headers | `x-api-key: <API_KEY>`, `content-type: application/json` |
 | Query parameters | none |
 | Body | `{"to":"{{email}}","subject":"{{emailSubject}}","body":"{{emailMessage}}"}` |

@@ -1,4 +1,4 @@
-// VoiceOwl demo-booking tools: POST /getAvailableSlots (getAvailableSlots), POST /bookAppointment (bookAppointment), POST /email (after-call email).
+// VoiceOwl demo-booking tools: POST /getAvailableSlots (getAvailableSlots), POST /bookAppointment (bookAppointment), POST /sendGmail (after-call email).
 import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';
@@ -40,10 +40,10 @@ export function makeApp(env, google = makeGoogle(env)) {
     try {
       if (req.method === 'GET' && req.url === '/health') return send(200, { ok: true });
       if (!env.API_KEY || req.headers['x-api-key'] !== env.API_KEY) return send(401, { error: 'unauthorized' });
-      if (req.method !== 'POST' || !['/getAvailableSlots', '/bookAppointment', '/email'].includes(req.url)) return send(404, { error: 'not found' });
+      if (req.method !== 'POST' || !['/getAvailableSlots', '/bookAppointment', '/sendGmail'].includes(req.url)) return send(404, { error: 'not found' });
       let raw = ''; for await (const c of req) { raw += c; if (raw.length > 1e5) return send(413, { error: 'too large' }); }
       const body = raw ? JSON.parse(raw) : {};
-      if (req.url === '/email') {
+      if (req.url === '/sendGmail') {
         console.log(new Date().toISOString(), req.url, JSON.stringify({ to: body.to ? '***' : undefined, subject: body.subject }));
         return send(200, await sendEmail({ google, body }));
       }
@@ -55,7 +55,7 @@ export function makeApp(env, google = makeGoogle(env)) {
       return send(r.status, r.out);
     } catch (e) {
       console.error('ERROR', e.message);
-      if (req.url === '/email') return send(200, MAIL.error);
+      if (req.url === '/sendGmail') return send(200, MAIL.error);
       return send(req.url === '/bookAppointment' ? 200 : 500, req.url === '/bookAppointment'
         ? { booked: false, reason: 'error', toolResponse: SAY.bookError }
         : { slots: [], toolResponse: SAY.calendarDown });
