@@ -2,6 +2,9 @@
 // Usage: node auth.mjs   (needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env, OAuth client type "Desktop app")
 import http from 'node:http';
 import fs from 'node:fs';
+import net from 'node:net';
+// Slow networks: Node 20 gives each address only 250 ms to connect, then fails with ETIMEDOUT. Give it 5 s.
+net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
 
 const env = {};
 for (const line of fs.readFileSync(new URL('./.env', import.meta.url), 'utf8').split('\n')) {
@@ -21,4 +24,5 @@ http.createServer(async (req, res) => {
   res.end(j.refresh_token ? 'Done. Go back to the terminal.' : 'Failed: ' + JSON.stringify(j));
   console.log(j.refresh_token ? `\nPut this line in .env:\n\nGOOGLE_REFRESH_TOKEN=${j.refresh_token}\n` : 'Failed: ' + JSON.stringify(j));
   process.exit(0);
-}).listen(PORT, '127.0.0.1');
+}).on('error', e => { console.error(e.code === 'EADDRINUSE' ? `Port ${PORT} is busy: an earlier "node auth.mjs" is still running. Stop it (Ctrl+C) and try again.` : e.message); process.exit(1); })
+  .listen(PORT, '127.0.0.1');

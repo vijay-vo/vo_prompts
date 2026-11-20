@@ -1,6 +1,9 @@
 // VoiceOwl demo-booking tools. Two routes: POST /slots (getAvailableSlots), POST /book (bookDemo).
 import http from 'node:http';
 import fs from 'node:fs';
+import net from 'node:net';
+// Slow networks: Node 20 gives each address only 250 ms to connect, then fails with ETIMEDOUT. Give it 5 s.
+net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
 import { makeGoogle } from './google.mjs';
 import { config, getSlots, bookSlot, SAY } from './slots.mjs';
 import { validTz } from './labels.mjs';
@@ -42,5 +45,7 @@ export function makeApp(env, google = makeGoogle(env)) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const env = loadEnv();
   const port = Number(env.PORT || 8787);
-  http.createServer(makeApp(env)).listen(port, () => console.log(`booking tools on :${port}${env.GOOGLE_MOCK === '1' ? ' (MOCK calendar)' : ''}`));
+  http.createServer(makeApp(env))
+    .on('error', e => { console.error(e.code === 'EADDRINUSE' ? `Port ${port} is busy: the service is already running (ss -ltnp 'sport = :${port}' shows the pid). Stop it first.` : e.message); process.exit(1); })
+    .listen(port, () => console.log(`booking tools on :${port}${env.GOOGLE_MOCK === '1' ? ' (MOCK calendar)' : ''}`));
 }
