@@ -43,3 +43,12 @@ assert.deepEqual(b2.j, { booked: false, reason: 'slot_taken' });
 const after = (await call('/slots', { timezone: 'Asia/Kolkata' })).j.slots;
 assert.ok(!after.some(s => s.slotId === a[0].slotId), 'booked slot no longer offered');
 console.log('\nall tests passed'); srv.close();
+
+// Fallback: no slot 2h after the first, so the next free slot is offered instead of only one.
+import { pickTwo, config } from './slots.mjs';
+const cfgT = config({});
+const near = pickTwo([{ startMs: 0, wd: 2 }, { startMs: 30 * 60000, wd: 2 }], cfgT);
+assert.equal(near.length, 2, 'fallback offers a second, closer slot');
+const far = pickTwo([{ startMs: 0, wd: 2 }, { startMs: 30 * 60000, wd: 2 }, { startMs: 3 * 3600000, wd: 2 }], cfgT);
+assert.equal(far[1].startMs, 3 * 3600000, 'the 2h gap is still preferred');
+console.log('fallback tests passed');

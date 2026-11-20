@@ -61,7 +61,8 @@ export function pickTwo(list, cfg) {
   const noFri = cfg.avoidFriday ? list.filter(c => c.wd !== 5) : list;
   const pool = noFri.length ? noFri : list;
   const a = pool[0];
-  const b = pool.find(c => c.startMs >= a.startMs + cfg.gapHours * 60 * MIN);
+  // No slot that far apart (e.g. the caller asked for one evening): offer the next free one instead.
+  const b = pool.find(c => c.startMs >= a.startMs + cfg.gapHours * 60 * MIN) || pool.find(c => c.startMs > a.startMs);
   return b ? [a, b] : [a];
 }
 export async function getSlots({ google, cfg, body, now = Date.now() }) {
