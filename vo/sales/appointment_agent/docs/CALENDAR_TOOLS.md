@@ -1,6 +1,6 @@
 # Appointment Agent: Google Calendar tools, research and build plan (2026-11-20)
 
-Goal: the two HTTP tools the prompt calls, getAvailableSlots and bookDemo, working end to end
+Goal: the two HTTP tools the prompt calls, getAvailableSlots and bookAppointment, working end to end
 on one Google Calendar, starting with the user's own calendar and later the sales team's.
 
 ## 1. What the Google docs say (read 2026-11-20)
@@ -68,7 +68,7 @@ timezone maths. The service has two routes:
 6. `slotId` is the start time signed with a secret (HMAC), so the model cannot invent one and
    the service can verify it on booking.
 
-**POST /book** (bookDemo)
+**POST /book** (bookAppointment)
 1. Input: `slotId`, `email`, `notes`, plus lead fields (section 4).
 2. Verify the slotId signature and that the time is still in the future.
 3. Re-check freeBusy for that exact quarter hour. If busy: `{booked:false, reason:"slot_taken"}`.
@@ -117,14 +117,14 @@ Superseded 2026-11-20 later the same day: parameter names and the full mapping a
 PLATFORM_SETUP.md (preferredDay, preferredTime, appointmentNotes, fname, lname; no excludeSlotIds).
 
 Settled 2026-11-20: the platform can add request parameters, so it injects `timezone`,
-`firstName`, `lastName` and `company` into bookDemo, and `timezone` into getAvailableSlots. No
+`firstName`, `lastName` and `company` into bookAppointment, and `timezone` into getAvailableSlots. No
 prompt change. Sales hours: IST 9 AM to 11 PM.
 
 
-- **Lead fields on booking.** The prompt's bookDemo passes only `slotId`, `email`, `notes`. The
+- **Lead fields on booking.** The prompt's bookAppointment passes only `slotId`, `email`, `notes`. The
   event title needs the name and company ("Demo: Priya Sharma, BrightLoans"). Either the platform
   adds `firstName`, `lastName` and `company` to the HTTP call from the call variables (best, no
-  prompt change), or I add them to the prompt's bookDemo parameters.
+  prompt change), or I add them to the prompt's bookAppointment parameters.
 - **Tool schema keys** must match the prompt key for key (TOOL_CALLING.md rule 7). I will write
   the schemas from the prompt, so use the keys exactly as written there.
 - **preferredDate.** The prompt asks the model to turn "Friday" into a date. Safer: the tool takes

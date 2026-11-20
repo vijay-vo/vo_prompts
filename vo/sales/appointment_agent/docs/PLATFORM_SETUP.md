@@ -97,7 +97,7 @@ Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
 ---
 
-## 4. Tool 2: bookDemo
+## 4. Tool 2: bookAppointment
 
 `POST https://<your-host>/book`, same headers. No preToolMessage.
 
@@ -164,8 +164,8 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
 
 | Detail | Most reliable source |
 |---|---|
-| Booked day and time, Meet link | bookDemo reply (`prospectTime`, `meetLink`), saved as call variables, then given to the PCA |
-| Booked or not, slot taken, error | bookDemo reply (`booked`, `reason`); the PCA's `callResult` agrees with it |
+| Booked day and time, Meet link | bookAppointment reply (`prospectTime`, `meetLink`), saved as call variables, then given to the PCA |
+| Booked or not, slot taken, error | bookAppointment reply (`booked`, `reason`); the PCA's `callResult` agrees with it |
 | Invite accepted | only what the prospect said on the call (PCA `inviteAccepted`). Google's own accept status needs a later check by `eventId` (not built) |
 | Problem, objections, interest, callback time, colleague, do-not-call | the conversation (PCA) |
 
@@ -218,8 +218,8 @@ asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "n
    Not Available where unknown; valid timezone and email.
 2. Agent variables: fname, company, industry, defaultLanguage, priorContext. Nothing else.
 3. getAvailableSlots: timezone added by the platform; preferredDay and preferredTime from the model.
-4. bookDemo: slotId and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
-5. Save bookDemo's `prospectTime` and `meetLink` as call variables `bookedTime` and `meetLink` for the PCA.
+4. bookAppointment: slotId and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
+5. Save bookAppointment's `prospectTime` and `meetLink` as call variables `bookedTime` and `meetLink` for the PCA.
 6. PCA inputs as in section 6; three message fields mapped; emailStatus and correctedEmail gone.
 7. sendEmail tool after the PCA: to, subject, body (section 5a). Token from `node auth.mjs` with the Gmail scopes.
 8. Server and ngrok running; test the URL from Postman first.

@@ -141,7 +141,7 @@ Inside: she reads the two spokenLabels by meaning, earliest first. She keeps bot
 conversation for the next steps. Then silence until Priya answers.
 Priya: "Three is better."
 
-### Step 9. The booking (tool call 2: bookDemo)
+### Step 9. The booking (tool call 2: bookAppointment)
 The model's turn is the call alone: no text, no preToolMessage. **Priya hears a short silence**
 while it runs (usually one to three seconds).
 The model passes:
@@ -307,7 +307,7 @@ Daniel: "Twelve noon works."
 1:30 AM IST, outside sales hours, so the service would offer the free slots nearest to 3 PM:
 12:15 PM and 12:00 noon.)
 
-### Step 11. Tool call 3: bookDemo
+### Step 11. Tool call 3: bookAppointment
 The model passes `slotId: htfwc-1218c0` and
 `appointmentNotes: weekend leads called too late`. The platform adds `email: daniel@harborlending.com`,
 `timezone: America/New_York`, `fname: Daniel`, `lname: Brooks`, `company: Harbor Lending`.
@@ -352,7 +352,7 @@ Reply:
 | The laptop is asleep or ngrok is off | the platform gets no reply | the tool fails: Tanya cannot offer times. This is why live calls need an always-on host |
 
 ## Points worth deciding
-1. **Silence during bookDemo.** That turn has no spoken line (TOOL_CALLING.md: an acting tool is
+1. **Silence during bookAppointment.** That turn has no spoken line (TOOL_CALLING.md: an acting tool is
    not announced), so the prospect hears one to three seconds of silence. Usually fine; if it
    feels long in tests, the fix belongs on the platform (a filler), not in the prompt.
 2. **US hours.** With IST 9 AM to 11 PM, New York gets 9:00 AM to 12:30 PM only, and Los Angeles

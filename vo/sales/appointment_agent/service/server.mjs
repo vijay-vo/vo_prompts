@@ -1,4 +1,4 @@
-// VoiceOwl demo-booking tools: POST /slots (getAvailableSlots), POST /book (bookDemo), POST /email (after-call email).
+// VoiceOwl demo-booking tools: POST /slots (getAvailableSlots), POST /book (bookAppointment), POST /email (after-call email).
 import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';

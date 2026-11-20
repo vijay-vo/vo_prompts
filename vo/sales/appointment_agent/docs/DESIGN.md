@@ -246,7 +246,7 @@ bookings no-show about 7%, 7+ days out about 25%), each with:
 Empty list = nothing free for that request. Every Result also carries an `toolResponse`: an English
 note to the model saying what happened and what to do next (added 2026-11-20).
 
-### bookDemo
+### bookAppointment
 
 Input: `slotId` and `appointmentNotes` from the model (one line: pain mentioned, colleague to invite);
 `fname`, `lname`, `company`, `email`, `timezone` added by the platform. Full mapping:
@@ -301,7 +301,7 @@ The platform then sends WhatsApp + email after the call.
 14. **Social proof** — which real customers or industries may the agent mention?
     ("We work with teams like yours in BFSI" must be true.)
 15. **Invite timing** — confirm that the Google invite really goes out when
-    bookDemo runs, so the prospect can accept it during the call.
+    bookAppointment runs, so the prospect can accept it during the call.
 16. **Tentative booking** — OK to book a penciled-in slot the prospect can decline?
 17. **Objection rounds** — Connor Murray's "two nos", with more tries while the
     prospect stays friendly (Pavlo)? Proposed in section 5.
@@ -350,7 +350,7 @@ The platform then sends WhatsApp + email after the call.
 27. **Email.** For form leads, confirm the email on file ("still the one at
     acme dot com?"). Read back only the slot and the email. After two failed tries,
     send a link on WhatsApp instead (relates to item 7). If the prospect changes the
-    slot, call getAvailableSlots again before bookDemo.
+    slot, call getAvailableSlots again before bookAppointment.
 28. **"Are you a robot?" (refines section 4).** One honest sentence, the reason for the
     call again, and an offer of a human callback. After a refusal, a post-call flag
     stops further AI calls (new post-call field `noAICalls` for item 11).
@@ -387,7 +387,7 @@ interested" is recovered only about 15% of the time, which supports stopping).
 
 Files: `default/default.txt` (the agent) and `pca/pca.txt` (post-call analysis, flat JSON,
 17 fields). Both are plain text, in the second person, with fixed English lines that Tanya
-speaks in the prospect's language. Tool turns follow TOOL_CALLING.md: bookDemo is the call
+speaks in the prospect's language. Tool turns follow TOOL_CALLING.md: bookAppointment is the call
 alone; getAvailableSlots carries a short wait line in preToolMessage only; the closing line
 goes in callhangup's preToolMessage only.
 
@@ -402,7 +402,7 @@ Choices made while writing (change any of them on request):
 - **No recording notice** in the prompt (item 10 still open).
 - **Callback:** Tanya says "I'll make a note to call you then"; the PCA captures
   callbackTime. Re-dialling is the platform's job (item 8).
-- **Email (changed 2026-11-20):** never asked or confirmed; bookDemo always uses {{email}}. If
+- **Email (changed 2026-11-20):** never asked or confirmed; bookAppointment always uses {{email}}. If
   the prospect wants another address, Tanya notes it and books as usual.
 - **After-call messages (2026-11-20):** the PCA writes whatsappMessage, emailSubject and
   emailMessage for three cases: booked, times to follow, information asked for. All "none"
@@ -411,7 +411,7 @@ Choices made while writing (change any of them on request):
 Check on the platform before the first test call:
 1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
    getAvailableSlots: preferredDay, preferredTime (timezone added by the platform); the Result
-   has slots (slotId, spokenLabel) and a toolResponse. bookDemo: slotId, appointmentNotes; the
+   has slots (slotId, spokenLabel) and a toolResponse. bookAppointment: slotId, appointmentNotes; the
    Result says booked with a spokenLabel, or not booked with slot_taken or error, and a
    toolResponse. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
@@ -421,6 +421,6 @@ Check on the platform before the first test call:
 3. **First message:** "Hi {{fname}}, it's Tanya from VoiceOwl.", played after the
    prospect says hello, in {{defaultLanguage}}.
 4. **Dates:** done 2026-11-20. The model passes a day as a word; the service resolves it.
-5. **The Google invite** should reach the prospect the moment bookDemo runs, since Tanya asks
+5. **The Google invite** should reach the prospect the moment bookAppointment runs, since Tanya asks
    them to accept it during the call (item 15).
 6. **Voice:** a young female TTS voice, at a calm pace.
