@@ -44,6 +44,28 @@ const b2 = await call('/book', { timezone: 'Asia/Kolkata', slotId: a[0].slotId, 
 assert.equal(b2.j.booked, false); assert.equal(b2.j.reason, 'slot_taken'); assert.match(b2.j.toolResponse, /^Failure: That time was just taken/);
 const after = (await call('/slots', { timezone: 'Asia/Kolkata' })).j.slots;
 assert.ok(!after.some(s => s.slotId === a[0].slotId), 'booked slot no longer offered');
+assert.equal((await call('/email', { to: 'a@b.com', subject: 'x', body: 'y' }, 'bad')).s, 401);
+const em = await call('/email', { to: 'priya@brightloans.com', subject: 'Your VoiceOwl demo is booked', body: 'Hi Priya,\n\nBooked.\n\nTanya, VoiceOwl' });
+assert.equal(em.s, 200); assert.equal(em.j.sent, true); assert.match(em.j.toolResponse, /^Success: The email was sent/); assert.ok(em.j.messageId);
+const mime = google.sent.at(-1).mime;
+assert.match(mime, /^To: priya@brightloans\.com\r\n/);
+assert.ok(Buffer.from(mime.split('\r\n\r\n')[1].replace(/\r\n/g, ''), 'base64').toString().includes('Hi Priya,\r\n\r\nBooked.'));
+const escaped = await call('/email', { to: 'priya@brightloans.com', subject: 'Héllo', body: 'Line one\\n\\nLine two' });
+assert.equal(escaped.j.sent, true);
+assert.ok(Buffer.from(google.sent.at(-1).mime.split('\r\n\r\n')[1].replace(/\r\n/g, ''), 'base64').toString().includes('Line one\r\n\r\nLine two'), 'literal \\n becomes a line break');
+const injected = await call('/email', { to: 'priya@brightloans.com', subject: 'Hi\r\nBcc: evil@x.com', body: 'y' });
+assert.equal(injected.j.sent, true); assert.ok(!/^Bcc:/m.test(google.sent.at(-1).mime), 'no header injection');
+const before = google.sent.length;
+assert.equal((await call('/email', { to: 'priya@brightloans.com', subject: 'none', body: 'none' })).j.reason, 'nothing_to_send');
+assert.equal((await call('/email', { to: 'Not Available', subject: 'x', body: 'y' })).j.reason, 'bad_address');
+assert.equal(google.sent.length, before, 'nothing sent for none or a bad address');
+const broken = http.createServer(makeApp(env, { ...google, sendMail: async () => { throw new Error('boom'); } }));
+await new Promise(r => broken.listen(0, r));
+const br = await fetch(`http://127.0.0.1:${broken.address().port}/email`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': 'k' }, body: JSON.stringify({ to: 'a@b.com', subject: 'x', body: 'y' }) });
+assert.equal(br.status, 200); assert.deepEqual(await br.json(), { sent: false, reason: 'error', toolResponse: 'Failure: The email could not be sent.' });
+broken.close();
+console.log('email tests passed');
+
 console.log('\nall tests passed'); srv.close();
 
 // Fallback: no slot 2h after the first, so the next free slot is offered instead of only one.

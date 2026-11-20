@@ -143,6 +143,16 @@ each person's own calendar timezone by itself. Nobody converts anything by hand.
 
 Platform tool, no parameters. The closing line goes in its preToolMessage (the prompt sets it).
 
+## 5a. After-call tool: sendEmail
+
+Not an agent tool: the platform calls it after the PCA. Full details in GMAIL_SETUP.md.
+
+`POST https://<your-host>/email`, same headers. Body:
+`{"to":"{{email}}","subject":"{{emailSubject}}","body":"{{emailMessage}}"}`
+
+Reply: `{"sent":true,"toolResponse":"Success: The email was sent.","messageId":"18c..."}`. When the PCA wrote
+"none" the service sends nothing and answers `"reason":"nothing_to_send"`, so the tool can run after every call.
+
 ---
 
 ## 6. After the call: PCA
@@ -187,8 +197,8 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
 | PCA field | Send to | Notes |
 |---|---|---|
 | whatsappMessage | WhatsApp, free text, to Contact | send only when not "none" |
-| emailSubject | email subject, to email | send only when not "none" |
-| emailMessage | email body, to email | `\n\n` is a paragraph break |
+| emailSubject | `subject` of the sendEmail tool (section 5a) | the service skips "none" |
+| emailMessage | `body` of the sendEmail tool (section 5a) | `\n\n` is a paragraph break |
 | callResult | CRM status | booked, bookingFailed, doNotCall, callbackLater, notInterested, gatekeeper, wrongNumber, voicemail, disconnected |
 | bookedSlot, inviteAccepted | CRM | |
 | painPoint, painDetail, mainObjection, interestLevel | CRM notes for sales | painPoint: slowResponse, tooManyCalls, language, other, none |
@@ -211,4 +221,5 @@ asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "n
 4. bookDemo: slotId and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
 5. Save bookDemo's `prospectTime` and `meetLink` as call variables `bookedTime` and `meetLink` for the PCA.
 6. PCA inputs as in section 6; three message fields mapped; emailStatus and correctedEmail gone.
-7. Server and ngrok running; test the URL from Postman first.
+7. sendEmail tool after the PCA: to, subject, body (section 5a). Token from `node auth.mjs` with the Gmail scopes.
+8. Server and ngrok running; test the URL from Postman first.

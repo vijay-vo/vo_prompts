@@ -1,14 +1,15 @@
 # VoiceOwl demo-booking tools (local service)
 
-Two HTTP routes that the platform's tools call. All date, time and timezone work is done here,
+Three HTTP routes that the platform's tools call. All date, time and timezone work is done here,
 never by the model. Plain Node 20, no packages to install.
 
 | Platform tool | Route | Body the platform sends |
 |---|---|---|
 | getAvailableSlots | `POST /slots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
 | bookDemo | `POST /book` | from the model: `slotId`, `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
+| sendEmail (after the PCA) | `POST /email` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. See docs/GMAIL_SETUP.md |
 
-Every reply carries an `toolResponse` for the model. A booked reply also has `prospectTime`, `salesTime`,
+Every reply carries a `toolResponse` for the model. A booked reply also has `prospectTime`, `salesTime`,
 `startUtc`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
 
 Every request needs the header `x-api-key: <API_KEY from .env>`.

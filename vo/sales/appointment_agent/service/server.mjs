@@ -1,11 +1,11 @@
-// VoiceOwl demo-booking tools. Two routes: POST /slots (getAvailableSlots), POST /book (bookDemo).
+// VoiceOwl demo-booking tools: POST /slots (getAvailableSlots), POST /book (bookDemo), POST /email (after-call email).
 import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';
 // Slow networks: Node 20 gives each address only 250 ms to connect, then fails with ETIMEDOUT. Give it 5 s.
 net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
 import { makeGoogle } from './google.mjs';
-import { config, getSlots, bookSlot, SAY } from './slots.mjs';
+import { config, getSlots, bookSlot, SAY, clean } from './slots.mjs';
 import { validTz } from './labels.mjs';
 
 function loadEnv() {
@@ -18,6 +18,21 @@ function loadEnv() {
   } catch {}
   return env;
 }
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const MAIL = {
+  sent: { sent: true, toolResponse: 'Success: The email was sent.' },
+  skipped: { sent: false, reason: 'nothing_to_send', toolResponse: 'Success: No email was needed for this call.' },
+  badTo: { sent: false, reason: 'bad_address', toolResponse: 'Failure: The email address is not valid.' },
+  error: { sent: false, reason: 'error', toolResponse: 'Failure: The email could not be sent.' },
+};
+async function sendEmail({ google, body }) {
+  const to = clean(body.to), subject = clean(body.subject), text = clean(body.body);
+  if (/^none$/i.test(subject) || /^none$/i.test(text) || !subject || !text) return MAIL.skipped;
+  if (!EMAIL_RE.test(to)) return MAIL.badTo;
+  const { messageId } = await google.sendMail({ to, subject, body: text });
+  return { ...MAIL.sent, messageId };
+}
+
 export function makeApp(env, google = makeGoogle(env)) {
   const cfg = config(env);
   return async (req, res) => {
@@ -25,9 +40,13 @@ export function makeApp(env, google = makeGoogle(env)) {
     try {
       if (req.method === 'GET' && req.url === '/health') return send(200, { ok: true });
       if (!env.API_KEY || req.headers['x-api-key'] !== env.API_KEY) return send(401, { error: 'unauthorized' });
-      if (req.method !== 'POST' || !['/slots', '/book'].includes(req.url)) return send(404, { error: 'not found' });
+      if (req.method !== 'POST' || !['/slots', '/book', '/email'].includes(req.url)) return send(404, { error: 'not found' });
       let raw = ''; for await (const c of req) { raw += c; if (raw.length > 1e5) return send(413, { error: 'too large' }); }
       const body = raw ? JSON.parse(raw) : {};
+      if (req.url === '/email') {
+        console.log(new Date().toISOString(), req.url, JSON.stringify({ to: body.to ? '***' : undefined, subject: body.subject }));
+        return send(200, await sendEmail({ google, body }));
+      }
       console.log(new Date().toISOString(), req.url, JSON.stringify({ ...body, email: body.email ? '***' : undefined }));
       if (!validTz(body.timezone)) return send(400, { error: 'timezone must be an IANA name such as Asia/Kolkata' });
       if (req.url === '/slots') return send(200, await getSlots({ google, cfg, body }));
@@ -36,6 +55,7 @@ export function makeApp(env, google = makeGoogle(env)) {
       return send(r.status, r.out);
     } catch (e) {
       console.error('ERROR', e.message);
+      if (req.url === '/email') return send(200, MAIL.error);
       return send(req.url === '/book' ? 200 : 500, req.url === '/book'
         ? { booked: false, reason: 'error', toolResponse: SAY.bookError }
         : { slots: [], toolResponse: SAY.calendarDown });
