@@ -409,8 +409,9 @@ Check on the platform before the first test call:
    slotId and spokenLabel. bookDemo: slotId, email, notes; the Result says booked with a
    spokenLabel, or not booked with slot taken or error. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
-2. **Variables injected:** firstName, company, role, industry, leadSource, leadContext,
-   leadSourceSpoken, email, priorContext, timezone, language, currentDate, currentWeekday.
+2. **Variables injected (2026-11-20):** firstName, company, industry, priorContext, timezone,
+   language, currentDate, currentWeekday. Not Available when unknown. The platform adds the
+   lead's email to the bookDemo request itself.
 3. **First message:** "Hi {{firstName}}, it's Tanya from VoiceOwl.", played after the
    prospect says hello, in {{language}}.
 4. **preferredDate** asks the model to work out a date from today's date and a day name

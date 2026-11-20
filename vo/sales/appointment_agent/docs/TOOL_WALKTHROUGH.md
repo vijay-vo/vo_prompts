@@ -37,9 +37,10 @@ violation, and the booking would fail anyway, because the service only accepts s
 ## Call 1: India
 
 Prospect: Priya Sharma, BrightLoans, Mumbai. Lead data from the platform: `firstName=Priya`,
-`lastName=Sharma`, `company=BrightLoans`, `leadSource=cold`, `role=sales head`,
-`industry=lending`, `email=priya@brightloans.com`,
-`timezone=Asia/Kolkata`, `language=English`, `currentDate=2026-11-23`, `currentWeekday=Monday`.
+`company=BrightLoans`, `industry=lending`, `timezone=Asia/Kolkata`, `language=English`,
+`currentDate=2026-11-23`, `currentWeekday=Monday`, `priorContext=First call to them. Sales head at a
+lending company, number from a purchased business list.` The platform also holds `lastName=Sharma` and
+`email=priya@brightloans.com` for the booking; the model never sees them.
 
 The call happens on **Monday 23 November 2026 at 12:45 PM IST** (07:15 UTC). Vijay's calendar
 already has a meeting from 1:00 to 2:00 PM IST today.
@@ -50,17 +51,18 @@ The platform plays the first message (no model involved): "Hi Priya, it's Tanya 
 
 ### Step 2. The opener (model turn, no tool)
 Priya: "Yes?"
-Tanya: "I know you weren't expecting my call. We work with sales heads at lending companies on
-one thing: reaching every new lead within a minute. Can I tell you why I called you
-specifically?"
-Inside: the prompt's EVERY OTHER LEAD line, because `leadSource=cold`, with [role] and [industry]
-filled from the lead data.
+Tanya: "I know you weren't expecting my call. We work with lending companies like BrightLoans on
+one thing: every customer call answered and handled well, in the customer's own language. Can I
+tell you why I called you specifically?"
+Inside: the prompt's EVERY OTHER FIRST CALL line, because `priorContext` shows no earlier
+conversation and no website or event visit, with [industry] and [company] filled from the lead data.
 
 ### Step 3. Value line and the three-problem question (no tool)
 Priya: "Go on."
-Tanya: "We build voice agents that call every new lead within a minute, in their own language,
-and book the meeting. Most teams tell us one of three things: leads get called too late, too few
-get called, or only in one language. Which is closest to you?"
+Tanya: "We build voice AI agents that talk to your customers like a person, in their own
+language, and handle thousands of calls at once, connected to your own systems. Most teams tell us
+one of three things: calls wait too long, there are more calls than the team can handle, or
+customers want their own language. Which is closest to you?"
 
 ### Step 4. Her problem (no tool)
 Priya: "Too late. Weekend leads wait until Monday."
@@ -68,8 +70,8 @@ Tanya: "Tell me more about that."
 Priya: "By Monday half of them have gone elsewhere."
 
 ### Step 5. The ask (no tool)
-Tanya: "That's exactly what we fix. Would it make sense to spend fifteen minutes with Hussain,
-our sales head, and hear it working on leads like yours, in your customers' language?"
+Tanya: "That's exactly what we build for. Would it make sense to spend fifteen minutes with
+Hussain, our sales head, and see it working on weekend leads that wait until Monday?"
 Then silence until Priya answers.
 Priya: "Sure, why not."
 
@@ -147,9 +149,9 @@ The model's turn is the call alone: no text, no preToolMessage. **Priya hears a 
 while it runs (usually one to three seconds).
 The model passes:
 ```json
-{"slotId":"MTc5NTQyNjIwMDAwMC5mZjRkZWNiYjRjOTA2OWM2","email":"priya@brightloans.com","notes":"weekend leads wait until Monday, half are lost"}
+{"slotId":"MTc5NTQyNjIwMDAwMC5mZjRkZWNiYjRjOTA2OWM2","notes":"weekend leads wait until Monday, half are lost"}
 ```
-The platform adds the lead fields from the call data and sends:
+The platform adds the lead fields from the call data, including the email, and sends:
 ```
 POST https://tanya-tools.ngrok-free.app/book
 x-api-key: <API_KEY>
@@ -212,7 +214,7 @@ call.
 - The platform sends its WhatsApp and email confirmation.
 - The PCA reads the transcript and returns, among other fields: `callResult: booked`,
   `bookedSlot: "today, three in the afternoon, prospect time"`, `inviteAccepted: yes`,
-  `painPoint: tooLate`, and the WhatsApp and email texts (`whatsappMessage`, `emailSubject`,
+  `painPoint: slowResponse`, and the WhatsApp and email texts (`whatsappMessage`, `emailSubject`,
   `emailMessage`) that the platform sends.
 - On Vijay's calendar: "VoiceOwl demo: Priya Sharma, BrightLoans", Monday 3:00 to 3:15 PM, with
   the Meet link.
@@ -222,9 +224,9 @@ call.
 ## Call 2: US (New York)
 
 Prospect: Daniel Brooks, Harbor Lending, New York. Lead data: `firstName=Daniel`,
-`lastName=Brooks`, `company=Harbor Lending`, `leadSource=cold`, `email=daniel@harborlending.com`,
-**`timezone=America/New_York`**, `language=English`,
-`currentDate=2026-11-23`, `currentWeekday=Monday`.
+`company=Harbor Lending`, `industry=lending`, **`timezone=America/New_York`**, `language=English`,
+`currentDate=2026-11-23`, `currentWeekday=Monday`, `priorContext=First call to them.` The platform
+holds `lastName=Brooks` and `email=daniel@harborlending.com` for the booking.
 
 The call happens on **Monday 23 November 2026 at 8:10 PM IST**, which is **9:40 AM in New York**
 (14:40 UTC). New York is on winter time (UTC−5), 10 hours 30 minutes behind IST. Vijay's
@@ -306,8 +308,8 @@ Daniel: "Twelve noon works."
 1:30 AM IST. Tanya would say that day is full, and ask for another day.)
 
 ### Step 11. Tool call 3: bookDemo
-The model passes `slotId: MTc5NTYyNjAwMDAwMC4wNGRmNDk1ZTRjMjJiMWI4`,
-`email: daniel@harborlending.com`, `notes: weekend leads called too late`. The platform adds
+The model passes `slotId: MTc5NTYyNjAwMDAwMC4wNGRmNDk1ZTRjMjJiMWI4` and
+`notes: weekend leads called too late`. The platform adds `email: daniel@harborlending.com`,
 `timezone: America/New_York`, `firstName: Daniel`, `lastName: Brooks`, `company: Harbor Lending`.
 
 Inside /book, the same as India:
