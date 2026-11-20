@@ -23,7 +23,7 @@ never guessed. The prompt allows her to speak a time only from a getAvailableSlo
 book only a slotId from that Result. So the order is always:
 
 1. The prospect agrees to the fifteen minutes.
-2. Tanya calls getAvailableSlots, and the prospect hears "Let me check Hussain's calendar."
+2. Tanya calls getAvailableSlots, and the prospect hears "Let me check the calendar."
 3. The service asks Google which times are busy, works out which are free and fit both
    timezones, and returns two of them as ready-to-say English labels.
 4. Only then does Tanya say "I have today at two in the afternoon or today at three in the
@@ -78,7 +78,7 @@ The model's turn has no text. It invokes getAvailableSlots with:
 ```json
 { "timezone": "Asia/Kolkata" }
 ```
-and `preToolMessage: "Let me check Hussain's calendar."`
+and `preToolMessage: "Let me check the calendar."`
 - No partOfDay, no preferredDate and no excludeSlotIds, because Priya named no preference and
   nothing has been offered yet.
 - **The platform** speaks the preToolMessage to Priya, then sends the HTTP request (it also adds
@@ -195,12 +195,12 @@ POST https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceD
 ```
 
 ### Step 11. Confirmation and show-up (no tool)
-Tanya: "Done. Today at three in the afternoon, with Hussain, our sales head. The invite is in your
+Tanya: "Done. Today at three in the afternoon, with Hussain. The invite is in your
 inbox now. Could you accept it while we're on the call, so it's in your calendar?"
 Priya: "Okay... yes, accepted."
 Inside Google: Priya's click turns her status on the event from "needs action" to "accepted".
 Vijay sees that on the event in his calendar. Our service is not involved.
-Tanya: "Perfect. You'll also get the details on WhatsApp and email. Hussain will see you then."
+Tanya: "Perfect. You'll also get the details on WhatsApp and email."
 Priya: "Great, thanks."
 
 ### Step 12. The close (tool call 3: callhangup)
@@ -234,7 +234,7 @@ Steps 1 to 5 are the same conversation as India, with Daniel's name and company.
 to the fifteen minutes.
 
 ### Step 6. Tool call 1: getAvailableSlots
-The model passes `{"timezone":"America/New_York"}` with preToolMessage "Let me check Hussain's
+The model passes `{"timezone":"America/New_York"}` with preToolMessage "Let me check the
 calendar." The platform POSTs it to `/slots`, as in India.
 
 ### Step 7. Inside /slots: where two timezones really matter
@@ -280,7 +280,7 @@ is the one bit of date work the model does (CALENDAR_TOOLS.md lists it as a risk
 {"timezone":"America/New_York","partOfDay":"afternoon","preferredDate":"2026-11-25",
  "excludeSlotIds":["MTc5NTQ0NjAwMDAwMC5kOThiNGRhMjg3ZmFhYWNi","MTc5NTQ0OTYwMDAwMC41M2M5YjFmNWNkMGE5ZWQx"]}
 ```
-with preToolMessage "Let me check Hussain's calendar."
+with preToolMessage "Let me check the calendar."
 
 Inside /slots:
 - The two excluded slotIds are unpacked and their times skipped.
@@ -326,7 +326,7 @@ Reply:
 ```
 
 ### Step 12. Confirmation, close, after the call
-- Tanya: "Done. Wednesday at twelve noon, with Hussain, our sales head. The invite is in your inbox
+- Tanya: "Done. Wednesday at twelve noon, with Hussain. The invite is in your inbox
   now. Could you accept it while we're on the call, so it's in your calendar?"
 - Then the same show-up line, the callhangup close and the post-call steps as India.
 - The PCA gives `bookedSlot: "Wednesday, twelve noon, prospect time"`.
