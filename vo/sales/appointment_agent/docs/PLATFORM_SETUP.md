@@ -10,12 +10,12 @@ service/server.mjs and service/slots.mjs (booking service). Field names below mu
 | Column | Required | Example | Used for |
 |---|---|---|---|
 | Contact | yes | +919876543210 | the number to dial |
-| fname | yes | Priya | agent `{{fname}}`; /book; PCA |
-| lname | no | Sharma | /book (name on the calendar invite) |
-| company | no | BrightLoans Financial Services Pvt Ltd | agent `{{company}}`; /book; PCA. Tanya says only the short name |
+| fname | yes | Priya | agent `{{fname}}`; /bookAppointment; PCA |
+| lname | no | Sharma | /bookAppointment (name on the calendar invite) |
+| company | no | BrightLoans Financial Services Pvt Ltd | agent `{{company}}`; /bookAppointment; PCA. Tanya says only the short name |
 | industry | no | lending | agent `{{industry}}` |
-| email | yes | priya@brightloans.com | /book (the invite goes here); PCA. Never read out on the call |
-| timezone | yes | Asia/Kolkata | added by the platform to /slots and /book |
+| email | yes | priya@brightloans.com | /bookAppointment (the invite goes here); PCA. Never read out on the call |
+| timezone | yes | Asia/Kolkata | added by the platform to /getAvailableSlots and /bookAppointment |
 | defaultLanguage | yes | English | agent `{{defaultLanguage}}`: the language the call opens in |
 | priorContext | yes | First call to them. Sales head at a lending company. | agent `{{priorContext}}`; PCA |
 
@@ -60,7 +60,7 @@ Greeting (first message): `Hi {{fname}}, it's Tanya from VoiceOwl.`, played afte
 
 ## 3. Tool 1: getAvailableSlots
 
-`POST https://<your-host>/slots`, headers `x-api-key: <API_KEY>` and `content-type: application/json`.
+`POST https://<your-host>/getAvailableSlots`, headers `x-api-key: <API_KEY>` and `content-type: application/json`.
 
 | Body key | Set by | Value |
 |---|---|---|
@@ -99,7 +99,7 @@ Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
 ## 4. Tool 2: bookAppointment
 
-`POST https://<your-host>/book`, same headers. No preToolMessage.
+`POST https://<your-host>/bookAppointment`, same headers. No preToolMessage.
 
 | Body key | Set by | Value | Required |
 |---|---|---|---|

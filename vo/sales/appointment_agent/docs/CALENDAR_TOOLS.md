@@ -55,7 +55,7 @@ one hour), compute free slots, convert timezones, or build a spoken label. Those
 lines of our own code between the two. DESIGN.md already says the tool does all date, time and
 timezone maths. The service has two routes:
 
-**POST /slots** (getAvailableSlots)
+**POST /getAvailableSlots** (getAvailableSlots)
 1. Input: `timezone`, optional `partOfDay`, `preferredDate`, `excludeSlotIds`.
 2. Read busy times with one freeBusy call for now to now + 7 days.
 3. Cut candidate 15-minute slots on a fixed grid (every quarter hour: :00, :15, :30, :45) inside
@@ -68,7 +68,7 @@ timezone maths. The service has two routes:
 6. `slotId` is the start time signed with a secret (HMAC), so the model cannot invent one and
    the service can verify it on booking.
 
-**POST /book** (bookAppointment)
+**POST /bookAppointment** (bookAppointment)
 1. Input: `slotId`, `email`, `notes`, plus lead fields (section 4).
 2. Verify the slotId signature and that the time is still in the future.
 3. Re-check freeBusy for that exact quarter hour. If busy: `{booked:false, reason:"slot_taken"}`.

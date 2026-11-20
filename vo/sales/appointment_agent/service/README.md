@@ -5,8 +5,8 @@ never by the model. Plain Node 20, no packages to install.
 
 | Platform tool | Route | Body the platform sends |
 |---|---|---|
-| getAvailableSlots | `POST /slots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
-| bookAppointment | `POST /book` | from the model: `slotId`, `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
+| getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
+| bookAppointment | `POST /bookAppointment` | from the model: `slotId`, `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
 | sendEmail (after the PCA) | `POST /email` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. See docs/GMAIL_SETUP.md |
 
 Every reply carries a `toolResponse` for the model. A booked reply also has `prospectTime`, `salesTime`,
@@ -15,8 +15,8 @@ Every reply carries a `toolResponse` for the model. A booked reply also has `pro
 Every request needs the header `x-api-key: <API_KEY from .env>`.
 
 Responses:
-- `/slots` → `{"slots":[{"slotId":"...","startUtc":"...","spokenLabel":"today, four in the evening"}, ...]}` (0 to 2 slots)
-- `/book` → `{"booked":true,"spokenLabel":"...","meetLink":"https://meet.google.com/...","eventId":"..."}`
+- `/getAvailableSlots` → `{"slots":[{"slotId":"...","startUtc":"...","spokenLabel":"today, four in the evening"}, ...]}` (0 to 2 slots)
+- `/bookAppointment` → `{"booked":true,"spokenLabel":"...","meetLink":"https://meet.google.com/...","eventId":"..."}`
   or `{"booked":false,"reason":"slot_taken"}` or `{"booked":false,"reason":"error"}`
 
 ## Rules built in
@@ -47,7 +47,7 @@ Responses:
 ## Test
 - Without Google: `node test.mjs` (in-memory calendar).
 - With Google:
-  `curl -s -X POST localhost:8787/slots -H 'x-api-key: KEY' -H 'content-type: application/json' -d '{"timezone":"Asia/Kolkata"}'`
+  `curl -s -X POST localhost:8787/getAvailableSlots -H 'x-api-key: KEY' -H 'content-type: application/json' -d '{"timezone":"Asia/Kolkata"}'`
   then book one of the returned slotIds with your own email and check the invite and the Meet link.
 
 ## Running locally: limits

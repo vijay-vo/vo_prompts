@@ -101,7 +101,7 @@ export function parseTime(t) {
   if (m && +m[1] < 24 && +m[2] < 60) return { minute: +m[1] * 60 + +m[2] };
   return {};
 }
-export async function getSlots({ google, cfg, body, now = Date.now() }) {
+export async function getAvailableSlots({ google, cfg, body, now = Date.now() }) {
   const tz = body.timezone;
   const day = clean(body.preferredDay).toLowerCase();
   const date = resolveDay(day, tz, now, cfg);
@@ -121,7 +121,7 @@ export async function getSlots({ google, cfg, body, now = Date.now() }) {
     : day === 'saturday' || day === 'sunday' ? SAY.weekend : SAY.none;
   return { slots, toolResponse };
 }
-export async function bookSlot({ google, cfg, body, now = Date.now() }) {
+export async function bookAppointment({ google, cfg, body, now = Date.now() }) {
   const fail = { booked: false, reason: 'error', toolResponse: SAY.bookError };
   const startMs = verifySlot(body.slotId, cfg.secret);
   if (startMs === null || startMs < now) return { status: 400, out: fail };

@@ -82,15 +82,15 @@ The model's turn has no text. It invokes getAvailableSlots with no parameters, a
 - **The platform** speaks the preToolMessage to Priya, then sends the HTTP request, adding
   `timezone` from the contact:
 ```
-POST https://tanya-tools.ngrok-free.app/slots
+POST https://tanya-tools.ngrok-free.app/getAvailableSlots
 x-api-key: <API_KEY>
 content-type: application/json
 
 {"timezone":"Asia/Kolkata"}
 ```
-- **ngrok** forwards it to `http://localhost:8787/slots` on the laptop.
+- **ngrok** forwards it to `http://localhost:8787/getAvailableSlots` on the laptop.
 
-### Step 7. Inside the service: /slots
+### Step 7. Inside the service: /getAvailableSlots
 1. **Key check:** the `x-api-key` header must equal `API_KEY` in `.env`, otherwise 401.
 2. **Timezone check:** `Asia/Kolkata` must be a real IANA timezone, otherwise 400.
 3. **Google login:** if the cached access token is older than about 58 minutes, the service
@@ -150,7 +150,7 @@ The model passes:
 ```
 The platform adds the lead fields from the call data, including the email, and sends:
 ```
-POST https://tanya-tools.ngrok-free.app/book
+POST https://tanya-tools.ngrok-free.app/bookAppointment
 x-api-key: <API_KEY>
 
 {"slotId":"htdbu-31f5ca","email":"priya@brightloans.com",
@@ -158,7 +158,7 @@ x-api-key: <API_KEY>
  "timezone":"Asia/Kolkata","fname":"Priya","lname":"Sharma","company":"BrightLoans"}
 ```
 
-### Step 10. Inside the service: /book
+### Step 10. Inside the service: /bookAppointment
 1. Key check and timezone check, as before. Email format check (something@something.something).
 2. **Unpack the slotId:** read the start minute from `htdbu`, sign it again with `SLOT_SECRET`,
    and compare with `31f5ca`. It matches, so the start is 09:30 UTC = 3:00 PM IST. It is in
@@ -237,9 +237,9 @@ to the fifteen minutes.
 
 ### Step 6. Tool call 1: getAvailableSlots
 The model passes no parameters, with preToolMessage "Let me check the calendar." The platform
-adds `{"timezone":"America/New_York"}` and POSTs it to `/slots`, as in India.
+adds `{"timezone":"America/New_York"}` and POSTs it to `/getAvailableSlots`, as in India.
 
-### Step 7. Inside /slots: where two timezones really matter
+### Step 7. Inside /getAvailableSlots: where two timezones really matter
 1. Key, timezone and Google login, as before.
 2. freeBusy from 14:40 UTC for 8 days: nothing busy.
 3. First possible start: 14:40 + 10 minutes = 14:50 UTC, rounded up to **15:00 UTC**.
@@ -282,7 +282,7 @@ The model passes the day as a word, never a date:
 ```
 with preToolMessage "Let me check the calendar." The platform adds the timezone.
 
-Inside /slots:
+Inside /getAvailableSlots:
 - "wednesday" becomes the next Wednesday **in New York time**: 2026-11-25. The service works out
   the date, so the model never does.
 - Only candidates on that date are kept.
@@ -312,7 +312,7 @@ The model passes `slotId: htfwc-1218c0` and
 `appointmentNotes: weekend leads called too late`. The platform adds `email: daniel@harborlending.com`,
 `timezone: America/New_York`, `fname: Daniel`, `lname: Brooks`, `company: Harbor Lending`.
 
-Inside /book, the same as India:
+Inside /bookAppointment, the same as India:
 - The slotId unpacks to 17:00 UTC on 25 November.
 - A re-check shows it is free.
 - The event is created with start `2026-11-25T17:00:00Z` and end `17:15Z`, with Daniel as the guest
@@ -346,7 +346,7 @@ Reply:
 | Google or the laptop fails during booking | `{"booked":false,"reason":"error"}` (or no answer) | "Something went wrong with the booking on my side. Our team will send you the details on email and WhatsApp." Never a third booking try |
 | Nothing free for the day asked | `{"slots":[],"toolResponse":"No time is free for that request. ..."}` | "That day's full. I can book any weekday in the next seven days; which other day suits you?" |
 | A weekend day asked | `{"slots":[],"toolResponse":"Demos are Monday to Friday only. ..."}` | asks which weekday suits them |
-| Google or the service fails during /slots | `{"slots":[],"toolResponse":"The calendar could not be checked. ..."}` | "Our team will send you the details on email and WhatsApp." then the close |
+| Google or the service fails during /getAvailableSlots | `{"slots":[],"toolResponse":"The calendar could not be checked. ..."}` | "Our team will send you the details on email and WhatsApp." then the close |
 | The platform sends the same booking twice | the second call finds the event it made and answers `booked:true` again | nothing different: one event, one invite |
 | The model sends a made-up slotId | signature check fails → `booked:false, reason:error` | the error line, no fake booking |
 | The laptop is asleep or ngrok is off | the platform gets no reply | the tool fails: Tanya cannot offer times. This is why live calls need an always-on host |
