@@ -82,14 +82,18 @@ Result (what the model reads):
 {"slots":[
  {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
  {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
- "instruction":"Two times are free: today, two in the afternoon, or today, three in the afternoon, the prospect's time. Offer both and ask which works better."}
+ "instruction":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
 ```
 
-Other instructions the model can get:
-- One slot: `One time is free: Wednesday, twelve noon, the prospect's time. Offer it and ask if it works.`
-- None: `No time is free for that request. Ask which other day or time in the next seven days suits them.`
-- Weekend asked: `Demos are Monday to Friday only. Ask which weekday in the next seven days suits them.`
-- Service or Google down: `The calendar could not be checked. Tell the prospect our team will send them times on WhatsApp.`
+Every instruction starts with `Success:` or `Failure:`. All of them:
+
+| Case | instruction |
+|---|---|
+| Two slots | `Success: Two times are free: today, four in the evening, or today, five in the evening. Offer both and ask which works better.` |
+| One slot | `Success: One time is free: Wednesday, twelve noon. Offer it and ask if it works.` |
+| Nothing free | `Failure: No time is free for that request. Ask which other day or time in the next seven days suits them.` |
+| Weekend asked | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
+| Service or Google down | `Failure: The calendar could not be checked. Tell the prospect our team will send them times on WhatsApp.` |
 
 ---
 
@@ -100,7 +104,7 @@ Other instructions the model can get:
 | Body key | Set by | Value | Required |
 |---|---|---|---|
 | slotId | model | the chosen slot's slotId, e.g. htdbu-31f5ca | yes |
-| bookingNotes | model | one English line: their problem, any colleague, any email request, or "none" | no |
+| appointmentNotes | model | one English line: their problem, any colleague, any email request, or "none" | no |
 | email | platform, from the contact | priya@brightloans.com | yes |
 | timezone | platform, from the contact | Asia/Kolkata | yes |
 | fname | platform, from the contact | Priya | no |
@@ -110,7 +114,7 @@ Other instructions the model can get:
 Example the service receives:
 
 ```json
-{"slotId":"htdbu-31f5ca","bookingNotes":"weekend leads wait until Monday, half are lost",
+{"slotId":"htdbu-31f5ca","appointmentNotes":"weekend leads wait until Monday, half are lost",
  "email":"priya@brightloans.com","timezone":"Asia/Kolkata","fname":"Priya","lname":"Sharma",
  "company":"BrightLoans Financial Services Pvt Ltd"}
 ```
@@ -119,14 +123,14 @@ Result when booked:
 
 ```json
 {"booked":true,"spokenLabel":"today, three in the afternoon",
- "instruction":"The demo is booked for today, three in the afternoon, the prospect's time, and the invite is in their email now. Confirm it and ask them to accept the invite while you are on the call.",
+ "instruction":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"bc64c442..."}
 ```
 
-- Slot taken: `{"booked":false,"reason":"slot_taken","instruction":"That time was just taken. Check the calendar again, then offer the new times."}`
-- Error: `{"booked":false,"reason":"error","instruction":"The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again."}`
+- Slot taken: `{"booked":false,"reason":"slot_taken","instruction":"Failure: That time was just taken. Check the calendar again and offer the new times."}`
+- Error: `{"booked":false,"reason":"error","instruction":"Failure: The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again."}`
 
 **Save two fields from this reply as call variables for the PCA:** `prospectTime` → `bookedTime`, and
 `meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
@@ -206,7 +210,7 @@ asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "n
    Not Available where unknown; valid timezone and email.
 2. Agent variables: fname, company, industry, defaultLanguage, priorContext. Nothing else.
 3. getAvailableSlots: timezone added by the platform; preferredDay and preferredTime from the model.
-4. bookDemo: slotId and bookingNotes from the model; email, timezone, fname, lname, company added by the platform.
+4. bookDemo: slotId and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
 5. Save bookDemo's `prospectTime` and `meetLink` as call variables `bookedTime` and `meetLink` for the PCA.
 6. PCA inputs as in section 6; three message fields mapped; emailStatus and correctedEmail gone.
 7. Server and ngrok running; test the URL from Postman first.

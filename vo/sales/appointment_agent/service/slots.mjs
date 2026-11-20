@@ -69,6 +69,17 @@ export function pickTwo(list, cfg) {
   b ||= pool.find(c => c.startMs > a.startMs);
   return b ? [a, b] : [a];
 }
+// The instruction every reply carries for the model: "Success:" or "Failure:", then what to do.
+export const SAY = {
+  two: (a, b) => `Success: Two times are free: ${a}, or ${b}. Offer both and ask which works better.`,
+  one: (a) => `Success: One time is free: ${a}. Offer it and ask if it works.`,
+  booked: (a) => `Success: The demo is booked for ${a}. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.`,
+  none: 'Failure: No time is free for that request. Ask which other day or time in the next seven days suits them.',
+  weekend: 'Failure: Demos are Monday to Friday only. Ask which weekday suits them.',
+  calendarDown: 'Failure: The calendar could not be checked. Tell the prospect our team will send them times on WhatsApp.',
+  taken: 'Failure: That time was just taken. Check the calendar again and offer the new times.',
+  bookError: 'Failure: The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again.',
+};
 const DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 // preferredDay (today, tomorrow or a weekday name) becomes a date in the PROSPECT's timezone, so the
 // model never works out a date. A weekday name means its next date after today, within the window.
@@ -105,21 +116,19 @@ export async function getSlots({ google, cfg, body, now = Date.now() }) {
     picked = [...list].sort((a, b) => dist(a) - dist(b) || a.startMs - b.startMs).slice(0, 2);
   } else picked = pickTwo(list, cfg);
   const slots = picked.map(c => ({ slotId: signSlot(c.startMs, cfg.secret), startUtc: new Date(c.startMs).toISOString(), spokenLabel: spokenLabel(c.startMs, tz, now) }));
-  let instruction;
-  if (slots.length === 2) instruction = `Two times are free: ${slots[0].spokenLabel}, or ${slots[1].spokenLabel}, the prospect's time. Offer both and ask which works better.`;
-  else if (slots.length === 1) instruction = `One time is free: ${slots[0].spokenLabel}, the prospect's time. Offer it and ask if it works.`;
-  else if (day === 'saturday' || day === 'sunday') instruction = 'Demos are Monday to Friday only. Ask which weekday in the next seven days suits them.';
-  else instruction = 'No time is free for that request. Ask which other day or time in the next seven days suits them.';
+  const instruction = slots.length === 2 ? SAY.two(slots[0].spokenLabel, slots[1].spokenLabel)
+    : slots.length === 1 ? SAY.one(slots[0].spokenLabel)
+    : day === 'saturday' || day === 'sunday' ? SAY.weekend : SAY.none;
   return { slots, instruction };
 }
 export async function bookSlot({ google, cfg, body, now = Date.now() }) {
-  const fail = { booked: false, reason: 'error', instruction: 'The booking did not go through. Tell the prospect our team will send them times on WhatsApp. Do not try to book again.' };
+  const fail = { booked: false, reason: 'error', instruction: SAY.bookError };
   const startMs = verifySlot(body.slotId, cfg.secret);
   if (startMs === null || startMs < now) return { status: 400, out: fail };
   const endMs = startMs + cfg.slotMin * MIN;
   const label = spokenLabel(startMs, body.timezone, now);
   const ok = (ev) => ({ booked: true, spokenLabel: label,
-    instruction: `The demo is booked for ${label}, the prospect's time, and the invite is in their email now. Confirm it and ask them to accept the invite while you are on the call.`,
+    instruction: SAY.booked(label),
     prospectTime: `${writtenTime(startMs, body.timezone)} (${body.timezone})`,
     salesTime: `${writtenTime(startMs, cfg.salesTz)} (${cfg.salesTz})`,
     startUtc: new Date(startMs).toISOString(), meetLink: ev.hangoutLink || '', eventId: ev.id });
@@ -130,9 +139,9 @@ export async function bookSlot({ google, cfg, body, now = Date.now() }) {
     // A retry of a booking that already went through finds its own event: answer booked again.
     const own = await google.get(id);
     if (own && own.status !== 'cancelled') return { status: 200, out: ok(own) };
-    return { status: 200, out: { booked: false, reason: 'slot_taken', instruction: 'That time was just taken. Check the calendar again, then offer the new times.' } };
+    return { status: 200, out: { booked: false, reason: 'slot_taken', instruction: SAY.taken } };
   }
-  const company = clean(body.company), notes = clean(body.bookingNotes);
+  const company = clean(body.company), notes = clean(body.appointmentNotes);
   const name = [clean(body.fname), clean(body.lname)].filter(Boolean).join(' ');
   const who = name || String(body.email).split('@')[0];
   const res = await google.insert({

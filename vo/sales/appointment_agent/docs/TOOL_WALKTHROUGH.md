@@ -131,7 +131,7 @@ The service replies (this is what the model receives as the Result):
 {"slots":[
  {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
  {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
- "instruction":"Two times are free: today, two in the afternoon, or today, three in the afternoon, the prospect's time. Offer both and ask which works better."}
+ "instruction":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
 ```
 
 ### Step 8. Tanya offers the two times (no tool)
@@ -146,7 +146,7 @@ The model's turn is the call alone: no text, no preToolMessage. **Priya hears a 
 while it runs (usually one to three seconds).
 The model passes:
 ```json
-{"slotId":"htdbu-31f5ca","bookingNotes":"weekend leads wait until Monday, half are lost"}
+{"slotId":"htdbu-31f5ca","appointmentNotes":"weekend leads wait until Monday, half are lost"}
 ```
 The platform adds the lead fields from the call data, including the email, and sends:
 ```
@@ -154,7 +154,7 @@ POST https://tanya-tools.ngrok-free.app/book
 x-api-key: <API_KEY>
 
 {"slotId":"htdbu-31f5ca","email":"priya@brightloans.com",
- "bookingNotes":"weekend leads wait until Monday, half are lost",
+ "appointmentNotes":"weekend leads wait until Monday, half are lost",
  "timezone":"Asia/Kolkata","fname":"Priya","lname":"Sharma","company":"BrightLoans"}
 ```
 
@@ -191,23 +191,19 @@ POST https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceD
 7. Reply to the platform:
 ```json
 {"booked":true,"spokenLabel":"today, three in the afternoon",
- "instruction":"The demo is booked for today, three in the afternoon, the prospect's time, and the invite is in their email now. Confirm it and ask them to accept the invite while you are on the call.",
+ "instruction":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)","salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"<40-character id>"}
 ```
 The platform saves `prospectTime` and `meetLink` as the call variables `bookedTime` and `meetLink`
 for the PCA, which puts them in the WhatsApp and email messages.
-```
-```
 
 ### Step 11. Confirmation and show-up (no tool)
-Tanya: "Done. Today at three in the afternoon, with Hussain. The invite is in your
-inbox now. Could you accept it while we're on the call, so it's in your calendar?"
-Priya: "Okay... yes, accepted."
-Inside Google: Priya's click turns her status on the event from "needs action" to "accepted".
-Vijay sees that on the event in his calendar. Our service is not involved.
-Tanya: "Perfect. You'll also get the details on WhatsApp and email."
+Tanya: "Done. Today at three in the afternoon, with Hussain. The invite is in your email; please
+accept it whenever it suits you. You'll also get the details on WhatsApp and email."
 Priya: "Great, thanks."
+Inside Google: when Priya clicks Accept, now or later, her status on the event turns from "needs
+action" to "accepted". Vijay sees that in his calendar. Tanya never presses her to accept on the call.
 
 ### Step 12. The close (tool call 3: callhangup)
 The model's turn has no text. It invokes callhangup with `preToolMessage`: "Thanks, Priya. See
@@ -300,7 +296,7 @@ Inside /slots:
 {"slots":[
  {"slotId":"htfwc-1218c0","startUtc":"2026-11-25T17:00:00.000Z","spokenLabel":"Wednesday, twelve noon"},
  {"slotId":"htfwr-daeede","startUtc":"2026-11-25T17:15:00.000Z","spokenLabel":"Wednesday, twelve fifteen in the afternoon"}],
- "instruction":"Two times are free: Wednesday, twelve noon, or Wednesday, twelve fifteen in the afternoon, the prospect's time. Offer both and ask which works better."}
+ "instruction":"Success: Two times are free: Wednesday, twelve noon, or Wednesday, twelve fifteen in the afternoon. Offer both and ask which works better."}
 ```
 
 ### Step 10. Offer the two slots (no tool)
@@ -313,7 +309,7 @@ Daniel: "Twelve noon works."
 
 ### Step 11. Tool call 3: bookDemo
 The model passes `slotId: htfwc-1218c0` and
-`bookingNotes: weekend leads called too late`. The platform adds `email: daniel@harborlending.com`,
+`appointmentNotes: weekend leads called too late`. The platform adds `email: daniel@harborlending.com`,
 `timezone: America/New_York`, `fname: Daniel`, `lname: Brooks`, `company: Harbor Lending`.
 
 Inside /book, the same as India:
@@ -328,16 +324,16 @@ Inside /book, the same as India:
 
 Reply:
 ```json
-{"booked":true,"spokenLabel":"Wednesday, twelve noon","instruction":"The demo is booked for Wednesday, twelve noon, ...",
+{"booked":true,"spokenLabel":"Wednesday, twelve noon","instruction":"Success: The demo is booked for Wednesday, twelve noon. ...",
  "prospectTime":"Wednesday, 25 November 2026, 12:00 PM (America/New_York)",
  "salesTime":"Wednesday, 25 November 2026, 10:30 PM (Asia/Kolkata)",
  "startUtc":"2026-11-25T17:00:00.000Z","meetLink":"https://meet.google.com/xyz-abcd-efg","eventId":"<40-character id>"}
 ```
 
 ### Step 12. Confirmation, close, after the call
-- Tanya: "Done. Wednesday at twelve noon, with Hussain. The invite is in your inbox
-  now. Could you accept it while we're on the call, so it's in your calendar?"
-- Then the same show-up line, the callhangup close and the post-call steps as India.
+- Tanya: "Done. Wednesday at twelve noon, with Hussain. The invite is in your email; please accept
+  it whenever it suits you. You'll also get the details on WhatsApp and email."
+- Then the callhangup close and the post-call steps as India.
 - The PCA gives `bookedSlot: "Wednesday, twelve noon, prospect time"`.
 
 ---

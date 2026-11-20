@@ -6,7 +6,7 @@ never by the model. Plain Node 20, no packages to install.
 | Platform tool | Route | Body the platform sends |
 |---|---|---|
 | getAvailableSlots | `POST /slots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
-| bookDemo | `POST /book` | from the model: `slotId`, `bookingNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
+| bookDemo | `POST /book` | from the model: `slotId`, `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
 
 Every reply carries an `instruction` for the model. A booked reply also has `prospectTime`, `salesTime`,
 `startUtc`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.

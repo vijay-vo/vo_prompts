@@ -248,7 +248,7 @@ note to the model saying what happened and what to do next (added 2026-11-20).
 
 ### bookDemo
 
-Input: `slotId` and `bookingNotes` from the model (one line: pain mentioned, colleague to invite);
+Input: `slotId` and `appointmentNotes` from the model (one line: pain mentioned, colleague to invite);
 `fname`, `lname`, `company`, `email`, `timezone` added by the platform. Full mapping:
 PLATFORM_SETUP.md.
 
@@ -411,7 +411,7 @@ Choices made while writing (change any of them on request):
 Check on the platform before the first test call:
 1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
    getAvailableSlots: preferredDay, preferredTime (timezone added by the platform); the Result
-   has slots (slotId, spokenLabel) and an instruction. bookDemo: slotId, bookingNotes; the
+   has slots (slotId, spokenLabel) and an instruction. bookDemo: slotId, appointmentNotes; the
    Result says booked with a spokenLabel, or not booked with slot_taken or error, and an
    instruction. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.

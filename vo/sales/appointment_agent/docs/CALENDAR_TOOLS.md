@@ -114,7 +114,7 @@ and 7 below.
 ## 4. Gaps between the prompt and these tools
 
 Superseded 2026-11-20 later the same day: parameter names and the full mapping are now in
-PLATFORM_SETUP.md (preferredDay, preferredTime, bookingNotes, fname, lname; no excludeSlotIds).
+PLATFORM_SETUP.md (preferredDay, preferredTime, appointmentNotes, fname, lname; no excludeSlotIds).
 
 Settled 2026-11-20: the platform can add request parameters, so it injects `timezone`,
 `firstName`, `lastName` and `company` into bookDemo, and `timezone` into getAvailableSlots. No
