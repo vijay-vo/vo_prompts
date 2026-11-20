@@ -25,7 +25,7 @@ const MAIL = {
   badTo: { sent: false, reason: 'bad_address', toolResponse: 'Failure: The email address is not valid.' },
   error: { sent: false, reason: 'error', toolResponse: 'Failure: The email could not be sent.' },
 };
-async function sendEmail({ google, body }) {
+async function sendGmail({ google, body }) {
   const to = clean(body.to), subject = clean(body.subject), text = clean(body.body);
   if (/^none$/i.test(subject) || /^none$/i.test(text) || !subject || !text) return MAIL.skipped;
   if (!EMAIL_RE.test(to)) return MAIL.badTo;
@@ -45,7 +45,7 @@ export function makeApp(env, google = makeGoogle(env)) {
       const body = raw ? JSON.parse(raw) : {};
       if (req.url === '/sendGmail') {
         console.log(new Date().toISOString(), req.url, JSON.stringify({ to: body.to ? '***' : undefined, subject: body.subject }));
-        return send(200, await sendEmail({ google, body }));
+        return send(200, await sendGmail({ google, body }));
       }
       console.log(new Date().toISOString(), req.url, JSON.stringify({ ...body, email: body.email ? '***' : undefined }));
       if (!validTz(body.timezone)) return send(400, { error: 'timezone must be an IANA name such as Asia/Kolkata' });
