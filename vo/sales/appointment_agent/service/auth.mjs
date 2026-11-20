@@ -8,7 +8,9 @@ for (const line of fs.readFileSync(new URL('./.env', import.meta.url), 'utf8').s
   const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/); if (m) env[m[1]] = m[2].replace(/^["']|["']$/g, '');
 }
 const PORT = 53682, redirect = `http://127.0.0.1:${PORT}`;
-const scope = ['https://www.googleapis.com/auth/calendar.freebusy', 'https://www.googleapis.com/auth/calendar.events.owned'].join(' ');
+// One token for the booking service (Calendar) and for the platform's after-call email (Gmail send + read).
+const scope = ['https://www.googleapis.com/auth/calendar.freebusy', 'https://www.googleapis.com/auth/calendar.events.owned',
+  'https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly'].join(' ');
 const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({ client_id: env.GOOGLE_CLIENT_ID, redirect_uri: redirect, response_type: 'code', scope, access_type: 'offline', prompt: 'consent' });
 console.log('\nOpen this link, sign in with the calendar owner account, and approve:\n\n' + url + '\n');
 http.createServer(async (req, res) => {

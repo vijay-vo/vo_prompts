@@ -8,7 +8,7 @@ never by the model. Plain Node 20, no packages to install.
 | getAvailableSlots | `POST /slots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
 | bookDemo | `POST /book` | from the model: `slotId`, `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
 
-Every reply carries an `instruction` for the model. A booked reply also has `prospectTime`, `salesTime`,
+Every reply carries an `toolResponse` for the model. A booked reply also has `prospectTime`, `salesTime`,
 `startUtc`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
 
 Every request needs the header `x-api-key: <API_KEY from .env>`.

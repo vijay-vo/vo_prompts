@@ -124,14 +124,14 @@ POST https://www.googleapis.com/calendar/v3/freeBusy
 8. **slotId:** short, so the model copies it reliably: the start minute in base 36, a dash, and
    6 characters of a signature made with `SLOT_SECRET`. 14:00 IST becomes `htda6-6f65e2`. The
    model cannot make a valid one up.
-9. **instruction:** an English note to the model saying what is free and what to do next.
+9. **toolResponse:** an English note to the model saying what is free and what to do next.
 
 The service replies (this is what the model receives as the Result):
 ```json
 {"slots":[
  {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
  {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
- "instruction":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
+ "toolResponse":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
 ```
 
 ### Step 8. Tanya offers the two times (no tool)
@@ -191,7 +191,7 @@ POST https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceD
 7. Reply to the platform:
 ```json
 {"booked":true,"spokenLabel":"today, three in the afternoon",
- "instruction":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
+ "toolResponse":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)","salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"<40-character id>"}
 ```
@@ -296,7 +296,7 @@ Inside /slots:
 {"slots":[
  {"slotId":"htfwc-1218c0","startUtc":"2026-11-25T17:00:00.000Z","spokenLabel":"Wednesday, twelve noon"},
  {"slotId":"htfwr-daeede","startUtc":"2026-11-25T17:15:00.000Z","spokenLabel":"Wednesday, twelve fifteen in the afternoon"}],
- "instruction":"Success: Two times are free: Wednesday, twelve noon, or Wednesday, twelve fifteen in the afternoon. Offer both and ask which works better."}
+ "toolResponse":"Success: Two times are free: Wednesday, twelve noon, or Wednesday, twelve fifteen in the afternoon. Offer both and ask which works better."}
 ```
 
 ### Step 10. Offer the two slots (no tool)
@@ -324,7 +324,7 @@ Inside /book, the same as India:
 
 Reply:
 ```json
-{"booked":true,"spokenLabel":"Wednesday, twelve noon","instruction":"Success: The demo is booked for Wednesday, twelve noon. ...",
+{"booked":true,"spokenLabel":"Wednesday, twelve noon","toolResponse":"Success: The demo is booked for Wednesday, twelve noon. ...",
  "prospectTime":"Wednesday, 25 November 2026, 12:00 PM (America/New_York)",
  "salesTime":"Wednesday, 25 November 2026, 10:30 PM (Asia/Kolkata)",
  "startUtc":"2026-11-25T17:00:00.000Z","meetLink":"https://meet.google.com/xyz-abcd-efg","eventId":"<40-character id>"}
@@ -342,11 +342,11 @@ Reply:
 
 | Situation | What the service returns | What Tanya does |
 |---|---|---|
-| The time was taken between offer and booking | `{"booked":false,"reason":"slot_taken","instruction":"..."}` | getAvailableSlots again with the same preferences (the taken slot is now busy, so it is not offered), preToolMessage "That time was just taken. Let me check the calendar again.", offers the next ones |
+| The time was taken between offer and booking | `{"booked":false,"reason":"slot_taken","toolResponse":"..."}` | getAvailableSlots again with the same preferences (the taken slot is now busy, so it is not offered), preToolMessage "That time was just taken. Let me check the calendar again.", offers the next ones |
 | Google or the laptop fails during booking | `{"booked":false,"reason":"error"}` (or no answer) | "Something went wrong with the booking on my side. Our team will send you the details on email and WhatsApp." Never a third booking try |
-| Nothing free for the day asked | `{"slots":[],"instruction":"No time is free for that request. ..."}` | "That day's full. I can book any weekday in the next seven days; which other day suits you?" |
-| A weekend day asked | `{"slots":[],"instruction":"Demos are Monday to Friday only. ..."}` | asks which weekday suits them |
-| Google or the service fails during /slots | `{"slots":[],"instruction":"The calendar could not be checked. ..."}` | "Our team will send you the details on email and WhatsApp." then the close |
+| Nothing free for the day asked | `{"slots":[],"toolResponse":"No time is free for that request. ..."}` | "That day's full. I can book any weekday in the next seven days; which other day suits you?" |
+| A weekend day asked | `{"slots":[],"toolResponse":"Demos are Monday to Friday only. ..."}` | asks which weekday suits them |
+| Google or the service fails during /slots | `{"slots":[],"toolResponse":"The calendar could not be checked. ..."}` | "Our team will send you the details on email and WhatsApp." then the close |
 | The platform sends the same booking twice | the second call finds the event it made and answers `booked:true` again | nothing different: one event, one invite |
 | The model sends a made-up slotId | signature check fails → `booked:false, reason:error` | the error line, no fake booking |
 | The laptop is asleep or ngrok is off | the platform gets no reply | the tool fails: Tanya cannot offer times. This is why live calls need an always-on host |

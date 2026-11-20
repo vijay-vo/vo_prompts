@@ -69,7 +69,7 @@ export function pickTwo(list, cfg) {
   b ||= pool.find(c => c.startMs > a.startMs);
   return b ? [a, b] : [a];
 }
-// The instruction every reply carries for the model: "Success:" or "Failure:", then what to do.
+// toolResponse: the line every reply carries for the model: "Success:" or "Failure:", then what to do.
 export const SAY = {
   two: (a, b) => `Success: Two times are free: ${a}, or ${b}. Offer both and ask which works better.`,
   one: (a) => `Success: One time is free: ${a}. Offer it and ask if it works.`,
@@ -116,19 +116,19 @@ export async function getSlots({ google, cfg, body, now = Date.now() }) {
     picked = [...list].sort((a, b) => dist(a) - dist(b) || a.startMs - b.startMs).slice(0, 2);
   } else picked = pickTwo(list, cfg);
   const slots = picked.map(c => ({ slotId: signSlot(c.startMs, cfg.secret), startUtc: new Date(c.startMs).toISOString(), spokenLabel: spokenLabel(c.startMs, tz, now) }));
-  const instruction = slots.length === 2 ? SAY.two(slots[0].spokenLabel, slots[1].spokenLabel)
+  const toolResponse = slots.length === 2 ? SAY.two(slots[0].spokenLabel, slots[1].spokenLabel)
     : slots.length === 1 ? SAY.one(slots[0].spokenLabel)
     : day === 'saturday' || day === 'sunday' ? SAY.weekend : SAY.none;
-  return { slots, instruction };
+  return { slots, toolResponse };
 }
 export async function bookSlot({ google, cfg, body, now = Date.now() }) {
-  const fail = { booked: false, reason: 'error', instruction: SAY.bookError };
+  const fail = { booked: false, reason: 'error', toolResponse: SAY.bookError };
   const startMs = verifySlot(body.slotId, cfg.secret);
   if (startMs === null || startMs < now) return { status: 400, out: fail };
   const endMs = startMs + cfg.slotMin * MIN;
   const label = spokenLabel(startMs, body.timezone, now);
   const ok = (ev) => ({ booked: true, spokenLabel: label,
-    instruction: SAY.booked(label),
+    toolResponse: SAY.booked(label),
     prospectTime: `${writtenTime(startMs, body.timezone)} (${body.timezone})`,
     salesTime: `${writtenTime(startMs, cfg.salesTz)} (${cfg.salesTz})`,
     startUtc: new Date(startMs).toISOString(), meetLink: ev.hangoutLink || '', eventId: ev.id });
@@ -139,7 +139,7 @@ export async function bookSlot({ google, cfg, body, now = Date.now() }) {
     // A retry of a booking that already went through finds its own event: answer booked again.
     const own = await google.get(id);
     if (own && own.status !== 'cancelled') return { status: 200, out: ok(own) };
-    return { status: 200, out: { booked: false, reason: 'slot_taken', instruction: SAY.taken } };
+    return { status: 200, out: { booked: false, reason: 'slot_taken', toolResponse: SAY.taken } };
   }
   const company = clean(body.company), notes = clean(body.appointmentNotes);
   const name = [clean(body.fname), clean(body.lname)].filter(Boolean).join(' ');

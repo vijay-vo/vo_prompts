@@ -243,7 +243,7 @@ bookings no-show about 7%, 7+ days out about 25%), each with:
   nineteenth, eleven in the morning". Language: English label, or one per call
   language? (section 9)
 
-Empty list = nothing free for that request. Every Result also carries an `instruction`: an English
+Empty list = nothing free for that request. Every Result also carries an `toolResponse`: an English
 note to the model saying what happened and what to do next (added 2026-11-20).
 
 ### bookDemo
@@ -411,9 +411,9 @@ Choices made while writing (change any of them on request):
 Check on the platform before the first test call:
 1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
    getAvailableSlots: preferredDay, preferredTime (timezone added by the platform); the Result
-   has slots (slotId, spokenLabel) and an instruction. bookDemo: slotId, appointmentNotes; the
-   Result says booked with a spokenLabel, or not booked with slot_taken or error, and an
-   instruction. If the tools you built use other
+   has slots (slotId, spokenLabel) and a toolResponse. bookDemo: slotId, appointmentNotes; the
+   Result says booked with a spokenLabel, or not booked with slot_taken or error, and a
+   toolResponse. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
 2. **Variables injected (2026-11-20):** fname, company, industry, priorContext, defaultLanguage.
    Not Available when unknown. The platform adds timezone, email, fname, lname and company to the

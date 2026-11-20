@@ -40,14 +40,12 @@ Return only a single valid JSON object in the exact structure below. It must be 
   "painPoint": "",
   "painDetail": "",
   "mainObjection": "",
-  "objectionCount": "",
   "colleagueToInvite": "",
   "callbackTime": "",
   "interestLevel": "",
   "askedIfAI": "",
   "noAICalls": "",
   "doNotCall": "",
-  "language": "",
   "summary": "",
   "whatsappMessage": "",
   "emailSubject": "",
@@ -91,9 +89,6 @@ mainObjection
 Allowed values: "notInterested" | "sendEmail" | "haveSolution" | "busy" | "callLater" | "price" | "notDecisionMaker" | "howGotNumber" | "aiObjection" | "noProblem" | "other" | "none".
 The objection the prospect pushed hardest on: the one Tanya spent the most turns on, or, if equal, the last one raised. "aiObjection" is pushing back because Tanya is an A I; a curious "are you a bot?" alone is not an objection. "noProblem" is saying they have no such problem. "none" when they raised no objection.
 
-objectionCount
-How many separate times the prospect pushed back or said no after the opener, as a plain number in digits ("0", "1", "2", ...). A repeated no to the same ask counts again.
-
 colleagueToInvite
 The name and role of any other person the prospect said should be involved or join the demo, in English (for example "Ravi, head of sales"). "none" if nobody was named.
 
@@ -116,8 +111,6 @@ doNotCall
 Allowed values: "yes" | "no".
 "yes": the prospect asked not to be called again, to be removed from a list, or was abusive; or Tanya said they would not be called again.
 
-language
-The main language the prospect spoke, as its English name ("English", "Hindi", "Arabic", "German"). If they switched, the one they spoke most. "unknown" when no person spoke.
 
 summary
 One plain English paragraph of forty to eighty words. No line breaks, bullet points or headings. Cover, in order: who answered, whether this followed up an earlier conversation with the sales team, how they took the opener, the problem they described, any objections and how they ended, whether a demo was booked and when, whether the invite was accepted, any colleague, callback, or request to send the invite to a different email, and how the call ended. Mention their mood only if it stood out. Never add a detail that was not said. If the transcript is empty or has no customer turns, write "No transcript available for this call." and nothing more.
@@ -129,7 +122,7 @@ WHO GETS A MESSAGE. Write messages only in these three situations, decided from 
   TIMES TO FOLLOW: Tanya told the prospect that the team will send them the details on email and WhatsApp, because the booking failed, no time was free, or the calendar could not be checked, and no booking was confirmed later.
   INFORMATION ASKED FOR: the prospect asked for information by email, Tanya said they would get it on email and WhatsApp, and no booking was made.
 In every other call, and in any call where doNotCall or noAICalls is "yes", all three fields are "none".
-LANGUAGE. Write all three in the language in the language field. When it is "unknown", write in English.
+LANGUAGE. Write all three in the language the prospect spoke most on the call. When no person spoke, or it is unclear, write in English.
 FORM. Plain text only: no markdown, no emoji, no placeholders. The only link allowed is {{meetLink}}, written out in full, in BOOKED messages when it is present. The booked time comes from {{bookedTime}}, written as day, date and time followed by "your time" (for example "Monday, 23 November 2026, 3:00 PM, your time"), with the timezone name left out. When {{bookedTime}} is absent, the time comes only from Tanya's read-back, written the normal way for a written message ("today at 3:00 PM"), keeping her day words such as "today" or "tomorrow". Never calculate, convert or add a date or a timezone. Use the prospect's first name from {{fname}}; when it is absent, start with a plain greeting with no name. Sign every message "Tanya, VoiceOwl". Use only facts from the call and from this prompt: never invent a customer, figure, feature, price or promise.
 WHAT EACH MESSAGE SAYS.
   BOOKED: thanks for their time; the fifteen-minute VoiceOwl demo is booked for the booked time as FORM gives it, on Google Meet, with Hussain, VoiceOwl's Sales Head; the slot is reserved for them; the Google Meet link, {{meetLink}} when it is present, and that it is also in the calendar invite sent to their email; what the demo will show, tied to the problem in painDetail in their own words when there is one. When inviteAccepted is not "yes", one short sentence asks them to accept the invite whenever it suits them, so it is in their calendar. When a colleague was named, one short sentence says they are welcome to bring them along.

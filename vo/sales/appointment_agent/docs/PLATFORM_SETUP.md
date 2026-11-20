@@ -82,12 +82,12 @@ Result (what the model reads):
 {"slots":[
  {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
  {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
- "instruction":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
+ "toolResponse":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
 ```
 
-Every instruction starts with `Success:` or `Failure:`. All of them:
+Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
-| Case | instruction |
+| Case | toolResponse |
 |---|---|
 | Two slots | `Success: Two times are free: today, four in the evening, or today, five in the evening. Offer both and ask which works better.` |
 | One slot | `Success: One time is free: Wednesday, twelve noon. Offer it and ask if it works.` |
@@ -123,14 +123,14 @@ Result when booked:
 
 ```json
 {"booked":true,"spokenLabel":"today, three in the afternoon",
- "instruction":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
+ "toolResponse":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
  "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"bc64c442..."}
 ```
 
-- Slot taken: `{"booked":false,"reason":"slot_taken","instruction":"Failure: That time was just taken. Check the calendar again and offer the new times."}`
-- Error: `{"booked":false,"reason":"error","instruction":"Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again."}`
+- Slot taken: `{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Check the calendar again and offer the new times."}`
+- Error: `{"booked":false,"reason":"error","toolResponse":"Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again."}`
 
 **Save two fields from this reply as call variables for the PCA:** `prospectTime` → `bookedTime`, and
 `meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
@@ -169,14 +169,12 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
  "painPoint": "slowResponse",
  "painDetail": "weekend leads wait until Monday, half are lost",
  "mainObjection": "none",
- "objectionCount": "0",
  "colleagueToInvite": "none",
  "callbackTime": "none",
  "interestLevel": "high",
  "askedIfAI": "no",
  "noAICalls": "no",
  "doNotCall": "no",
- "language": "English",
  "summary": "Priya answered ... (40 to 80 words)",
  "whatsappMessage": "Hi Priya, thanks for your time. Your fifteen-minute VoiceOwl demo with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM, your time, on Google Meet. The slot is reserved for you. Join here: https://meet.google.com/abc-defg-hij. Hussain will show you how an agent handles weekend leads that wait until Monday. Tanya, VoiceOwl",
  "emailSubject": "Your VoiceOwl demo is booked for Monday, 23 November, 3:00 PM",
@@ -193,11 +191,11 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
 | emailMessage | email body, to email | `\n\n` is a paragraph break |
 | callResult | CRM status | booked, bookingFailed, doNotCall, callbackLater, notInterested, gatekeeper, wrongNumber, voicemail, disconnected |
 | bookedSlot, inviteAccepted | CRM | |
-| painPoint, painDetail, mainObjection, objectionCount, interestLevel | CRM notes for sales | painPoint: slowResponse, tooManyCalls, language, other, none |
+| painPoint, painDetail, mainObjection, interestLevel | CRM notes for sales | painPoint: slowResponse, tooManyCalls, language, other, none |
 | colleagueToInvite | sales follow-up | |
 | callbackTime | callback scheduling | the prospect's own words, not a date |
 | doNotCall, noAICalls | suppression list | "yes": never call again / only a human may call |
-| summary, language | CRM | |
+| summary | CRM | |
 
 Messages are written in three cases only: booked; booking failed or no slot (the team will send times); information
 asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "none" in all three fields.
