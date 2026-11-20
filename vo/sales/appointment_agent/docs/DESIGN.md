@@ -125,7 +125,7 @@ sense to...?".
 1. Read back once: day, date, time, "your time".
 2. Name the host: "{{demoHost}} from our team will run it. They've set this up for
    many {{industry}} teams." (people don't bail on a person they've heard of)
-3. Email: confirm the one on file by its domain, not letter by letter.
+3. Email: not asked or confirmed (decided 2026-11-20). The invite goes to the email on file.
 4. Book (tool). Google sends the invite to the prospect right away. Ask: "You'll see
    the invite in your email now. Could you accept it so it's in your calendar?"
 5. "You'll also get the details on WhatsApp and email." Close warm and short.
@@ -210,7 +210,7 @@ self-deprecating lines, idioms, naming a vendor of theirs we don't know.
 | {{country}} | Language default, greeting style | Yes |
 | {{timezone}} | IANA, e.g. Asia/Kolkata, America/New_York. Slots are spoken in the prospect's local time | Yes |
 | {{language}} | Starting language | Yes (or derived from country) |
-| {{email}} / {{emailDomain}} | Invite + spoken confirmation | Yes |
+| {{email}} | Invite (never asked or read out on the call) | Yes |
 
 Plus an **approved facts list** for product questions (from voiceowl.ai: 135+
 languages, 200M+ interactions, 60% cost reduction, proof of concept in 48–72 hours,
@@ -397,8 +397,11 @@ Choices made while writing (change any of them on request):
 - **No recording notice** in the prompt (item 10 still open).
 - **Callback:** Tanya says "I'll make a note to call you then"; the PCA captures
   callbackTime. Re-dialling is the platform's job (item 8).
-- **Email:** confirmed by its domain; a new one is spelled back; after two failed tries Tanya
-  books with the email on file and writes "email needs correcting" into notes.
+- **Email (changed 2026-11-20):** never asked or confirmed; bookDemo always uses {{email}}. If
+  the prospect wants another address, Tanya notes it and books as usual.
+- **After-call messages (2026-11-20):** the PCA writes whatsappMessage, emailSubject and
+  emailMessage for three cases: booked, times to follow, information asked for. All "none"
+  otherwise.
 
 Check on the platform before the first test call:
 1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
@@ -407,7 +410,7 @@ Check on the platform before the first test call:
    spokenLabel, or not booked with slot taken or error. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
 2. **Variables injected:** firstName, company, role, industry, leadSource, leadContext,
-   leadSourceSpoken, email, emailDomain, timezone, language, currentDate, currentWeekday.
+   leadSourceSpoken, email, timezone, language, currentDate, currentWeekday.
 3. **First message:** "Hi {{firstName}}, it's Tanya from VoiceOwl.", played after the
    prospect says hello, in {{language}}.
 4. **preferredDate** asks the model to work out a date from today's date and a day name

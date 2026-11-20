@@ -38,7 +38,7 @@ violation, and the booking would fail anyway, because the service only accepts s
 
 Prospect: Priya Sharma, BrightLoans, Mumbai. Lead data from the platform: `firstName=Priya`,
 `lastName=Sharma`, `company=BrightLoans`, `leadSource=cold`, `role=sales head`,
-`industry=lending`, `email=priya@brightloans.com`, `emailDomain=brightloans.com`,
+`industry=lending`, `email=priya@brightloans.com`,
 `timezone=Asia/Kolkata`, `language=English`, `currentDate=2026-11-23`, `currentWeekday=Monday`.
 
 The call happens on **Monday 23 November 2026 at 12:45 PM IST** (07:15 UTC). Vijay's calendar
@@ -142,12 +142,7 @@ Inside: she reads the two spokenLabels by meaning, earliest first. She keeps bot
 conversation for the next steps. Then silence until Priya answers.
 Priya: "Three is better."
 
-### Step 9. The email (no tool)
-Tanya: "The invite goes to your email at brightloans dot com. Is that still the right one?"
-Priya: "Yes."
-Inside: [email domain] comes from `emailDomain`. The full address is never read out.
-
-### Step 10. The booking (tool call 2: bookDemo)
+### Step 9. The booking (tool call 2: bookDemo)
 The model's turn is the call alone: no text, no preToolMessage. **Priya hears a short silence**
 while it runs (usually one to three seconds).
 The model passes:
@@ -164,7 +159,7 @@ x-api-key: <API_KEY>
  "timezone":"Asia/Kolkata","firstName":"Priya","lastName":"Sharma","company":"BrightLoans"}
 ```
 
-### Step 11. Inside the service: /book
+### Step 10. Inside the service: /book
 1. Key check and timezone check, as before. Email format check (something@something.something).
 2. **Unpack the slotId:** decode it to `1795426200000.<signature>`, sign `1795426200000` again
    with `SLOT_SECRET`, and compare. It matches, so the start is 09:30 UTC = 3:00 PM IST. It is in
@@ -199,7 +194,7 @@ POST https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceD
 {"booked":true,"spokenLabel":"today, three in the afternoon","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"<40-character id>"}
 ```
 
-### Step 12. Confirmation and show-up (no tool)
+### Step 11. Confirmation and show-up (no tool)
 Tanya: "Done. Today at three in the afternoon, with Hussain, our sales head. The invite is in your
 inbox now. Could you accept it while we're on the call, so it's in your calendar?"
 Priya: "Okay... yes, accepted."
@@ -208,16 +203,17 @@ Vijay sees that on the event in his calendar. Our service is not involved.
 Tanya: "Perfect. You'll also get the details on WhatsApp and email. Hussain will see you then."
 Priya: "Great, thanks."
 
-### Step 13. The close (tool call 3: callhangup)
+### Step 12. The close (tool call 3: callhangup)
 The model's turn has no text. It invokes callhangup with `preToolMessage`: "Thanks, Priya. See
 you on Google Meet. Have a great day." (CLOSING LINE D). The platform speaks it and ends the
 call.
 
-### Step 14. After the call (platform, not our service)
+### Step 13. After the call (platform, not our service)
 - The platform sends its WhatsApp and email confirmation.
 - The PCA reads the transcript and returns, among other fields: `callResult: booked`,
   `bookedSlot: "today, three in the afternoon, prospect time"`, `inviteAccepted: yes`,
-  `emailStatus: confirmed`, `painPoint: tooLate`.
+  `painPoint: tooLate`, and the WhatsApp and email texts (`whatsappMessage`, `emailSubject`,
+  `emailMessage`) that the platform sends.
 - On Vijay's calendar: "VoiceOwl demo: Priya Sharma, BrightLoans", Monday 3:00 to 3:15 PM, with
   the Meet link.
 
@@ -227,7 +223,7 @@ call.
 
 Prospect: Daniel Brooks, Harbor Lending, New York. Lead data: `firstName=Daniel`,
 `lastName=Brooks`, `company=Harbor Lending`, `leadSource=cold`, `email=daniel@harborlending.com`,
-`emailDomain=harborlending.com`, **`timezone=America/New_York`**, `language=English`,
+**`timezone=America/New_York`**, `language=English`,
 `currentDate=2026-11-23`, `currentWeekday=Monday`.
 
 The call happens on **Monday 23 November 2026 at 8:10 PM IST**, which is **9:40 AM in New York**
@@ -309,11 +305,7 @@ Daniel: "Twelve noon works."
 (If he had said "Wednesday at 3 PM", the Result would have been empty, because 3 PM New York is
 1:30 AM IST. Tanya would say that day is full, and ask for another day.)
 
-### Step 11. The email (no tool)
-Tanya: "The invite goes to your email at harborlending dot com. Is that still the right one?"
-Daniel: "Yes."
-
-### Step 12. Tool call 3: bookDemo
+### Step 11. Tool call 3: bookDemo
 The model passes `slotId: MTc5NTYyNjAwMDAwMC4wNGRmNDk1ZTRjMjJiMWI4`,
 `email: daniel@harborlending.com`, `notes: weekend leads called too late`. The platform adds
 `timezone: America/New_York`, `firstName: Daniel`, `lastName: Brooks`, `company: Harbor Lending`.
@@ -333,7 +325,7 @@ Reply:
 {"booked":true,"spokenLabel":"Wednesday, twelve noon","meetLink":"https://meet.google.com/xyz-abcd-efg","eventId":"<40-character id>"}
 ```
 
-### Step 13. Confirmation, close, after the call
+### Step 12. Confirmation, close, after the call
 - Tanya: "Done. Wednesday at twelve noon, with Hussain, our sales head. The invite is in your inbox
   now. Could you accept it while we're on the call, so it's in your calendar?"
 - Then the same show-up line, the callhangup close and the post-call steps as India.
