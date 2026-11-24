@@ -36,7 +36,14 @@ async function sendGmail({ google, body }) {
 export function makeApp(env, google = makeGoogle(env)) {
   const cfg = config(env);
   return async (req, res) => {
-    const send = (code, obj) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(obj)); };
+    // The two booking tools lead every reply with returnCode, only ever 200 or 500: 200 when the API
+    // worked and returned data (any Success or Failure answer), 500 for anything else (calendar not
+    // checked, booking did not go through, or a rejected request).
+    const tool = ['/getAvailableSlots', '/bookAppointment'].includes(req.url);
+    const send = (code, obj) => {
+      if (tool) obj = { returnCode: code === 200 && obj.reason !== 'error' ? 200 : 500, ...obj };
+      res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(obj));
+    };
     try {
       if (req.method === 'GET' && req.url === '/health') return send(200, { ok: true });
       if (!env.API_KEY || req.headers['x-api-key'] !== env.API_KEY) return send(401, { error: 'unauthorized' });

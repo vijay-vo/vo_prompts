@@ -12,11 +12,13 @@ never by the model. Plain Node 20, no packages to install.
 Every reply carries a `toolResponse` for the model. All times are the prospect's own local time. A booked reply
 also has `prospectTime`, `salesTime`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
 
+`returnCode` comes first in every reply of both tools and is only ever `200` or `500`: `200` when the API worked and returned data (any `Success:` or `Failure:` answer, booked or not), `500` when the calendar could not be checked, the booking did not go through, or the request was rejected.
+
 Every request needs the header `x-api-key: <API_KEY from .env>`.
 
 Responses:
-- `/getAvailableSlots` → `{"toolResponse":"Success: Two times are free. Option 1: today, four in the evening, startTime 2026-11-24T16:00. Option 2: ..."}`
-- `/bookAppointment` → always the same seven fields: `{"booked":true|false,"reason":"booked"|"slot_taken"|"not_offered"|"no_start_time"|"error","toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"...","eventId":"..."}`;
+- `/getAvailableSlots` → `{"returnCode":200,"toolResponse":"Success: Two times are free. Option 1: today, four in the evening, startTime 2026-11-24T16:00. Option 2: ..."}`
+- `/bookAppointment` → always the same eight fields (returnCode first): `{"returnCode":200|500,"booked":true|false,"reason":"booked"|"slot_taken"|"not_offered"|"no_start_time"|"error","toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"...","eventId":"..."}`;
   when not booked the last four are "Not Available" (slot_taken and not_offered offer new times)
 
 ## Rules built in

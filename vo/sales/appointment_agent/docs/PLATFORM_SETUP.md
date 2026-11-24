@@ -82,14 +82,16 @@ Examples the service receives:
 - "On the 27th, afternoon": `{"timezone":"America/New_York","preferredDay":"27","preferredTime":"afternoon"}`
 - "In three days": `{"timezone":"Asia/Tokyo","preferredDay":"in 3 days"}`
 
-Result: the toolResponse only. Each option has its time in words (spoken) and its `startTime` (copied into
+Result: `returnCode`, then the toolResponse. Each option has its time in words (spoken) and its `startTime` (copied into
 bookAppointment, never spoken), the prospect's local time:
 
 ```json
-{"toolResponse":"Success: Two times are free. Option 1: tomorrow, four in the evening, startTime 2026-11-25T16:00. Option 2: tomorrow, five in the evening, startTime 2026-11-25T17:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+{"returnCode":200,"toolResponse":"Success: Two times are free. Option 1: tomorrow, four in the evening, startTime 2026-11-25T16:00. Option 2: tomorrow, five in the evening, startTime 2026-11-25T17:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
 Platform variable for this reply's `toolResponse`: **availableSlotstoolResponse** (the prompt calls it by this name).
+
+`returnCode` comes first in every reply of both tools and is only ever `200` or `500`: `200` when the API worked and returned data (any `Success:` or `Failure:` answer, booked or not), `500` when the calendar could not be checked, the booking did not go through, or the request was rejected. The calendar-down reply is `{"returnCode":500,"toolResponse":"Failure: The calendar could not be checked. …"}`.
 
 Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
@@ -134,7 +136,7 @@ The service books the startTime only when it is still one of the free slots (15-
 within 15 days, free in Google). Result when booked:
 
 ```json
-{"booked":true,"reason":"booked",
+{"returnCode":200,"booked":true,"reason":"booked",
  "toolResponse":"Success: The call is booked for tomorrow, four in the evening. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Wednesday, 25 November 2026, 4:00 PM (Asia/Kolkata)",
  "salesTime":"Wednesday, 25 November 2026, 4:00 PM (Asia/Kolkata)",
@@ -145,13 +147,13 @@ For a New York prospect at 11:00 AM their time: `prospectTime` "Wednesday, 25 No
 (America/New_York)", `salesTime` "Wednesday, 25 November 2026, 9:30 PM (Asia/Kolkata)".
 
 Not booked (each comes with the two free times nearest the one asked, so the model offers them at once):
-- Taken meanwhile: `{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: …, startTime …. Option 2: …","prospectTime":"Not Available","salesTime":"Not Available","meetLink":"Not Available","eventId":"Not Available"}`
-- Wrong or garbled startTime: `{"booked":false,"reason":"not_offered","toolResponse":"Failure: That startTime is not a free time. Option 1: …", …the same four "Not Available" fields}`
-- Error: `{"booked":false,"reason":"error","toolResponse":"Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again.", …the same four "Not Available" fields}`
+- Taken meanwhile: `{"returnCode":200,"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: …, startTime …. Option 2: …","prospectTime":"Not Available","salesTime":"Not Available","meetLink":"Not Available","eventId":"Not Available"}`
+- Wrong or garbled startTime: `{"returnCode":200,"booked":false,"reason":"not_offered","toolResponse":"Failure: That startTime is not a free time. Option 1: …", …the same four "Not Available" fields}`
+- Error: `{"returnCode":500,"booked":false,"reason":"error","toolResponse":"Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again.", …the same four "Not Available" fields}`
 
 A repeat of a booking that already went through answers booked again, with no second event.
 
-Every reply, booked or not, has the same seven fields in the same order: `booked`, `reason` (`booked`,
+Every reply, booked or not, has the same eight fields in the same order: `returnCode`, `booked`, `reason` (`booked`,
 `slot_taken`, `not_offered`, `no_start_time` or `error`), `toolResponse`, `prospectTime`, `salesTime`, `meetLink`, `eventId`. When
 nothing was booked the last four are `Not Available`, so the call variables can be mapped once for every case.
 

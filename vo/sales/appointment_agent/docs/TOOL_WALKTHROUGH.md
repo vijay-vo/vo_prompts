@@ -49,7 +49,7 @@ Inside the service (the model never sees this):
 4. The earliest is tomorrow 9:00 AM; the second, an hour later, 10:00 AM.
 
 ```json
-{"toolResponse":"Success: Two times are free. Option 1: tomorrow, nine in the morning, startTime 2026-11-25T09:00. Option 2: tomorrow, ten in the morning, startTime 2026-11-25T10:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+{"returnCode":200,"toolResponse":"Success: Two times are free. Option 1: tomorrow, nine in the morning, startTime 2026-11-25T09:00. Option 2: tomorrow, ten in the morning, startTime 2026-11-25T10:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
 ## Step 3. Tanya offers both, in words
@@ -67,7 +67,7 @@ POST /getAvailableSlots
 When his exact time is free, the reply offers that one time alone, and Tanya asks before booking.
 
 ```json
-{"toolResponse":"Success: That time is free: tomorrow, eleven in the morning, startTime 2026-11-25T11:00. Say it in words, never the startTime, and ask if they want it. On a yes, book this startTime."}
+{"returnCode":200,"toolResponse":"Success: That time is free: tomorrow, eleven in the morning, startTime 2026-11-25T11:00. Say it in words, never the startTime, and ask if they want it. On a yes, book this startTime."}
 ```
 
 > Tanya: "Tomorrow at eleven in the morning, your time, is free. Shall I book it?"
@@ -78,7 +78,7 @@ It took him two turns. Tanya takes the startTime from that toolResponse.
 If he had asked for 2 PM, which is after Hussain's day ends, the reply would be:
 
 ```json
-{"toolResponse":"Failure: That time is not available. Option 1: tomorrow, twelve noon, startTime 2026-11-25T12:00. Option 2: tomorrow, twelve fifteen in the afternoon, startTime 2026-11-25T12:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+{"returnCode":200,"toolResponse":"Failure: That time is not available. Option 1: tomorrow, twelve noon, startTime 2026-11-25T12:00. Option 2: tomorrow, twelve fifteen in the afternoon, startTime 2026-11-25T12:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
 > Tanya: "Sorry, that time is not available. I have twelve noon or twelve fifteen, your time. Which works better?"
@@ -106,7 +106,7 @@ Inside the service:
 3. It creates the event with a Google Meet link, Daniel as guest; Google emails him the invite.
 
 ```json
-{"booked":true,"reason":"booked",
+{"returnCode":200,"booked":true,"reason":"booked",
  "toolResponse":"Success: The call is booked for tomorrow, eleven in the morning. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Wednesday, 25 November 2026, 11:00 AM (America/New_York)",
  "salesTime":"Wednesday, 25 November 2026, 9:30 PM (Asia/Kolkata)",
@@ -142,7 +142,7 @@ POST /sendGmail
 so Tanya offers them without checking again:
 
 ```json
-{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.","prospectTime":"Not Available","salesTime":"Not Available","meetLink":"Not Available","eventId":"Not Available"}
+{"returnCode":200,"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.","prospectTime":"Not Available","salesTime":"Not Available","meetLink":"Not Available","eventId":"Not Available"}
 ```
 
 > Tanya: "That time was just taken. I have ten forty-five or eleven fifteen. Which works?"
@@ -151,7 +151,7 @@ so Tanya offers them without checking again:
 `2026-11-25T11:07`). Nothing is booked; the reply offers the two real free times nearest to it:
 
 ```json
-{"booked":false,"reason":"not_offered","toolResponse":"Failure: That startTime is not a free time. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+{"returnCode":200,"booked":false,"reason":"not_offered","toolResponse":"Failure: That startTime is not a free time. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
 **The prospect names another day.** The model passes what he said; the service finds the date in his time.

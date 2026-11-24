@@ -12,12 +12,15 @@ const base = `http://127.0.0.1:${srv.address().port}`;
 const call = async (path, body, key = 'k') => { const r = await fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key }, body: JSON.stringify(body) }); return { s: r.status, j: await r.json() }; };
 
 const starts = (tr) => [...tr.matchAll(/startTime (\d{4}-\d\d-\d\dT\d\d:\d\d)/g)].map(m => m[1]);
-assert.equal((await call('/getAvailableSlots', { timezone: 'Asia/Kolkata' }, 'bad')).s, 401);
-assert.equal((await call('/getAvailableSlots', { timezone: 'Nope/Zone' })).s, 400);
+const unauth = await call('/getAvailableSlots', { timezone: 'Asia/Kolkata' }, 'bad');
+assert.equal(unauth.s, 401); assert.equal(unauth.j.returnCode, 500, 'returnCode is only 200 or 500');
+const badTz = await call('/getAvailableSlots', { timezone: 'Nope/Zone' });
+assert.equal(badTz.s, 400); assert.equal(badTz.j.returnCode, 500);
 
 for (const tz of ['Asia/Kolkata', 'America/New_York', 'Europe/London', 'Asia/Dubai', 'America/Los_Angeles', 'Asia/Tokyo']) {
   const { j } = await call('/getAvailableSlots', { timezone: tz });
-  assert.deepEqual(Object.keys(j), ['toolResponse'], 'the reply is the toolResponse only');
+  assert.deepEqual(Object.keys(j), ['returnCode', 'toolResponse'], 'returnCode first, then the toolResponse');
+  assert.equal(j.returnCode, 200);
   console.log(tz.padEnd(20), j.toolResponse);
   for (const st of starts(j.toolResponse)) {
     const ms = parseStartTime(st, tz);
@@ -51,11 +54,11 @@ const b1 = await call('/bookAppointment', { ...lead, startTime: a[0] });
 assert.equal(b1.j.booked, true); assert.match(b1.j.toolResponse, /^Success: The call is booked for .+ Do not push them/);
 assert.match(b1.j.prospectTime, /^\w+day, \d+ \w+ \d{4}, \d+:\d\d (AM|PM) \(Asia\/Kolkata\)$/);
 assert.match(b1.j.salesTime, /\(Asia\/Kolkata\)$/); assert.ok(b1.j.meetLink.startsWith('https://meet.google.com/')); assert.ok(b1.j.eventId);
-const KEYS = ['booked', 'reason', 'toolResponse', 'prospectTime', 'salesTime', 'meetLink', 'eventId'];
-assert.deepEqual(Object.keys(b1.j), KEYS); assert.equal(b1.j.reason, 'booked');
-for (const r of [odd, garbled]) { assert.deepEqual(Object.keys(r), KEYS); assert.equal(r.prospectTime, 'Not Available'); assert.equal(r.eventId, 'Not Available'); }
+const KEYS = ['returnCode', 'booked', 'reason', 'toolResponse', 'prospectTime', 'salesTime', 'meetLink', 'eventId'];
+assert.deepEqual(Object.keys(b1.j), KEYS); assert.equal(b1.j.reason, 'booked'); assert.equal(b1.j.returnCode, 200);
+for (const r of [odd, garbled]) { assert.deepEqual(Object.keys(r), KEYS); assert.equal(r.returnCode, 200, 'a Failure answer is still 200'); assert.equal(r.prospectTime, 'Not Available'); assert.equal(r.eventId, 'Not Available'); }
 const badMail = (await call('/bookAppointment', { ...lead, startTime: a[0], email: 'nope' }));
-assert.equal(badMail.s, 400); assert.deepEqual(Object.keys(badMail.j), KEYS); assert.equal(badMail.j.reason, 'error');
+assert.equal(badMail.s, 400); assert.deepEqual(Object.keys(badMail.j), KEYS); assert.equal(badMail.j.reason, 'error'); assert.equal(badMail.j.returnCode, 500);
 const retry = await call('/bookAppointment', { ...lead, startTime: a[0] });
 assert.equal(retry.j.booked, true, 'retried booking answers booked');
 const b2 = await call('/bookAppointment', { ...lead, startTime: a[0], email: 'other@x.com' });
@@ -90,6 +93,16 @@ await new Promise(r => broken.listen(0, r));
 const br = await fetch(`http://127.0.0.1:${broken.address().port}/sendGmail`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': 'k' }, body: JSON.stringify({ to: 'a@b.com', subject: 'x', body: 'y' }) });
 assert.equal(br.status, 200); assert.deepEqual(await br.json(), { sent: false, reason: 'error', toolResponse: 'Failure: The email could not be sent.' });
 broken.close();
+// Calendar down: both tools answer returnCode 500.
+const down = http.createServer(makeApp(env, { ...google, busy: async () => { throw new Error('down'); } }));
+await new Promise(r => down.listen(0, r));
+const dcall = async (path, body) => (await fetch(`http://127.0.0.1:${down.address().port}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': 'k' }, body: JSON.stringify(body) })).json();
+const ds = await dcall('/getAvailableSlots', { timezone: 'Asia/Kolkata' });
+assert.deepEqual(ds, { returnCode: 500, toolResponse: SAY.calendarDown });
+const db = await dcall('/bookAppointment', { ...lead, startTime: a[0] });
+assert.deepEqual(Object.keys(db), KEYS); assert.equal(db.returnCode, 500); assert.equal(db.reason, 'error'); assert.equal(db.toolResponse, SAY.bookError);
+down.close();
+console.log('returnCode tests passed');
 console.log('email tests passed');
 
 console.log('\nall tests passed'); srv.close();
