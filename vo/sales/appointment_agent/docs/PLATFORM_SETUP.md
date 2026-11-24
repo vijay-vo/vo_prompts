@@ -89,6 +89,8 @@ bookAppointment, never spoken), the prospect's local time:
 {"toolResponse":"Success: Two times are free. Option 1: tomorrow, four in the evening, startTime 2026-11-25T16:00. Option 2: tomorrow, five in the evening, startTime 2026-11-25T17:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
+Platform variable for this reply's `toolResponse`: **availableSlotstoolResponse** (the prompt calls it by this name).
+
 Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
 | Case | toolResponse |
@@ -152,6 +154,8 @@ A repeat of a booking that already went through answers booked again, with no se
 Every reply, booked or not, has the same seven fields in the same order: `booked`, `reason` (`booked`,
 `slot_taken`, `not_offered` or `error`), `toolResponse`, `prospectTime`, `salesTime`, `meetLink`, `eventId`. When
 nothing was booked the last four are `Not Available`, so the call variables can be mapped once for every case.
+
+Platform variable for this reply's `toolResponse`: **bookAppointmenttoolResponse** (the prompt calls it by this name).
 
 **Save from this reply as call variables:** `prospectTime` → `bookedTime` (used by the PCA), `salesTime` →
 `salesTime` (for the CRM), and `meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
