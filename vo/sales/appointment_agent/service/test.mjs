@@ -47,11 +47,15 @@ const b1 = await call('/bookAppointment', { ...lead, startTime: a[0] });
 assert.equal(b1.j.booked, true); assert.match(b1.j.toolResponse, /^Success: The call is booked for .+ Do not push them/);
 assert.match(b1.j.prospectTime, /^\w+day, \d+ \w+ \d{4}, \d+:\d\d (AM|PM) \(Asia\/Kolkata\)$/);
 assert.match(b1.j.salesTime, /\(Asia\/Kolkata\)$/); assert.ok(b1.j.meetLink.startsWith('https://meet.google.com/')); assert.ok(b1.j.eventId);
-assert.deepEqual(Object.keys(b1.j), ['booked', 'toolResponse', 'prospectTime', 'salesTime', 'meetLink', 'eventId']);
+const KEYS = ['booked', 'reason', 'toolResponse', 'prospectTime', 'salesTime', 'meetLink', 'eventId'];
+assert.deepEqual(Object.keys(b1.j), KEYS); assert.equal(b1.j.reason, 'booked');
+for (const r of [odd, garbled]) { assert.deepEqual(Object.keys(r), KEYS); assert.equal(r.prospectTime, 'Not Available'); assert.equal(r.eventId, 'Not Available'); }
+const badMail = (await call('/bookAppointment', { ...lead, startTime: a[0], email: 'nope' }));
+assert.equal(badMail.s, 400); assert.deepEqual(Object.keys(badMail.j), KEYS); assert.equal(badMail.j.reason, 'error');
 const retry = await call('/bookAppointment', { ...lead, startTime: a[0] });
 assert.equal(retry.j.booked, true, 'retried booking answers booked');
 const b2 = await call('/bookAppointment', { ...lead, startTime: a[0], email: 'other@x.com' });
-assert.equal(b2.j.booked, false); assert.equal(b2.j.reason, 'slot_taken');
+assert.equal(b2.j.booked, false); assert.equal(b2.j.reason, 'slot_taken'); assert.deepEqual(Object.keys(b2.j), KEYS); assert.equal(b2.j.meetLink, 'Not Available');
 assert.match(b2.j.toolResponse, /^Failure: That time was just taken\. Option 1: /); assert.ok(!starts(b2.j.toolResponse).includes(a[0]), 'taken time not re-offered');
 assert.ok(!starts((await call('/getAvailableSlots', { timezone: 'Asia/Kolkata' })).j.toolResponse).includes(a[0]), 'booked slot no longer offered');
 

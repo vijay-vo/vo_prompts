@@ -106,7 +106,7 @@ Inside the service:
 3. It creates the event with a Google Meet link, Daniel as guest; Google emails him the invite.
 
 ```json
-{"booked":true,
+{"booked":true,"reason":"booked",
  "toolResponse":"Success: The call is booked for tomorrow, eleven in the morning. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Wednesday, 25 November 2026, 11:00 AM (America/New_York)",
  "salesTime":"Wednesday, 25 November 2026, 9:30 PM (Asia/Kolkata)",
@@ -142,7 +142,7 @@ POST /sendGmail
 so Tanya offers them without checking again:
 
 ```json
-{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.","prospectTime":"Not Available","salesTime":"Not Available","meetLink":"Not Available","eventId":"Not Available"}
 ```
 
 > Tanya: "That time was just taken. I have ten forty-five or eleven fifteen. Which works?"

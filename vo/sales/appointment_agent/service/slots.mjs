@@ -163,6 +163,10 @@ export async function getAvailableSlots({ google, cfg, body, now = Date.now() })
   return { toolResponse: picked.length ? SAY.offer(opts(picked)) : SAY.none };
 }
 
+// Every bookAppointment reply has the same seven fields; the booking details are Not Available when not booked.
+const NA = 'Not Available';
+export const bookReply = (o) => ({ booked: false, reason: 'error', toolResponse: SAY.bookError, prospectTime: NA, salesTime: NA, meetLink: NA, eventId: NA, ...o });
+
 // startTime is the prospect's local time as offered ("2026-11-25T11:00"). It is booked only when it is
 // still one of the free slots; otherwise the reply offers the two free slots nearest to it.
 export async function bookAppointment({ google, cfg, body, now = Date.now() }) {
@@ -173,20 +177,20 @@ export async function bookAppointment({ google, cfg, body, now = Date.now() }) {
   const around = (ms) => nearest(free, ms).sort((a, b) => a.startMs - b.startMs).map(c => asOption(c.startMs, tz, now));
   const ref = startMs ?? now;
   const id = startMs === null ? '' : crypto.createHash('sha256').update(`${Math.round(startMs / MIN)}|${String(body.email).toLowerCase()}`).digest('hex').slice(0, 40);
-  const ok = (ev) => ({ booked: true,
+  const ok = (ev) => bookReply({ booked: true, reason: 'booked',
     toolResponse: SAY.booked(spokenLabel(startMs, tz, now)),
     prospectTime: `${writtenTime(startMs, tz)} (${tz})`,
     salesTime: `${writtenTime(startMs, cfg.salesTz)} (${cfg.salesTz})`,
-    meetLink: ev.hangoutLink || '', eventId: ev.id });
+    meetLink: ev.hangoutLink || NA, eventId: ev.id || NA });
   if (startMs === null || !free.some(c => c.startMs === startMs)) {
     if (startMs !== null && startMs > now) {
       // A retry of a booking that already went through finds its own event: answer booked again.
       const own = await google.get(id);
       if (own && own.status !== 'cancelled') return { status: 200, out: ok(own) };
       if (overlapsBusy(startMs, startMs + cfg.slotMin * MIN, busy, 0) && candidates({ busy: [], tz, now, cfg }).some(c => c.startMs === startMs))
-        return { status: 200, out: { booked: false, reason: 'slot_taken', toolResponse: SAY.taken(around(ref)) } };
+        return { status: 200, out: bookReply({ reason: 'slot_taken', toolResponse: SAY.taken(around(ref)) }) };
     }
-    return { status: 200, out: { booked: false, reason: 'not_offered', toolResponse: SAY.notOffered(around(ref)) } };
+    return { status: 200, out: bookReply({ reason: 'not_offered', toolResponse: SAY.notOffered(around(ref)) }) };
   }
   const endMs = startMs + cfg.slotMin * MIN;
   const company = clean(body.company), notes = clean(body.appointmentNotes);

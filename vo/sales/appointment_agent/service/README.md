@@ -16,8 +16,8 @@ Every request needs the header `x-api-key: <API_KEY from .env>`.
 
 Responses:
 - `/getAvailableSlots` → `{"toolResponse":"Success: Two times are free. Option 1: today, four in the evening, startTime 2026-11-24T16:00. Option 2: ..."}`
-- `/bookAppointment` → `{"booked":true,"toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"https://meet.google.com/...","eventId":"..."}`
-  or `{"booked":false,"reason":"slot_taken" | "not_offered" | "error","toolResponse":"..."}` (the first two offer new times)
+- `/bookAppointment` → always the same seven fields: `{"booked":true|false,"reason":"booked"|"slot_taken"|"not_offered"|"error","toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"...","eventId":"..."}`;
+  when not booked the last four are "Not Available" (slot_taken and not_offered offer new times)
 
 ## Rules built in
 - Slots are 15 minutes, every quarter hour (:00, :15, :30, :45), back to back, inside the sales team's hours (IST 9 AM to

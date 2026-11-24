@@ -257,8 +257,9 @@ PLATFORM_SETUP.md.
 Optional input: `tentative: true` for a penciled-in slot (Brandon's tactic), which
 the prospect can decline.
 
-Output: `booked: true` + `toolResponse` + `prospectTime` + `salesTime` + `meetLink` + `eventId`, or
-`booked: false` + `reason: slot_taken | not_offered | error` + `toolResponse`. A taken or not-offered
+Output: always the same seven fields, `booked`, `reason` (booked | slot_taken | not_offered | error),
+`toolResponse`, `prospectTime`, `salesTime`, `meetLink`, `eventId`; the last four are Not Available when
+not booked (fixed shape 2026-11-25). A taken or not-offered
 startTime gets the two free slots nearest to it in the toolResponse, so the model offers them at once.
 
 The calendar event adds the prospect as a guest, so Google itself emails the Meet
