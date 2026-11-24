@@ -408,6 +408,15 @@ nothing is booked, and CLOSING LINE D needs a Success Result; a time not written
 Result is checked with getAvailableSlots, never booked; the pre-send check covers all of this.
 On the platform, clear the getAvailableSlots preToolMessage if one is configured there.
 
+**PCA, same day.** The PCA counted a booking when "Tanya said it is done" and, with no
+`{{bookedTime}}`, took the time from her read-back, so that call would have sent a "booked"
+WhatsApp and email with an invented time. Now `{{bookedTime}}` (from the booking tool's reply) is
+the only proof of a booking and the only source of its time. Prospect agreed + no `{{bookedTime}}`
+= bookingFailed with the TIMES TO FOLLOW message, even when Tanya spoke as if it were booked.
+Sample times, names and pain phrases removed from the PCA. Depends on the platform saving
+prospectTime as bookedTime (PLATFORM_SETUP section 4): if that mapping is missing, every booked
+call is reported as bookingFailed.
+
 Choices made while writing (change any of them on request):
 - **Website or event leads** get B's shape with an honest first sentence ("You looked at
   VoiceOwl [lead context], so I wanted to reach you personally") instead of "I know you
