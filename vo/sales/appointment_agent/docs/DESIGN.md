@@ -227,9 +227,12 @@ out labels. LLMs are unreliable at date arithmetic and timezone conversion.
 
 Input:
 - `timezone` — prospect's IANA timezone (added by the platform)
-- `preferredDay` — optional: today, tomorrow, a weekday name, "in N days" or a date of the month
-  ("25"); the service works out the date in the prospect's timezone (changed 2026-11-20, was
-  preferredDate; "in N days" and dates added 2026-11-24)
+- `preferredDay` — optional, a closed list: today, tomorrow, day after tomorrow, a weekday name,
+  "in N days" or a date of the month ("25"); the service works out the date in the prospect's
+  timezone. A weekday that is today means today (next week when today is full); a date already gone
+  this month answers "That day has passed"; anything else answers "That day was not understood"
+  (closed list 2026-11-25). A free exact time is offered alone; one that is not available, for any
+  reason, gets "That time is not available" and the two nearest free times.
 - `preferredTime` — optional: morning / afternoon / evening, or an exact time such as 16:00
   (changed 2026-11-20, was partOfDay)
 - excludeSlotIds removed 2026-11-20: copying long ids back was a hallucination risk, and a new

@@ -5,7 +5,7 @@ never by the model. Plain Node 20, no packages to install.
 
 | Platform tool | Route | Body the platform sends |
 |---|---|---|
-| getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday..., `in 3 days`, or a date such as `25`), `preferredTime` (morning/afternoon/evening or 16:00) |
+| getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (one of: today, tomorrow, day after tomorrow, monday...sunday, `in N days`, or a date `1`-`31`), `preferredTime` (morning/afternoon/evening or `HH:MM` 24-hour) |
 | bookAppointment | `POST /bookAppointment` | from the model: `startTime` (copied from the chosen option), `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
 | sendGmail (after the PCA) | `POST /sendGmail` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. See docs/GMAIL_SETUP.md |
 

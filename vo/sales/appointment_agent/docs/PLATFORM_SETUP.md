@@ -1,6 +1,6 @@
 # Platform setup: contact upload, call variables, tool mapping, after-call messages
 
-Updated 2026-11-24 from the current files: default/default.txt (agent), pca/pca.txt (post-call analysis),
+Updated 2026-11-25 from the current files: default/default.txt (agent), pca/pca.txt (post-call analysis),
 service/server.mjs and service/slots.mjs (booking service). Field names below must match exactly.
 
 ---
@@ -66,8 +66,8 @@ Everything is in the **prospect's own time**: the model never sees IST or UTC.
 | Body key | Set by | Accepted values |
 |---|---|---|
 | timezone | platform, from the contact (hidden from the model) | an IANA name: Asia/Kolkata, America/New_York, Asia/Tokyo (required) |
-| preferredDay | model, only when the prospect named a day | `today`, `tomorrow`, `monday` ... `sunday`, `in N days` (e.g. `in 3 days`), or a date of the month as a number (`25`) |
-| preferredTime | model, only when the prospect named a time | `morning` (before 12), `afternoon` (12 to 4 PM), `evening` (4 PM on), or an exact 24-hour time `HH:MM` such as `16:00` |
+| preferredDay | model, only when the prospect named a day | exactly one of: `today`, `tomorrow`, `day after tomorrow`, `monday` ... `sunday`, `in N days` (digits, e.g. `in 4 days`), or the date of the month as digits `1` to `31` (e.g. `30`) |
+| preferredTime | model, only when the prospect named a time | `morning` (before 12), `afternoon` (12 to 4 PM), `evening` (4 PM on), or an exact 24-hour time `HH:MM` such as `16:00`. The model confirms an hour like "at four" (morning or afternoon?) before passing it |
 
 Both model parameters are text. Leave them out when the prospect named nothing: the service offers the earliest
 free times. A value it does not understand is ignored the same way.
@@ -77,7 +77,8 @@ preToolMessage: `Let me check the calendar.`
 Examples the service receives:
 - On the prospect's yes, no preference yet: `{"timezone":"Asia/Kolkata"}`
 - "Tomorrow at 4 PM?": `{"timezone":"Asia/Kolkata","preferredDay":"tomorrow","preferredTime":"16:00"}`
-  The 4:00 PM slot comes first when free, then the nearest other free slot.
+  When 4:00 PM is free, the reply offers that one time and Tanya asks "Shall I book it?". When it is not
+  available for any reason (taken, outside hours, passed), the reply says so and offers the two nearest free times.
 - "On the 27th, afternoon": `{"timezone":"America/New_York","preferredDay":"27","preferredTime":"afternoon"}`
 - "In three days": `{"timezone":"Asia/Tokyo","preferredDay":"in 3 days"}`
 
@@ -95,7 +96,11 @@ Every toolResponse starts with `Success:` or `Failure:`. All of them:
 | Two free | `Success: Two times are free. Option 1: …, startTime …. Option 2: …, startTime …. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.` |
 | One free | `Success: One time is free. The one free time is Wednesday, twelve noon, startTime 2026-11-25T12:00. Offer it in words, never the startTime, and ask if it works. To book, pass this startTime.` |
 | Nothing free | `Failure: No time is free for that request. Ask which other day suits them.` |
-| Weekend asked (Saturday, Sunday, or a date that falls on one) | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
+| Exact time asked, free | `Success: That time is free: tomorrow, four in the evening, startTime 2026-11-25T16:00. Say it in words, never the startTime, and ask if they want it. On a yes, book this startTime.` |
+| Exact time asked, not available | `Failure: That time is not available. Option 1: …, startTime …. Option 2: …, startTime …. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.` |
+| Weekend asked (Saturday, Sunday, or a date that falls on one) | `Failure: Calls are Monday to Friday only. Ask which weekday suits them.` |
+| Day already passed (yesterday, or a date earlier this month) | `Failure: That day has passed. Ask which day suits them.` |
+| Day not in the list (e.g. "next week") | `Failure: That day was not understood. Ask which day suits them.` |
 | More than 15 days away | `Failure: That day is more than 15 days away. Ask for a day in the next 15 days.` |
 | Service or Google down | `Failure: The calendar could not be checked. Tell the prospect our team will send them the details on email and WhatsApp.` |
 
@@ -128,7 +133,7 @@ within 15 days, free in Google). Result when booked:
 
 ```json
 {"booked":true,
- "toolResponse":"Success: The demo is booked for tomorrow, four in the evening. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
+ "toolResponse":"Success: The call is booked for tomorrow, four in the evening. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Wednesday, 25 November 2026, 4:00 PM (Asia/Kolkata)",
  "salesTime":"Wednesday, 25 November 2026, 4:00 PM (Asia/Kolkata)",
  "meetLink":"https://meet.google.com/abc-defg-hij","eventId":"bc64c442..."}

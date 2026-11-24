@@ -1,6 +1,6 @@
 # One call, step by step, with every tool call
 
-Updated 2026-11-24 for the startTime design. Every toolResponse below is the real output of the service
+Updated 2026-11-25 for the startTime design, the preferredDay list and the single-time offer. Every toolResponse below is the real output of the service
 code (`service/slots.mjs`) run with a fixed date and time and an in-memory calendar. Only the Meet link
 and the event id are made up.
 
@@ -64,17 +64,27 @@ POST /getAvailableSlots
 {"timezone":"America/New_York","preferredDay":"tomorrow","preferredTime":"11:00"}
 ```
 
-When his exact time is free, it comes first; the other option is the nearest free one.
+When his exact time is free, the reply offers that one time alone, and Tanya asks before booking.
 
 ```json
-{"toolResponse":"Success: Two times are free. Option 1: tomorrow, eleven in the morning, startTime 2026-11-25T11:00. Option 2: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+{"toolResponse":"Success: That time is free: tomorrow, eleven in the morning, startTime 2026-11-25T11:00. Say it in words, never the startTime, and ask if they want it. On a yes, book this startTime."}
 ```
 
-> Tanya: "Tomorrow at eleven in the morning works, or ten forty-five. Which do you prefer?"
-> Daniel: "Hmm, let me look… yes, eleven."
+> Tanya: "Tomorrow at eleven in the morning, your time, is free. Shall I book it?"
+> Daniel: "Hmm, let me look… yes, go ahead."
 
-It took him two turns. Tanya finds "eleven" in Option 1 of the latest toolResponse and takes its
-startTime.
+It took him two turns. Tanya takes the startTime from that toolResponse.
+
+If he had asked for 2 PM, which is after Hussain's day ends, the reply would be:
+
+```json
+{"toolResponse":"Failure: That time is not available. Option 1: tomorrow, twelve noon, startTime 2026-11-25T12:00. Option 2: tomorrow, twelve fifteen in the afternoon, startTime 2026-11-25T12:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+```
+
+> Tanya: "Sorry, that time is not available. I have twelve noon or twelve fifteen, your time. Which works better?"
+
+She never says why. If he had said only "at two", she would first ask "Two in the afternoon?" and pass
+`14:00` after his yes.
 
 ## Step 5. Tanya books
 
@@ -97,7 +107,7 @@ Inside the service:
 
 ```json
 {"booked":true,
- "toolResponse":"Success: The demo is booked for tomorrow, eleven in the morning. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
+ "toolResponse":"Success: The call is booked for tomorrow, eleven in the morning. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
  "prospectTime":"Wednesday, 25 November 2026, 11:00 AM (America/New_York)",
  "salesTime":"Wednesday, 25 November 2026, 9:30 PM (Asia/Kolkata)",
  "meetLink":"https://meet.google.com/abc-defg-hij",
@@ -148,13 +158,16 @@ so Tanya offers them without checking again:
 
 | Daniel says | preferredDay | toolResponse starts |
 |---|---|---|
-| "Thursday" | `thursday` | `Success: Two times are free. Option 1: Thursday, nine in the morning, startTime 2026-11-26T09:00. …` |
-| "On the 27th" | `27` | `Success: Two times are free. Option 1: Friday, nine in the morning, startTime 2026-11-27T09:00. …` |
-| "In three days" | `in 3 days` | `Success: Two times are free. Option 1: Friday, nine in the morning, startTime 2026-11-27T09:00. …` |
-| "Saturday" | `saturday` | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
-| "The 10th of December" | `10` | `Failure: That day is more than 15 days away. Ask for a day in the next 15 days.` |
+| "Thursday" | `thursday` | `Success: Two times are free. Option 1: Thursday the twenty-sixth of November, nine in the morning, startTime 2026-11-26T09:00. …` |
+| "On the 27th" | `27` | `Success: Two times are free. Option 1: Friday the twenty-seventh of November, nine in the morning, startTime 2026-11-27T09:00. …` |
+| "In three days" | `in 3 days` | `Success: Two times are free. Option 1: Friday the twenty-seventh of November, nine in the morning, startTime 2026-11-27T09:00. …` |
+| "Day after tomorrow" | `day after tomorrow` | `Success: Two times are free. Option 1: Thursday the twenty-sixth of November, nine in the morning, startTime 2026-11-26T09:00. …` |
+| "Saturday" | `saturday` | `Failure: Calls are Monday to Friday only. Ask which weekday suits them.` |
+| "The 20th" (already gone) | `20` | `Failure: That day has passed. Ask which day suits them.` |
+| "Next week" | not passed: Tanya asks which day first | (if passed anyway) `Failure: That day was not understood. Ask which day suits them.` |
+| "The 31st" | `31` | `Failure: That day is more than 15 days away. Ask for a day in the next 15 days.` |
 
-Beyond a week, the words name the date, e.g. "Friday the fourth of December, nine in the morning".
+For any day other than today and tomorrow, the words name the date, so a wrong day is heard before booking.
 
 **Nothing is free that day.** `Failure: No time is free for that request. Ask which other day suits them.`
 
