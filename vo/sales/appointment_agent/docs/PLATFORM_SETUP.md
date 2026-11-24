@@ -1,6 +1,6 @@
 # Platform setup: contact upload, call variables, tool mapping, after-call messages
 
-Updated 2026-11-20 from the current files: default/default.txt (agent), pca/pca.txt (post-call analysis),
+Updated 2026-11-24 from the current files: default/default.txt (agent), pca/pca.txt (post-call analysis),
 service/server.mjs and service/slots.mjs (booking service). Field names below must match exactly.
 
 ---
@@ -61,38 +61,42 @@ Greeting (first message): `Hi {{fname}}, it's Tanya from VoiceOwl.`, played afte
 ## 3. Tool 1: getAvailableSlots
 
 `POST https://<your-host>/getAvailableSlots`, headers `x-api-key: <API_KEY>` and `content-type: application/json`.
+Everything is in the **prospect's own time**: the model never sees IST or UTC.
 
-| Body key | Set by | Value |
+| Body key | Set by | Accepted values |
 |---|---|---|
-| timezone | platform, from the contact | Asia/Kolkata (required) |
-| preferredDay | model, only when the prospect named a day | today, tomorrow, monday ... friday (saturday, sunday answer "weekdays only") |
-| preferredTime | model, only when the prospect named a time | morning, afternoon, evening, or an exact time in 24-hour form such as 16:00 |
+| timezone | platform, from the contact (hidden from the model) | an IANA name: Asia/Kolkata, America/New_York, Asia/Tokyo (required) |
+| preferredDay | model, only when the prospect named a day | `today`, `tomorrow`, `monday` ... `sunday`, `in N days` (e.g. `in 3 days`), or a date of the month as a number (`25`) |
+| preferredTime | model, only when the prospect named a time | `morning` (before 12), `afternoon` (12 to 4 PM), `evening` (4 PM on), or an exact 24-hour time `HH:MM` such as `16:00` |
+
+Both model parameters are text. Leave them out when the prospect named nothing: the service offers the earliest
+free times. A value it does not understand is ignored the same way.
 
 preToolMessage: `Let me check the calendar.`
 
 Examples the service receives:
-- No preference: `{"timezone":"Asia/Kolkata"}`
+- On the prospect's yes, no preference yet: `{"timezone":"Asia/Kolkata"}`
 - "Tomorrow at 4 PM?": `{"timezone":"Asia/Kolkata","preferredDay":"tomorrow","preferredTime":"16:00"}`
   The 4:00 PM slot comes first when free, then the nearest other free slot.
-- "Wednesday afternoon": `{"timezone":"America/New_York","preferredDay":"wednesday","preferredTime":"afternoon"}`
+- "On the 27th, afternoon": `{"timezone":"America/New_York","preferredDay":"27","preferredTime":"afternoon"}`
+- "In three days": `{"timezone":"Asia/Tokyo","preferredDay":"in 3 days"}`
 
-Result (what the model reads):
+Result: the toolResponse only. Each option has its time in words (spoken) and its `startTime` (copied into
+bookAppointment, never spoken), the prospect's local time:
 
 ```json
-{"slots":[
- {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
- {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
- "toolResponse":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
+{"toolResponse":"Success: Two times are free. Option 1: tomorrow, four in the evening, startTime 2026-11-25T16:00. Option 2: tomorrow, five in the evening, startTime 2026-11-25T17:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
 Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
 | Case | toolResponse |
 |---|---|
-| Two slots | `Success: Two times are free: today, four in the evening, or today, five in the evening. Offer both and ask which works better.` |
-| One slot | `Success: One time is free: Wednesday, twelve noon. Offer it and ask if it works.` |
-| Nothing free | `Failure: No time is free for that request. Ask which other day or time in the next seven days suits them.` |
-| Weekend asked | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
+| Two free | `Success: Two times are free. Option 1: …, startTime …. Option 2: …, startTime …. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.` |
+| One free | `Success: One time is free. The one free time is Wednesday, twelve noon, startTime 2026-11-25T12:00. Offer it in words, never the startTime, and ask if it works. To book, pass this startTime.` |
+| Nothing free | `Failure: No time is free for that request. Ask which other day suits them.` |
+| Weekend asked (Saturday, Sunday, or a date that falls on one) | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
+| More than 15 days away | `Failure: That day is more than 15 days away. Ask for a day in the next 15 days.` |
 | Service or Google down | `Failure: The calendar could not be checked. Tell the prospect our team will send them the details on email and WhatsApp.` |
 
 ---
@@ -103,7 +107,7 @@ Every toolResponse starts with `Success:` or `Failure:`. All of them:
 
 | Body key | Set by | Value | Required |
 |---|---|---|---|
-| slotId | model | the chosen slot's slotId, e.g. htdbu-31f5ca | yes |
+| startTime | model | copied from the chosen option, e.g. `2026-11-25T16:00` (prospect's local time) | yes |
 | appointmentNotes | model | one English line: their problem, any colleague, any email request, or "none" | no |
 | email | platform, from the contact | priya@brightloans.com | yes |
 | timezone | platform, from the contact | Asia/Kolkata | yes |
@@ -114,30 +118,36 @@ Every toolResponse starts with `Success:` or `Failure:`. All of them:
 Example the service receives:
 
 ```json
-{"slotId":"htdbu-31f5ca","appointmentNotes":"weekend leads wait until Monday, half are lost",
+{"startTime":"2026-11-25T16:00","appointmentNotes":"weekend leads wait until Monday, half are lost",
  "email":"priya@brightloans.com","timezone":"Asia/Kolkata","fname":"Priya","lname":"Sharma",
  "company":"BrightLoans Financial Services Pvt Ltd"}
 ```
 
-Result when booked:
+The service books the startTime only when it is still one of the free slots (15-minute grid, both working hours,
+within 15 days, free in Google). Result when booked:
 
 ```json
-{"booked":true,"spokenLabel":"today, three in the afternoon",
- "toolResponse":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
- "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
- "salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
- "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"bc64c442..."}
+{"booked":true,
+ "toolResponse":"Success: The demo is booked for tomorrow, four in the evening. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
+ "prospectTime":"Wednesday, 25 November 2026, 4:00 PM (Asia/Kolkata)",
+ "salesTime":"Wednesday, 25 November 2026, 4:00 PM (Asia/Kolkata)",
+ "meetLink":"https://meet.google.com/abc-defg-hij","eventId":"bc64c442..."}
 ```
 
-- Slot taken: `{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Check the calendar again and offer the new times."}`
+For a New York prospect at 11:00 AM their time: `prospectTime` "Wednesday, 25 November 2026, 11:00 AM
+(America/New_York)", `salesTime` "Wednesday, 25 November 2026, 9:30 PM (Asia/Kolkata)".
+
+Not booked (each comes with the two free times nearest the one asked, so the model offers them at once):
+- Taken meanwhile: `{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: …, startTime …. Option 2: …"}`
+- Wrong or garbled startTime: `{"booked":false,"reason":"not_offered","toolResponse":"Failure: That startTime is not a free time. Option 1: …"}`
 - Error: `{"booked":false,"reason":"error","toolResponse":"Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again."}`
 
-**Save two fields from this reply as call variables for the PCA:** `prospectTime` → `bookedTime`, and
-`meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
+A repeat of a booking that already went through answers booked again, with no second event.
 
-Timezones: Google stores one moment in time (startUtc). The service writes it in the prospect's timezone
-(`prospectTime`, used in messages) and in the sales team's (`salesTime`, for your CRM). Google shows the event in
-each person's own calendar timezone by itself. Nobody converts anything by hand.
+**Save from this reply as call variables:** `prospectTime` → `bookedTime` (used by the PCA), `salesTime` →
+`salesTime` (for the CRM), and `meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
+
+Google shows the event in each person's own calendar timezone by itself. Nobody converts anything by hand.
 
 ## 5. Tool 3: callhangup
 
@@ -218,8 +228,8 @@ asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "n
    Not Available where unknown; valid timezone and email.
 2. Agent variables: fname, company, industry, defaultLanguage, priorContext. Nothing else.
 3. getAvailableSlots: timezone added by the platform; preferredDay and preferredTime from the model.
-4. bookAppointment: slotId and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
-5. Save bookAppointment's `prospectTime` and `meetLink` as call variables `bookedTime` and `meetLink` for the PCA.
+4. bookAppointment: startTime and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
+5. Save bookAppointment's `prospectTime`, `salesTime` and `meetLink` as call variables `bookedTime`, `salesTime` and `meetLink`.
 6. PCA inputs as in section 6; three message fields mapped; emailStatus and correctedEmail gone.
 7. sendGmail tool after the PCA: to, subject, body (section 5a). Token from `node auth.mjs` with the Gmail scopes.
 8. Server and ngrok running; test the URL from Postman first.

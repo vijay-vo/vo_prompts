@@ -1,6 +1,6 @@
 // Slot maths: all date, time and timezone work lives here, never in the model.
 import crypto from 'node:crypto';
-import { parts, spokenLabel, localDateString, writtenTime } from './labels.mjs';
+import { parts, spokenLabel, localDateString, writtenTime, localStartTime, parseStartTime } from './labels.mjs';
 
 const MIN = 60000;
 export function config(env) {
@@ -11,23 +11,10 @@ export function config(env) {
     workDays: (env.WORK_DAYS || '1,2,3,4,5').split(',').map(Number),
     prospectStart: n('PROSPECT_START_HOUR', 9) * 60, prospectEnd: n('PROSPECT_END_HOUR', 19) * 60,
     slotMin: n('SLOT_MINUTES', 15), gridMin: n('GRID_MINUTES', 15), bufferMin: n('BUFFER_MINUTES', 0),
-    noticeMin: n('MIN_NOTICE_MINUTES', 10), windowDays: n('WINDOW_DAYS', 7),
+    noticeMin: n('MIN_NOTICE_MINUTES', 10), windowDays: n('WINDOW_DAYS', 15),
     gapsMin: (env.SECOND_SLOT_GAPS_MINUTES || '60,30').split(',').map(Number),
     avoidFriday: env.AVOID_FRIDAY === '1',
-    secret: env.SLOT_SECRET || 'dev-secret-change-me',
   };
-}
-// A slotId is short so the model copies it reliably: the start minute in base 36, a dash, and
-// 6 hex characters of an HMAC with SLOT_SECRET, e.g. "tqd3s0-1a2b3c". The model cannot invent one.
-export function signSlot(startMs, secret) {
-  const m = Math.round(startMs / MIN).toString(36);
-  return `${m}-${crypto.createHmac('sha256', secret).update(m).digest('hex').slice(0, 6)}`;
-}
-export function verifySlot(slotId, secret) {
-  const m = String(slotId || '').trim().toLowerCase().split('-')[0];
-  if (!/^[0-9a-z]+$/.test(m)) return null;
-  const startMs = parseInt(m, 36) * MIN;
-  return Number.isFinite(startMs) && signSlot(startMs, secret) === String(slotId).trim().toLowerCase() ? startMs : null;
 }
 // Values the platform sends for unknown details count as absent.
 export const clean = (v) => { const t = String(v ?? '').trim(); return /^(|null|undefined|not available|n\/a)$/i.test(t) ? '' : t; };
@@ -69,28 +56,42 @@ export function pickTwo(list, cfg) {
   b ||= pool.find(c => c.startMs > a.startMs);
   return b ? [a, b] : [a];
 }
-// toolResponse: the line every reply carries for the model: "Success:" or "Failure:", then what to do.
+// toolResponse: the only thing the model reads: "Success:" or "Failure:", then what to do. Each offered
+// time carries its startTime (the prospect's local time), which the model copies into bookAppointment.
+const opt = (o) => `${o.label}, startTime ${o.startTime}`;
+const offer = (os) => os.length === 2
+  ? `Option 1: ${opt(os[0])}. Option 2: ${opt(os[1])}. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.`
+  : `The one free time is ${opt(os[0])}. Offer it in words, never the startTime, and ask if it works. To book, pass this startTime.`;
 export const SAY = {
-  two: (a, b) => `Success: Two times are free: ${a}, or ${b}. Offer both and ask which works better.`,
-  one: (a) => `Success: One time is free: ${a}. Offer it and ask if it works.`,
+  offer: (os) => `Success: ${os.length === 2 ? 'Two times are free.' : 'One time is free.'} ${offer(os)}`,
   booked: (a) => `Success: The demo is booked for ${a}. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.`,
-  none: 'Failure: No time is free for that request. Ask which other day or time in the next seven days suits them.',
+  none: 'Failure: No time is free for that request. Ask which other day suits them.',
   weekend: 'Failure: Demos are Monday to Friday only. Ask which weekday suits them.',
+  tooFar: (n) => `Failure: That day is more than ${n} days away. Ask for a day in the next ${n} days.`,
   calendarDown: 'Failure: The calendar could not be checked. Tell the prospect our team will send them the details on email and WhatsApp.',
-  taken: 'Failure: That time was just taken. Check the calendar again and offer the new times.',
+  taken: (os) => `Failure: That time was just taken. ${os.length ? offer(os) : 'No other time is free nearby. Ask which other day suits them.'}`,
+  notOffered: (os) => `Failure: That startTime is not a free time. ${os.length ? offer(os) : 'Ask which other day suits them.'}`,
   bookError: 'Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again.',
 };
 const DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-// preferredDay (today, tomorrow or a weekday name) becomes a date in the PROSPECT's timezone, so the
-// model never works out a date. A weekday name means its next date after today, within the window.
+// preferredDay becomes a date in the PROSPECT's timezone, so the model never works out a date. Accepted:
+// today, tomorrow, a weekday name (its next date after today), "in N days", or a day of the month ("27",
+// the next 27th, today included). Returns { date, wd }, { tooFar: true }, or null when absent or unknown.
 export function resolveDay(day, tz, now, cfg) {
-  const d = clean(day).toLowerCase();
+  const d = clean(day).toLowerCase().replace(/\s+/g, ' ');
   if (!d) return null;
-  if (d === 'today') return localDateString(now, tz);
-  if (d === 'tomorrow') return localDateString(now + 86400000, tz);
+  const at = (k) => k > cfg.windowDays ? { tooFar: true } : { date: localDateString(now + k * 86400000, tz), wd: parts(now + k * 86400000, tz).wd };
+  if (d === 'today') return at(0);
+  if (d === 'tomorrow') return at(1);
+  const inN = d.match(/^in (\d{1,3}) days?$/);
+  if (inN) return at(+inN[1]);
   const wd = DAYS.indexOf(d);
-  if (wd < 0) return null;
-  for (let k = 1; k <= cfg.windowDays; k++) if (parts(now + k * 86400000, tz).wd === wd) return localDateString(now + k * 86400000, tz);
+  if (wd >= 0) { for (let k = 1; k <= 7; k++) if (parts(now + k * 86400000, tz).wd === wd) return at(k); }
+  const dom = d.match(/^(\d{1,2})$/);
+  if (dom && +dom[1] >= 1 && +dom[1] <= 31) {
+    for (let k = 0; k <= cfg.windowDays; k++) if (parts(now + k * 86400000, tz).d === +dom[1]) return at(k);
+    return { tooFar: true };
+  }
   return null;
 }
 // preferredTime: morning / afternoon / evening, or an exact time HH:MM (24-hour, prospect's time).
@@ -101,13 +102,19 @@ export function parseTime(t) {
   if (m && +m[1] < 24 && +m[2] < 60) return { minute: +m[1] * 60 + +m[2] };
   return {};
 }
+const asOption = (ms, tz, now) => ({ startMs: ms, label: spokenLabel(ms, tz, now), startTime: localStartTime(ms, tz) });
+// The free slots nearest a moment, nearest first.
+const nearest = (list, ms, n = 2) => [...list].sort((a, b) => Math.abs(a.startMs - ms) - Math.abs(b.startMs - ms) || a.startMs - b.startMs).slice(0, n);
+
 export async function getAvailableSlots({ google, cfg, body, now = Date.now() }) {
   const tz = body.timezone;
-  const day = clean(body.preferredDay).toLowerCase();
-  const date = resolveDay(day, tz, now, cfg);
+  const day = resolveDay(body.preferredDay, tz, now, cfg);
+  if (day?.tooFar) return { toolResponse: SAY.tooFar(cfg.windowDays) };
+  if (day && (day.wd === 0 || day.wd === 6)) return { toolResponse: SAY.weekend };
+  const date = day?.date;
   const time = parseTime(body.preferredTime);
   const busy = await google.busy(now, now + (cfg.windowDays + 1) * 86400000);
-  const list = candidates({ busy, tz, now, cfg, partOfDay: time.part, preferredDate: date || undefined });
+  const list = candidates({ busy, tz, now, cfg, partOfDay: time.part, preferredDate: date });
   let picked;
   if (time.minute !== undefined) {
     // An exact time: the free slot nearest to it first (the time itself when free), then the next nearest.
@@ -115,32 +122,35 @@ export async function getAvailableSlots({ google, cfg, body, now = Date.now() })
     const dist = (c) => { const p = parts(c.startMs, tz); return Math.abs(p.h * 60 + p.mi - time.minute) + (date ? 0 : (c.startMs - now) / 86400000 * 1440); };
     picked = [...list].sort((a, b) => dist(a) - dist(b) || a.startMs - b.startMs).slice(0, 2);
   } else picked = pickTwo(list, cfg);
-  const slots = picked.map(c => ({ slotId: signSlot(c.startMs, cfg.secret), startUtc: new Date(c.startMs).toISOString(), spokenLabel: spokenLabel(c.startMs, tz, now) }));
-  const toolResponse = slots.length === 2 ? SAY.two(slots[0].spokenLabel, slots[1].spokenLabel)
-    : slots.length === 1 ? SAY.one(slots[0].spokenLabel)
-    : day === 'saturday' || day === 'sunday' ? SAY.weekend : SAY.none;
-  return { slots, toolResponse };
+  return { toolResponse: picked.length ? SAY.offer(picked.map(c => asOption(c.startMs, tz, now))) : SAY.none };
 }
+
+// startTime is the prospect's local time as offered ("2026-11-25T11:00"). It is booked only when it is
+// still one of the free slots; otherwise the reply offers the two free slots nearest to it.
 export async function bookAppointment({ google, cfg, body, now = Date.now() }) {
-  const fail = { booked: false, reason: 'error', toolResponse: SAY.bookError };
-  const startMs = verifySlot(body.slotId, cfg.secret);
-  if (startMs === null || startMs < now) return { status: 400, out: fail };
-  const endMs = startMs + cfg.slotMin * MIN;
-  const label = spokenLabel(startMs, body.timezone, now);
-  const ok = (ev) => ({ booked: true, spokenLabel: label,
-    toolResponse: SAY.booked(label),
-    prospectTime: `${writtenTime(startMs, body.timezone)} (${body.timezone})`,
+  const tz = body.timezone;
+  const startMs = parseStartTime(body.startTime, tz);
+  const busy = await google.busy(now, now + (cfg.windowDays + 1) * 86400000);
+  const free = candidates({ busy, tz, now, cfg });
+  const around = (ms) => nearest(free, ms).sort((a, b) => a.startMs - b.startMs).map(c => asOption(c.startMs, tz, now));
+  const ref = startMs ?? now;
+  const id = startMs === null ? '' : crypto.createHash('sha256').update(`${Math.round(startMs / MIN)}|${String(body.email).toLowerCase()}`).digest('hex').slice(0, 40);
+  const ok = (ev) => ({ booked: true,
+    toolResponse: SAY.booked(spokenLabel(startMs, tz, now)),
+    prospectTime: `${writtenTime(startMs, tz)} (${tz})`,
     salesTime: `${writtenTime(startMs, cfg.salesTz)} (${cfg.salesTz})`,
-    startUtc: new Date(startMs).toISOString(), meetLink: ev.hangoutLink || '', eventId: ev.id });
-  const slotKey = signSlot(startMs, cfg.secret);
-  const id = crypto.createHash('sha256').update(`${slotKey}|${String(body.email).toLowerCase()}`).digest('hex').slice(0, 40);
-  const busy = await google.busy(startMs - 1, endMs + 1);
-  if (overlapsBusy(startMs, endMs, busy, 0)) {
-    // A retry of a booking that already went through finds its own event: answer booked again.
-    const own = await google.get(id);
-    if (own && own.status !== 'cancelled') return { status: 200, out: ok(own) };
-    return { status: 200, out: { booked: false, reason: 'slot_taken', toolResponse: SAY.taken } };
+    meetLink: ev.hangoutLink || '', eventId: ev.id });
+  if (startMs === null || !free.some(c => c.startMs === startMs)) {
+    if (startMs !== null && startMs > now) {
+      // A retry of a booking that already went through finds its own event: answer booked again.
+      const own = await google.get(id);
+      if (own && own.status !== 'cancelled') return { status: 200, out: ok(own) };
+      if (overlapsBusy(startMs, startMs + cfg.slotMin * MIN, busy, 0) && candidates({ busy: [], tz, now, cfg }).some(c => c.startMs === startMs))
+        return { status: 200, out: { booked: false, reason: 'slot_taken', toolResponse: SAY.taken(around(ref)) } };
+    }
+    return { status: 200, out: { booked: false, reason: 'not_offered', toolResponse: SAY.notOffered(around(ref)) } };
   }
+  const endMs = startMs + cfg.slotMin * MIN;
   const company = clean(body.company), notes = clean(body.appointmentNotes);
   const name = [clean(body.fname), clean(body.lname)].filter(Boolean).join(' ');
   const who = name || String(body.email).split('@')[0];
@@ -150,6 +160,7 @@ export async function bookAppointment({ google, cfg, body, now = Date.now() }) {
     description: [company ? `Company: ${company}` : '', notes && notes.toLowerCase() !== 'none' ? `Notes: ${notes}` : ''].filter(Boolean).join('\n'),
     requestId: id,
   });
+  if (res.duplicate) return { status: 200, out: ok({ ...res.event, id: res.event?.id || id }) };
   let ev = res.event;
   for (let i = 0; i < 3 && !ev.hangoutLink; i++) { await new Promise(s => setTimeout(s, 1000)); ev = (await google.get(id)) || ev; }
   return { status: 200, out: ok({ ...ev, id: ev.id || id }) };

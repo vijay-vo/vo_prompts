@@ -1,362 +1,178 @@
-# Two calls, step by step, with every tool call (India and US)
+# One call, step by step, with every tool call
 
-What happens on the line, inside the model, on the platform, in our service and at Google. The
-slot times, labels and IDs below are the real output of the service code
-(`service/slots.mjs`), run with a fixed date and time. Only the Meet links and the ngrok URL are
-made up.
+Updated 2026-11-24 for the startTime design. Every toolResponse below is the real output of the service
+code (`service/slots.mjs`) run with a fixed date and time and an in-memory calendar. Only the Meet link
+and the event id are made up.
 
-Setup used in both calls:
-- Calendar: vijay.c@voiceowl.ai, `CALENDAR_ID=primary`.
-- Service on the laptop at port 8787, reached by the platform through
-  `https://tanya-tools.ngrok-free.app` (example).
-- Settings from `.env.example`: sales hours IST 9:00 AM to 11:00 PM, Monday to Friday; the prospect's
-  own 9:00 AM to 7:00 PM, Monday to Friday; 15-minute demos every quarter hour (:00, :15, :30,
-  :45); at least 10 minutes' notice; up to 7 days ahead; the second offer at least 60 minutes
-  after the first, else at least 30 minutes, else the next free slot.
+The example:
+- Today: Tuesday 24 November 2026. The call is at 10:00 AM in New York, 8:30 PM in India.
+- Prospect: Daniel, Harbor Lending, New York (`America/New_York`).
+- Hussain's calendar: busy today until 11 PM IST. His hours, 9 AM to 11 PM IST, are 9:00 AM to
+  12:30 PM in New York.
+- Settings from `.env.example`: 15-minute demos every quarter hour, the prospect's own 9 AM to 7 PM,
+  Monday to Friday, at least 10 minutes' notice, up to 15 days ahead, the second offer about an hour
+  after the first.
 
----
-
-## First, the short answer: how does Tanya know which times are free?
-
-She doesn't, until she asks the service. Times are never in the prompt, never in her memory and
-never guessed. The prompt allows her to speak a time only from a getAvailableSlots Result, and to
-book only a slotId from that Result. So the order is always:
-
-1. The prospect agrees to the fifteen minutes.
-2. Tanya calls getAvailableSlots, and the prospect hears "Let me check the calendar."
-3. The service asks Google which times are busy, works out which are free and fit both
-   timezones, and returns two of them as ready-to-say English labels.
-4. Only then does Tanya say "I have today at two in the afternoon or today at three in the
-   afternoon."
-
-If Tanya ever said "two or three" before step 2, that would be the model inventing times: a prompt
-violation, and the booking would fail anyway, because the service only accepts slotIds it signed.
+**The one rule:** everything the model sees is in Daniel's own time. The service does every date,
+timezone and calendar step. The model reads one thing, the `toolResponse`, speaks the words in it, and
+copies a `startTime` from it to book.
 
 ---
 
-## Call 1: India
+## Step 1. The call starts
 
-Prospect: Priya Sharma, BrightLoans, Mumbai. Lead data from the platform: `fname=Priya`,
-`company=BrightLoans`, `industry=lending`, `timezone=Asia/Kolkata`, `defaultLanguage=English`,
-`priorContext=First call to them. Sales head at a
-lending company, number from a purchased business list.` The platform also holds `lname=Sharma`,
-`email=priya@brightloans.com` and `timezone=Asia/Kolkata` for the tools; the model never sees them.
+The platform dials Daniel with his contact row:
 
-The call happens on **Monday 23 November 2026 at 12:45 PM IST** (07:15 UTC). Vijay's calendar
-already has a meeting from 1:00 to 2:00 PM IST today.
-
-### Step 1. The platform dials, Priya answers
-Priya: "Hello?"
-The platform plays the first message (no model involved): "Hi Priya, it's Tanya from VoiceOwl."
-
-### Step 2. The opener (model turn, no tool)
-Priya: "Yes?"
-Tanya: "I know you weren't expecting my call. We work with lending companies like BrightLoans on
-one thing: every customer call answered and handled well, in the customer's own language. Can I
-tell you why I called you specifically?"
-Inside: the prompt's EVERY OTHER FIRST CALL line, because `priorContext` shows no earlier
-conversation and no website or event visit, with [industry] and [company] filled from the lead data.
-
-### Step 3. Value line and the three-problem question (no tool)
-Priya: "Go on."
-Tanya: "We build voice AI agents that talk to your customers like a person, in their own
-language, and handle thousands of calls at once, connected to your own systems. Most teams tell us
-one of three things: calls wait too long, there are more calls than the team can handle, or
-customers want their own language. Which is closest to you?"
-
-### Step 4. Her problem (no tool)
-Priya: "Too late. Weekend leads wait until Monday."
-Tanya: "Tell me more about that."
-Priya: "By Monday half of them have gone elsewhere."
-
-### Step 5. The ask (no tool)
-Tanya: "That's exactly what we build for. Would it make sense to spend fifteen minutes with
-Hussain, our sales head, and see it working on weekend leads that wait until Monday?"
-Then silence until Priya answers.
-Priya: "Sure, why not."
-
-### Step 6. Tanya checks the calendar (tool call 1: getAvailableSlots)
-The model's turn has no text. It invokes getAvailableSlots with no parameters, and
-`preToolMessage: "Let me check the calendar."`
-- No preferredDay and no preferredTime, because Priya named no preference.
-- **The platform** speaks the preToolMessage to Priya, then sends the HTTP request, adding
-  `timezone` from the contact:
 ```
-POST https://tanya-tools.ngrok-free.app/getAvailableSlots
-x-api-key: <API_KEY>
-content-type: application/json
-
-{"timezone":"Asia/Kolkata"}
+fname=Daniel, company=Harbor Lending, email=daniel@harborlending.com, timezone=America/New_York,
+defaultLanguage=English, priorContext=Not Available
 ```
-- **ngrok** forwards it to `http://localhost:8787/getAvailableSlots` on the laptop.
 
-### Step 7. Inside the service: /getAvailableSlots
-1. **Key check:** the `x-api-key` header must equal `API_KEY` in `.env`, otherwise 401.
-2. **Timezone check:** `Asia/Kolkata` must be a real IANA timezone, otherwise 400.
-3. **Google login:** if the cached access token is older than about 58 minutes, the service
-   swaps the refresh token for a new one:
-   `POST https://oauth2.googleapis.com/token` with grant_type `refresh_token`. Google returns an
-   access token valid for one hour, which is then cached.
-4. **Busy times from Google:**
-```
-POST https://www.googleapis.com/calendar/v3/freeBusy
-{"timeMin":"2026-11-23T07:15:00Z","timeMax":"2026-12-01T07:15:00Z","items":[{"id":"primary"}]}
-```
-   Google answers with only the busy blocks, not their titles:
-   `busy: [{"start":"2026-11-23T07:30:00Z","end":"2026-11-23T08:30:00Z"}]` (1:00 to 2:00 PM IST).
-5. **The first possible start:** now + 10 minutes of notice = 07:25 UTC (12:55 PM IST), rounded
-   up to the next quarter hour = **07:30 UTC (1:00 PM IST)**.
-6. **Walk forward in 15-minute steps** for 7 days. Each candidate must pass all checks:
+Tanya talks about his problem and asks whether fifteen minutes with Hussain makes sense. He says yes.
 
-| Candidate | In IST (sales) | In Priya's time | Check that fails |
-|---|---|---|---|
-| 07:30 to 08:15 UTC | Mon 1:00 to 1:45 PM | Mon 1:00 to 1:45 PM | overlaps the 1:00 to 2:00 PM meeting |
-| **08:30 UTC** | Mon 2:00 PM | Mon 2:00 PM | none: **slot 1** |
-| 08:45 to 09:15 UTC | Mon 2:15 to 2:45 PM | Mon 2:15 to 2:45 PM | none, but less than 60 minutes after slot 1 |
-| **09:30 UTC** | Mon 3:00 PM | Mon 3:00 PM | none, and 60 minutes after slot 1: **slot 2** |
+## Step 2. On the yes, Tanya checks the calendar at once
 
-   Had nothing been free 60 minutes after slot 1, the service would take the first free slot 30
-   minutes after it, and failing that the very next free slot.
+She asks nothing about time first. Her turn has no text, only the tool call, and Daniel hears the
+preToolMessage "Let me check the calendar."
 
-   For India both timezones are the same, so the only limits are the calendar and the hours.
-7. **Spoken labels** in Priya's timezone: same date as today → "today"; 14:00 → "two in the
-   afternoon"; 15:00 → "three in the afternoon".
-8. **slotId:** short, so the model copies it reliably: the start minute in base 36, a dash, and
-   6 characters of a signature made with `SLOT_SECRET`. 14:00 IST becomes `htda6-6f65e2`. The
-   model cannot make a valid one up.
-9. **toolResponse:** an English note to the model saying what is free and what to do next.
-
-The service replies (this is what the model receives as the Result):
 ```json
-{"slots":[
- {"slotId":"htda6-6f65e2","startUtc":"2026-11-23T08:30:00.000Z","spokenLabel":"today, two in the afternoon"},
- {"slotId":"htdbu-31f5ca","startUtc":"2026-11-23T09:30:00.000Z","spokenLabel":"today, three in the afternoon"}],
- "toolResponse":"Success: Two times are free: today, two in the afternoon, or today, three in the afternoon. Offer both and ask which works better."}
+POST /getAvailableSlots
+{"timezone":"America/New_York"}
 ```
 
-### Step 8. Tanya offers the two times (no tool)
-Tanya: "I have today at two in the afternoon or today at three in the afternoon, your time.
-Which works better?"
-Inside: she reads the two spokenLabels by meaning, earliest first. She keeps both slotIds in the
-conversation for the next steps. Then silence until Priya answers.
-Priya: "Three is better."
+`timezone` is added by the platform; the model passes nothing because Daniel named no day or time.
 
-### Step 9. The booking (tool call 2: bookAppointment)
-The model's turn is the call alone: no text, no preToolMessage. **Priya hears a short silence**
-while it runs (usually one to three seconds).
-The model passes:
+Inside the service (the model never sees this):
+1. One Google freeBusy call reads Hussain's busy times for the next 15 days.
+2. It cuts 15-minute slots that fit both Daniel's 9 AM to 7 PM and Hussain's 9 AM to 11 PM IST.
+3. Today has nothing left: Hussain is busy until 12:30 PM New York, his day ends then.
+4. The earliest is tomorrow 9:00 AM; the second, an hour later, 10:00 AM.
+
 ```json
-{"slotId":"htdbu-31f5ca","appointmentNotes":"weekend leads wait until Monday, half are lost"}
-```
-The platform adds the lead fields from the call data, including the email, and sends:
-```
-POST https://tanya-tools.ngrok-free.app/bookAppointment
-x-api-key: <API_KEY>
-
-{"slotId":"htdbu-31f5ca","email":"priya@brightloans.com",
- "appointmentNotes":"weekend leads wait until Monday, half are lost",
- "timezone":"Asia/Kolkata","fname":"Priya","lname":"Sharma","company":"BrightLoans"}
+{"toolResponse":"Success: Two times are free. Option 1: tomorrow, nine in the morning, startTime 2026-11-25T09:00. Option 2: tomorrow, ten in the morning, startTime 2026-11-25T10:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
-### Step 10. Inside the service: /bookAppointment
-1. Key check and timezone check, as before. Email format check (something@something.something).
-2. **Unpack the slotId:** read the start minute from `htdbu`, sign it again with `SLOT_SECRET`,
-   and compare with `31f5ca`. It matches, so the start is 09:30 UTC = 3:00 PM IST. It is in
-   the future, so the end is 09:45 UTC.
-3. **Check it is still free:** a freeBusy call for 09:30 to 09:45 UTC only. Nothing is busy.
-   (If someone had booked 3:00 PM since step 7, the answer would be
-   `{"booked":false,"reason":"slot_taken"}`.)
-4. **A fixed event id** from the slotId and the email (first 40 characters of a SHA-256 hash). If
-   the platform sends the same request twice, Google refuses a second event with the same id, and
-   the service answers "booked" for the event that already exists. No double booking.
-5. **Create the event:**
-```
-POST https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all
-{
- "id": "<40-character id>",
- "summary": "VoiceOwl demo: Priya Sharma, BrightLoans",
- "description": "Company: BrightLoans\nNotes: weekend leads wait until Monday, half are lost",
- "start": {"dateTime": "2026-11-23T09:30:00.000Z"},
- "end":   {"dateTime": "2026-11-23T09:45:00.000Z"},
- "attendees": [{"email": "priya@brightloans.com", "displayName": "Priya Sharma"}],
- "conferenceData": {"createRequest": {"requestId": "<same id>", "conferenceSolutionKey": {"type": "hangoutsMeet"}}}
-}
-```
-   - `conferenceDataVersion=1` makes Google create a Meet link.
-   - `sendUpdates=all` makes Google email the invite to Priya **at once**, from
-     vijay.c@voiceowl.ai, with Accept / Decline buttons and the Meet link.
-   - Anyone in `EXTRA_ATTENDEES` (for example Hussain later) is added as a guest too.
-6. **The Meet link:** usually in Google's reply as `hangoutLink`. If Google says it is still
-   being created, the service reads the event again, up to three times, one second apart.
-7. Reply to the platform:
+## Step 3. Tanya offers both, in words
+
+> Tanya: "I have tomorrow at nine in the morning or ten in the morning, your time. Which works better?"
+> Daniel: "Neither. Can we do tomorrow around eleven?"
+
+## Step 4. Tanya checks his time
+
 ```json
-{"booked":true,"spokenLabel":"today, three in the afternoon",
- "toolResponse":"Success: The demo is booked for today, three in the afternoon. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
- "prospectTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)","salesTime":"Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
- "startUtc":"2026-11-23T09:30:00.000Z","meetLink":"https://meet.google.com/abc-defg-hij","eventId":"<40-character id>"}
+POST /getAvailableSlots
+{"timezone":"America/New_York","preferredDay":"tomorrow","preferredTime":"11:00"}
 ```
-The platform saves `prospectTime` and `meetLink` as the call variables `bookedTime` and `meetLink`
-for the PCA, which puts them in the WhatsApp and email messages.
 
-### Step 11. Confirmation and show-up (no tool)
-Tanya: "Done. Today at three in the afternoon, with Hussain. The invite is in your email; please
-accept it whenever it suits you. You'll also get the details on WhatsApp and email."
-Priya: "Great, thanks."
-Inside Google: when Priya clicks Accept, now or later, her status on the event turns from "needs
-action" to "accepted". Vijay sees that in his calendar. Tanya never presses her to accept on the call.
+When his exact time is free, it comes first; the other option is the nearest free one.
 
-### Step 12. The close (tool call 3: callhangup)
-The model's turn has no text. It invokes callhangup with `preToolMessage`: "Thanks, Priya. See
-you on Google Meet. Have a great day." (CLOSING LINE D). The platform speaks it and ends the
-call.
+```json
+{"toolResponse":"Success: Two times are free. Option 1: tomorrow, eleven in the morning, startTime 2026-11-25T11:00. Option 2: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
+```
 
-### Step 13. After the call (platform, not our service)
-- The platform sends its WhatsApp and email confirmation.
-- The PCA reads the transcript and returns, among other fields: `callResult: booked`,
-  `bookedSlot: "today, three in the afternoon, prospect time"`, `inviteAccepted: yes`,
-  `painPoint: slowResponse`, and the WhatsApp and email texts (`whatsappMessage`, `emailSubject`,
-  `emailMessage`) that the platform sends.
-- On Vijay's calendar: "VoiceOwl demo: Priya Sharma, BrightLoans", Monday 3:00 to 3:15 PM, with
-  the Meet link.
+> Tanya: "Tomorrow at eleven in the morning works, or ten forty-five. Which do you prefer?"
+> Daniel: "Hmm, let me look… yes, eleven."
+
+It took him two turns. Tanya finds "eleven" in Option 1 of the latest toolResponse and takes its
+startTime.
+
+## Step 5. Tanya books
+
+A turn with no text and no preToolMessage. The model passes `startTime` and `appointmentNotes`; the
+platform adds the rest.
+
+```json
+POST /bookAppointment
+{"startTime":"2026-11-25T11:00",
+ "appointmentNotes":"missed calls after hours, leads go cold",
+ "email":"daniel@harborlending.com","timezone":"America/New_York",
+ "fname":"Daniel","lname":"Not Available","company":"Harbor Lending"}
+```
+
+Inside the service:
+1. `2026-11-25T11:00` in New York is 16:00 UTC, 9:30 PM IST.
+2. It must still be one of the free slots: on the quarter hour, inside both sets of hours, within 15
+   days, at least 10 minutes away, and free in Google right now. It is.
+3. It creates the event with a Google Meet link, Daniel as guest; Google emails him the invite.
+
+```json
+{"booked":true,
+ "toolResponse":"Success: The demo is booked for tomorrow, eleven in the morning. Tell the prospect the invite is in their email and they can accept it whenever it suits them. Do not push them to accept it now.",
+ "prospectTime":"Wednesday, 25 November 2026, 11:00 AM (America/New_York)",
+ "salesTime":"Wednesday, 25 November 2026, 9:30 PM (Asia/Kolkata)",
+ "meetLink":"https://meet.google.com/abc-defg-hij",
+ "eventId":"7d82dec850f5c850281540b2a5be1030e644fa28"}
+```
+
+The platform saves `prospectTime` as `bookedTime`, `salesTime` as `salesTime` and `meetLink` as `meetLink`.
+
+## Step 6. Tanya confirms and closes
+
+> Tanya: "Done. Tomorrow, eleven in the morning, with Hussain. The invite is in your email; please
+> accept it whenever it suits you. You'll also get the details on WhatsApp and email."
+
+She answers anything he asks, says the closing line, and hangs up.
+
+## Step 7. After the call
+
+The PCA reads the transcript with `bookedTime` and `meetLink` and writes `callResult: booked`,
+`whatsappMessage`, `emailSubject` and `emailMessage`. The platform sends the email:
+
+```json
+POST /sendGmail
+{"to":"daniel@harborlending.com","subject":"Your VoiceOwl demo is booked for Wednesday, 25 November, 11:00 AM","body":"Hi Daniel,\n\n..."}
+→ {"sent":true,"toolResponse":"Success: The email was sent.","messageId":"18c..."}
+```
 
 ---
 
-## Call 2: US (New York)
+## When it goes differently
 
-Prospect: Daniel Brooks, Harbor Lending, New York. Lead data: `fname=Daniel`,
-`company=Harbor Lending`, `industry=lending`, **`timezone=America/New_York`**, `defaultLanguage=English`,
-`priorContext=First call to them.` The platform
-holds `lname=Brooks`, `email=daniel@harborlending.com` and `timezone=America/New_York` for the tools.
+**The time is taken between offer and booking.** Someone else took 11:00. The reply carries new options,
+so Tanya offers them without checking again:
 
-The call happens on **Monday 23 November 2026 at 8:10 PM IST**, which is **9:40 AM in New York**
-(14:40 UTC). New York is on winter time (UTC−5), 10 hours 30 minutes behind IST. Vijay's
-calendar is empty.
-
-Steps 1 to 5 are the same conversation as India, with Daniel's name and company. Daniel says yes
-to the fifteen minutes.
-
-### Step 6. Tool call 1: getAvailableSlots
-The model passes no parameters, with preToolMessage "Let me check the calendar." The platform
-adds `{"timezone":"America/New_York"}` and POSTs it to `/getAvailableSlots`, as in India.
-
-### Step 7. Inside /getAvailableSlots: where two timezones really matter
-1. Key, timezone and Google login, as before.
-2. freeBusy from 14:40 UTC for 8 days: nothing busy.
-3. First possible start: 14:40 + 10 minutes = 14:50 UTC, rounded up to **15:00 UTC**.
-4. Every candidate is now checked in **two** clocks: IST (Vijay, 9:00 AM to 11:00 PM) and New York
-   (Daniel, 9:00 AM to 7:00 PM). Both must pass, and the 15 minutes must end inside both.
-
-| Candidate (UTC) | IST | New York | Result |
-|---|---|---|---|
-| **Mon 15:00** | Mon 8:30 PM | Mon 10:00 AM | **slot 1**: inside both |
-| Mon 15:15 to 15:45 | Mon 8:45 to 9:15 PM | Mon 10:15 to 10:45 AM | free, but less than 60 minutes after slot 1 |
-| **Mon 16:00** | Mon 9:30 PM | Mon 11:00 AM | **slot 2**: inside both, 60 minutes after slot 1 |
-| Mon 17:15 | Mon 10:45 PM | Mon 12:15 PM | the last start of the day: ends 11:00 PM IST |
-| Mon 17:30 | Mon 11:00 PM | Mon 12:30 PM | fails: would end 11:15 PM IST |
-
-   **So for New York there is only one window a day: 9:00 AM to 12:30 PM their time (7:30 to 11:00
-   PM IST), with the last start at 12:15 PM.**
-5. Labels are built in **Daniel's** timezone, not IST: Monday 10:00 in New York is "today, ten in
-   the morning"; Monday 11:00 is "today, eleven in the morning".
-
-Result:
 ```json
-{"slots":[
- {"slotId":"htdl0-2277d8","startUtc":"2026-11-23T15:00:00.000Z","spokenLabel":"today, ten in the morning"},
- {"slotId":"htdmo-5a0f87","startUtc":"2026-11-23T16:00:00.000Z","spokenLabel":"today, eleven in the morning"}
-]}
+{"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
-### Step 8. Offer, and neither works (no tool)
-Tanya: "I have today at ten in the morning or today at eleven in the morning, your time. Which
-works better?"
-Daniel: "Neither, really. Could we do Wednesday afternoon?"
-Daniel has already named a day and a part of the day, so the prompt's branch THEY NAME A DAY OR A
-TIME OF THEIR OWN applies: Tanya asks nothing more and goes straight to the next tool call. (Had he
-only said "neither", she would first ask which day or what time suits him better.)
+> Tanya: "That time was just taken. I have ten forty-five or eleven fifteen. Which works?"
 
-### Step 9. Tool call 2: getAvailableSlots again, with his preference
-The model passes the day as a word, never a date:
-```json
-{"preferredDay":"wednesday","preferredTime":"afternoon"}
-```
-with preToolMessage "Let me check the calendar." The platform adds the timezone.
+**The model passes a wrong startTime** (garbled, never offered, outside hours, such as
+`2026-11-25T11:07`). Nothing is booked; the reply offers the two real free times nearest to it:
 
-Inside /getAvailableSlots:
-- "wednesday" becomes the next Wednesday **in New York time**: 2026-11-25. The service works out
-  the date, so the model never does.
-- Only candidates on that date are kept.
-- "Afternoon" means 12:00 noon to 4:00 PM **in New York time**.
-- New York afternoon on Wednesday = 10:30 PM IST Wednesday to 2:30 AM IST Thursday. Only 12:00
-  noon (10:30 PM IST) and 12:15 PM (10:45 PM IST) also end by 11 PM IST. 12:30 PM New York would
-  be 11:00 PM IST and fails.
-- Nothing is 60 or 30 minutes after 12:00 noon, so the second offer falls back to the next free
-  slot, 12:15 PM. The Result has two slots:
 ```json
-{"slots":[
- {"slotId":"htfwc-1218c0","startUtc":"2026-11-25T17:00:00.000Z","spokenLabel":"Wednesday, twelve noon"},
- {"slotId":"htfwr-daeede","startUtc":"2026-11-25T17:15:00.000Z","spokenLabel":"Wednesday, twelve fifteen in the afternoon"}],
- "toolResponse":"Success: Two times are free: Wednesday, twelve noon, or Wednesday, twelve fifteen in the afternoon. Offer both and ask which works better."}
+{"booked":false,"reason":"not_offered","toolResponse":"Failure: That startTime is not a free time. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
-### Step 10. Offer the two slots (no tool)
-Tanya: "I have Wednesday at twelve noon or twelve fifteen in the afternoon, your time. Which works
-better?"
-Daniel: "Twelve noon works."
-(Had he said "Wednesday at 3 PM", the model would pass `preferredTime: "15:00"`. 3 PM New York is
-1:30 AM IST, outside sales hours, so the service would offer the free slots nearest to 3 PM:
-12:15 PM and 12:00 noon.)
+**The prospect names another day.** The model passes what he said; the service finds the date in his time.
 
-### Step 11. Tool call 3: bookAppointment
-The model passes `slotId: htfwc-1218c0` and
-`appointmentNotes: weekend leads called too late`. The platform adds `email: daniel@harborlending.com`,
-`timezone: America/New_York`, `fname: Daniel`, `lname: Brooks`, `company: Harbor Lending`.
-
-Inside /bookAppointment, the same as India:
-- The slotId unpacks to 17:00 UTC on 25 November.
-- A re-check shows it is free.
-- The event is created with start `2026-11-25T17:00:00Z` and end `17:15Z`, with Daniel as the guest
-  and a Meet link. Google emails the invite at once.
-- Google stores **one** moment in time, and each calendar shows it in its owner's timezone:
-  - **On Vijay's calendar:** Wednesday 10:30 to 10:45 PM IST.
-  - **On Daniel's calendar and in his invite email:** Wednesday 12:00 to 12:15 PM EST.
-- Nobody converts anything by hand.
-
-Reply:
-```json
-{"booked":true,"spokenLabel":"Wednesday, twelve noon","toolResponse":"Success: The demo is booked for Wednesday, twelve noon. ...",
- "prospectTime":"Wednesday, 25 November 2026, 12:00 PM (America/New_York)",
- "salesTime":"Wednesday, 25 November 2026, 10:30 PM (Asia/Kolkata)",
- "startUtc":"2026-11-25T17:00:00.000Z","meetLink":"https://meet.google.com/xyz-abcd-efg","eventId":"<40-character id>"}
-```
-
-### Step 12. Confirmation, close, after the call
-- Tanya: "Done. Wednesday at twelve noon, with Hussain. The invite is in your email; please accept
-  it whenever it suits you. You'll also get the details on WhatsApp and email."
-- Then the callhangup close and the post-call steps as India.
-- The PCA gives `bookedSlot: "Wednesday, twelve noon, prospect time"`.
-
----
-
-## What can go differently, and what happens
-
-| Situation | What the service returns | What Tanya does |
+| Daniel says | preferredDay | toolResponse starts |
 |---|---|---|
-| The time was taken between offer and booking | `{"booked":false,"reason":"slot_taken","toolResponse":"..."}` | getAvailableSlots again with the same preferences (the taken slot is now busy, so it is not offered), preToolMessage "That time was just taken. Let me check the calendar again.", offers the next ones |
-| Google or the laptop fails during booking | `{"booked":false,"reason":"error"}` (or no answer) | "Something went wrong with the booking on my side. Our team will send you the details on email and WhatsApp." Never a third booking try |
-| Nothing free for the day asked | `{"slots":[],"toolResponse":"No time is free for that request. ..."}` | "That day's full. I can book any weekday in the next seven days; which other day suits you?" |
-| A weekend day asked | `{"slots":[],"toolResponse":"Demos are Monday to Friday only. ..."}` | asks which weekday suits them |
-| Google or the service fails during /getAvailableSlots | `{"slots":[],"toolResponse":"The calendar could not be checked. ..."}` | "Our team will send you the details on email and WhatsApp." then the close |
-| The platform sends the same booking twice | the second call finds the event it made and answers `booked:true` again | nothing different: one event, one invite |
-| The model sends a made-up slotId | signature check fails → `booked:false, reason:error` | the error line, no fake booking |
-| The laptop is asleep or ngrok is off | the platform gets no reply | the tool fails: Tanya cannot offer times. This is why live calls need an always-on host |
+| "Thursday" | `thursday` | `Success: Two times are free. Option 1: Thursday, nine in the morning, startTime 2026-11-26T09:00. …` |
+| "On the 27th" | `27` | `Success: Two times are free. Option 1: Friday, nine in the morning, startTime 2026-11-27T09:00. …` |
+| "In three days" | `in 3 days` | `Success: Two times are free. Option 1: Friday, nine in the morning, startTime 2026-11-27T09:00. …` |
+| "Saturday" | `saturday` | `Failure: Demos are Monday to Friday only. Ask which weekday suits them.` |
+| "The 10th of December" | `10` | `Failure: That day is more than 15 days away. Ask for a day in the next 15 days.` |
 
-## Points worth deciding
-1. **Silence during bookAppointment.** That turn has no spoken line (TOOL_CALLING.md: an acting tool is
-   not announced), so the prospect hears one to three seconds of silence. Usually fine; if it
-   feels long in tests, the fix belongs on the platform (a filler), not in the prompt.
-2. **US hours.** With IST 9 AM to 11 PM, New York gets 9:00 AM to 12:30 PM only, and Los Angeles
-   9:00 to 9:30 AM only. A later end hour in IST widens this.
-3. **Dates.** Done (2026-11-20): the model passes a day as a word (today, tomorrow, wednesday) and
-   the service works out the date in the prospect's timezone. A date the prospect names ("the
-   twenty-fifth") makes Tanya ask which day of the week that is.
+Beyond a week, the words name the date, e.g. "Friday the fourth of December, nine in the morning".
+
+**Nothing is free that day.** `Failure: No time is free for that request. Ask which other day suits them.`
+
+**The calendar or the booking breaks.** `Failure: The calendar could not be checked. …` or
+`Failure: The booking did not go through. …` Tanya tells Daniel the team will send the details on email
+and WhatsApp, never retries the booking, and closes.
+
+---
+
+## What each country can be offered
+
+The prospect only ever hears their own time, but every slot must also fall in Hussain's 9 AM to 11 PM IST.
+
+| Prospect | Times offered (their time, weekdays) |
+|---|---|
+| India | 9:00 AM to 7:00 PM |
+| Dubai | 9:00 AM to 7:00 PM |
+| Japan | 12:30 PM to 7:00 PM |
+| UK | 9:00 AM to 5:30 PM |
+| New York | 9:00 AM to 12:30 PM |
+| California | 9:00 AM to 9:30 AM |

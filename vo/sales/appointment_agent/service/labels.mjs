@@ -57,3 +57,20 @@ export function writtenTime(ms, tz) {
   const p = parts(ms, tz);
   return `${WEEKDAYS[p.wd]}, ${p.d} ${MONTHS[p.mo - 1]} ${p.y}, ${p.h % 12 || 12}:${String(p.mi).padStart(2, '0')} ${p.h < 12 ? 'AM' : 'PM'}`;
 }
+
+// startTime: the prospect's local wall-clock time, "2026-11-25T11:00", the form the model copies.
+export function localStartTime(ms, tz) {
+  const p = parts(ms, tz);
+  return `${localDateString(ms, tz)}T${String(p.h).padStart(2, '0')}:${String(p.mi).padStart(2, '0')}`;
+}
+// Back to a moment: null when the text is not that form or the time does not exist in tz.
+export function parseStartTime(v, tz) {
+  const m = String(v ?? '').trim().match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::00)?$/);
+  if (!m) return null;
+  const [y, mo, d, h, mi] = m.slice(1).map(Number);
+  const want = Date.UTC(y, mo - 1, d, h, mi);
+  let t = want;
+  for (let i = 0; i < 3; i++) { const p = parts(t, tz); t += want - Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi); }
+  const p = parts(t, tz);
+  return p.y === y && p.mo === mo && p.d === d && p.h === h && p.mi === mi ? t : null;
+}

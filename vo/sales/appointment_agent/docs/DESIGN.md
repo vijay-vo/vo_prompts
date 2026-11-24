@@ -20,7 +20,7 @@ go-ahead. Research behind each point: RESEARCH.md.
 | Opener | Sample B (context first, then "Can I tell you why I called you specifically?") with sample C's thirty-second line as the fallback when the prospect is guarded (decided 2026-11-19, CALL_EXAMPLES.md). |
 | Opening | Must be engaging and lead to booking. The opener is the most important part. |
 | Demo | 15 minutes, Google Meet link from the calendar event, run by the sales team. |
-| Calendar | One shared Google Calendar (sales team). Any free time there in the next 7 days is bookable. |
+| Calendar | One shared Google Calendar (sales team). Any free time there in the next 15 days is bookable (was 7 until 2026-11-24). |
 | Tools | HTTP tools on the VoiceOwl platform, built by the user: check availability, book appointment. |
 | Prospect email | Already in the lead data. |
 | Slots | Offer two. If both refused, ask what they prefer and check that. |
@@ -227,36 +227,36 @@ out labels. LLMs are unreliable at date arithmetic and timezone conversion.
 
 Input:
 - `timezone` — prospect's IANA timezone (added by the platform)
-- `preferredDay` — optional: today, tomorrow or a weekday name; the service works out the date in
-  the prospect's timezone (changed 2026-11-20, was preferredDate)
+- `preferredDay` — optional: today, tomorrow, a weekday name, "in N days" or a date of the month
+  ("25"); the service works out the date in the prospect's timezone (changed 2026-11-20, was
+  preferredDate; "in N days" and dates added 2026-11-24)
 - `preferredTime` — optional: morning / afternoon / evening, or an exact time such as 16:00
   (changed 2026-11-20, was partOfDay)
 - excludeSlotIds removed 2026-11-20: copying long ids back was a hallucination risk, and a new
   check always carries a new preference.
 
-Output: up to **two** free 15-minute slots inside the next 7 days, inside
+Output: up to **two** free 15-minute slots inside the next 15 days, inside
 working hours (see section 9), **the two earliest first** (vendor data: same-day
-bookings no-show about 7%, 7+ days out about 25%), each with:
-- `slotId`
-- `startUtc`
-- `spokenLabel` — in the prospect's local time and words, e.g. "Tuesday the
-  nineteenth, eleven in the morning". Language: English label, or one per call
-  language? (section 9)
+bookings no-show about 7%, 7+ days out about 25%).
 
-Empty list = nothing free for that request. Every Result also carries an `toolResponse`: an English
-note to the model saying what happened and what to do next (added 2026-11-20).
+Changed 2026-11-24: the Result is the `toolResponse` only. Each option carries its time in words, in
+the prospect's local time ("tomorrow, eleven in the morning"), and its `startTime` in the prospect's
+local time ("2026-11-25T11:00"), which the model copies into bookAppointment. slotId (a signed code),
+startUtc and spokenLabel are gone: a small model copies a date-time that matches the spoken words more
+reliably than a random code, and Retell, ElevenLabs and Vapi all book by start time.
 
 ### bookAppointment
 
-Input: `slotId` and `appointmentNotes` from the model (one line: pain mentioned, colleague to invite);
+Input: `startTime` and `appointmentNotes` from the model (one line: pain mentioned, colleague to invite);
 `fname`, `lname`, `company`, `email`, `timezone` added by the platform. Full mapping:
 PLATFORM_SETUP.md.
 
 Optional input: `tentative: true` for a penciled-in slot (Brandon's tactic), which
 the prospect can decline.
 
-Output: `booked: true` + `spokenLabel` + `meetLink`, or `booked: false` +
-`reason: slot_taken | error`.
+Output: `booked: true` + `toolResponse` + `prospectTime` + `salesTime` + `meetLink` + `eventId`, or
+`booked: false` + `reason: slot_taken | not_offered | error` + `toolResponse`. A taken or not-offered
+startTime gets the two free slots nearest to it in the toolResponse, so the model offers them at once.
 
 The calendar event adds the prospect as a guest, so Google itself emails the Meet
 invite right away (during the call), so the agent can ask them to accept it now.
@@ -411,9 +411,8 @@ Choices made while writing (change any of them on request):
 Check on the platform before the first test call:
 1. **Tool schemas must match the prompt key for key** (TOOL_CALLING.md rule 7).
    getAvailableSlots: preferredDay, preferredTime (timezone added by the platform); the Result
-   has slots (slotId, spokenLabel) and a toolResponse. bookAppointment: slotId, appointmentNotes; the
-   Result says booked with a spokenLabel, or not booked with slot_taken or error, and a
-   toolResponse. If the tools you built use other
+   is a toolResponse with up to two options (words + startTime). bookAppointment: startTime,
+   appointmentNotes; the Result is a toolResponse, booked or not, with new options when not. If the tools you built use other
    names or keys, tell me and I'll change the prompt to match.
 2. **Variables injected (2026-11-20):** fname, company, industry, priorContext, defaultLanguage.
    Not Available when unknown. The platform adds timezone, email, fname, lname and company to the

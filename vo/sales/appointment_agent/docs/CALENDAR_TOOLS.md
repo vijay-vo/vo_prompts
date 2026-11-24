@@ -46,6 +46,9 @@ platform's HTTP tool is known to follow redirects. Not recommended.
 
 ## 2. Architecture
 
+Superseded 2026-11-24 for the tool shapes below: slotId, startUtc and spokenLabel are gone; both tools
+work in the prospect's local time with `startTime`, and the window is 15 days. Current shapes: PLATFORM_SETUP.md.
+
 ```
 Platform HTTP tool  --HTTPS + API key-->  small service (we write it)  --OAuth-->  Google Calendar API
 ```

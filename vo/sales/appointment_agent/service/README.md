@@ -5,27 +5,28 @@ never by the model. Plain Node 20, no packages to install.
 
 | Platform tool | Route | Body the platform sends |
 |---|---|---|
-| getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday...), `preferredTime` (morning/afternoon/evening or 16:00) |
-| bookAppointment | `POST /bookAppointment` | from the model: `slotId`, `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
+| getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (today, tomorrow, monday..., `in 3 days`, or a date such as `25`), `preferredTime` (morning/afternoon/evening or 16:00) |
+| bookAppointment | `POST /bookAppointment` | from the model: `startTime` (copied from the chosen option), `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
 | sendGmail (after the PCA) | `POST /sendGmail` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. See docs/GMAIL_SETUP.md |
 
-Every reply carries a `toolResponse` for the model. A booked reply also has `prospectTime`, `salesTime`,
-`startUtc`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
+Every reply carries a `toolResponse` for the model. All times are the prospect's own local time. A booked reply
+also has `prospectTime`, `salesTime`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
 
 Every request needs the header `x-api-key: <API_KEY from .env>`.
 
 Responses:
-- `/getAvailableSlots` → `{"slots":[{"slotId":"...","startUtc":"...","spokenLabel":"today, four in the evening"}, ...]}` (0 to 2 slots)
-- `/bookAppointment` → `{"booked":true,"spokenLabel":"...","meetLink":"https://meet.google.com/...","eventId":"..."}`
-  or `{"booked":false,"reason":"slot_taken"}` or `{"booked":false,"reason":"error"}`
+- `/getAvailableSlots` → `{"toolResponse":"Success: Two times are free. Option 1: today, four in the evening, startTime 2026-11-24T16:00. Option 2: ..."}`
+- `/bookAppointment` → `{"booked":true,"toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"https://meet.google.com/...","eventId":"..."}`
+  or `{"booked":false,"reason":"slot_taken" | "not_offered" | "error","toolResponse":"..."}` (the first two offer new times)
 
 ## Rules built in
 - Slots are 15 minutes, every quarter hour (:00, :15, :30, :45), back to back, inside the sales team's hours (IST 9 AM to
   11 PM, Monday to Friday) AND the prospect's own 9 AM to 7 PM, Monday to Friday.
-- At least 10 minutes' notice (a call at 3:00 PM can book 3:15 PM), up to 7 days ahead, earliest
+- At least 10 minutes' notice (a call at 3:00 PM can book 3:15 PM), up to 15 days ahead, earliest
   first. The second offer is the first free slot at least 60 minutes after the first, else at
   least 30 minutes after it, else the next free slot. `AVOID_FRIDAY=1` skips the prospect's Fridays when other days exist (off).
-- A slotId is signed, so the model cannot invent one. Booking re-checks the calendar first.
+- Booking takes the startTime only when it is still one of the free slots; otherwise it offers the two
+  free slots nearest to it. The model cannot book a time that was never free.
 - Booking creates the event with a Google Meet link and emails the invite at once
   (`sendUpdates=all`). A retried booking of the same slot and email answers "booked" again
   instead of creating a second event.
@@ -37,7 +38,7 @@ Responses:
    expiry). Scopes: `.../auth/calendar.freebusy` and `.../auth/calendar.events.owned`.
 3. Credentials → Create OAuth client ID → type **Desktop app** → copy the client ID and secret.
 4. `cp .env.example .env`, fill in `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, a long random
-   `API_KEY` and `SLOT_SECRET` (for example from `openssl rand -hex 24`).
+   `API_KEY` (for example from `openssl rand -hex 24`).
 5. `node auth.mjs` → open the link, sign in with the calendar's account, approve → paste the
    printed `GOOGLE_REFRESH_TOKEN` into `.env`. If Google rejects the scope
    `calendar.events.owned`, change it in auth.mjs to `.../auth/calendar.events` and run again.
@@ -48,7 +49,7 @@ Responses:
 - Without Google: `node test.mjs` (in-memory calendar).
 - With Google:
   `curl -s -X POST localhost:8787/getAvailableSlots -H 'x-api-key: KEY' -H 'content-type: application/json' -d '{"timezone":"Asia/Kolkata"}'`
-  then book one of the returned slotIds with your own email and check the invite and the Meet link.
+  then book one of the returned startTimes with your own email and check the invite and the Meet link.
 
 ## Running locally: limits
 - The platform runs in the cloud, so it reaches this laptop only through ngrok.

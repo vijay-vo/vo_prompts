@@ -50,7 +50,7 @@ export function makeApp(env, google = makeGoogle(env)) {
       console.log(new Date().toISOString(), req.url, JSON.stringify({ ...body, email: body.email ? '***' : undefined }));
       if (!validTz(body.timezone)) return send(400, { error: 'timezone must be an IANA name such as Asia/Kolkata' });
       if (req.url === '/getAvailableSlots') return send(200, await getAvailableSlots({ google, cfg, body }));
-      if (!body.slotId || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email || '')) return send(400, { booked: false, reason: 'error', toolResponse: SAY.bookError });
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email || '')) return send(400, { booked: false, reason: 'error', toolResponse: SAY.bookError });
       const r = await bookAppointment({ google, cfg, body });
       return send(r.status, r.out);
     } catch (e) {
@@ -58,7 +58,7 @@ export function makeApp(env, google = makeGoogle(env)) {
       if (req.url === '/sendGmail') return send(200, MAIL.error);
       return send(req.url === '/bookAppointment' ? 200 : 500, req.url === '/bookAppointment'
         ? { booked: false, reason: 'error', toolResponse: SAY.bookError }
-        : { slots: [], toolResponse: SAY.calendarDown });
+        : { toolResponse: SAY.calendarDown });
     }
   };
 }
