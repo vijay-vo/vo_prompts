@@ -205,20 +205,9 @@ Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{booke
  "noAICalls": "no",
  "doNotCall": "no",
  "summary": "Priya answered ... (40 to 80 words)",
- "whatsappMessage": "Hi Priya, thanks for your time. Your fifteen-minute VoiceOwl call with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM. Join on Google Meet: https://meet.google.com/abc-defg-hij
-The invite is also in your email; please accept it whenever it suits you. Hussain will show you how an agent handles weekend leads that wait until Monday. Tanya, VoiceOwl",
+ "whatsappMessage": "Hi Priya, thanks for your time. Your fifteen-minute VoiceOwl call with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM. Join on Google Meet: https://meet.google.com/abc-defg-hij\nThe invite is also in your email; please accept it whenever it suits you. Hussain will show you how an agent handles weekend leads that wait until Monday. Tanya, VoiceOwl",
  "emailSubject": "Your VoiceOwl call is booked for Monday, 23 November, 3:00 PM",
- "emailMessage": "Hi Priya,
-
-Thanks for your time today. Your fifteen-minute VoiceOwl call with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM on Google Meet. The slot is reserved for you.
-
-Join here:
-https://meet.google.com/abc-defg-hij
-The invite is also in your email; please accept it whenever it suits you.
-
-Hussain will show you how a VoiceOwl agent handles weekend leads that wait until Monday.
-
-Tanya, VoiceOwl"
+ "emailMessage": "Hi Priya,\n\nThanks for your time today. Your fifteen-minute VoiceOwl call with Hussain, our Sales Head, is booked for Monday, 23 November 2026, 3:00 PM on Google Meet. The slot is reserved for you.\n\nJoin here:\nhttps://meet.google.com/abc-defg-hij\nThe invite is also in your email; please accept it whenever it suits you.\n\nHussain will show you how a VoiceOwl agent handles weekend leads that wait until Monday.\n\nTanya, VoiceOwl"
 }
 ```
 
