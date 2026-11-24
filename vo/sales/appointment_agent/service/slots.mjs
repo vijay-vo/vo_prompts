@@ -74,6 +74,7 @@ export const SAY = {
   unknown: 'Failure: That day was not understood. Ask which day suits them.',
   calendarDown: 'Failure: The calendar could not be checked. Tell the prospect our team will send them the details on email and WhatsApp.',
   taken: (os) => `Failure: That time was just taken. ${os.length ? offer(os) : 'No other time is free nearby. Ask which other day suits them.'}`,
+  noStart: (os) => `Failure: No startTime was passed, so nothing was booked. ${os.length ? offer(os) : 'Ask which other day suits them.'}`,
   notOffered: (os) => `Failure: That startTime is not a free time. ${os.length ? offer(os) : 'Ask which other day suits them.'}`,
   bookError: 'Failure: The booking did not go through. Tell the prospect our team will send them the details on email and WhatsApp. Do not try to book again.',
 };
@@ -190,7 +191,8 @@ export async function bookAppointment({ google, cfg, body, now = Date.now() }) {
       if (overlapsBusy(startMs, startMs + cfg.slotMin * MIN, busy, 0) && candidates({ busy: [], tz, now, cfg }).some(c => c.startMs === startMs))
         return { status: 200, out: bookReply({ reason: 'slot_taken', toolResponse: SAY.taken(around(ref)) }) };
     }
-    return { status: 200, out: bookReply({ reason: 'not_offered', toolResponse: SAY.notOffered(around(ref)) }) };
+    const missing = !clean(body.startTime) || /^[-\s]*$/.test(String(body.startTime));
+    return { status: 200, out: bookReply({ reason: missing ? 'no_start_time' : 'not_offered', toolResponse: (missing ? SAY.noStart : SAY.notOffered)(around(ref)) }) };
   }
   const endMs = startMs + cfg.slotMin * MIN;
   const company = clean(body.company), notes = clean(body.appointmentNotes);

@@ -16,7 +16,7 @@ Every request needs the header `x-api-key: <API_KEY from .env>`.
 
 Responses:
 - `/getAvailableSlots` → `{"toolResponse":"Success: Two times are free. Option 1: today, four in the evening, startTime 2026-11-24T16:00. Option 2: ..."}`
-- `/bookAppointment` → always the same seven fields: `{"booked":true|false,"reason":"booked"|"slot_taken"|"not_offered"|"error","toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"...","eventId":"..."}`;
+- `/bookAppointment` → always the same seven fields: `{"booked":true|false,"reason":"booked"|"slot_taken"|"not_offered"|"no_start_time"|"error","toolResponse":"...","prospectTime":"...","salesTime":"...","meetLink":"...","eventId":"..."}`;
   when not booked the last four are "Not Available" (slot_taken and not_offered offer new times)
 
 ## Rules built in

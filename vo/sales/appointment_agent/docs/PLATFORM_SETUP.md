@@ -152,7 +152,7 @@ Not booked (each comes with the two free times nearest the one asked, so the mod
 A repeat of a booking that already went through answers booked again, with no second event.
 
 Every reply, booked or not, has the same seven fields in the same order: `booked`, `reason` (`booked`,
-`slot_taken`, `not_offered` or `error`), `toolResponse`, `prospectTime`, `salesTime`, `meetLink`, `eventId`. When
+`slot_taken`, `not_offered`, `no_start_time` or `error`), `toolResponse`, `prospectTime`, `salesTime`, `meetLink`, `eventId`. When
 nothing was booked the last four are `Not Available`, so the call variables can be mapped once for every case.
 
 Platform variable for this reply's `toolResponse`: **bookAppointmenttoolResponse** (the prompt calls it by this name).

@@ -43,6 +43,10 @@ const odd = (await call('/bookAppointment', { ...lead, startTime: a[0].replace(/
 assert.equal(odd.booked, false); assert.equal(odd.reason, 'not_offered'); assert.match(odd.toolResponse, /^Failure: That startTime is not a free time\. Option 1: /);
 const garbled = (await call('/bookAppointment', { ...lead, startTime: 'tomorrow 4 PM' })).j;
 assert.equal(garbled.reason, 'not_offered'); assert.equal(starts(garbled.toolResponse).length, 2, 'a garbled startTime gets two real options');
+for (const st of [undefined, '', '-']) {
+  const r = (await call('/bookAppointment', { ...lead, startTime: st })).j;
+  assert.equal(r.reason, 'no_start_time'); assert.match(r.toolResponse, /^Failure: No startTime was passed, so nothing was booked\. Option 1: /);
+}
 const b1 = await call('/bookAppointment', { ...lead, startTime: a[0] });
 assert.equal(b1.j.booked, true); assert.match(b1.j.toolResponse, /^Success: The call is booked for .+ Do not push them/);
 assert.match(b1.j.prospectTime, /^\w+day, \d+ \w+ \d{4}, \d+:\d\d (AM|PM) \(Asia\/Kolkata\)$/);
