@@ -176,8 +176,7 @@ Reply: `{"sent":true,"toolResponse":"Success: The email was sent.","messageId":"
 
 ## 6. After the call: PCA
 
-Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{{fname}}`, `{{company}}`,
-`{{email}}`, `{{priorContext}}`, `{{bookedTime}}`, `{{meetLink}}`.
+Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{bookedTime}}`, `{{meetLink}}`.
 
 ### Where each detail comes from
 
@@ -185,7 +184,7 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
 |---|---|
 | Booked day and time, Meet link | bookAppointment reply (`prospectTime`, `meetLink`), saved as call variables, then given to the PCA |
 | Booked or not, slot taken, error | bookAppointment reply (`booked`, `reason`); the PCA's `callResult` agrees with it |
-| Invite accepted | only what the prospect said on the call (PCA `inviteAccepted`). Google's own accept status needs a later check by `eventId` (not built) |
+| Invite accepted | not tracked by the PCA (removed 2026-11-25). Google's own accept status needs a later check by `eventId` (not built) |
 | Problem, objections, interest, callback time, colleague, do-not-call | the conversation (PCA) |
 
 ### PCA output, example for a booked call
@@ -193,15 +192,12 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
 ```json
 {
  "callResult": "booked",
- "bookedSlot": "Monday, 23 November 2026, 3:00 PM (Asia/Kolkata)",
- "inviteAccepted": "yes",
  "painPoint": "slowResponse",
  "painDetail": "weekend leads wait until Monday, half are lost",
  "mainObjection": "none",
  "colleagueToInvite": "none",
  "callbackTime": "none",
  "interestLevel": "high",
- "askedIfAI": "no",
  "noAICalls": "no",
  "doNotCall": "no",
  "summary": "Priya answered ... (40 to 80 words)",
@@ -219,7 +215,6 @@ Inputs: the transcript, `{{system.current_date}}`, `{{system.current_time}}`, `{
 | emailSubject | `subject` of the sendGmail tool (section 5a) | the service skips "none" |
 | emailMessage | `body` of the sendGmail tool (section 5a) | `\n\n` is a paragraph break |
 | callResult | CRM status | booked, bookingFailed, doNotCall, callbackLater, notInterested, gatekeeper, wrongNumber, voicemail, disconnected |
-| bookedSlot, inviteAccepted | CRM | |
 | painPoint, painDetail, mainObjection, interestLevel | CRM notes for sales | painPoint: slowResponse, tooManyCalls, language, other, none |
 | colleagueToInvite | sales follow-up | |
 | callbackTime | callback scheduling | the prospect's own words, not a date |
@@ -239,6 +234,6 @@ asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "n
 3. getAvailableSlots: timezone added by the platform; preferredDay and preferredTime from the model.
 4. bookAppointment: startTime and appointmentNotes from the model; email, timezone, fname, lname, company added by the platform.
 5. Save bookAppointment's `prospectTime`, `salesTime` and `meetLink` as call variables `bookedTime`, `salesTime` and `meetLink`.
-6. PCA inputs as in section 6; three message fields mapped; emailStatus and correctedEmail gone.
+6. PCA inputs as in section 6 (bookedSlot, inviteAccepted, askedIfAI removed 2026-11-25); three message fields mapped; emailStatus and correctedEmail gone.
 7. sendGmail tool after the PCA: to, subject, body (section 5a). Token from `node auth.mjs` with the Gmail scopes.
 8. Server and ngrok running; test the URL from Postman first.

@@ -296,7 +296,8 @@ The platform then sends WhatsApp + email after the call.
 11. **Post-call analysis fields** — proposed: callResult (booked / callback /
     notInterested / doNotCall / wrongPerson / gatekeeper / voicemail / failed),
     slotStartUtc, email, emailCorrection, objection, painMentioned, colleagueToInvite,
-    callbackTime, interestLevel, askedIfAI, language.
+    callbackTime, interestLevel, askedIfAI, language. (2026-11-25: bookedSlot, inviteAccepted, askedIfAI
+    and the inputs email, system.current_date, system.current_time removed from the PCA.)
 12. **Demo take-home** — Bay: "a demo of your product is just not enough". What do
     they get out of the 15 minutes? Idea: hear the agent speaking their customers'
     language (VoiceOwl claims 135+). Does the sales team agree, or is there a
