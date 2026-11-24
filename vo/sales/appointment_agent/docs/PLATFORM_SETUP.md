@@ -72,7 +72,7 @@ Everything is in the **prospect's own time**: the model never sees IST or UTC.
 Both model parameters are text. Leave them out when the prospect named nothing: the service offers the earliest
 free times. A value it does not understand is ignored the same way.
 
-preToolMessage: `Let me check the calendar.`
+No preToolMessage (2026-11-24): the turn is the call alone, as with bookAppointment. Leave the field empty on the platform.
 
 Examples the service receives:
 - On the prospect's yes, no preference yet: `{"timezone":"Asia/Kolkata"}`

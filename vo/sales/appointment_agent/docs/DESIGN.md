@@ -392,9 +392,21 @@ interested" is recovered only about 15% of the time, which supports stopping).
 
 Files: `default/default.txt` (the agent) and `pca/pca.txt` (post-call analysis, flat JSON,
 17 fields). Both are plain text, in the second person, with fixed English lines that Tanya
-speaks in the prospect's language. Tool turns follow TOOL_CALLING.md: bookAppointment is the call
-alone; getAvailableSlots carries a short wait line in preToolMessage only; the closing line
-goes in callhangup's preToolMessage only.
+speaks in the prospect's language. Tool turns follow TOOL_CALLING.md: getAvailableSlots and
+bookAppointment are the call alone (no text, no preToolMessage); the closing line goes in
+callhangup's preToolMessage only.
+
+**Changed 2026-11-24 (live call: invented times, false "booked").** Tanya offered "four or five in
+the afternoon" when the Result said nine thirty and ten thirty (the prompt's worked example carried
+four and five in the evening), booked an un-offered five o'clock, got `Failure: That startTime is
+not a free time`, and still closed with "See you on Google Meet". Fixed the CRC way
+(TOOL_CALLING.md rules 1, 3, 4): no sample times, dates or startTimes anywhere in the prompt; the
+getAvailableSlots turn has no words at all (its wait line is gone: no time can exist before the
+Result); no scripted outcome lines (offer, free, not available, booked, taken): every outcome turn
+does what the latest Result says, with its days and times; a Failure from bookAppointment means
+nothing is booked, and CLOSING LINE D needs a Success Result; a time not written in the latest
+Result is checked with getAvailableSlots, never booked; the pre-send check covers all of this.
+On the platform, clear the getAvailableSlots preToolMessage if one is configured there.
 
 Choices made while writing (change any of them on request):
 - **Website or event leads** get B's shape with an honest first sentence ("You looked at

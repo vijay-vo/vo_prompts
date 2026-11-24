@@ -32,8 +32,8 @@ Tanya talks about his problem and asks whether fifteen minutes with Hussain make
 
 ## Step 2. On the yes, Tanya checks the calendar at once
 
-She asks nothing about time first. Her turn has no text, only the tool call, and Daniel hears the
-preToolMessage "Let me check the calendar."
+She asks nothing about time first. Her turn is the tool call alone: no text and no preToolMessage
+(2026-11-24: no time can exist before the Result, so the turn carries no words).
 
 ```json
 POST /getAvailableSlots
