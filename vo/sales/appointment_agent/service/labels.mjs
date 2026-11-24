@@ -42,7 +42,6 @@ export function spokenLabel(startMs, tz, nowMs = Date.now()) {
   let day;
   if (diff === 0) day = 'today';
   else if (diff === 1) day = 'tomorrow';
-  else if (diff < 7) day = WEEKDAYS[p.wd];
   else day = `${WEEKDAYS[p.wd]} the ${ORD[p.d]} of ${MONTHS[p.mo - 1]}`;
   const h12 = p.h % 12 || 12;
   let time = words(h12);
