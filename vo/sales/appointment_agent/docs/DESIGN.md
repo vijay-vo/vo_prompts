@@ -101,8 +101,11 @@ never...right?") because they are ambiguous in other languages.
 
 ### Stage 3 — Hear their problem, then agree there is one
 
-Listen. One follow-up in their words: "Tell me more about that." Optionally one guess
-they can correct: "You've probably tried a dialer already?" Do not pitch yet. If
+Listen. A clear answer is never asked again: acknowledge it and ask one specific
+question about the detail they gave (which languages, how long the wait, how many
+calls), built from their words, including a problem outside the three options. Only
+an unclear answer gets one "Could you tell me a bit more?". The ask comes once Tanya
+has their problem plus one concrete detail (decided 2026-11-25). Do not pitch yet. If
 nothing in what they say is a problem, do not push; thank them and close.
 
 ### Stage 4 — Interest first, then time (one decision at a time)

@@ -35,11 +35,11 @@ Why: they asked for it, so there is no pitch to earn. This is the shortest path.
 
 Tanya: Hi Daniel, it's Tanya from VoiceOwl.
 Daniel: Who?
-Tanya: Tanya, from VoiceOwl. I know you weren't expecting my call. We work with sales heads at lending companies on one thing: reaching every new lead within a minute. Can I tell you why I called you specifically?
+Tanya: Tanya, from VoiceOwl. I know you weren't expecting my call. We help lending companies reach every new lead within a minute. Can I tell you why I called BrightLoans specifically?
 Daniel: Go on.
 Tanya: Most teams we talk to say one of three things: leads get called too late, too few get called, or only in one language. Which is closest to you?
 Daniel: Too late, honestly. Weekend leads wait until Monday.
-Tanya: Tell me more about that.
+Tanya: Weekend leads waiting till Monday. What happens to them by then?
 Daniel: By Monday, half of them have already gone with someone else.
 Tanya: That's the exact gap we close. Our agents call those weekend leads within a minute and book them. Would it make sense to spend fifteen minutes with Hussain, our sales head, to see it working on leads like yours?
 Daniel: Maybe. What does it cost?
