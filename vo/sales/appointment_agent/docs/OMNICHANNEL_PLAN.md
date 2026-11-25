@@ -77,7 +77,7 @@ reply already carries its own thread ID, subject and Message-ID, and the answer 
    It also keeps the CSV's priorContext when that has a value.
 The whole team uses this one mailbox, so searching it finds everything.
 
-**Who Tanya may answer by email (the gate, proposal)**
+**Who Tanya may answer by email (the gate, agreed 2026-11-25)**
 Tanya answers a mail only when all six checks pass. Otherwise she does not touch it, and a person handles it.
 1. **Tanya started the thread.** The thread holds a mail from our Sent folder with the header
    `X-VoiceOwl-Agent: tanya`; /sendGmail adds this header to every mail it sends (built). An outsider cannot fake it,
@@ -109,7 +109,7 @@ Scopes: gmail.readonly, gmail.send and gmail.modify (for the label).
 
 ## New prompts needed (to discuss before writing)
 
-1. **Email summariser:** the email list from /emailContext plus the CSV priorContext become `priorContext`. Platform LLM step.
+1. **priorContext summariser (one for all channels, agreed in principle 2026-11-25):** emails (/emailContext), WhatsApp messages and earlier call summaries (platform database), plus the CSV priorContext, go in; one JSON field `priorContext` comes out. Platform LLM step, run just before each call.
 2. **Tanya by email:** answers in the thread with no tools. Her goal is the demo, through the booking link.
    She answers questions, handles objections, stops on an opt-out, and passes the thread to a person when unsure.
 3. **Tanya on WhatsApp:** the same job in short chat messages, with no tools for now.
