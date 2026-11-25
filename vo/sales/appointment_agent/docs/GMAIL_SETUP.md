@@ -121,7 +121,7 @@ Dates are in the sales timezone (`SALES_TZ`). "we" is anyone writing from this m
 |---|---|---|
 | `POST /checkReplies` | `{}` | Looks at every new incoming mail once and runs the gate. Runs by itself every `EMAIL_POLL_SECONDS`. |
 | `POST /pendingReplies` | `{}` | Lists mails waiting for Tanya: `messageId`, `threadId`, `email`, `subject`, `latestMessage` (new text only), `conversation` (the thread as dated lines). |
-| `POST /replyInThread` | `{"messageId":"...","body":"..."}` | Runs the gate again, then sends the answer in the same thread ("Re: subject", In-Reply-To, References, the Tanya header). `"none"` sends nothing. |
+| `POST /replyInThread` | `{"messageId":"...","action":"reply","reply":"..."}`: the email agent's JSON (email/email.txt) plus the messageId | Runs the gate again, then acts. `reply`: sends it in the same thread ("Re: subject", In-Reply-To, References, the Tanya header). `human`: sends the handoff email, then labels `Tanya-needs-human` and `Tanya-off`. `stop`: sends nothing, labels `Tanya-needs-human` and `Tanya-off` (record the opt-out on the platform). `none`: sends nothing. Without `action` it is `reply`, and `body` works in place of `reply`. |
 
 **The gate.** Tanya may answer only when all of these hold. Otherwise she leaves the mail alone and the inbox works as usual.
 1. Tanya started the thread: it holds a mail from Sent with `X-VoiceOwl-Agent: tanya`. Every /sendGmail and /replyInThread

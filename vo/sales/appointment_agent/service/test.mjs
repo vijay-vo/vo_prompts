@@ -228,6 +228,26 @@ console.log('email tests passed');
   assert.deepEqual([res(r5), res(r6), res(r7)], ['limit', 'too_old', 'not_in_funnel']);
   assert.ok(has(r5, LABELS.human) && has(r6, LABELS.human) && !has(r7, LABELS.human));
 
+
+  // The email agent's actions: human sends the handoff and switches Tanya off; stop and none send nothing.
+  const queue = async (to, t) => { const th = (await tanyaMail(to, 'Hi', t)).threadId; const m = inbound(th, to, 'Re: Hi', 'Question', t + H); clock = t + H; await checkReplies({ google: g, now: t + H }); assert.ok(has(m, LABELS.toReply)); return { th, m }; };
+  const qh = await queue('h@q.co', NOW + 10 * H);
+  const before2 = g.sent.length;
+  const hr = await replyInThread({ google: g, body: { messageId: qh.m.id, action: 'human', reply: 'Hi,\n\nPassed to our team.\n\nTanya, VoiceOwl' }, now: NOW + 11 * H });
+  assert.equal(hr.reason, 'handed_to_human'); assert.equal(g.sent.length, before2 + 1, 'the handoff email is sent');
+  assert.ok(has(qh.m, LABELS.human) && has(qh.m, LABELS.off) && !has(qh.m, LABELS.toReply));
+  const qh2 = inbound(qh.th, 'h@q.co', 'Re: Hi', 'Hello?', NOW + 12 * H);
+  assert.equal((await checkReplies({ google: g, now: NOW + 12 * H })).results.find(r => r.messageId === qh2.id).result, 'tanya_off', 'after a handoff Tanya stays out');
+  const qs = await queue('s@q.co', NOW + 20 * H);
+  const before3 = g.sent.length;
+  assert.equal((await replyInThread({ google: g, body: { messageId: qs.m.id, action: 'stop', reply: 'none' }, now: NOW + 21 * H })).reason, 'stopped');
+  assert.equal(g.sent.length, before3, 'stop sends nothing'); assert.ok(has(qs.m, LABELS.human) && has(qs.m, LABELS.off));
+  const qn = await queue('n@q.co', NOW + 30 * H);
+  assert.equal((await replyInThread({ google: g, body: { messageId: qn.m.id, action: 'none', reply: 'none' }, now: NOW + 31 * H })).reason, 'nothing_to_send');
+  assert.ok(!has(qn.m, LABELS.toReply) && !has(qn.m, LABELS.off), 'none only clears the queue');
+  const qr = await queue('r@q.co', NOW + 40 * H);
+  assert.equal((await replyInThread({ google: g, body: { messageId: qr.m.id, action: 'reply', reply: 'Hi,\n\nSure.\n\nTanya, VoiceOwl' }, now: NOW + 41 * H })).sent, true, 'reply works with the agent JSON fields');
+
   // The routes answer through the server too.
   const cr = await call('/checkReplies', {}); assert.equal(cr.s, 200); assert.ok('checked' in cr.j);
   assert.equal((await call('/replyInThread', { messageId: 'nope', body: 'x' })).j.reason, 'not_pending');

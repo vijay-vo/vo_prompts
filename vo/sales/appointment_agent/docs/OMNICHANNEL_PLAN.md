@@ -107,13 +107,19 @@ service works without a database. The platform adds check 3.
 5. It labels the mail "Tanya replied" and writes both messages to the contact history.
 Scopes: gmail.readonly, gmail.send and gmail.modify (for the label).
 
-## New prompts needed (to discuss before writing)
+## Prompts (written 2026-11-25, untested)
 
-1. **priorContext summariser (one for all channels, agreed in principle 2026-11-25):** emails (/emailContext), WhatsApp messages and earlier call summaries (platform database), plus the CSV priorContext, go in; one JSON field `priorContext` comes out. Platform LLM step, run just before each call.
-2. **Tanya by email:** answers in the thread with no tools. Her goal is the demo, through the booking link.
-   She answers questions, handles objections, stops on an opt-out, and passes the thread to a person when unsure.
-3. **Tanya on WhatsApp:** the same job in short chat messages, with no tools for now.
-Proposal: 2 and 3 share one core with a short section per channel.
+| Prompt | Runs | Inputs | Output |
+|---|---|---|---|
+| prior_context/prior_context.txt | platform LLM step just before each call, and when a WhatsApp chat starts | fname, company, salesNotes (the CSV priorContext), callHistory (date, callResult, PCA summary per call), emailHistory (/emailContext emailContext), whatsappHistory (dated "we wrote" / "they wrote" lines) | `{"priorContext": "..."}`, the call agent's {{priorContext}} |
+| email/email.txt | once per mail in /pendingReplies | fname, company, priorContext, conversation and latestMessage (both from /pendingReplies) | `{"action":"reply\|human\|stop\|none","reply":"..."}`, which goes to /replyInThread with the messageId |
+| whatsapp/whatsapp.txt | the platform's WhatsApp chat agent, when the prospect replies | fname, company, priorContext; the chat itself | plain chat messages, no tools |
+| text_pca/text_pca.txt | after a WhatsApp chat or an email thread goes quiet | channel, the conversation (agent: / customer:), fname, company, priorContext | chatResult, doNotContact, noAICalls, needsHuman, callbackTime, painPoint, painDetail, mainObjection, colleagueToInvite, interestLevel, language, summary |
+
+Changed with them: default/default.txt (priorContext covers calls, email and WhatsApp; the follow-up opener names the latest
+contact and picks up anything still open) and pca/pca.txt (priorContext wording). Tanya by email and on WhatsApp cannot book.
+She sends the booking link, and hands over to a person or stops as the prompts say. doNotContact, noAICalls or needsHuman
+"yes" from text_pca, or "stop" or "human" from the email agent, update the contact in the platform database.
 
 ## Open questions
 

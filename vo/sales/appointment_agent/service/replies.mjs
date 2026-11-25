@@ -89,14 +89,24 @@ export async function pendingReplies({ google, env = {} }) {
   return { count: out.length, pending: out };
 }
 
-// Send Tanya's answer to one pending mail, in its thread. The gate runs again first, in case a person
-// replied or switched Tanya off while the answer was being written. body "none": no answer is sent.
+// Send Tanya's answer to one pending mail, in its thread. Body: messageId, and the email agent's output
+// (email/email.txt): action "reply" | "human" | "stop" | "none", and the email text as reply (or body).
+//   reply  send it.
+//   human  send the handoff email, then label the thread for a person and switch Tanya off on it.
+//   stop   send nothing; label it for a person (to record the opt-out) and switch Tanya off on it.
+//   none   send nothing.
+// The gate runs again before any send, in case a person replied or switched Tanya off meanwhile.
 export async function replyInThread({ google, env = {}, body, now = Date.now(), inFunnel }) {
   const L = await labelIds(google);
   const m = body.messageId ? await google.getMessage(String(body.messageId)) : null;
   if (!m || !(m.labelIds || []).includes(L.toReply)) return { sent: false, reason: 'not_pending' };
-  const text = String(body.body ?? '').trim();
-  if (!text || /^none$/i.test(text)) { await google.modifyMessage(m.id, [], [L.toReply]); return { sent: false, reason: 'nothing_to_send' }; }
+  const action = String(body.action || 'reply').trim().toLowerCase();
+  if (action === 'stop') { await google.modifyMessage(m.id, [L.human, L.off], [L.toReply]); return { sent: false, reason: 'stopped' }; }
+  const text = String(body.reply ?? body.body ?? '').trim();
+  if (action === 'none' || !text || /^none$/i.test(text)) {
+    await google.modifyMessage(m.id, action === 'human' ? [L.human, L.off] : [], [L.toReply]);
+    return { sent: false, reason: action === 'human' ? 'handed_to_human' : 'nothing_to_send' };
+  }
   const thread = await google.getThread(m.threadId) || [m];
   const g = gate(thread, m, { offId: L.off, now, limits: limitsFrom(env), inFunnel });
   if (!g.ok) { await google.modifyMessage(m.id, g.human ? [L.human] : [], [L.toReply]); return { sent: false, reason: g.reason }; }
@@ -106,6 +116,7 @@ export async function replyInThread({ google, env = {}, body, now = Date.now(), 
     to: addressOf(header(m, 'From')), subject: /^re:/i.test(subject) ? subject : `Re: ${subject}`, body: text,
     threadId: m.threadId, inReplyTo: messageIdHeader, references: `${header(m, 'References')} ${messageIdHeader}`.trim(),
   });
-  for (const x of thread.filter(x => (x.labelIds || []).includes(L.toReply))) await google.modifyMessage(x.id, [L.replied], [L.toReply]);
-  return { sent: true, messageId, threadId };
+  const after = action === 'human' ? [L.replied, L.human, L.off] : [L.replied];
+  for (const x of thread.filter(x => (x.labelIds || []).includes(L.toReply))) await google.modifyMessage(x.id, after, [L.toReply]);
+  return action === 'human' ? { sent: true, reason: 'handed_to_human', messageId, threadId } : { sent: true, messageId, threadId };
 }
