@@ -1,4 +1,5 @@
-// VoiceOwl demo-booking tools: POST /getAvailableSlots (getAvailableSlots), POST /bookAppointment (bookAppointment), POST /sendGmail (after-call email).
+// VoiceOwl demo-booking tools: POST /getAvailableSlots (getAvailableSlots), POST /bookAppointment (bookAppointment), POST /sendGmail (after-call email),
+// POST /emailContext (earlier emails with a prospect, for priorContext).
 import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';
@@ -7,6 +8,7 @@ net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
 import { makeGoogle } from './google.mjs';
 import { config, getAvailableSlots, bookAppointment, bookReply, SAY, clean } from './slots.mjs';
 import { validTz } from './labels.mjs';
+import { contextFrom, involves, searchFor } from './mail.mjs';
 
 function loadEnv() {
   const env = { ...process.env };
@@ -29,9 +31,25 @@ async function sendGmail({ google, body }) {
   const to = clean(body.to), subject = clean(body.subject), text = clean(body.body);
   if (/^none$/i.test(subject) || /^none$/i.test(text) || !subject || !text) return MAIL.skipped;
   if (!EMAIL_RE.test(to)) return MAIL.badTo;
-  const { messageId } = await google.sendMail({ to, subject, body: text });
-  return { ...MAIL.sent, messageId };
+  const { messageId, threadId } = await google.sendMail({ to, subject, body: text });
+  return { ...MAIL.sent, messageId, threadId };
 }
+
+// Earlier emails with one prospect, found by their address. threadId is optional: when it is given and
+// the thread is theirs, that thread is read; otherwise (absent, wrong, deleted) the mailbox is searched.
+async function emailContext({ google, body, env }) {
+  const email = clean(body.email).toLowerCase(), threadId = clean(body.threadId);
+  if (!EMAIL_RE.test(email)) return { found: 0, reason: 'bad_address', source: 'none', emailContext: 'Not Available', threadId: 'Not Available' };
+  const opts = { email, tz: env.SALES_TZ || 'Asia/Kolkata', keep: Number(env.EMAIL_CONTEXT_MESSAGES || 5) };
+  if (threadId && !/^none$/i.test(threadId)) {
+    const msgs = await google.getThread(threadId);
+    if (msgs?.some(m => involves(m, email))) return ctxReply(contextFrom(msgs, opts), 'thread');
+  }
+  const ids = await google.listMessages(searchFor(email), 20);
+  const msgs = await Promise.all(ids.map(id => google.getMessage(id)));
+  return ctxReply(contextFrom(msgs.filter(Boolean), opts), 'search');
+}
+const ctxReply = (c, source) => ({ found: c.found, reason: c.found ? 'found' : 'no_emails', source, emailContext: c.emailContext, threadId: c.threadId });
 
 export function makeApp(env, google = makeGoogle(env)) {
   const cfg = config(env);
@@ -47,12 +65,16 @@ export function makeApp(env, google = makeGoogle(env)) {
     try {
       if (req.method === 'GET' && req.url === '/health') return send(200, { ok: true });
       if (!env.API_KEY || req.headers['x-api-key'] !== env.API_KEY) return send(401, { error: 'unauthorized' });
-      if (req.method !== 'POST' || !['/getAvailableSlots', '/bookAppointment', '/sendGmail'].includes(req.url)) return send(404, { error: 'not found' });
+      if (req.method !== 'POST' || !['/getAvailableSlots', '/bookAppointment', '/sendGmail', '/emailContext'].includes(req.url)) return send(404, { error: 'not found' });
       let raw = ''; for await (const c of req) { raw += c; if (raw.length > 1e5) return send(413, { error: 'too large' }); }
       const body = raw ? JSON.parse(raw) : {};
       if (req.url === '/sendGmail') {
         console.log(new Date().toISOString(), req.url, JSON.stringify({ to: body.to ? '***' : undefined, subject: body.subject }));
         return send(200, await sendGmail({ google, body }));
+      }
+      if (req.url === '/emailContext') {
+        console.log(new Date().toISOString(), req.url, JSON.stringify({ email: body.email ? '***' : undefined, threadId: body.threadId }));
+        return send(200, await emailContext({ google, body, env }));
       }
       console.log(new Date().toISOString(), req.url, JSON.stringify({ ...body, email: body.email ? '***' : undefined }));
       if (!validTz(body.timezone)) return send(400, { error: 'timezone must be an IANA name such as Asia/Kolkata' });
@@ -63,6 +85,7 @@ export function makeApp(env, google = makeGoogle(env)) {
     } catch (e) {
       console.error('ERROR', e.message);
       if (req.url === '/sendGmail') return send(200, MAIL.error);
+      if (req.url === '/emailContext') return send(200, { found: 0, reason: 'error', source: 'none', emailContext: 'Not Available', threadId: 'Not Available' });
       return send(req.url === '/bookAppointment' ? 200 : 500, req.url === '/bookAppointment'
         ? bookReply({})
         : { toolResponse: SAY.calendarDown });

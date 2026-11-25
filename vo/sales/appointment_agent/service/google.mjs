@@ -1,5 +1,6 @@
 // Google Calendar and Gmail access: real (OAuth refresh token) or mock (GOOGLE_MOCK=1, in memory, for tests).
 import crypto from 'node:crypto';
+import { AGENT_HEADER } from './mail.mjs';
 
 let tokenCache = { value: null, exp: 0 };
 async function accessToken(env) {
@@ -27,10 +28,11 @@ const oneLine = (v) => String(v ?? '').replace(/[\r\n]+/g, ' ').trim();
 const b64 = (v) => Buffer.from(v, 'utf8').toString('base64');
 export function mimeMessage({ to, subject, body }) {
   const text = String(body).replace(/\\n/g, '\n').replace(/\r?\n/g, '\r\n');
-  return [`To: ${oneLine(to)}`, `Subject: =?UTF-8?B?${b64(oneLine(subject))}?=`, 'MIME-Version: 1.0',
+  return [`To: ${oneLine(to)}`, `Subject: =?UTF-8?B?${b64(oneLine(subject))}?=`, `${AGENT_HEADER}: tanya`, 'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', b64(text).replace(/.{76}/g, '$&\r\n')].join('\r\n');
 }
 
+const GMAIL = 'https://gmail.googleapis.com/gmail/v1';
 export function makeGoogle(env) {
   if (env.GOOGLE_MOCK === '1') return makeMock();
   const cal = encodeURIComponent(env.CALENDAR_ID || 'primary');
@@ -53,9 +55,27 @@ export function makeGoogle(env) {
     async get(id) { const r = await gfetch(env, `/calendars/${cal}/events/${id}`); return r.status === 200 ? r.body : null; },
     async sendMail(msg) {
       const raw = Buffer.from(mimeMessage(msg), 'utf8').toString('base64url');
-      const r = await gfetch(env, '/users/me/messages/send', { method: 'POST', body: JSON.stringify({ raw }) }, 3, 'https://gmail.googleapis.com/gmail/v1');
+      const r = await gfetch(env, '/users/me/messages/send', { method: 'POST', body: JSON.stringify({ raw }) }, 3, GMAIL);
       if (r.status !== 200) throw new Error(`gmail send ${r.status}: ${JSON.stringify(r.body)}`);
-      return { messageId: r.body.id };
+      return { messageId: r.body.id, threadId: r.body.threadId };
+    },
+    // Mail search, the same syntax as the Gmail search box; newest first. Returns ids only.
+    async listMessages(q, max = 20) {
+      const r = await gfetch(env, `/users/me/messages?${new URLSearchParams({ q, maxResults: String(max) })}`, {}, 3, GMAIL);
+      if (r.status !== 200) throw new Error(`gmail list ${r.status}: ${JSON.stringify(r.body)}`);
+      return (r.body.messages || []).map(m => m.id);
+    },
+    async getMessage(id) {
+      const r = await gfetch(env, `/users/me/messages/${encodeURIComponent(id)}?format=full`, {}, 3, GMAIL);
+      if (r.status !== 200) throw new Error(`gmail get ${r.status}: ${JSON.stringify(r.body)}`);
+      return r.body;
+    },
+    // null when the thread does not exist (a wrong or old threadId).
+    async getThread(id) {
+      const r = await gfetch(env, `/users/me/threads/${encodeURIComponent(id)}?format=full`, {}, 3, GMAIL);
+      if (r.status === 404 || r.status === 400) return null;
+      if (r.status !== 200) throw new Error(`gmail thread ${r.status}: ${JSON.stringify(r.body)}`);
+      return r.body.messages || [];
     },
   };
 }
@@ -73,6 +93,11 @@ function makeMock() {
     },
     async get(id) { return events.has(id) ? { id, status: 'confirmed', hangoutLink: 'https://meet.google.com/mock-mock-mock' } : null; },
     sent: [],
-    async sendMail(msg) { this.sent.push({ ...msg, mime: mimeMessage(msg) }); return { messageId: `mock-${this.sent.length}` }; },
+    async sendMail(msg) { this.sent.push({ ...msg, mime: mimeMessage(msg) }); return { messageId: `mock-${this.sent.length}`, threadId: `mock-thread-${this.sent.length}` }; },
+    // Mailbox for /emailContext tests: Gmail message resources. The mock search ignores q; /emailContext filters by address.
+    mails: [],
+    async listMessages(q, max = 20) { return [...this.mails].sort((a, b) => b.internalDate - a.internalDate).slice(0, max).map(m => m.id); },
+    async getMessage(id) { return this.mails.find(m => m.id === id); },
+    async getThread(id) { const t = this.mails.filter(m => m.threadId === id); return t.length ? t : null; },
   };
 }

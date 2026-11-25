@@ -24,11 +24,12 @@ Google Cloud console → the same project → **APIs & Services → Library** �
 | Scope | Allows |
 |---|---|
 | `https://www.googleapis.com/auth/gmail.send` | sending email as the signed-in account |
-| `https://www.googleapis.com/auth/gmail.readonly` | reading the mailbox (replies, bounces) |
+| `https://www.googleapis.com/auth/gmail.readonly` | reading the mailbox (earlier emails, replies, bounces) |
+| `https://www.googleapis.com/auth/gmail.modify` | adding labels, such as "Tanya replied" (added 2026-11-25) |
 
 Click **Update**, then **Save**. Keep the two calendar scopes.
 
-- Together this is read and write, without the power to delete mail. Do not add
+- Together this is read, send and label. `gmail.modify` can move mail to Trash but cannot delete it permanently. Do not add
   `https://mail.google.com/` (full access, including permanent delete).
 - With an **Internal** consent screen there is no Google review for these scopes.
 
@@ -36,13 +37,13 @@ Click **Update**, then **Save**. Keep the two calendar scopes.
 
 The email goes out from the account you sign in with here, and the calendar is that account's too.
 
-1. In the `service` folder: `node auth.mjs`
-2. Open the link, sign in with the calendar account, approve. The screen lists Calendar and Gmail.
+1. Stop `node server.mjs`, then in the `service` folder: `node auth.mjs`
+2. Open the link, sign in with the calendar account, approve. The screen lists Calendar and Gmail (read, send, and manage labels).
 3. The terminal prints `GOOGLE_REFRESH_TOKEN=...`. Put it in `.env` in place of the old one. Press Ctrl+C.
 4. Restart `node server.mjs`.
 
-An old token made before the Gmail scopes were added keeps working for Calendar but gets 403
-"insufficient authentication scopes" from Gmail.
+An old token keeps working for what it already had, but gets 403 "insufficient authentication scopes"
+for anything newer. After adding `gmail.modify` (2026-11-25), repeat this step once.
 
 ## 4. Test the route
 
@@ -90,3 +91,26 @@ So the platform can call the tool after every call: when the PCA wrote "none", n
   myaccount.google.com → Security → Third-party access if it leaks.
 - **A separate sending address later** (such as demos@voiceowl.ai) means signing in with that account in
   step 3; move the calendar to it too, so one token still serves both.
+
+## 7. Earlier emails with a prospect: `POST /emailContext` (added 2026-11-25)
+
+For priorContext before a call. The service finds the prospect's emails by their address, so no thread ID
+is needed.
+
+| Part | Value |
+|---|---|
+| Body | `{"email":"{{email}}"}` or `{"email":"{{email}}","threadId":"..."}` (threadId optional) |
+| threadId given and the thread is theirs | that thread is read |
+| no threadId, or a wrong one | the mailbox is searched: `{from:<email> to:<email> cc:<email>}` |
+
+Kept: the last 5 real emails (`EMAIL_CONTEXT_MESSAGES` in `.env`), oldest first, new text only (quoted history
+removed), up to about 1,500 characters each. Left out: calendar notices, bounces, auto-replies, bulk mail.
+
+Reply (always HTTP 200):
+```json
+{"found":2,"reason":"found","source":"search",
+ "emailContext":"12 Nov 2026, we wrote, subject \"...\": ...\n13 Nov 2026, they wrote, subject \"...\": ...",
+ "threadId":"18c..."}
+```
+`reason`: `found`, `no_emails` (emailContext "No earlier emails."), `bad_address` or `error` (both "Not Available").
+Dates are in the sales timezone (`SALES_TZ`). "we" is anyone writing from this mailbox, Tanya or the team.

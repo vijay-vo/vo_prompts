@@ -103,6 +103,50 @@ const db = await dcall('/bookAppointment', { ...lead, startTime: a[0] });
 assert.deepEqual(Object.keys(db), KEYS); assert.equal(db.returnCode, 500); assert.equal(db.reason, 'error'); assert.equal(db.toolResponse, SAY.bookError);
 down.close();
 console.log('returnCode tests passed');
+
+// /emailContext: earlier emails with one prospect, by address; threadId optional.
+assert.ok(em.j.threadId, '/sendGmail returns the threadId'); assert.match(mime, /\r\nX-VoiceOwl-Agent: tanya\r\n/, 'every sent mail is marked as Tanya');
+const b64u = (t) => Buffer.from(t).toString('base64url');
+let mid = 0;
+const mail = ({ thread, from, to, subject, text, html, at, sent = false, headers = [], mimeType }) => ({
+  id: `m${++mid}`, threadId: thread, labelIds: sent ? ['SENT'] : ['INBOX'], internalDate: String(Date.parse(at)),
+  payload: { mimeType: mimeType || 'multipart/alternative', headers: [{ name: 'From', value: from }, { name: 'To', value: to }, { name: 'Subject', value: subject }, ...headers],
+    parts: [text != null && { mimeType: 'text/plain', body: { data: b64u(text) } }, html != null && { mimeType: 'text/html', body: { data: b64u(html) } }].filter(Boolean) },
+});
+const US = 'Tanya <sales@voiceowl.ai>', PRIYA = 'Priya Sharma <Priya@BrightLoans.com>';
+google.mails.push(
+  mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Book your VoiceOwl call with Hussain', text: 'Hi Priya,\n\nSorry we could not book.\n\nTanya, VoiceOwl', at: '2026-11-12T05:00:00Z', sent: true }),
+  mail({ thread: 'T1', from: PRIYA, to: US, subject: 'Re: Book your VoiceOwl call with Hussain', text: 'Can we do Thursday? We get 400 calls a day in Hindi.\n\nOn Thu, 12 Nov 2026 at 10:30, Tanya <sales@voiceowl.ai>\nwrote:\n> Hi Priya,\n> Sorry we could not book.', at: '2026-11-13T06:00:00Z' }),
+  mail({ thread: 'T1', from: PRIYA, to: US, subject: 'Automatic reply: Book your VoiceOwl call', text: 'I am out of office.', at: '2026-11-13T06:01:00Z', headers: [{ name: 'Auto-Submitted', value: 'auto-replied' }] }),
+  mail({ thread: 'T2', from: PRIYA, to: US, subject: 'Accepted: VoiceOwl demo', text: 'Priya has accepted.', at: '2026-11-14T06:00:00Z' }),
+  mail({ thread: 'T3', from: 'Mail Delivery Subsystem <mailer-daemon@googlemail.com>', to: US, subject: 'Delivery Status Notification (Failure)', text: 'priya@brightloans.com not found', at: '2026-11-14T07:00:00Z' }),
+  mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Re: Book your VoiceOwl call with Hussain', html: '<p>Thursday works.</p><p>Tanya</p><blockquote>old text</blockquote>', at: '2026-11-15T06:00:00Z', sent: true }),
+  mail({ thread: 'T9', from: 'dan@harbor.com', to: US, subject: 'Hello', text: 'Other prospect.', at: '2026-11-15T07:00:00Z' }),
+);
+const ctx = (await call('/emailContext', { email: ' priya@brightloans.com ' })).j;
+assert.deepEqual(Object.keys(ctx), ['found', 'reason', 'source', 'emailContext', 'threadId']);
+assert.equal(ctx.found, 3); assert.equal(ctx.reason, 'found'); assert.equal(ctx.source, 'search'); assert.equal(ctx.threadId, 'T1');
+assert.equal(ctx.emailContext, [
+  '12 Nov 2026, we wrote, subject "Book your VoiceOwl call with Hussain": Hi Priya, / Sorry we could not book. / Tanya, VoiceOwl',
+  '13 Nov 2026, they wrote, subject "Re: Book your VoiceOwl call with Hussain": Can we do Thursday? We get 400 calls a day in Hindi.',
+  '15 Nov 2026, we wrote, subject "Re: Book your VoiceOwl call with Hussain": Thursday works. / Tanya',
+].join('\n'), 'oldest first; quotes, auto-replies, calendar notices, bounces and other prospects left out');
+assert.equal((await call('/emailContext', { email: 'priya@brightloans.com', threadId: 'T1' })).j.source, 'thread');
+assert.equal((await call('/emailContext', { email: 'priya@brightloans.com', threadId: 'T9' })).j.source, 'search', "someone else's thread falls back to search");
+assert.equal((await call('/emailContext', { email: 'priya@brightloans.com', threadId: 'gone' })).j.found, 3, 'a wrong threadId falls back to search');
+assert.equal((await call('/emailContext', { email: 'priya@brightloans.com', threadId: 'Not Available' })).j.source, 'search');
+const none = (await call('/emailContext', { email: 'new@lead.com' })).j;
+assert.deepEqual(none, { found: 0, reason: 'no_emails', source: 'search', emailContext: 'No earlier emails.', threadId: 'Not Available' });
+assert.equal((await call('/emailContext', { email: 'Not Available' })).j.reason, 'bad_address');
+const failing = http.createServer(makeApp(env, { ...google, listMessages: async () => { throw new Error('gmail down'); } }));
+await new Promise(r => failing.listen(0, r));
+const fr = await (await fetch(`http://127.0.0.1:${failing.address().port}/emailContext`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': 'k' }, body: JSON.stringify({ email: 'priya@brightloans.com' }) })).json();
+assert.equal(fr.reason, 'error'); assert.equal(fr.emailContext, 'Not Available');
+failing.close();
+const { newText } = await import('./mail.mjs');
+assert.equal(newText('Sounds good.\n\n-----Original Message-----\nFrom: x'), 'Sounds good.', 'Outlook quote removed');
+assert.equal(newText('Yes.\n\nFrom: Tanya <a@b.c>\nSent: Monday\nSubject: x'), 'Yes.', 'Outlook header block removed');
+assert.ok(newText('a '.repeat(2000)).length <= 1504, 'long mail capped');
 console.log('email tests passed');
 
 console.log('\nall tests passed'); srv.close();

@@ -7,7 +7,8 @@ never by the model. Plain Node 20, no packages to install.
 |---|---|---|
 | getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (one of: today, tomorrow, day after tomorrow, monday...sunday, `in N days`, or a date `1`-`31`), `preferredTime` (morning/afternoon/evening or `HH:MM` 24-hour) |
 | bookAppointment | `POST /bookAppointment` | from the model: `startTime` (copied from the chosen option), `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
-| sendGmail (after the PCA) | `POST /sendGmail` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. See docs/GMAIL_SETUP.md |
+| sendGmail (after the PCA) | `POST /sendGmail` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. Every mail carries the header `X-VoiceOwl-Agent: tanya`; the reply has `messageId` and `threadId`. See docs/GMAIL_SETUP.md |
+| emailContext (before a call) | `POST /emailContext` | `email`, optional `threadId`; returns the last 5 emails with that address as dated lines, for priorContext. See docs/GMAIL_SETUP.md section 7 |
 
 Every reply carries a `toolResponse` for the model. All times are the prospect's own local time. A booked reply
 also has `prospectTime`, `salesTime`, `meetLink` and `eventId`. Full mapping with examples: docs/PLATFORM_SETUP.md.
