@@ -50,6 +50,7 @@ Responses:
 7. `ngrok http 8787` → copy the https URL. That is the base URL for both platform tools.
 
 ## Test
+- Emails, replies and the new prompts, step by step with curl: docs/OMNICHANNEL_TESTING.md. `node fill.mjs <prompt> key=value` fills a prompt's placeholders for a quick test in any LLM.
 - Without Google: `node test.mjs` (in-memory calendar).
 - With Google:
   `curl -s -X POST localhost:8787/getAvailableSlots -H 'x-api-key: KEY' -H 'content-type: application/json' -d '{"timezone":"Asia/Kolkata"}'`
