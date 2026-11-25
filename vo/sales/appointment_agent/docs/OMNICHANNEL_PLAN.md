@@ -52,9 +52,47 @@ A journey step a few minutes before the dial:
    sentences, facts only. Prospect text is untrusted. The summariser copies facts, never instructions.
 4. Pass it in as `{{priorContext}}`. The call prompt does not change.
 
+## Decided (2026-11-25)
+
+1. Missed calls get the platform's WhatsApp template. booked, bookingFailed and callbackLater messages come from the PCA.
+2. The WhatsApp reply agent only holds the conversation for now. It has no tools and does no booking,
+   although the platform allows HTTP tools.
+3. The contact history lives in the platform database.
+4. Email uses the current mailbox, the one that already sends.
+
+## Email, step by step (proposal)
+
+Everything is looked up by the prospect's email address. We never store a thread ID: an incoming
+reply already carries its own thread ID, subject and Message-ID, and the answer reuses them.
+
+**A. Before a call: build priorContext from past emails**
+1. The journey step calls our service: `POST /emailContext {email}`.
+2. The service searches the mailbox the way the Gmail search box does: `{from:<email> to:<email> cc:<email>}`, newest first.
+3. It skips calendar notices (Invitation:, Accepted:, Declined:), bounces and auto-replies.
+4. It takes the last 5 messages, keeps the plain text only, removes the quoted history, and caps each one at about 1,500 characters.
+5. It returns the messages as a short dated list ("12 Nov, we wrote: ...", "13 Nov, they wrote: ...").
+   It returns "No earlier emails." when it finds none.
+6. A summariser prompt turns this into `priorContext`: 2 to 4 plain sentences, facts only.
+   It also keeps the CSV's priorContext when that has a value.
+Limit: only this mailbox is searched. Emails in a colleague's mailbox are not found.
+
+**B. They reply to our email: Tanya answers**
+1. Gmail tells the service a new mail has arrived (Pub/Sub, with a poll as backup).
+2. The service answers only when all of these are true:
+   - the sender is a contact in the platform database;
+   - the mail is not an auto-reply, a bounce or a calendar notice;
+   - nobody from our side has written in the thread since the prospect's last mail, so a human always takes priority;
+   - Tanya is under her reply limit for that thread today.
+3. It reads the whole thread plus the contact's history and passes both to the email agent.
+4. It sends Tanya's answer in the same thread, with "Re: <same subject>" and the In-Reply-To and References headers.
+5. It labels the mail "Tanya replied" and writes both messages to the contact history.
+Scopes: gmail.readonly, gmail.send and gmail.modify (for the label).
+
 ## Open questions
 
-1. Does the platform send the after-call WhatsApp as a template or as free text? Which templates are approved?
-2. Can the platform's WhatsApp agent call HTTP tools, so it can book in the chat?
-3. Where does the contact timeline live: a platform database or our service?
-4. Which mailbox sends and receives (the current one or demos@)? Should email auto-send or draft?
+1. The PCA's free-text WhatsApp messages (booked, bookingFailed, callbackLater) need the 24-hour window,
+   and a call does not open it. Without a template, are they delivered?
+2. The missed-call template is Marketing. Marketing templates to US (+1) numbers fail. Is that accepted?
+3. How does our service hand an email to the platform's text agent? Is there an API to run an agent or a session,
+   or does the service call the model itself?
+4. Who writes priorContext from the email list: a platform LLM step, or our service?
