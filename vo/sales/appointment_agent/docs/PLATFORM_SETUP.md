@@ -227,8 +227,10 @@ Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{booke
 | doNotCall, noAICalls | suppression list | "yes": never call again / only a human may call |
 | summary | CRM | |
 
-Messages are written in three cases only: booked; booking failed or no slot (the team will send times); information
-asked for. All other calls, and anyone with doNotCall or noAICalls "yes", get "none" in all three fields.
+The PCA writes messages for three callResult values only: booked, bookingFailed and callbackLater (the last two
+carry the booking link). gatekeeper, voicemail and disconnected (and platform no-answer or busy) get the platform's own
+fixed missed-call template. notInterested, doNotCall and wrongNumber get nothing. Anyone with doNotCall or noAICalls
+"yes" gets nothing, whatever callResult says.
 
 ---
 
