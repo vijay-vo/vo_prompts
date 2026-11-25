@@ -220,7 +220,7 @@ Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{booke
 | whatsappMessage | WhatsApp, free text, to Contact | send only when not "none" |
 | emailSubject | `subject` of the sendGmail tool (section 5a) | the service skips "none" |
 | emailMessage | `body` of the sendGmail tool (section 5a) | `\n\n` is a paragraph break |
-| callResult | CRM status | booked, bookingFailed, doNotCall, callbackLater, notInterested, gatekeeper, wrongNumber, voicemail, disconnected |
+| callResult | CRM status | booked, bookingFailed, callbackLater, gatekeeper, voicemail, disconnected, notInterested, doNotCall, wrongNumber |
 | painPoint, painDetail, mainObjection, interestLevel | CRM notes for sales | painPoint: slowResponse, tooManyCalls, language, other, none |
 | colleagueToInvite | sales follow-up | |
 | callbackTime | callback scheduling | the prospect's own words, not a date |
@@ -231,6 +231,25 @@ The PCA writes messages for three callResult values only: booked, bookingFailed 
 carry the booking link). gatekeeper, voicemail and disconnected (and platform no-answer or busy) get the platform's own
 fixed missed-call template. notInterested, doNotCall and wrongNumber get nothing. Anyone with doNotCall or noAICalls
 "yes" gets nothing, whatever callResult says.
+
+### The two links
+
+| Link | Value | Used in | Comes from |
+|---|---|---|---|
+| Meet link | `{{meetLink}}`, e.g. `https://meet.google.com/abc-defg-hij` | booked message only | bookAppointment reply, one per booking |
+| Booking link | `https://calendar.app.google/StCvpJnSaJrRTqCw7` | bookingFailed and callbackLater messages (PCA), missed-call template (platform) | Google Calendar appointment schedule "15-minute call with Hussain, VoiceOwl", fixed |
+
+A message never carries both. A booked message without a Meet link says the link is in the invite; it never falls
+back to the booking link. Tanya never says a link on the call. To change the booking link: THE LINKS in pca/pca.txt
+and the platform's missed-call template.
+
+### Platform missed-call template (gatekeeper, voicemail, disconnected, no answer, busy)
+
+WhatsApp body and email body:
+```
+Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. I tried to reach you by phone but we couldn't connect.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If you'd like to see it working, you can book a 15-minute call with Hussain (Sales Head) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
+```
+Email subject: `Sorry we missed you - VoiceOwl`
 
 ---
 
