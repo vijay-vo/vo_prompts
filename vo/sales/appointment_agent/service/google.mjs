@@ -26,9 +26,11 @@ async function gfetch(env, path, init = {}, tries = 3, base = 'https://www.googl
 
 const oneLine = (v) => String(v ?? '').replace(/[\r\n]+/g, ' ').trim();
 const b64 = (v) => Buffer.from(v, 'utf8').toString('base64');
-export function mimeMessage({ to, subject, body }) {
+export function mimeMessage({ to, subject, body, inReplyTo, references }) {
   const text = String(body).replace(/\\n/g, '\n').replace(/\r?\n/g, '\r\n');
-  return [`To: ${oneLine(to)}`, `Subject: =?UTF-8?B?${b64(oneLine(subject))}?=`, `${AGENT_HEADER}: tanya`, 'MIME-Version: 1.0',
+  // In-Reply-To and References put a reply in the prospect's existing conversation.
+  const thread = inReplyTo ? [`In-Reply-To: ${oneLine(inReplyTo)}`, `References: ${oneLine(references || inReplyTo)}`] : [];
+  return [`To: ${oneLine(to)}`, `Subject: =?UTF-8?B?${b64(oneLine(subject))}?=`, ...thread, `${AGENT_HEADER}: tanya`, 'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', b64(text).replace(/.{76}/g, '$&\r\n')].join('\r\n');
 }
 
@@ -55,7 +57,7 @@ export function makeGoogle(env) {
     async get(id) { const r = await gfetch(env, `/calendars/${cal}/events/${id}`); return r.status === 200 ? r.body : null; },
     async sendMail(msg) {
       const raw = Buffer.from(mimeMessage(msg), 'utf8').toString('base64url');
-      const r = await gfetch(env, '/users/me/messages/send', { method: 'POST', body: JSON.stringify({ raw }) }, 3, GMAIL);
+      const r = await gfetch(env, '/users/me/messages/send', { method: 'POST', body: JSON.stringify(msg.threadId ? { raw, threadId: msg.threadId } : { raw }) }, 3, GMAIL);
       if (r.status !== 200) throw new Error(`gmail send ${r.status}: ${JSON.stringify(r.body)}`);
       return { messageId: r.body.id, threadId: r.body.threadId };
     },
@@ -77,6 +79,20 @@ export function makeGoogle(env) {
       if (r.status !== 200) throw new Error(`gmail thread ${r.status}: ${JSON.stringify(r.body)}`);
       return r.body.messages || [];
     },
+    async listLabels() {
+      const r = await gfetch(env, '/users/me/labels', {}, 3, GMAIL);
+      if (r.status !== 200) throw new Error(`gmail labels ${r.status}: ${JSON.stringify(r.body)}`);
+      return r.body.labels || [];
+    },
+    async createLabel(name) {
+      const r = await gfetch(env, '/users/me/labels', { method: 'POST', body: JSON.stringify({ name, labelListVisibility: 'labelShow', messageListVisibility: 'show' }) }, 3, GMAIL);
+      if (r.status !== 200) throw new Error(`gmail label create ${r.status}: ${JSON.stringify(r.body)}`);
+      return r.body;
+    },
+    async modifyMessage(id, add = [], remove = []) {
+      const r = await gfetch(env, `/users/me/messages/${encodeURIComponent(id)}/modify`, { method: 'POST', body: JSON.stringify({ addLabelIds: add, removeLabelIds: remove }) }, 3, GMAIL);
+      if (r.status !== 200) throw new Error(`gmail modify ${r.status}: ${JSON.stringify(r.body)}`);
+    },
   };
 }
 
@@ -93,7 +109,23 @@ function makeMock() {
     },
     async get(id) { return events.has(id) ? { id, status: 'confirmed', hangoutLink: 'https://meet.google.com/mock-mock-mock' } : null; },
     sent: [],
-    async sendMail(msg) { this.sent.push({ ...msg, mime: mimeMessage(msg) }); return { messageId: `mock-${this.sent.length}`, threadId: `mock-thread-${this.sent.length}` }; },
+    // A sent mail also lands in the mock mailbox as a SENT message, like Gmail's own copy.
+    async sendMail(msg) {
+      this.sent.push({ ...msg, mime: mimeMessage(msg) });
+      const id = `mock-${this.sent.length}`, threadId = msg.threadId || `mock-thread-${this.sent.length}`;
+      const headers = [['From', 'sales@voiceowl.ai'], ['To', msg.to], ['Subject', msg.subject], ['Message-ID', `<${id}@mail.gmail.com>`], ['X-VoiceOwl-Agent', 'tanya']]
+        .concat(msg.inReplyTo ? [['In-Reply-To', msg.inReplyTo], ['References', msg.references || msg.inReplyTo]] : []).map(([name, value]) => ({ name, value }));
+      this.mails.push({ id, threadId, labelIds: ['SENT'], internalDate: String(this.now ? this.now() : Date.now()),
+        payload: { mimeType: 'text/plain', headers, body: { data: Buffer.from(String(msg.body)).toString('base64url') } } });
+      return { messageId: id, threadId };
+    },
+    labels: [{ id: 'INBOX', name: 'INBOX' }, { id: 'SENT', name: 'SENT' }],
+    async listLabels() { return this.labels; },
+    async createLabel(name) { const l = { id: `Label_${this.labels.length}`, name }; this.labels.push(l); return l; },
+    async modifyMessage(id, add = [], remove = []) {
+      const m = this.mails.find(x => x.id === id); if (!m) return;
+      m.labelIds = [...new Set([...(m.labelIds || []).filter(l => !remove.includes(l)), ...add])];
+    },
     // Mailbox for /emailContext tests: Gmail message resources. The mock search ignores q; /emailContext filters by address.
     mails: [],
     async listMessages(q, max = 20) { return [...this.mails].sort((a, b) => b.internalDate - a.internalDate).slice(0, max).map(m => m.id); },

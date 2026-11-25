@@ -114,6 +114,7 @@ const mail = ({ thread, from, to, subject, text, html, at, sent = false, headers
     parts: [text != null && { mimeType: 'text/plain', body: { data: b64u(text) } }, html != null && { mimeType: 'text/html', body: { data: b64u(html) } }].filter(Boolean) },
 });
 const US = 'Tanya <sales@voiceowl.ai>', PRIYA = 'Priya Sharma <Priya@BrightLoans.com>';
+google.mails.length = 0; // the mock keeps copies of the mails sent above; start this mailbox empty
 google.mails.push(
   mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Book your VoiceOwl call with Hussain', text: 'Hi Priya,\n\nSorry we could not book.\n\nTanya, VoiceOwl', at: '2026-11-12T05:00:00Z', sent: true }),
   mail({ thread: 'T1', from: PRIYA, to: US, subject: 'Re: Book your VoiceOwl call with Hussain', text: 'Can we do Thursday? We get 400 calls a day in Hindi.\n\nOn Thu, 12 Nov 2026 at 10:30, Tanya <sales@voiceowl.ai>\nwrote:\n> Hi Priya,\n> Sorry we could not book.', at: '2026-11-13T06:00:00Z' }),
@@ -148,6 +149,91 @@ assert.equal(newText('Sounds good.\n\n-----Original Message-----\nFrom: x'), 'So
 assert.equal(newText('Yes.\n\nFrom: Tanya <a@b.c>\nSent: Monday\nSubject: x'), 'Yes.', 'Outlook header block removed');
 assert.ok(newText('a '.repeat(2000)).length <= 1504, 'long mail capped');
 console.log('email tests passed');
+
+// Email replies: the gate, the queue and the answer in the thread.
+{
+  const { checkReplies, pendingReplies, replyInThread, LABELS } = await import('./replies.mjs');
+  const g = makeGoogle({ GOOGLE_MOCK: '1' });
+  const NOW = Date.parse('2026-11-25T10:00:00Z'), H = 36e5;
+  let clock = NOW - 48 * H; g.now = () => clock;
+  let n = 0;
+  const inbound = (thread, from, subject, text, t, headers = []) => {
+    const m = mail({ thread, from, to: 'sales@voiceowl.ai', subject, text, at: new Date(t).toISOString(), headers: [{ name: 'Message-ID', value: `<in${++n}@x.com>` }, ...headers] });
+    g.mails.push(m); return m;
+  };
+  const tanyaMail = async (to, subject, t, threadId) => { clock = t; return g.sendMail({ to, subject, body: 'Hi,\n\nTanya, VoiceOwl', threadId }); };
+  const labelId = (name) => g.labels.find(l => l.name === name)?.id;
+  const has = (m, name) => (m.labelIds || []).includes(labelId(name));
+
+  const t1 = (await tanyaMail('priya@brightloans.com', 'Book your VoiceOwl call with Hussain', NOW - 48 * H)).threadId;
+  const reply = inbound(t1, 'Priya <priya@brightloans.com>', 'Re: Book your VoiceOwl call with Hussain', 'Is Thursday possible?\n\nOn Mon, Tanya wrote:\n> Hi', NOW - 2 * H);
+  const stranger = inbound('S1', 'someone@random.com', 'Partnership', 'Hello there', NOW - H);
+  g.mails.push(mail({ thread: 'H1', from: 'sales@voiceowl.ai', to: 'ravi@acme.com', subject: 'Hello Ravi', text: 'Written by hand.', at: new Date(NOW - 5 * H).toISOString(), sent: true }));
+  const handReply = inbound('H1', 'ravi@acme.com', 'Re: Hello Ravi', 'Thanks', NOW - H);
+  const t2 = (await tanyaMail('dan@harbor.com', 'Thanks for your time - VoiceOwl', NOW - 30 * H)).threadId;
+  const boss = inbound(t2, 'Boss <boss@harbor.com>', 'Re: Thanks for your time - VoiceOwl', 'Send me details.', NOW - H);
+  const t3 = (await tanyaMail('kim@jp.co', 'Book your VoiceOwl call with Hussain', NOW - 30 * H)).threadId;
+  const ooo = inbound(t3, 'kim@jp.co', 'Automatic reply: Book your VoiceOwl call', 'Away.', NOW - H, [{ name: 'Auto-Submitted', value: 'auto-replied' }]);
+  clock = NOW;
+
+  const r1 = await checkReplies({ google: g, now: NOW });
+  const by = Object.fromEntries(r1.results.map(r => [r.messageId, r.result]));
+  assert.deepEqual([by[reply.id], by[stranger.id], by[handReply.id], by[boss.id], by[ooo.id]], ['to_reply', 'not_tanya_thread', 'not_tanya_thread', 'other_sender', 'not_a_person']);
+  assert.equal(r1.toReply, 1);
+  assert.ok(Object.values(LABELS).every(name => labelId(name)), 'the five labels are created');
+  assert.ok(has(reply, LABELS.toReply) && has(reply, LABELS.checked)); assert.ok(has(boss, LABELS.human)); assert.ok(!has(stranger, LABELS.toReply) && has(stranger, LABELS.checked));
+  assert.equal((await checkReplies({ google: g, now: NOW })).checked, 0, 'a mail is looked at only once');
+
+  const pend = await pendingReplies({ google: g });
+  assert.equal(pend.count, 1); const p0 = pend.pending[0];
+  assert.equal(p0.email, 'priya@brightloans.com'); assert.equal(p0.latestMessage, 'Is Thursday possible?');
+  assert.match(p0.conversation, /we wrote, subject "Book your VoiceOwl call with Hussain"[\s\S]*\nthey wrote|they wrote, subject "Re: Book your VoiceOwl call with Hussain": Is Thursday possible\?$/);
+
+  const sentR = await replyInThread({ google: g, body: { messageId: reply.id, body: 'Hi Priya,\n\nThursday works.\n\nTanya, VoiceOwl' }, now: NOW });
+  assert.equal(sentR.sent, true); assert.equal(sentR.threadId, t1, 'the answer stays in the same thread');
+  const out = g.sent.at(-1);
+  assert.equal(out.to, 'priya@brightloans.com'); assert.equal(out.subject, 'Re: Book your VoiceOwl call with Hussain');
+  assert.match(out.mime, /\r\nIn-Reply-To: <in1@x\.com>\r\nReferences: <in1@x\.com>\r\n/); assert.match(out.mime, /\r\nX-VoiceOwl-Agent: tanya\r\n/);
+  assert.ok(has(reply, LABELS.replied) && !has(reply, LABELS.toReply));
+  assert.equal((await replyInThread({ google: g, body: { messageId: reply.id, body: 'again' }, now: NOW })).reason, 'not_pending', 'never answered twice');
+  assert.equal((await replyInThread({ google: g, body: { messageId: stranger.id, body: 'hi' }, now: NOW })).reason, 'not_pending', 'a mail that failed the gate cannot be answered');
+
+  // A person replies by hand: Tanya stops, even for a mail already queued.
+  const r2 = inbound(t1, 'priya@brightloans.com', 'Re: Book your VoiceOwl call with Hussain', 'And who joins?', NOW + H);
+  await checkReplies({ google: g, now: NOW + H });
+  assert.ok(has(r2, LABELS.toReply));
+  g.mails.push(mail({ thread: t1, from: 'hussain@voiceowl.ai', to: 'priya@brightloans.com', subject: 'Re: Book', text: 'I will join.', at: new Date(NOW + 2 * H).toISOString(), sent: true }));
+  assert.equal((await replyInThread({ google: g, body: { messageId: r2.id, body: 'Hussain joins.' }, now: NOW + 2 * H })).reason, 'human_took_over');
+  assert.ok(!has(r2, LABELS.toReply), 'taken off the queue');
+  const r3 = inbound(t1, 'priya@brightloans.com', 'Re: Book', 'Thanks Hussain', NOW + 3 * H);
+  assert.equal((await checkReplies({ google: g, now: NOW + 3 * H })).results.find(r => r.messageId === r3.id).result, 'human_took_over');
+
+  // The team switches Tanya off on a thread.
+  const t4 = (await tanyaMail('lee@k.co', 'Thanks for your time - VoiceOwl', NOW)).threadId;
+  await g.modifyMessage(g.mails.find(m => m.threadId === t4).id, [labelId(LABELS.off)]);
+  const r4 = inbound(t4, 'lee@k.co', 'Re: Thanks', 'Tell me more', NOW + H);
+  assert.equal((await checkReplies({ google: g, now: NOW + H })).results.find(r => r.messageId === r4.id).result, 'tanya_off');
+
+  // Limits: 3 Tanya mails in a day; a reply more than 30 days after her last mail.
+  const t5 = (await tanyaMail('ann@z.co', 'Hi', NOW - 3 * H)).threadId;
+  await tanyaMail('ann@z.co', 'Re: Hi', NOW - 2 * H, t5); await tanyaMail('ann@z.co', 'Re: Hi', NOW - H, t5);
+  const r5 = inbound(t5, 'ann@z.co', 'Re: Hi', 'More?', NOW);
+  const t6 = (await tanyaMail('old@z.co', 'Hi', NOW - 40 * 24 * H)).threadId;
+  const r6 = inbound(t6, 'old@z.co', 'Re: Hi', 'Late reply', NOW);
+  const t7 = (await tanyaMail('dnc@z.co', 'Hi', NOW - H)).threadId;
+  const r7 = inbound(t7, 'dnc@z.co', 'Re: Hi', 'Hello', NOW);
+  clock = NOW;
+  const r8 = await checkReplies({ google: g, now: NOW, inFunnel: (e) => e !== 'dnc@z.co' });
+  const res = (m) => r8.results.find(r => r.messageId === m.id).result;
+  assert.deepEqual([res(r5), res(r6), res(r7)], ['limit', 'too_old', 'not_in_funnel']);
+  assert.ok(has(r5, LABELS.human) && has(r6, LABELS.human) && !has(r7, LABELS.human));
+
+  // The routes answer through the server too.
+  const cr = await call('/checkReplies', {}); assert.equal(cr.s, 200); assert.ok('checked' in cr.j);
+  assert.equal((await call('/replyInThread', { messageId: 'nope', body: 'x' })).j.reason, 'not_pending');
+  console.log('email reply tests passed');
+}
+
 
 console.log('\nall tests passed'); srv.close();
 

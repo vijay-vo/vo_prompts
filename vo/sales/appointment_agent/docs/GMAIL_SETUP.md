@@ -114,3 +114,35 @@ Reply (always HTTP 200):
 ```
 `reason`: `found`, `no_emails` (emailContext "No earlier emails."), `bad_address` or `error` (both "Not Available").
 Dates are in the sales timezone (`SALES_TZ`). "we" is anyone writing from this mailbox, Tanya or the team.
+
+## 8. Email replies: Tanya answers only her own prospects (added 2026-11-25)
+
+| Route | Body | Does |
+|---|---|---|
+| `POST /checkReplies` | `{}` | Looks at every new incoming mail once and runs the gate. Runs by itself every `EMAIL_POLL_SECONDS`. |
+| `POST /pendingReplies` | `{}` | Lists mails waiting for Tanya: `messageId`, `threadId`, `email`, `subject`, `latestMessage` (new text only), `conversation` (the thread as dated lines). |
+| `POST /replyInThread` | `{"messageId":"...","body":"..."}` | Runs the gate again, then sends the answer in the same thread ("Re: subject", In-Reply-To, References, the Tanya header). `"none"` sends nothing. |
+
+**The gate.** Tanya may answer only when all of these hold. Otherwise she leaves the mail alone and the inbox works as usual.
+1. Tanya started the thread: it holds a mail from Sent with `X-VoiceOwl-Agent: tanya`. Every /sendGmail and /replyInThread
+   mail carries this header. A mail sent any other way, including by hand, does not count.
+2. The sender is the address Tanya wrote to. Anyone else gets `Tanya-needs-human`.
+3. The contact is still in the funnel (platform database; not checked locally).
+4. Nobody from our side has replied by hand since Tanya's last mail, and no mail in the thread has `Tanya-off`.
+5. A person wrote it: not an auto-reply, bounce, calendar notice or bulk mail.
+6. At most 3 Tanya mails in the last 24 hours and 10 in all, and the mail came within 30 days of her last one.
+   Otherwise it gets `Tanya-needs-human`.
+
+**Labels** (created on first use; they hold all the state, there is no database):
+
+| Label | Meaning |
+|---|---|
+| `Tanya-checked` | the service has looked at this mail |
+| `Tanya-to-reply` | passed the gate, waiting for an answer |
+| `Tanya-replied` | Tanya answered it |
+| `Tanya-needs-human` | a person should look |
+| `Tanya-off` | **set by the team** on a thread to stop Tanya there for good |
+
+Test it: send an after-call mail with /sendGmail to your own second address and reply from that address.
+Then `POST /checkReplies` shows `to_reply`, `/pendingReplies` lists the mail, and `/replyInThread` answers it in the same
+thread. A reply from a third address gets `other_sender`.

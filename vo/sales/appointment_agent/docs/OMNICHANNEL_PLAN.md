@@ -77,7 +77,7 @@ reply already carries its own thread ID, subject and Message-ID, and the answer 
    It also keeps the CSV's priorContext when that has a value.
 The whole team uses this one mailbox, so searching it finds everything.
 
-**Who Tanya may answer by email (the gate, agreed 2026-11-25)**
+**Who Tanya may answer by email (the gate, agreed and built on 2026-11-25; see GMAIL_SETUP.md section 8)**
 Tanya answers a mail only when all six checks pass. Otherwise she does not touch it, and a person handles it.
 1. **Tanya started the thread.** The thread holds a mail from our Sent folder with the header
    `X-VoiceOwl-Agent: tanya`; /sendGmail adds this header to every mail it sends (built). An outsider cannot fake it,

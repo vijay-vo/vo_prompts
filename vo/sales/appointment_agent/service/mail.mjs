@@ -3,10 +3,10 @@
 // Every email /sendGmail sends carries this header, so a later reply can be traced to Tanya.
 export const AGENT_HEADER = 'X-VoiceOwl-Agent';
 
-const header = (msg, name) => (msg.payload?.headers || []).find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';
+export const header = (msg, name) => (msg.payload?.headers || []).find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';
 const decode = (data) => Buffer.from(String(data || '').replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
 export const addressOf = (v) => (String(v).match(/<([^>]+)>/)?.[1] || String(v)).trim().toLowerCase();
-const addressesIn = (v) => String(v).split(',').map(addressOf).filter(Boolean);
+export const addressesIn = (v) => String(v).split(',').map(addressOf).filter(Boolean);
 
 function walk(part, out = []) {
   if (!part) return out;
@@ -14,7 +14,7 @@ function walk(part, out = []) {
   for (const p of part.parts || []) walk(p, out);
   return out;
 }
-function bodyText(msg) {
+export function bodyText(msg) {
   const parts = walk(msg.payload);
   const plain = parts.find(p => p.mimeType === 'text/plain' && p.body?.data);
   if (plain) return decode(plain.body.data);

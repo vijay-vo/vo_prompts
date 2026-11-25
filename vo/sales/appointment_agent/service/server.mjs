@@ -1,5 +1,6 @@
 // VoiceOwl demo-booking tools: POST /getAvailableSlots (getAvailableSlots), POST /bookAppointment (bookAppointment), POST /sendGmail (after-call email),
-// POST /emailContext (earlier emails with a prospect, for priorContext).
+// POST /emailContext (earlier emails with a prospect, for priorContext), and email replies:
+// POST /checkReplies (look at new mail, run the gate), POST /pendingReplies (mails waiting for Tanya), POST /replyInThread (send her answer).
 import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';
@@ -9,6 +10,7 @@ import { makeGoogle } from './google.mjs';
 import { config, getAvailableSlots, bookAppointment, bookReply, SAY, clean } from './slots.mjs';
 import { validTz } from './labels.mjs';
 import { contextFrom, involves, searchFor } from './mail.mjs';
+import { checkReplies, pendingReplies, replyInThread } from './replies.mjs';
 
 function loadEnv() {
   const env = { ...process.env };
@@ -51,6 +53,9 @@ async function emailContext({ google, body, env }) {
 }
 const ctxReply = (c, source) => ({ found: c.found, reason: c.found ? 'found' : 'no_emails', source, emailContext: c.emailContext, threadId: c.threadId });
 
+const REPLY_ROUTES = { '/checkReplies': checkReplies, '/pendingReplies': pendingReplies, '/replyInThread': replyInThread };
+const ROUTES = ['/getAvailableSlots', '/bookAppointment', '/sendGmail', '/emailContext', ...Object.keys(REPLY_ROUTES)];
+
 export function makeApp(env, google = makeGoogle(env)) {
   const cfg = config(env);
   return async (req, res) => {
@@ -65,7 +70,7 @@ export function makeApp(env, google = makeGoogle(env)) {
     try {
       if (req.method === 'GET' && req.url === '/health') return send(200, { ok: true });
       if (!env.API_KEY || req.headers['x-api-key'] !== env.API_KEY) return send(401, { error: 'unauthorized' });
-      if (req.method !== 'POST' || !['/getAvailableSlots', '/bookAppointment', '/sendGmail', '/emailContext'].includes(req.url)) return send(404, { error: 'not found' });
+      if (req.method !== 'POST' || ![...ROUTES].includes(req.url)) return send(404, { error: 'not found' });
       let raw = ''; for await (const c of req) { raw += c; if (raw.length > 1e5) return send(413, { error: 'too large' }); }
       const body = raw ? JSON.parse(raw) : {};
       if (req.url === '/sendGmail') {
@@ -75,6 +80,10 @@ export function makeApp(env, google = makeGoogle(env)) {
       if (req.url === '/emailContext') {
         console.log(new Date().toISOString(), req.url, JSON.stringify({ email: body.email ? '***' : undefined, threadId: body.threadId }));
         return send(200, await emailContext({ google, body, env }));
+      }
+      if (REPLY_ROUTES[req.url]) {
+        console.log(new Date().toISOString(), req.url, JSON.stringify({ messageId: body.messageId }));
+        return send(200, await REPLY_ROUTES[req.url]({ google, env, body }));
       }
       console.log(new Date().toISOString(), req.url, JSON.stringify({ ...body, email: body.email ? '***' : undefined }));
       if (!validTz(body.timezone)) return send(400, { error: 'timezone must be an IANA name such as Asia/Kolkata' });
@@ -86,6 +95,7 @@ export function makeApp(env, google = makeGoogle(env)) {
       console.error('ERROR', e.message);
       if (req.url === '/sendGmail') return send(200, MAIL.error);
       if (req.url === '/emailContext') return send(200, { found: 0, reason: 'error', source: 'none', emailContext: 'Not Available', threadId: 'Not Available' });
+      if (REPLY_ROUTES[req.url]) return send(200, { ok: false, reason: 'error' });
       return send(req.url === '/bookAppointment' ? 200 : 500, req.url === '/bookAppointment'
         ? bookReply({})
         : { toolResponse: SAY.calendarDown });
@@ -98,4 +108,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   http.createServer(makeApp(env))
     .on('error', e => { console.error(e.code === 'EADDRINUSE' ? `Port ${port} is busy: the service is already running (ss -ltnp 'sport = :${port}' shows the pid). Stop it first.` : e.message); process.exit(1); })
     .listen(port, () => console.log(`booking tools on :${port}${env.GOOGLE_MOCK === '1' ? ' (MOCK calendar)' : ''}`));
+  // Look for new email replies every EMAIL_POLL_SECONDS (0 or unset: only when POST /checkReplies is called).
+  const every = Number(env.EMAIL_POLL_SECONDS || 0);
+  if (every > 0) {
+    const google = makeGoogle(env);
+    let busy = false;
+    setInterval(async () => {
+      if (busy) return; busy = true;
+      try { const r = await checkReplies({ google, env }); if (r.checked) console.log(new Date().toISOString(), 'checkReplies', JSON.stringify(r)); }
+      catch (e) { console.error('checkReplies ERROR', e.message); } finally { busy = false; }
+    }, every * 1000);
+  }
 }
