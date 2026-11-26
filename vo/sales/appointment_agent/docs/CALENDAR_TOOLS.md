@@ -76,7 +76,7 @@ timezone maths. The service has two routes:
 2. Verify the slotId signature and that the time is still in the future.
 3. Re-check freeBusy for that exact quarter hour. If busy: `{booked:false, reason:"slot_taken"}`.
 4. Insert the event with `conferenceDataVersion=1`, `sendUpdates=all`, the prospect as an
-   attendee, Hussain as host (calendar owner), a `requestId` made from the slotId + email so a
+   attendee, the calendar owner as host (Ruchika in production), a `requestId` made from the slotId + email so a
    retried call cannot double-book.
 5. If the Meet link is pending, fetch the event once or twice.
 6. Return `{booked:true, spokenLabel, meetLink}` or `{booked:false, reason:"error"}`.
@@ -112,7 +112,7 @@ and 7 below.
 9. **Test:** curl the two routes, book a test slot with your own email, check that the invite and
    Meet link arrive, then make a test call.
 10. **Later:** move to the sales team's calendar by changing the calendar id and the token owner.
-    Moving to a shared team calendar means the sales team's Hussain account authorises once.
+    Moving to a shared team calendar means Ruchika's account (or the demo account) authorises once.
 
 ## 4. Gaps between the prompt and these tools
 

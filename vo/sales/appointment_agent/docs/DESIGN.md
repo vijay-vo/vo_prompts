@@ -16,7 +16,7 @@ go-ahead. Research behind each point: RESEARCH.md.
 | Language | Multilingual: the agent speaks the prospect's language. |
 | Persona | Female: Tanya, a young woman (user, 2026-11-20, replacing the male Neil). Most calls go to the US and India. Other details decided by Claude (section 2). |
 | AI disclosure | Only when the prospect asks. Reconfirmed 2026-11-19 after the round-4 research (legal check for EU/UK stays open, item 19). |
-| Demo host | Hussain, Sales Head (decided 2026-11-19). Tanya names Hussain in stage 4 and 5. |
+| Demo host | Ruchika, co-founder (decided 2026-11-26; was Hussain, Sales Head). Tanya names Ruchika in stage 4 and 5: "Ruchika, our co-founder". Her role, co-founder and COO, only when asked; asked why a co-founder runs the demo: "She likes to meet every new customer herself." In gendered languages every word about her is feminine. First name only. Alternating Ruchika and Vivek by attempt is parked. |
 | Opener | Sample B (context first, then "Can I tell you why I called you specifically?") with sample C's thirty-second line as the fallback when the prospect is guarded (decided 2026-11-19, CALL_EXAMPLES.md). |
 | Opening | Must be engaging and lead to booking. The opener is the most important part. |
 | Demo | 15 minutes, Google Meet link from the calendar event, run by the sales team. |
@@ -305,7 +305,7 @@ The platform then sends WhatsApp + email after the call.
     they get out of the 15 minutes? Idea: hear the agent speaking their customers'
     language (VoiceOwl claims 135+). Does the sales team agree, or is there a
     tailored demo or audit?
-13. ~~**Demo host name**~~ Decided: Hussain, Sales Head (section 1).
+13. ~~**Demo host name**~~ Decided: Ruchika, co-founder (2026-11-26, was Hussain; section 1).
 14. **Social proof** — which real customers or industries may the agent mention?
     ("We work with teams like yours in BFSI" must be true.)
 15. **Invite timing** — confirm that the Google invite really goes out when

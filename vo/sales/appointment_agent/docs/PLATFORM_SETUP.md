@@ -207,9 +207,9 @@ Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{booke
  "noAICalls": "no",
  "doNotCall": "no",
  "summary": "Priya answered ... (40 to 80 words)",
- "whatsappMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Hussain is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nTanya, VoiceOwl",
+ "whatsappMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Ruchika is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nTanya, VoiceOwl",
  "emailSubject": "Your VoiceOwl call is booked for Monday, 23 November, 3:00 PM",
- "emailMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Hussain is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nTanya, VoiceOwl"
+ "emailMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Ruchika is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nTanya, VoiceOwl"
 }
 ```
 
@@ -237,7 +237,7 @@ fixed missed-call template. notInterested, doNotCall and wrongNumber get nothing
 | Link | Value | Used in | Comes from |
 |---|---|---|---|
 | Meet link | `{{meetLink}}`, e.g. `https://meet.google.com/abc-defg-hij` | booked message only | bookAppointment reply, one per booking |
-| Booking link | `https://calendar.app.google/StCvpJnSaJrRTqCw7` | bookingFailed and callbackLater messages (PCA), missed-call template (platform) | Google Calendar appointment schedule "15-minute call with Hussain, VoiceOwl", fixed |
+| Booking link | `https://calendar.app.google/StCvpJnSaJrRTqCw7` | bookingFailed and callbackLater messages (PCA), missed-call template (platform) | Google Calendar appointment schedule, fixed. Test page, still titled "15-minute call with Ruchika, VoiceOwl": rename it, or replace the link with Ruchika's page in pca/pca.txt and here |
 
 A message never carries both. A booked message without a Meet link says the link is in the invite; it never falls
 back to the booking link. Tanya never says a link on the call. To change the booking link: THE LINKS in pca/pca.txt
@@ -247,7 +247,7 @@ and the platform's missed-call template.
 
 WhatsApp body and email body:
 ```
-Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. I tried to reach you by phone but we couldn't connect.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If you'd like to see it working, you can book a 15-minute call with Hussain (Sales Head) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
+Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. I tried to reach you by phone but we couldn't connect.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If you'd like to see it working, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
 ```
 Email subject: `Sorry we missed you - VoiceOwl`
 

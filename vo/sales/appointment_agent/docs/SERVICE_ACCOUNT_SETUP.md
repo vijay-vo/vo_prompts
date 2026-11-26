@@ -40,12 +40,12 @@ Choose the Workspace account whose calendar holds the demos and whose address se
 A dedicated account such as `demos@voiceowl.ai` works better than a person's own account:
 - Its calendar holds only demos, so free/busy is the demo schedule.
 - Invites and after-call emails come from a neutral sender.
-- Add Hussain to every event with `EXTRA_ATTENDEES` in `.env` (this setting already exists).
+- Add Ruchika to every event with `EXTRA_ATTENDEES` in `.env` (this setting already exists).
 
 The account needs a Google Workspace licence with Calendar, Gmail and Google Meet turned on for its
 organisational unit. Without Meet, events are created but have no `hangoutLink`.
 
-If the demos must stay on Hussain's own calendar, act as Hussain instead. Nothing else changes.
+If the demos must stay on Ruchika's own calendar, act as Ruchika instead. Nothing else changes.
 
 ## 2. Create the service account
 
@@ -122,8 +122,8 @@ GOOGLE_SA_KEY_FILE=./service-account.json
 # The Workspace user the service account acts as: whose calendar and whose mailbox
 GOOGLE_IMPERSONATE=demos@voiceowl.ai
 CALENDAR_ID=primary
-# Optional: also invite Hussain to every demo
-EXTRA_ATTENDEES=hussain@voiceowl.ai
+# Optional: also invite Ruchika to every demo
+EXTRA_ATTENDEES=<Ruchika's email>
 ```
 
 `CALENDAR_ID=primary` now means the primary calendar of `GOOGLE_IMPERSONATE`. To book on a shared

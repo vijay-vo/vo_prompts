@@ -19,7 +19,7 @@ pattern: the agent never has to search Gmail or WhatsApp history while it works.
   The fixed text goes in the template and the PCA fills only short values: name, time, link.
 - **When they reply:** a WhatsApp agent, Tanya by text, gets the timeline and the same two tools
   (getAvailableSlots, bookAppointment). It can book in the chat, answer simple questions, hand off to
-  Hussain when asked, and treat STOP or "don't contact me" as doNotCall. Replies inside the window are free.
+  Ruchika when asked, and treat STOP or "don't contact me" as doNotCall. Replies inside the window are free.
 - The policy allows this agent. Meta's January 2026 rule bans general-purpose AI assistants, not a
   business's own booking or sales bot.
 

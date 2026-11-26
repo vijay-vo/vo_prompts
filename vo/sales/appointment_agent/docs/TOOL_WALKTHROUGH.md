@@ -7,7 +7,7 @@ and the event id are made up.
 The example:
 - Today: Tuesday 24 November 2026. The call is at 10:00 AM in New York, 8:30 PM in India.
 - Prospect: Daniel, Harbor Lending, New York (`America/New_York`).
-- Hussain's calendar: busy today until 11 PM IST. His hours, 9 AM to 11 PM IST, are 9:00 AM to
+- Ruchika's calendar: busy today until 11 PM IST. Her hours, 9 AM to 11 PM IST, are 9:00 AM to
   12:30 PM in New York.
 - Settings from `.env.example`: 15-minute demos every quarter hour, the prospect's own 9 AM to 7 PM,
   Monday to Friday, at least 10 minutes' notice, up to 15 days ahead, the second offer about an hour
@@ -28,7 +28,7 @@ fname=Daniel, company=Harbor Lending, email=daniel@harborlending.com, timezone=A
 defaultLanguage=English, priorContext=Not Available
 ```
 
-Tanya talks about his problem and asks whether fifteen minutes with Hussain makes sense. He says yes.
+Tanya talks about his problem and asks whether fifteen minutes with Ruchika makes sense. He says yes.
 
 ## Step 2. On the yes, Tanya checks the calendar at once
 
@@ -43,9 +43,9 @@ POST /getAvailableSlots
 `timezone` is added by the platform; the model passes nothing because Daniel named no day or time.
 
 Inside the service (the model never sees this):
-1. One Google freeBusy call reads Hussain's busy times for the next 15 days.
-2. It cuts 15-minute slots that fit both Daniel's 9 AM to 7 PM and Hussain's 9 AM to 11 PM IST.
-3. Today has nothing left: Hussain is busy until 12:30 PM New York, his day ends then.
+1. One Google freeBusy call reads Ruchika's busy times for the next 15 days.
+2. It cuts 15-minute slots that fit both Daniel's 9 AM to 7 PM and Ruchika's 9 AM to 11 PM IST.
+3. Today has nothing left: Ruchika is busy until 12:30 PM New York, her day ends then.
 4. The earliest is tomorrow 9:00 AM; the second, an hour later, 10:00 AM.
 
 ```json
@@ -75,7 +75,7 @@ When his exact time is free, the reply offers that one time alone, and Tanya ask
 
 It took him two turns. Tanya takes the startTime from that toolResponse.
 
-If he had asked for 2 PM, which is after Hussain's day ends, the reply would be:
+If he had asked for 2 PM, which is after Ruchika's day ends, the reply would be:
 
 ```json
 {"returnCode":200,"toolResponse":"Failure: That time is not available. Option 1: tomorrow, twelve noon, startTime 2026-11-25T12:00. Option 2: tomorrow, twelve fifteen in the afternoon, startTime 2026-11-25T12:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
@@ -118,7 +118,7 @@ The platform saves `prospectTime` as `bookedTime`, `salesTime` as `salesTime` an
 
 ## Step 6. Tanya confirms and closes
 
-> Tanya: "Done. Tomorrow, eleven in the morning, with Hussain. The invite is in your email; please
+> Tanya: "Done. Tomorrow, eleven in the morning, with Ruchika. The invite is in your email; please
 > accept it whenever it suits you. You'll also get the details on WhatsApp and email."
 
 She answers anything he asks, says the closing line, and hangs up.
@@ -179,7 +179,7 @@ and WhatsApp, never retries the booking, and closes.
 
 ## What each country can be offered
 
-The prospect only ever hears their own time, but every slot must also fall in Hussain's 9 AM to 11 PM IST.
+The prospect only ever hears their own time, but every slot must also fall in Ruchika's 9 AM to 11 PM IST.
 
 | Prospect | Times offered (their time, weekdays) |
 |---|---|

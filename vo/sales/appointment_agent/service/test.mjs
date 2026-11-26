@@ -116,21 +116,21 @@ const mail = ({ thread, from, to, subject, text, html, at, sent = false, headers
 const US = 'Tanya <sales@voiceowl.ai>', PRIYA = 'Priya Sharma <Priya@BrightLoans.com>';
 google.mails.length = 0; // the mock keeps copies of the mails sent above; start this mailbox empty
 google.mails.push(
-  mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Book your VoiceOwl call with Hussain', text: 'Hi Priya,\n\nSorry we could not book.\n\nTanya, VoiceOwl', at: '2026-11-12T05:00:00Z', sent: true }),
-  mail({ thread: 'T1', from: PRIYA, to: US, subject: 'Re: Book your VoiceOwl call with Hussain', text: 'Can we do Thursday? We get 400 calls a day in Hindi.\n\nOn Thu, 12 Nov 2026 at 10:30, Tanya <sales@voiceowl.ai>\nwrote:\n> Hi Priya,\n> Sorry we could not book.', at: '2026-11-13T06:00:00Z' }),
+  mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Book your VoiceOwl call with Ruchika', text: 'Hi Priya,\n\nSorry we could not book.\n\nTanya, VoiceOwl', at: '2026-11-12T05:00:00Z', sent: true }),
+  mail({ thread: 'T1', from: PRIYA, to: US, subject: 'Re: Book your VoiceOwl call with Ruchika', text: 'Can we do Thursday? We get 400 calls a day in Hindi.\n\nOn Thu, 12 Nov 2026 at 10:30, Tanya <sales@voiceowl.ai>\nwrote:\n> Hi Priya,\n> Sorry we could not book.', at: '2026-11-13T06:00:00Z' }),
   mail({ thread: 'T1', from: PRIYA, to: US, subject: 'Automatic reply: Book your VoiceOwl call', text: 'I am out of office.', at: '2026-11-13T06:01:00Z', headers: [{ name: 'Auto-Submitted', value: 'auto-replied' }] }),
   mail({ thread: 'T2', from: PRIYA, to: US, subject: 'Accepted: VoiceOwl demo', text: 'Priya has accepted.', at: '2026-11-14T06:00:00Z' }),
   mail({ thread: 'T3', from: 'Mail Delivery Subsystem <mailer-daemon@googlemail.com>', to: US, subject: 'Delivery Status Notification (Failure)', text: 'priya@brightloans.com not found', at: '2026-11-14T07:00:00Z' }),
-  mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Re: Book your VoiceOwl call with Hussain', html: '<p>Thursday works.</p><p>Tanya</p><blockquote>old text</blockquote>', at: '2026-11-15T06:00:00Z', sent: true }),
+  mail({ thread: 'T1', from: US, to: PRIYA, subject: 'Re: Book your VoiceOwl call with Ruchika', html: '<p>Thursday works.</p><p>Tanya</p><blockquote>old text</blockquote>', at: '2026-11-15T06:00:00Z', sent: true }),
   mail({ thread: 'T9', from: 'dan@harbor.com', to: US, subject: 'Hello', text: 'Other prospect.', at: '2026-11-15T07:00:00Z' }),
 );
 const ctx = (await call('/emailContext', { email: ' priya@brightloans.com ' })).j;
 assert.deepEqual(Object.keys(ctx), ['found', 'reason', 'source', 'emailContext', 'threadId']);
 assert.equal(ctx.found, 3); assert.equal(ctx.reason, 'found'); assert.equal(ctx.source, 'search'); assert.equal(ctx.threadId, 'T1');
 assert.equal(ctx.emailContext, [
-  '12 Nov 2026, we wrote, subject "Book your VoiceOwl call with Hussain": Hi Priya, / Sorry we could not book. / Tanya, VoiceOwl',
-  '13 Nov 2026, they wrote, subject "Re: Book your VoiceOwl call with Hussain": Can we do Thursday? We get 400 calls a day in Hindi.',
-  '15 Nov 2026, we wrote, subject "Re: Book your VoiceOwl call with Hussain": Thursday works. / Tanya',
+  '12 Nov 2026, we wrote, subject "Book your VoiceOwl call with Ruchika": Hi Priya, / Sorry we could not book. / Tanya, VoiceOwl',
+  '13 Nov 2026, they wrote, subject "Re: Book your VoiceOwl call with Ruchika": Can we do Thursday? We get 400 calls a day in Hindi.',
+  '15 Nov 2026, we wrote, subject "Re: Book your VoiceOwl call with Ruchika": Thursday works. / Tanya',
 ].join('\n'), 'oldest first; quotes, auto-replies, calendar notices, bounces and other prospects left out');
 assert.equal((await call('/emailContext', { email: 'priya@brightloans.com', threadId: 'T1' })).j.source, 'thread');
 assert.equal((await call('/emailContext', { email: 'priya@brightloans.com', threadId: 'T9' })).j.source, 'search', "someone else's thread falls back to search");
@@ -165,14 +165,14 @@ console.log('email tests passed');
   const labelId = (name) => g.labels.find(l => l.name === name)?.id;
   const has = (m, name) => (m.labelIds || []).includes(labelId(name));
 
-  const t1 = (await tanyaMail('priya@brightloans.com', 'Book your VoiceOwl call with Hussain', NOW - 48 * H)).threadId;
-  const reply = inbound(t1, 'Priya <priya@brightloans.com>', 'Re: Book your VoiceOwl call with Hussain', 'Is Thursday possible?\n\nOn Mon, Tanya wrote:\n> Hi', NOW - 2 * H);
+  const t1 = (await tanyaMail('priya@brightloans.com', 'Book your VoiceOwl call with Ruchika', NOW - 48 * H)).threadId;
+  const reply = inbound(t1, 'Priya <priya@brightloans.com>', 'Re: Book your VoiceOwl call with Ruchika', 'Is Thursday possible?\n\nOn Mon, Tanya wrote:\n> Hi', NOW - 2 * H);
   const stranger = inbound('S1', 'someone@random.com', 'Partnership', 'Hello there', NOW - H);
   g.mails.push(mail({ thread: 'H1', from: 'sales@voiceowl.ai', to: 'ravi@acme.com', subject: 'Hello Ravi', text: 'Written by hand.', at: new Date(NOW - 5 * H).toISOString(), sent: true }));
   const handReply = inbound('H1', 'ravi@acme.com', 'Re: Hello Ravi', 'Thanks', NOW - H);
   const t2 = (await tanyaMail('dan@harbor.com', 'Thanks for your time - VoiceOwl', NOW - 30 * H)).threadId;
   const boss = inbound(t2, 'Boss <boss@harbor.com>', 'Re: Thanks for your time - VoiceOwl', 'Send me details.', NOW - H);
-  const t3 = (await tanyaMail('kim@jp.co', 'Book your VoiceOwl call with Hussain', NOW - 30 * H)).threadId;
+  const t3 = (await tanyaMail('kim@jp.co', 'Book your VoiceOwl call with Ruchika', NOW - 30 * H)).threadId;
   const ooo = inbound(t3, 'kim@jp.co', 'Automatic reply: Book your VoiceOwl call', 'Away.', NOW - H, [{ name: 'Auto-Submitted', value: 'auto-replied' }]);
   clock = NOW;
 
@@ -187,25 +187,25 @@ console.log('email tests passed');
   const pend = await pendingReplies({ google: g });
   assert.equal(pend.count, 1); const p0 = pend.pending[0];
   assert.equal(p0.email, 'priya@brightloans.com'); assert.equal(p0.latestMessage, 'Is Thursday possible?');
-  assert.match(p0.conversation, /we wrote, subject "Book your VoiceOwl call with Hussain"[\s\S]*\nthey wrote|they wrote, subject "Re: Book your VoiceOwl call with Hussain": Is Thursday possible\?$/);
+  assert.match(p0.conversation, /we wrote, subject "Book your VoiceOwl call with Ruchika"[\s\S]*\nthey wrote|they wrote, subject "Re: Book your VoiceOwl call with Ruchika": Is Thursday possible\?$/);
 
   const sentR = await replyInThread({ google: g, body: { messageId: reply.id, body: 'Hi Priya,\n\nThursday works.\n\nTanya, VoiceOwl' }, now: NOW });
   assert.equal(sentR.sent, true); assert.equal(sentR.threadId, t1, 'the answer stays in the same thread');
   const out = g.sent.at(-1);
-  assert.equal(out.to, 'priya@brightloans.com'); assert.equal(out.subject, 'Re: Book your VoiceOwl call with Hussain');
+  assert.equal(out.to, 'priya@brightloans.com'); assert.equal(out.subject, 'Re: Book your VoiceOwl call with Ruchika');
   assert.match(out.mime, /\r\nIn-Reply-To: <in1@x\.com>\r\nReferences: <in1@x\.com>\r\n/); assert.match(out.mime, /\r\nX-VoiceOwl-Agent: tanya\r\n/);
   assert.ok(has(reply, LABELS.replied) && !has(reply, LABELS.toReply));
   assert.equal((await replyInThread({ google: g, body: { messageId: reply.id, body: 'again' }, now: NOW })).reason, 'not_pending', 'never answered twice');
   assert.equal((await replyInThread({ google: g, body: { messageId: stranger.id, body: 'hi' }, now: NOW })).reason, 'not_pending', 'a mail that failed the gate cannot be answered');
 
   // A person replies by hand: Tanya stops, even for a mail already queued.
-  const r2 = inbound(t1, 'priya@brightloans.com', 'Re: Book your VoiceOwl call with Hussain', 'And who joins?', NOW + H);
+  const r2 = inbound(t1, 'priya@brightloans.com', 'Re: Book your VoiceOwl call with Ruchika', 'And who joins?', NOW + H);
   await checkReplies({ google: g, now: NOW + H });
   assert.ok(has(r2, LABELS.toReply));
-  g.mails.push(mail({ thread: t1, from: 'hussain@voiceowl.ai', to: 'priya@brightloans.com', subject: 'Re: Book', text: 'I will join.', at: new Date(NOW + 2 * H).toISOString(), sent: true }));
-  assert.equal((await replyInThread({ google: g, body: { messageId: r2.id, body: 'Hussain joins.' }, now: NOW + 2 * H })).reason, 'human_took_over');
+  g.mails.push(mail({ thread: t1, from: 'ruchika@voiceowl.ai', to: 'priya@brightloans.com', subject: 'Re: Book', text: 'I will join.', at: new Date(NOW + 2 * H).toISOString(), sent: true }));
+  assert.equal((await replyInThread({ google: g, body: { messageId: r2.id, body: 'Ruchika joins.' }, now: NOW + 2 * H })).reason, 'human_took_over');
   assert.ok(!has(r2, LABELS.toReply), 'taken off the queue');
-  const r3 = inbound(t1, 'priya@brightloans.com', 'Re: Book', 'Thanks Hussain', NOW + 3 * H);
+  const r3 = inbound(t1, 'priya@brightloans.com', 'Re: Book', 'Thanks Ruchika', NOW + 3 * H);
   assert.equal((await checkReplies({ google: g, now: NOW + 3 * H })).results.find(r => r.messageId === r3.id).result, 'human_took_over');
 
   // The team switches Tanya off on a thread.
@@ -324,7 +324,7 @@ assert.match(await ask({ preferredDay: '27' }), /Option 1: Friday the twenty-sev
 assert.match(await ask({ preferredDay: '4' }), /Option 1: Friday the fourth of December, nine in the morning, startTime 2026-12-04T09:00\./, 'beyond a week the label names the date');
 assert.equal(SAY.none, 'Failure: No time is free for that request. Ask which other day suits them.');
 
-// Japan: Hussain's 9 AM IST is 12:30 PM in Tokyo, so the earliest Tokyo slot is 12:30 PM.
+// Japan: Ruchika's 9 AM IST is 12:30 PM in Tokyo, so the earliest Tokyo slot is 12:30 PM.
 const tokyo = await getAvailableSlots({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Tokyo', preferredDay: 'tomorrow' }, now: mon3 });
 assert.match(tokyo.toolResponse, /Option 1: tomorrow, twelve thirty in the afternoon, startTime 2026-11-24T12:30\./);
 const bt = await bookAppointment({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Tokyo', email: 'k@jp.co', startTime: '2026-11-24T12:30' }, now: mon3 });

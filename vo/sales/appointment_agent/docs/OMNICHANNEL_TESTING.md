@@ -43,7 +43,7 @@ With a thread ID (from A2 or the reply above): `api emailContext "{\"email\":\"$
 ### A2. Tanya's after-call email (starts a thread she owns)
 
 ```bash
-api sendGmail "{\"to\":\"$TEST_EMAIL\",\"subject\":\"Book your VoiceOwl call with Hussain\",\"body\":\"Hi Priya,\\n\\nThis is Tanya from VoiceOwl. Thanks for your time today.\\n\\nYou can book a 15-minute call with Hussain (Sales Head) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\\n\\nTanya, VoiceOwl\"}"
+api sendGmail "{\"to\":\"$TEST_EMAIL\",\"subject\":\"Book your VoiceOwl call with Ruchika\",\"body\":\"Hi Priya,\\n\\nThis is Tanya from VoiceOwl. Thanks for your time today.\\n\\nYou can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\\n\\nTanya, VoiceOwl\"}"
 ```
 Expect `sent: true`, a `messageId` and a `threadId`. In your sending mailbox: Sent, open the mail, ⋮ → **Show original**.
 It must contain the header `X-VoiceOwl-Agent: tanya`.
