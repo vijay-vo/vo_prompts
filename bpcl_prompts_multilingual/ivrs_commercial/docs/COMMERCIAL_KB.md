@@ -4,6 +4,18 @@ The facts Vaani may state on the commercial line. Every fact here comes from an 
 (BPCL, commerciallpg.in, Bharatgas, MoPNG, PIB, BIS, the Gazette), checked on 2026-10-23. Prompts take
 their commercial facts from this file and from nothing else. A fact that is not here is not stated.
 
+Updated 2026-11-26 (COMM-KB-02) from five documents BPCL shared, kept in this folder:
+- IS 6044 (Part 1):2018, the current cylinder-installation code (replaces the 2000 edition below);
+- BPCL Karnataka LPG State Office, "Check list for inspection of commercial installations as per
+  PESO & IS 6044 norms", with the daily check list for a liquid off-take installation;
+- BPCL Commercial Manager's presentation to distributors on conversions and product knowledge;
+- BPCL "LPG Conversion 1st Cut", the field-force booklet on converting industries to LPG;
+- IS 2379, the colour code for industrial pipelines.
+
+Deliberately NOT taken from them: every price, cost, savings or payback figure (dated, and true of one
+site only); customer names from case studies; vendor, burner and fitting brands and quotation prices;
+sizing formulas, pressure settings and pipe sizes; the GasTechApp. See section 11.
+
 Sources are listed at the end of each section. Open points that BPCL or the team still has to answer
 are NOT in this file; they live in [../BPCL_QUESTIONS.md](../BPCL_QUESTIONS.md).
 
@@ -56,7 +68,50 @@ Sources: commerciallpg.in FAQ, Submit Request form and Catalogue; bharatpetroleu
 Cutting Gas, Bharatgas Mini, Industrial & Commercial LPG pages; my.ebharatgas.com BuyCylinder; IS 6044
 (Part 1):2013 clause 1.2.
 
-## 3. New commercial supply (a new connection, more supply, a new location)
+## 2a. How LPG behaves (for answering "why" questions)
+
+- LPG is mainly butane and propane. It is stored as a liquid under pressure, and turns into gas
+  when it leaves the cylinder. One volume of liquid makes about 250 volumes of gas.
+- LPG has no colour and no natural smell. A strong-smelling agent is added so that a leak can be
+  noticed by its smell.
+- LPG gas is heavier than air, so a leak settles low: on the floor, in pits, drains and sewers.
+- Cylinders and tanks are never filled to the top; space is left because liquid LPG expands when it
+  warms. Cylinders are best kept under a shed.
+- LPG burns only in the right mix with air (about 2 to 10 percent LPG in air).
+
+Sources: BPCL distributor presentation (LPG properties slides).
+
+## 2b. Cylinder systems: VOT and LOT
+
+- **VOT, vapour off-take.** Gas is drawn from the top of the cylinder. The cylinder turns liquid into
+  gas on its own, from the heat around it. Each cylinder gives only a limited amount of gas per
+  hour, so a VOT bank links many cylinders on a manifold. VOT suits a use of about 1 to 15 kg of
+  gas an hour.
+- **LOT, liquid off-take.** Liquid LPG is drawn from the cylinder and turned into gas in a
+  vaporiser. LOT suits a use of about 15 to 75 kg an hour with 33 or 47.5 kg LOT cylinders, and more
+  with the large LOT cylinders.
+- **What LOT gives a high-use customer:** less space for the cylinder bank, fewer cylinders to
+  handle, and almost no gas left unused in cylinders sent back. It is recommended where use is high,
+  as in hotels and industries, and where a bulk tank is not possible.
+- **Large LOT cylinder.** One large LOT cylinder replaces about ten 47.5 kg cylinders. It has a
+  valve that can draw both liquid and gas, so very little gas is left, and a gauge that shows the
+  level. Its exact size is open (section 11).
+- **Which system a customer gets** is decided after a site assessment, mainly from how much gas they
+  use per hour at peak and per day.
+
+### Cylinder sweating or frosting
+
+- **What it is.** When the burners need more gas than the connected cylinders can give on their
+  own, the liquid inside draws heat from the cylinder wall. The cylinder becomes cold and moisture
+  or frost forms on it. Gas pressure can drop, especially at peak hours and in winter.
+- **Safe fixes:** connect more cylinders to the manifold, connect the unconnected cylinders, and
+  improve the air flow around the cylinders. A customer whose use has grown can ask about moving
+  to a larger system (LOT).
+- **Never** put a cylinder in hot water or heat it in any way. BPCL calls this the most dangerous
+  practice. The safety inspection checks that cylinders are not kept in hot water tubs.
+
+Sources: BPCL distributor presentation (VOT, LOT, 450 kg system slides); Karnataka inspection check
+list 2(f).
 
 - **How to apply.** Online on the BPCL commercial LPG portal, www.commerciallpg.in, using Submit
   Request.
@@ -98,6 +153,34 @@ Cutting Gas, Bharatgas Mini, Industrial & Commercial LPG pages; my.ebharatgas.co
 
 Sources: commerciallpg.in home ("How It Works"), FAQ, Submit Request, Track Request.
 
+## 3a. Conversion: switching a business to LPG from another fuel
+
+- **What it is.** A business that now runs on another fuel (diesel, furnace oil, LDO, LSHS, coal,
+  wood, briquettes, agro waste or electricity) changes over to LPG. Bharat Petroleum's Bharatgas
+  team helps with this as a full fuel solution.
+- **Equipment that is commonly converted:** steam and hot water boilers, thermic fluid heaters, hot
+  air generators, furnaces, industrial and bakery ovens, dryers, kilns, heat treatment and metal
+  melting furnaces, powder coating ovens, incinerators, hot mix plants, poultry brooders, tea dryers,
+  and textile machines.
+- **Why businesses switch (qualitative only):** LPG burns clean with almost no smoke, soot or sulphur;
+  the heat is easy to control; it needs no heating or pumping of oil; equipment needs less
+  maintenance; and it is stored in a closed system, so there is no spillage or pilferage.
+- **How it works:**
+  1. The business asks for supply on www.commerciallpg.in, Submit Request (section 3), giving its
+     current fuel and use.
+  2. The Bharatgas team assesses the site: the current fuel and how much is used, the equipment and
+     its burner, the running hours, and the temperature the process needs.
+  3. From that, the team works out how much LPG the business would need and the right system: VOT,
+     LOT, a large LOT cylinder bank, or bulk.
+  4. The oil burners are replaced with gas burners and a gas train, as the site needs.
+  5. The installation is done and tested as per IS 6044 by an agency authorised by the distributing
+     company (section 7).
+- Vaani never states a saving, cost, payback or consumption figure, and never promises that a
+  conversion will be approved or will save money; the assessment decides.
+
+Sources: BPCL "LPG Conversion 1st Cut" (scope, best candidates, process of conversion, Annexure I);
+BPCL distributor presentation (installation planning, site survey).
+
 ## 4. Booking a refill
 
 - A commercial customer books refills on Bharat Petroleum's commercial IVRS, the line they called
@@ -130,18 +213,44 @@ Source: commerciallpg.in ("the Distributor executes delivery").
 Sources: PIB 01 Jan 2026 and 07 Jun 2026; BPCL Charter Jan 2026 ch.1 3.3 and 5.9; commerciallpg.in
 LPG Prices and Fuel Savings Calculator; my.ebharatgas.com SMS page.
 
-## 7. Safety at a commercial installation (IS 6044 Part 1 and Part 2, BPCL safety advice)
+## 7. Safety at a commercial installation (IS 6044 Part 1:2018 and Part 2, BPCL safety advice)
 
 General advice only. For anything about the design, size or approval of an installation, the
-customer follows their supplier's instructions and applicable rules.
+customer follows the distributing company's approved layout, the authorised agency, and applicable
+rules (PESO, fire NOC). Vaani gives the rule; she never designs, sizes or approves a setup.
 
-- Cylinders stand upright with the valve on top, on a concrete or brick floor, in a ventilated
-  place, away from heat such as steam pipes, boilers and burners.
-- Cylinders are never kept or used below ground level, in a cellar or a basement.
+### Where cylinders may stand, by how much gas is installed
+
+- Up to 50 kg: indoors on any floor (not a basement), about 5 square metres of floor area.
+- Up to 100 kg: indoors on any floor (not a basement), at least 12 square metres.
+- Several such small installations in one workspace stand at least 3 metres apart, and together
+  hold no more than 200 kg.
+- Up to 400 kg: indoors only in a room or section kept only for the cylinders, ventilated at low
+  level straight to the outside.
+- In any building (a mall, hotel, industry or public place), all the cylinders inside together
+  never exceed 400 kg. More than that goes outdoors.
+- Above 400 kg and up to 1,000 kg: outdoors, on the ground floor, in a covered shed open on all
+  sides, at least 3 metres from public places, roads and other buildings.
+- Above 1,000 kg: banks of up to 1,000 kg each, at least 2 metres apart on all sides, no more than
+  8 banks including standby.
+
+### General placement
+
+- Cylinders stand upright with the valve on top, on a firm, level concrete or brick floor, raised
+  if outdoors, protected from sun and rain, with ventilation at low level.
+- Away from heat such as steam pipes, boilers and burners; no flame or source of fire within
+  3 metres.
+- Never below ground level, in a cellar or a basement.
 - Cylinders holding more than 20 kg of gas are not kept on floors above ground level.
-- Cylinders are kept at least 1 metre away from drains, culverts and openings that lead below
-  ground.
+- At least 1 metre away from drains, culverts and openings that lead below ground.
+- Not on a driveway; where it cannot be avoided, at least 3 metres from it with a protective wall.
+- Not where they block a way or can be damaged.
+- The delivery vehicle and a fire tender can reach the bank; the delivery point is within 75 metres.
 - An unused cylinder, full or empty, always has its safety cap on.
+- Caution signs ("LPG", "DANGER", "HIGHLY INFLAMMABLE GAS", "NO SMOKING") are painted in luminous red
+  outside, where they are easily seen.
+
+### Pipes and fittings
 - Flexible hose:
   - The cylinder and the appliance are in the same room.
   - The hose is normally no longer than 2 metres.
@@ -150,14 +259,62 @@ customer follows their supplier's instructions and applicable rules.
 - A main valve is fitted in the gas pipe near where it enters the building.
 - Leaks are checked with soap solution, never with a flame.
 - A defective pipe or fitting is replaced, not repaired in place.
-- Dry powder or carbon dioxide fire extinguishers are kept near the cylinder installation, with two
-  buckets of sand and two of water nearby.
-- Bulk storage tanks and their first regulators are always outside the building.
-- The supplier instructs the customer on how the system works, how to recognise a leak, and what to
-  do in a leak, a fire or a failure of any part.
+- The gas pipe is not run near a chimney, flue, air duct or lift shaft, and stays below electrical
+  wiring with a clear gap from it.
+- A flexible hose is not used where the air is hotter than 52 degrees C.
+- **Pipe colour code:** vapour LPG lines are yellow; liquid LPG lines are yellow with a black band.
+  The direction of flow is marked on the pipe in black. The colour code is also shown on a board in
+  the shed and at the main office.
 
-Sources: IS 6044 (Part 1):2000 with Amendment 1 (2008), clauses 3.4, 4.1.8 to 4.1.14, 5.3, 8.1.1,
-8.1.2, 8.6, 9.2 to 9.4, 10.1; IS 6044 (Part 2):2001 clause 3.1.1; BPCL Charter Jan 2026 ch.1 9.1.
+### Fire safety
+
+- Dry powder or carbon dioxide fire extinguishers are kept near the installation, with two buckets
+  of sand and two of water nearby.
+- Number of 10 kg dry powder extinguishers by installed LPG: 40 to 200 kg, two; above 200 up to
+  320 kg, three; above 320 up to 1,000 kg, four; above 1,000 kg, two more for each further 1,000 kg
+  or part of it. Where there is electrical equipment, one 4.5 kg carbon dioxide extinguisher too.
+- Above 2,000 kg up to 4,000 kg: a water sprinkler or a gas monitoring system with alarms. Above
+  4,000 kg up to 8,000 kg: both.
+- A "Do's and Don'ts" board is displayed and the staff handling LPG are trained.
+- Bulk storage tanks and their first regulators are always outside the building.
+
+### Who installs, inspects and tests
+
+- The system is installed only by an agency authorised by the distributing company, to a layout
+  the distributing company approves.
+- Maintenance, inspection, testing and repair are done only by agencies the distributing company
+  authorises, or by the distributing company itself.
+- The customer gets the whole installation inspected regularly as the distributing company sets,
+  **at least once a year**, and keeps the records.
+- Pigtails are looked at every time an empty cylinder is changed. Pigtails and flexible hoses are
+  hydro-tested every year. Piping is pneumatic- and hydro-tested once in five years.
+- The distributing company instructs the customer on how the whole system works, how to recognise a
+  leak, and what to do in a leak, a fire, or a failure of any part. It also holds safety awareness
+  camps for commercial customers.
+- Handling: cylinders are never dropped or thrown on one another; a trolley is used to move them;
+  no oil or grease on the valve; no smoking, flames or welding nearby.
+
+### BPCL's safety inspection of a commercial installation
+
+BPCL inspects commercial installations against PESO and IS 6044 norms with a check list. It covers:
+where and how the cylinders stand; the manifold and its valves; the pipeline; the pressure
+regulator; leak tests and their dates; the flexible hose; the vaporiser (for LOT); fire
+extinguishers and other safety equipment; signs, colour code and earthing. The inspector records
+observations and actions, and the customer signs. Vaani explains what it covers; she does not
+promise a visit or a date. A customer who wants an inspection or a mechanic goes through the request
+or complaint path.
+
+### Daily checks at a LOT installation (BPCL's daily check list, summary)
+
+The vaporiser is switched on and warmed before the cylinder valves are opened; the cylinders stand
+upright; the unused manifolds and regulators are kept closed; gauges work; the staff check for
+leaks at the cylinders and pipes; soap solution, two dry powder extinguishers and four sand buckets
+are at hand; nothing unrelated is stored there. If a leak is found, the isolation valve for that
+part is closed at once and the distributor is informed.
+
+Sources: IS 6044 (Part 1):2018 clauses 4.1 to 4.9, 5.1, 6.3, 9.1, 9.8, 9.10, 10.2 to 10.4, 11.2 to
+11.8, 12.1, 12.6; IS 6044 (Part 2):2001 clause 3.1.1; IS 2379; BPCL Karnataka inspection check list
+and LOT daily check list; BPCL Charter Jan 2026 ch.1 9.1.
 
 ## 8. Gas leak or fire (emergency)
 
@@ -170,8 +327,12 @@ Sources: IS 6044 (Part 1):2000 with Amendment 1 (2008), clauses 3.4, 4.1.8 to 4.
      make sparks). Keep mobile phones away.
   4. Open all doors and windows.
   5. Call the emergency helpline 1906.
+- **At a manifold or multi-cylinder installation:** close the isolation valve for the leaking part,
+  and the main shut-off valve outside the gas bank, then inform the distributor. This is in
+  addition to the steps above, never instead of them.
 
-Sources: MoPNG Emergency Helpline page; BPCL Charter Jan 2026 ch.1 8.1, 8.2, 9.2(c).
+Sources: MoPNG Emergency Helpline page; BPCL Charter Jan 2026 ch.1 8.1, 8.2, 9.2(c); BPCL LOT daily
+check list items 5 to 7; Karnataka inspection check list 3(d).
 
 ## 9. Uses of LPG in industry (commerciallpg.in industry pages)
 
@@ -212,3 +373,13 @@ Source: commerciallpg.in industry pages and fuel-savings page.
 Unchanged from the domestic line: Bharat Petroleum, Mumbai Headquarters office, Bharat Bhavan, 4 and
 6 Currimbhoy Road, Ballard Estate, Mumbai 400001. Address only, no phone number. It is never offered
 as somewhere to go to get a problem solved.
+
+## 11. Open points from the 2026-11-26 documents (not stated until BPCL answers)
+
+- **Large LOT and Hippo sizes.** The documents name 422 kg (Hippo), 425 kg and 450 kg in different
+  places. No size is stated; BPCL_QUESTIONS.md questions 46 and 77.
+- **GasTechApp.** Named in the distributor presentation as a fuel-conversion calculator app. Not
+  recommended until BPCL confirms it is theirs to recommend (question 76).
+- **PESO licence threshold.** The inspection check list says an explosives licence under the Gas
+  Cylinder Rules is needed when unconnected cylinders stored exceed 100 kg. Not stated until BPCL
+  answers questions 53 and 78.

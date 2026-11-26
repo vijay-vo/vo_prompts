@@ -333,3 +333,19 @@ If any of the above is wrong, please correct us first.
 75. Who is our single contact person in BPCL for this project, and who will test and sign off the
     voice assistant?
     Answer:
+
+## 20. From the documents shared on 2026-11-26
+
+76. The distributor presentation names the "GasTechApp" (fuel conversion calculator, technical and
+    product catalogue). Is it a BPCL app, and may Vaani tell customers to download it?
+    Answer:
+77. The documents give the large LOT cylinder as 425 kg in some places and 450 kg in others, and
+    Hippo as 422 kg. Which sizes does BPCL supply today, and are these the same product? (See 46.)
+    Answer:
+78. The inspection check list says an explosives licence under the Gas Cylinder Rules is needed when
+    stored unconnected cylinders exceed 100 kg. May Vaani tell customers this? (See 53.)
+    Answer:
+79. May Vaani tell a customer that BPCL does commercial safety inspections on request, and how
+    should the customer ask for one: a complaint or request on this line, the distributor, or the
+    Sales Officer? (See 54.)
+    Answer:
