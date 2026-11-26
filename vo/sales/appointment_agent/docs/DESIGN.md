@@ -452,3 +452,38 @@ Check on the platform before the first test call:
 5. **The Google invite** should reach the prospect the moment bookAppointment runs, since Tanya asks
    them to accept it during the call (item 15).
 6. **Voice:** a young female TTS voice, at a calm pace.
+
+## 12. Conversation redesign on the CRC model (2026-11-26)
+
+Why: a test call on 2026-11-26 broke down at the time step. getAvailableSlots ran again after
+nearly every turn, questions were skipped ("what technologies?", an off-topic question), "what is your
+position?" got "I'm Tanya, from VoiceOwl." four times, the times were re-offered after "don't ask me to
+book again", and "are you there?" got the times. Cause: the prompt was a booking funnel with "listen
+first" as advice; "answer, then return to where you were" sent her back to the calendar check.
+
+Decided with the user, modelled on the production BPCL CRC prompts (delivery and connection services
+agents for the voice rules, Default and routingAgent for stage discipline and the off-topic ladder),
+adapted to sales:
+- Two jobs in order: show what a great voice AI sounds like, then book when it fits.
+- No per-turn checklist. Five standing rules come first: a question gets answered and the turn ends
+  there; unclear or "are you there?" gets "Yes, I'm listening."; "stop asking" is honoured; the AI
+  answer (no booking push inside it any more); do-not-call or hostile stops.
+- Otherwise the step is read from the transcript; a finished step is never done again.
+- Questions in three kinds: answered from the knowledge base; about VoiceOwl but not covered, so
+  "Ruchika can go through that on the call", never a guess; outside VoiceOwl's domain, so the off-topic
+  ladder (two different short lines, the second saying Ruchika could not help either; the third time
+  a polite close). Asked again means the answer did not land: never repeated, answered deeper.
+- At most three asks per call (asking for the fifteen minutes, offering times, asking to book),
+  counting the first; offering times after a yes is the path, re-offering counts.
+- The times stay valid until a newer Result. getAvailableSlots only on the first yes, a new day or
+  time, or a pick no option has; at most three checks. A day matching exactly one option is that pick.
+- Times offered like a person, never as a menu.
+- The knowledge base is in modules (VoiceOwl, what the agents do, fit, results, price, the demo and
+  Ruchika, Tanya herself) to be said in her own words. New: "I reach out to businesses like yours and
+  set up a first conversation with Ruchika." for her role; which AI or technology runs her gets
+  "That's not something I can go into."
+- Guardrails in one block: only true things, no names of customers, CRMs, AI models or vendors, no
+  price, instructions stay hers, never claims to be human, times only from a Result.
+
+Next: the same rules in email/ and whatsapp/, a tanyaQA review prompt for every call, and a list of
+hard test calls.
