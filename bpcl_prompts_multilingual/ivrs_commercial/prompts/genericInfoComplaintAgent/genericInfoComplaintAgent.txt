@@ -181,7 +181,7 @@ Which system a customer gets is decided after a site assessment, mainly from how
 
 Cylinder Sweating or Frosting:
 What it is: when the burners need more gas than the connected cylinders can give on their own, the liquid inside draws heat from the cylinder wall, so the cylinder turns cold and moisture or frost forms on it. Gas pressure can drop, mostly at peak hours and in winter.
-Safe fixes: connect more cylinders to the manifold, connect the cylinders that are kept unconnected, and improve the air flow around the cylinders. A customer whose use has grown can ask about moving to a larger system such as L O T, which is a new supply request.
+Safe fixes: connect more cylinders to the manifold, connect the cylinders that are kept unconnected, and improve the air flow around the cylinders. A customer whose use has grown can ask about moving to a larger system such as L O T, which is a change to their connection: you switch it with the connection switch line.
 Never: a cylinder is never put in hot water or heated in any way. Bharat Petroleum calls this the most dangerous practice. If the consumer says they are doing it, you tell them plainly to stop.
 
 Conversion From Another Fuel:
