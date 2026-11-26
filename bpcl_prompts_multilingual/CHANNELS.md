@@ -2097,6 +2097,15 @@ separately, and no size signal will ever reveal it.
 | **User decisions** | No call transfer. No Commercial Manager numbers; escalation is a registered complaint. Payment methods same as domestic without subsidy. Nothing about domestic LPG priority. Booking limits not stated until discussed. Unconfirmed facts are left out of the prompts and reported to the user, never written as "Vaani does not know". |
 | **Not changed** | Every other channel. |
 
+### COMM-KB-02 · ivrs_commercial knowledge from BPCL's 2026-11-26 documents (2026-11-26)
+
+| | |
+|---|---|
+| **Source** | Five PDFs in `ivrs_commercial/docs/`: IS 6044 (Part 1):2018, BPCL Karnataka commercial inspection check list with the LOT daily check list, BPCL distributor presentation on conversions and product knowledge, BPCL "LPG Conversion 1st Cut", IS 2379. `COMMERCIAL_KB.md` updated first (6d53920). |
+| **What** | genericInfoComplaintAgent and its v2: how LPG behaves, VOT and LOT, the large LOT cylinder (no size), cylinder sweating and the never-heat rule, IS 6044:2018 placement by quantity, pipe colour code, extinguisher counts, who installs, inspects and tests, BPCL's safety inspection, LOT daily checks. newConnectionAgent: conversion from another fuel (§13-K). emergencyAgent: manifold and cylinder-bank leak steps (isolation valve, main shut-off, inform distributor), on top of the Type A steps. Default: short LPG-smell and sweating FAQs; conversion joins NEW CONNECTION INTENT. routingAgent: conversion and installation-safety signals. postCallAnalysisFlat: conversion is `newConnection`. vaaniQA: the new facts are allowed. |
+| **User decisions** | Conversion belongs to newConnectionAgent. Vaani answers what a commercial customer could ask, from BPCL's internal material too. Left out on purpose: prices, savings and payback figures, case-study customer names, vendors and quotation prices, sizing formulas and pressure settings, the GasTechApp. Large LOT / Hippo size, GasTechApp and the PESO licence threshold go to BPCL_QUESTIONS 76 to 79. |
+| **Not changed** | paymentAgent, connectionServicesAgent, booking and delivery agents, getConsumerDetails, unregisteredComplaintAgent. Every other channel (commercial-only content). |
+
 ### PORT-1028 · Today's Hindi CRC fixes from main ported — bpcl_contact_center, bpcl_lite_zip, CRC, ivrs_commercial (2026-10-28)
 
 | | |
