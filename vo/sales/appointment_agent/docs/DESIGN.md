@@ -514,3 +514,14 @@ English. Added: the script of the prospect's words decides the language (Devanag
 "speak X" request holds until they ask for another; quoted lines and KB facts are never copied in English; the
 preToolMessage goodbye follows the same rule; and a LAST CHECK — LANGUAGE line at the very end of the prompt, closest
 to generation. Not faults (user, same day): "five legs" heard as five lakh; an ask after an off-topic answer.
+
+## 15. Voicemail, machines and call screening (2026-11-27)
+
+From the user's voicemail reference prompt (voicemailreferenceprompt.txt, a separate IVR agent), only the detection
+ideas were taken. New VOICEMAIL OR MACHINE — HIGHEST PRIORITY block at the top of default.txt, checked every turn:
+signs judged by meaning in any language (voicemail greetings, phone network announcements such as switched off / not
+reachable / busy / not in service, written as English meanings, phone menus); on any of them callhangup with no text
+and no message. Call screening ("say your name and why you're calling") is not voicemail: Tanya says "It's Tanya from
+VoiceOwl, calling for [first name]." and waits; voicemail after it means hang up. Unsure = a person. The old
+voicemail line in WHO PICKED UP THE PHONE now points to the block. Not taken, per the user: silent waits or
+skip_turn (current behaviour stays), phone menu navigation (Tanya still hangs up on menus), the two-agent design.
