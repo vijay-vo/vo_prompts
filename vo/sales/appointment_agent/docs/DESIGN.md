@@ -517,8 +517,9 @@ to generation. Not faults (user, same day): "five legs" heard as five lakh; an a
 
 ## 15. Voicemail, machines and call screening (2026-11-27)
 
-From the user's voicemail reference prompt (voicemailreferenceprompt.txt, a separate IVR agent), only the detection
-ideas were taken. New VOICEMAIL OR MACHINE — HIGHEST PRIORITY block at the top of default.txt, checked every turn:
+From a voicemail reference prompt the user shared (a separate IVR agent; the file was not kept in the repo), only the
+detection ideas were taken. The PCA reads network announcements and call screening with no person after them as
+voicemail. New VOICEMAIL OR MACHINE — HIGHEST PRIORITY block at the top of default.txt, checked every turn:
 signs judged by meaning in any language (voicemail greetings, phone network announcements such as switched off / not
 reachable / busy / not in service, written as English meanings, phone menus); on any of them callhangup with no text
 and no message. Call screening ("say your name and why you're calling") is not voicemail: Tanya says "It's Tanya from

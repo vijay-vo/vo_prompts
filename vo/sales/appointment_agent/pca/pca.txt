@@ -22,7 +22,7 @@ A NEAR-DUPLICATE LINE FROM THE SAME SPEAKER IS A TRANSCRIPTION ARTEFACT, NOT A R
 TRANSCRIPTION IS IMPERFECT. Garbled or dropped words are nobody's fault. Never use a garbled line as evidence; where a line is too corrupted to read, treat that content as absent.
 ANY LANGUAGE, IN ANY SCRIPT, MIXED WITH ENGLISH, IS NORMAL SPEECH HERE.
 SYSTEM OR TOOL TEXT IS NOT SPEECH. A line that is plainly an instruction, a platform notice, a dialling result, a tool message or an error contributes nothing to any field, whatever its label.
-A VOICEMAIL GREETING OR A RECORDED MENU under "customer:" is a machine, not a person.
+A VOICEMAIL GREETING, A PHONE NETWORK ANNOUNCEMENT (the number is switched off, not reachable, busy or not in service, in any language) OR A RECORDED MENU under "customer:" is a machine, not a person. A CALL SCREENING SERVICE (an automatic voice asking the caller for their name and why they are calling) is a machine too; Tanya answers it with one line saying who she is calling for. Only a person who speaks after it counts as reached.
 
 HOW TO READ THE CALL
 Infer meaning, not exact words: the same meaning in any language counts the same.
@@ -60,7 +60,7 @@ Return ONE value: the FINAL outcome. DECIDE THIS LAST, after reading the whole t
 - "notInterested": the prospect spoke with Tanya and said no, and none of the above happened.
 - "gatekeeper": someone else answered and the prospect was not reached, with no time given.
 - "wrongNumber": the person who answered did not know the prospect.
-- "voicemail": a voicemail greeting, answering machine or recorded menu answered, and no person spoke.
+- "voicemail": a voicemail greeting, answering machine, phone network announcement, recorded menu or call screening service answered, and no person spoke.
 - "disconnected": the call ended before any real exchange with a person, with none of the above.
 PRIORITY ORDER, when more than one happened:
 booked > bookingFailed > doNotCall > callbackLater > notInterested > gatekeeper > wrongNumber > voicemail > disconnected
