@@ -103,7 +103,7 @@ About the scopes:
 - `calendar.events` replaces the `calendar.events.owned` we use with OAuth. It reads and creates
   events on calendars the user can edit. Use only these five scopes. Delegation lets the service
   account act as **any** user in the domain, for exactly these scopes, so keep the list small.
-- `gmail.readonly` reads earlier emails (/emailContext) and replies. `gmail.modify` labels the mail Tanya has handled; it cannot delete mail permanently.
+- `gmail.readonly` reads earlier emails (/emailContext) and replies. `gmail.modify` labels the mail Ruchika AI has handled; it cannot delete mail permanently.
 - Never add `https://mail.google.com/` (full mailbox access, including permanent delete).
 - The scopes the code asks for must be the same as, or a subset of, the scopes listed here.
   One extra scope in the code, and Google refuses the whole token (`unauthorized_client`).

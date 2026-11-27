@@ -28,9 +28,9 @@ fname=Daniel, company=Harbor Lending, email=daniel@harborlending.com, timezone=A
 defaultLanguage=English, priorContext=Not Available
 ```
 
-Tanya talks about his problem and asks whether fifteen minutes with Ruchika makes sense. He says yes.
+Ruchika AI talks about his problem and asks whether fifteen minutes with Ruchika makes sense. He says yes.
 
-## Step 2. On the yes, Tanya checks the calendar at once
+## Step 2. On the yes, Ruchika AI checks the calendar at once
 
 She asks nothing about time first. Her turn is the tool call alone: no text and no preToolMessage
 (2026-11-24: no time can exist before the Result, so the turn carries no words).
@@ -52,28 +52,28 @@ Inside the service (the model never sees this):
 {"returnCode":200,"toolResponse":"Success: Two times are free. Option 1: tomorrow, nine in the morning, startTime 2026-11-25T09:00. Option 2: tomorrow, ten in the morning, startTime 2026-11-25T10:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
-## Step 3. Tanya offers both, in words
+## Step 3. Ruchika AI offers both, in words
 
-> Tanya: "I have tomorrow at nine in the morning or ten in the morning, your time. Which works better?"
+> Ruchika AI: "I have tomorrow at nine in the morning or ten in the morning, your time. Which works better?"
 > Daniel: "Neither. Can we do tomorrow around eleven?"
 
-## Step 4. Tanya checks his time
+## Step 4. Ruchika AI checks his time
 
 ```json
 POST /getAvailableSlots
 {"timezone":"America/New_York","preferredDay":"tomorrow","preferredTime":"11:00"}
 ```
 
-When his exact time is free, the reply offers that one time alone, and Tanya asks before booking.
+When his exact time is free, the reply offers that one time alone, and Ruchika AI asks before booking.
 
 ```json
 {"returnCode":200,"toolResponse":"Success: That time is free: tomorrow, eleven in the morning, startTime 2026-11-25T11:00. Say it in words, never the startTime, and ask if they want it. On a yes, book this startTime."}
 ```
 
-> Tanya: "Tomorrow at eleven in the morning, your time, is free. Shall I book it?"
+> Ruchika AI: "Tomorrow at eleven in the morning, your time, is free. Shall I book it?"
 > Daniel: "Hmm, let me look… yes, go ahead."
 
-It took him two turns. Tanya takes the startTime from that toolResponse.
+It took him two turns. Ruchika AI takes the startTime from that toolResponse.
 
 If he had asked for 2 PM, which is after Ruchika's day ends, the reply would be:
 
@@ -81,12 +81,12 @@ If he had asked for 2 PM, which is after Ruchika's day ends, the reply would be:
 {"returnCode":200,"toolResponse":"Failure: That time is not available. Option 1: tomorrow, twelve noon, startTime 2026-11-25T12:00. Option 2: tomorrow, twelve fifteen in the afternoon, startTime 2026-11-25T12:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
-> Tanya: "Sorry, that time is not available. I have twelve noon or twelve fifteen, your time. Which works better?"
+> Ruchika AI: "Sorry, that time is not available. I have twelve noon or twelve fifteen, your time. Which works better?"
 
 She never says why. If he had said only "at two", she would first ask "Two in the afternoon?" and pass
 `14:00` after his yes.
 
-## Step 5. Tanya books
+## Step 5. Ruchika AI books
 
 A turn with no text and no preToolMessage. The model passes `startTime` and `appointmentNotes`; the
 platform adds the rest.
@@ -116,9 +116,9 @@ Inside the service:
 
 The platform saves `prospectTime` as `bookedTime`, `salesTime` as `salesTime` and `meetLink` as `meetLink`.
 
-## Step 6. Tanya confirms and closes
+## Step 6. Ruchika AI confirms and closes
 
-> Tanya: "Done. Tomorrow, eleven in the morning, with Ruchika. The invite is in your email; please
+> Ruchika AI: "Done. Tomorrow, eleven in the morning, with Ruchika. The invite is in your email; please
 > accept it whenever it suits you. You'll also get the details on WhatsApp and email."
 
 She answers anything he asks, says the closing line, and hangs up.
@@ -139,13 +139,13 @@ POST /sendGmail
 ## When it goes differently
 
 **The time is taken between offer and booking.** Someone else took 11:00. The reply carries new options,
-so Tanya offers them without checking again:
+so Ruchika AI offers them without checking again:
 
 ```json
 {"returnCode":200,"booked":false,"reason":"slot_taken","toolResponse":"Failure: That time was just taken. Option 1: tomorrow, ten forty-five in the morning, startTime 2026-11-25T10:45. Option 2: tomorrow, eleven fifteen in the morning, startTime 2026-11-25T11:15. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose.","prospectTime":"Not Available","salesTime":"Not Available","meetLink":"Not Available","eventId":"Not Available"}
 ```
 
-> Tanya: "That time was just taken. I have ten forty-five or eleven fifteen. Which works?"
+> Ruchika AI: "That time was just taken. I have ten forty-five or eleven fifteen. Which works?"
 
 **The model passes a wrong startTime** (garbled, never offered, outside hours, such as
 `2026-11-25T11:07`). Nothing is booked; the reply offers the two real free times nearest to it:
@@ -164,7 +164,7 @@ so Tanya offers them without checking again:
 | "Day after tomorrow" | `day after tomorrow` | `Success: Two times are free. Option 1: Thursday the twenty-sixth of November, nine in the morning, startTime 2026-11-26T09:00. …` |
 | "Saturday" | `saturday` | `Failure: Calls are Monday to Friday only. Ask which weekday suits them.` |
 | "The 20th" (already gone) | `20` | `Failure: That day has passed. Ask which day suits them.` |
-| "Next week" | not passed: Tanya asks which day first | (if passed anyway) `Failure: That day was not understood. Ask which day suits them.` |
+| "Next week" | not passed: Ruchika AI asks which day first | (if passed anyway) `Failure: That day was not understood. Ask which day suits them.` |
 | "The 31st" | `31` | `Failure: That day is more than 15 days away. Ask for a day in the next 15 days.` |
 
 For any day other than today and tomorrow, the words name the date, so a wrong day is heard before booking.
@@ -172,7 +172,7 @@ For any day other than today and tomorrow, the words name the date, so a wrong d
 **Nothing is free that day.** `Failure: No time is free for that request. Ask which other day suits them.`
 
 **The calendar or the booking breaks.** `Failure: The calendar could not be checked. …` or
-`Failure: The booking did not go through. …` Tanya tells Daniel the team will send the details on email
+`Failure: The booking did not go through. …` Ruchika AI tells Daniel the team will send the details on email
 and WhatsApp, never retries the booking, and closes.
 
 ---

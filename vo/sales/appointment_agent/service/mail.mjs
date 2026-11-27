@@ -1,6 +1,6 @@
 // Reading Gmail for the prospect's earlier emails: /emailContext. Pure functions; Gmail calls are in google.mjs.
 
-// Every email /sendGmail sends carries this header, so a later reply can be traced to Tanya.
+// Every email /sendGmail sends carries this header, so a later reply can be traced to Ruchika AI.
 export const AGENT_HEADER = 'X-VoiceOwl-Agent';
 
 export const header = (msg, name) => (msg.payload?.headers || []).find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';

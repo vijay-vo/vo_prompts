@@ -1,37 +1,38 @@
-// Email replies: find new mail, decide whether Tanya may answer (the gate), queue it, send her answer in the thread.
+// Email replies: find new mail, decide whether Ruchika AI may answer (the gate), queue it, send her answer in the thread.
 // The state lives in Gmail labels, so the service keeps no database:
-//   Tanya-checked      every incoming mail the service has looked at (never looked at twice)
-//   Tanya-to-reply     passed the gate, waiting for Tanya's answer (/pendingReplies)
-//   Tanya-replied      Tanya answered it
-//   Tanya-needs-human  a person should look (someone else wrote, or a limit was reached)
-//   Tanya-off          added by the team on a thread: Tanya never answers that thread again
+//   RuchikaAI-checked      every incoming mail the service has looked at (never looked at twice)
+//   RuchikaAI-to-reply     passed the gate, waiting for Ruchika AI's answer (/pendingReplies)
+//   RuchikaAI-replied      Ruchika AI answered it
+//   RuchikaAI-needs-human  a person should look (someone else wrote, or a limit was reached)
+//   RuchikaAI-off          added by the team on a thread: Ruchika AI never answers that thread again
 import { AGENT_HEADER, header, addressOf, addressesIn, isNoise, isOurs, bodyText, newText, contextFrom } from './mail.mjs';
 
-export const LABELS = { checked: 'Tanya-checked', toReply: 'Tanya-to-reply', replied: 'Tanya-replied', human: 'Tanya-needs-human', off: 'Tanya-off' };
+export const LABELS = { checked: 'RuchikaAI-checked', toReply: 'RuchikaAI-to-reply', replied: 'RuchikaAI-replied', human: 'RuchikaAI-needs-human', off: 'RuchikaAI-off' };
 const DAY = 864e5;
 const at = (m) => Number(m.internalDate);
-export const isTanya = (m) => isOurs(m) && /^tanya$/i.test(header(m, AGENT_HEADER).trim());
+// 'tanya' is the agent's old name: threads it started before the rename still count as hers.
+export const isAgent = (m) => isOurs(m) && /^(ruchika-ai|tanya)$/i.test(header(m, AGENT_HEADER).trim());
 
 export function limitsFrom(env = {}) {
   return { perDay: Number(env.EMAIL_REPLIES_PER_DAY || 3), total: Number(env.EMAIL_REPLIES_TOTAL || 10), maxAgeDays: Number(env.EMAIL_REPLY_MAX_AGE_DAYS || 30) };
 }
 
-// May Tanya answer `msg` (an incoming mail) in `thread`? { ok } or { ok: false, reason, human }.
+// May Ruchika AI answer `msg` (an incoming mail) in `thread`? { ok } or { ok: false, reason, human }.
 // inFunnel: the platform database check (contact exists, not doNotCall or noAICalls, not handed to a person).
 export function gate(thread, msg, { offId, now = Date.now(), limits = limitsFrom(), inFunnel = () => true }) {
   const t = [...thread].sort((a, b) => at(a) - at(b));
-  const tanya = t.filter(isTanya);
-  if (!tanya.length) return { ok: false, reason: 'not_tanya_thread' };                          // 1. Tanya started it
-  if (t.some(m => (m.labelIds || []).includes(offId))) return { ok: false, reason: 'tanya_off' };  // 4. team switched her off
+  const agent = t.filter(isAgent);
+  if (!agent.length) return { ok: false, reason: 'not_agent_thread' };                          // 1. Ruchika AI started it
+  if (t.some(m => (m.labelIds || []).includes(offId))) return { ok: false, reason: 'agent_off' };  // 4. team switched her off
   if (isNoise(msg)) return { ok: false, reason: 'not_a_person' };                                // 5. a person wrote it
-  const prospects = new Set(tanya.flatMap(m => addressesIn(header(m, 'To'))));
+  const prospects = new Set(agent.flatMap(m => addressesIn(header(m, 'To'))));
   const from = addressOf(header(msg, 'From'));
   if (!prospects.has(from)) return { ok: false, reason: 'other_sender', human: true };         // 2. the prospect wrote it
   if (!inFunnel(from)) return { ok: false, reason: 'not_in_funnel' };                           // 3. still in the funnel
-  const last = tanya.at(-1);
-  if (t.some(m => isOurs(m) && !isTanya(m) && at(m) > at(last))) return { ok: false, reason: 'human_took_over' }; // 4.
+  const last = agent.at(-1);
+  if (t.some(m => isOurs(m) && !isAgent(m) && at(m) > at(last))) return { ok: false, reason: 'human_took_over' }; // 4.
   if (at(msg) - at(last) > limits.maxAgeDays * DAY) return { ok: false, reason: 'too_old', human: true };       // 6.
-  if (tanya.filter(m => now - at(m) < DAY).length >= limits.perDay || tanya.length >= limits.total)
+  if (agent.filter(m => now - at(m) < DAY).length >= limits.perDay || agent.length >= limits.total)
     return { ok: false, reason: 'limit', human: true };
   return { ok: true };
 }
@@ -70,7 +71,7 @@ export async function checkReplies({ google, env = {}, now = Date.now(), inFunne
   return { checked: fresh.length, toReply: results.filter(r => r.result === 'to_reply').length, results };
 }
 
-// Mails waiting for Tanya, each with the conversation so far, for the email agent.
+// Mails waiting for Ruchika AI, each with the conversation so far, for the email agent.
 export async function pendingReplies({ google, env = {} }) {
   const L = await labelIds(google);
   const ids = await google.listMessages(search(LABELS.toReply), 50);
@@ -89,13 +90,13 @@ export async function pendingReplies({ google, env = {} }) {
   return { count: out.length, pending: out };
 }
 
-// Send Tanya's answer to one pending mail, in its thread. Body: messageId, and the email agent's output
+// Send Ruchika AI's answer to one pending mail, in its thread. Body: messageId, and the email agent's output
 // (email/email.txt): action "reply" | "human" | "stop" | "none", and the email text as reply (or body).
 //   reply  send it.
-//   human  send the handoff email, then label the thread for a person and switch Tanya off on it.
-//   stop   send nothing; label it for a person (to record the opt-out) and switch Tanya off on it.
+//   human  send the handoff email, then label the thread for a person and switch Ruchika AI off on it.
+//   stop   send nothing; label it for a person (to record the opt-out) and switch Ruchika AI off on it.
 //   none   send nothing.
-// The gate runs again before any send, in case a person replied or switched Tanya off meanwhile.
+// The gate runs again before any send, in case a person replied or switched Ruchika AI off meanwhile.
 export async function replyInThread({ google, env = {}, body, now = Date.now(), inFunnel }) {
   const L = await labelIds(google);
   const m = body.messageId ? await google.getMessage(String(body.messageId)) : null;

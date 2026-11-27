@@ -17,7 +17,7 @@ pattern: the agent never has to search Gmail or WhatsApp history while it works.
   April 2025. Those messages fail for US prospects. Email has to cover them.
 - **Template variables cannot contain line breaks.** The PCA's `\n\n` text cannot go into one variable.
   The fixed text goes in the template and the PCA fills only short values: name, time, link.
-- **When they reply:** a WhatsApp agent, Tanya by text, gets the timeline and the same two tools
+- **When they reply:** a WhatsApp agent, Ruchika AI by text, gets the timeline and the same two tools
   (getAvailableSlots, bookAppointment). It can book in the chat, answer simple questions, hand off to
   Ruchika when asked, and treat STOP or "don't contact me" as doNotCall. Replies inside the window are free.
 - The policy allows this agent. Meta's January 2026 rule bans general-purpose AI assistants, not a
@@ -77,34 +77,34 @@ reply already carries its own thread ID, subject and Message-ID, and the answer 
    It also keeps the CSV's priorContext when that has a value.
 The whole team uses this one mailbox, so searching it finds everything.
 
-**Who Tanya may answer by email (the gate, agreed and built on 2026-11-25; see GMAIL_SETUP.md section 8)**
-Tanya answers a mail only when all six checks pass. Otherwise she does not touch it, and a person handles it.
-1. **Tanya started the thread.** The thread holds a mail from our Sent folder with the header
-   `X-VoiceOwl-Agent: tanya`; /sendGmail adds this header to every mail it sends (built). An outsider cannot fake it,
+**Who Ruchika AI may answer by email (the gate, agreed and built on 2026-11-25; see GMAIL_SETUP.md section 8)**
+Ruchika AI answers a mail only when all six checks pass. Otherwise she does not touch it, and a person handles it.
+1. **Ruchika AI started the thread.** The thread holds a mail from our Sent folder with the header
+   `X-VoiceOwl-Agent: ruchika-ai`; /sendGmail adds this header to every mail it sends (built). An outsider cannot fake it,
    because a received mail is never in Sent. This stops random mail, new threads, and replies to emails the
    team wrote by hand.
-2. **The prospect wrote.** The sender is the address Tanya's mail went to. Anyone else, such as a colleague
+2. **The prospect wrote.** The sender is the address Ruchika AI's mail went to. Anyone else, such as a colleague
    in cc or a forward, gets the "Needs human" label.
 3. **They are still in the funnel.** In the platform database the contact exists, is not doNotCall or
    noAICalls, and is not handed to a person. For local testing this check is skipped.
-4. **No human has taken over.** Nobody from our side has replied without the Tanya header since her last mail,
-   and the thread has no "Tanya off" label. The team stops Tanya on a thread by adding that label.
+4. **No human has taken over.** Nobody from our side has replied without the Ruchika AI header since her last mail,
+   and the thread has no "Ruchika AI off" label. The team stops Ruchika AI on a thread by adding that label.
 5. **A person wrote it.** It is not an auto-reply, a bounce, a calendar notice or bulk mail (the same filter as A).
-6. **Within limits.** At most 3 replies from Tanya per thread per day and 10 in all, and the prospect's mail
-   is no more than 30 days after Tanya's last one. Past a limit the thread gets "Needs human".
-Everything Tanya needs for checks 1, 2, 4, 5 and 6 is in Gmail itself (headers and labels), so the local
+6. **Within limits.** At most 3 replies from Ruchika AI per thread per day and 10 in all, and the prospect's mail
+   is no more than 30 days after Ruchika AI's last one. Past a limit the thread gets "Needs human".
+Everything Ruchika AI needs for checks 1, 2, 4, 5 and 6 is in Gmail itself (headers and labels), so the local
 service works without a database. The platform adds check 3.
 
-**B. They reply to our email: Tanya answers**
+**B. They reply to our email: Ruchika AI answers**
 1. Gmail tells the service a new mail has arrived (Pub/Sub, with a poll as backup).
 2. The service answers only when all of these are true:
    - the sender is a contact in the platform database;
    - the mail is not an auto-reply, a bounce or a calendar notice;
    - nobody from our side has written in the thread since the prospect's last mail, so a human always takes priority;
-   - Tanya is under her reply limit for that thread today.
+   - Ruchika AI is under her reply limit for that thread today.
 3. It reads the whole thread plus the contact's history and passes both to the email agent.
-4. It sends Tanya's answer in the same thread, with "Re: <same subject>" and the In-Reply-To and References headers.
-5. It labels the mail "Tanya replied" and writes both messages to the contact history.
+4. It sends Ruchika AI's answer in the same thread, with "Re: <same subject>" and the In-Reply-To and References headers.
+5. It labels the mail "RuchikaAI-replied" and writes both messages to the contact history.
 Scopes: gmail.readonly, gmail.send and gmail.modify (for the label).
 
 ## Prompts (written 2026-11-25, untested)
@@ -117,7 +117,7 @@ Scopes: gmail.readonly, gmail.send and gmail.modify (for the label).
 | text_pca/text_pca.txt | after a WhatsApp chat or an email thread goes quiet | channel, the conversation (agent: / customer:), fname, company, priorContext | chatResult, doNotContact, noAICalls, needsHuman, callbackTime, painPoint, painDetail, mainObjection, colleagueToInvite, interestLevel, language, summary |
 
 Changed with them: default/default.txt (priorContext covers calls, email and WhatsApp; the follow-up opener names the latest
-contact and picks up anything still open) and pca/pca.txt (priorContext wording). Tanya by email and on WhatsApp cannot book.
+contact and picks up anything still open) and pca/pca.txt (priorContext wording). Ruchika AI by email and on WhatsApp cannot book.
 She sends the booking link, and hands over to a person or stops as the prompts say. doNotContact, noAICalls or needsHuman
 "yes" from text_pca, or "stop" or "human" from the email agent, update the contact in the platform database.
 

@@ -30,7 +30,7 @@ export function mimeMessage({ to, subject, body, inReplyTo, references }) {
   const text = String(body).replace(/\\n/g, '\n').replace(/\r?\n/g, '\r\n');
   // In-Reply-To and References put a reply in the prospect's existing conversation.
   const thread = inReplyTo ? [`In-Reply-To: ${oneLine(inReplyTo)}`, `References: ${oneLine(references || inReplyTo)}`] : [];
-  return [`To: ${oneLine(to)}`, `Subject: =?UTF-8?B?${b64(oneLine(subject))}?=`, ...thread, `${AGENT_HEADER}: tanya`, 'MIME-Version: 1.0',
+  return [`To: ${oneLine(to)}`, `Subject: =?UTF-8?B?${b64(oneLine(subject))}?=`, ...thread, `${AGENT_HEADER}: ruchika-ai`, 'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', b64(text).replace(/.{76}/g, '$&\r\n')].join('\r\n');
 }
 
@@ -113,7 +113,7 @@ function makeMock() {
     async sendMail(msg) {
       this.sent.push({ ...msg, mime: mimeMessage(msg) });
       const id = `mock-${this.sent.length}`, threadId = msg.threadId || `mock-thread-${this.sent.length}`;
-      const headers = [['From', 'sales@voiceowl.ai'], ['To', msg.to], ['Subject', msg.subject], ['Message-ID', `<${id}@mail.gmail.com>`], ['X-VoiceOwl-Agent', 'tanya']]
+      const headers = [['From', 'sales@voiceowl.ai'], ['To', msg.to], ['Subject', msg.subject], ['Message-ID', `<${id}@mail.gmail.com>`], ['X-VoiceOwl-Agent', 'ruchika-ai']]
         .concat(msg.inReplyTo ? [['In-Reply-To', msg.inReplyTo], ['References', msg.references || msg.inReplyTo]] : []).map(([name, value]) => ({ name, value }));
       this.mails.push({ id, threadId, labelIds: ['SENT'], internalDate: String(this.now ? this.now() : Date.now()),
         payload: { mimeType: 'text/plain', headers, body: { data: Buffer.from(String(msg.body)).toString('base64url') } } });

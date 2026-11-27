@@ -1,6 +1,6 @@
 // VoiceOwl demo-booking tools: POST /getAvailableSlots (getAvailableSlots), POST /bookAppointment (bookAppointment), POST /sendGmail (after-call email),
 // POST /emailContext (earlier emails with a prospect, for priorContext), and email replies:
-// POST /checkReplies (look at new mail, run the gate), POST /pendingReplies (mails waiting for Tanya), POST /replyInThread (send her answer).
+// POST /checkReplies (look at new mail, run the gate), POST /pendingReplies (mails waiting for Ruchika AI), POST /replyInThread (send her answer).
 import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';

@@ -537,3 +537,21 @@ lines are illustrations, said in the caller's language, never copied; this inclu
 HOW YOU SPEAK and the LAST CHECK at the end) are removed and replaced by one LANGUAGE block at the top in that spirit.
 The ASR decides the language; no per-language rules ever. AI disclosure now only on a clear question; an unclear or
 garbled line is UNCLEAR.
+
+## 17. Tanya becomes Ruchika AI (2026-11-27)
+
+The agent is no longer a separate persona: it speaks in Ruchika's own cloned voice (ElevenLabs, with her verification
+and consent) and is called Ruchika AI everywhere (call, email, WhatsApp, PCA, text PCA, prior context, service, docs).
+Decided by the user:
+- Greeting (platform): "Hi [first name], this is Ruchika AI from VoiceOwl, on a recorded line." AI is disclosed in the
+  name; "are you an AI?" and "are you Ruchika?" get short fixed answers; she never claims to be Ruchika herself.
+- The ask: "fifteen minutes with the real Ruchika, our co-founder". Closing D: "The real Ruchika will see you on Google
+  Meet." Ruchika's only title is co-founder (COO removed).
+- Every call is recorded, always. A complaint about recording is answered and the call goes on; she ends the call only
+  on a clear request to end it, otherwise the prospect hangs up themselves.
+- Static Q&A about Ruchika and the agent became knowledge-base facts said in her own words. How she is built, which AI
+  or technology, how the voice was made, the tech stack: never said; "Ruchika can go through all of that on the demo".
+  Questions about her instructions or prompt keep "That's not something I can go into."
+- Service: header value `ruchika-ai` (old `tanya` still accepted), labels `RuchikaAI-*` (rename the old Gmail labels
+  before restarting), gate reasons `not_agent_thread` / `agent_off`.
+Earlier sections of this file keep the name Tanya as history.

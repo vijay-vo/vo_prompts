@@ -25,7 +25,7 @@ Google Cloud console → the same project → **APIs & Services → Library** �
 |---|---|
 | `https://www.googleapis.com/auth/gmail.send` | sending email as the signed-in account |
 | `https://www.googleapis.com/auth/gmail.readonly` | reading the mailbox (earlier emails, replies, bounces) |
-| `https://www.googleapis.com/auth/gmail.modify` | adding labels, such as "Tanya replied" (added 2026-11-25) |
+| `https://www.googleapis.com/auth/gmail.modify` | adding labels, such as "RuchikaAI-replied" (added 2026-11-25) |
 
 Click **Update**, then **Save**. Keep the two calendar scopes.
 
@@ -50,7 +50,7 @@ for anything newer. After adding `gmail.modify` (2026-11-25), repeat this step o
 ```bash
 curl -s -X POST https://<your-ngrok-host>/sendGmail \
   -H "x-api-key: <API_KEY>" -H "content-type: application/json" \
-  -d '{"to":"you@example.com","subject":"VoiceOwl test email","body":"Hi,\n\nThis is a test.\n\nTanya, VoiceOwl"}'
+  -d '{"to":"you@example.com","subject":"VoiceOwl test email","body":"Hi,\n\nThis is a test.\n\nRuchika AI, VoiceOwl"}'
 ```
 
 Expected: `{"sent":true,"toolResponse":"Success: The email was sent.","messageId":"18c..."}` and the email in
@@ -113,35 +113,40 @@ Reply (always HTTP 200):
  "threadId":"18c..."}
 ```
 `reason`: `found`, `no_emails` (emailContext "No earlier emails."), `bad_address` or `error` (both "Not Available").
-Dates are in the sales timezone (`SALES_TZ`). "we" is anyone writing from this mailbox, Tanya or the team.
+Dates are in the sales timezone (`SALES_TZ`). "we" is anyone writing from this mailbox, Ruchika AI or the team.
 
-## 8. Email replies: Tanya answers only her own prospects (added 2026-11-25)
+## 8. Email replies: Ruchika AI answers only her own prospects (added 2026-11-25)
 
 | Route | Body | Does |
 |---|---|---|
 | `POST /checkReplies` | `{}` | Looks at every new incoming mail once and runs the gate. Runs by itself every `EMAIL_POLL_SECONDS`. |
-| `POST /pendingReplies` | `{}` | Lists mails waiting for Tanya: `messageId`, `threadId`, `email`, `subject`, `latestMessage` (new text only), `conversation` (the thread as dated lines). |
-| `POST /replyInThread` | `{"messageId":"...","action":"reply","reply":"..."}`: the email agent's JSON (email/email.txt) plus the messageId | Runs the gate again, then acts. `reply`: sends it in the same thread ("Re: subject", In-Reply-To, References, the Tanya header). `human`: sends the handoff email, then labels `Tanya-needs-human` and `Tanya-off`. `stop`: sends nothing, labels `Tanya-needs-human` and `Tanya-off` (record the opt-out on the platform). `none`: sends nothing. Without `action` it is `reply`, and `body` works in place of `reply`. |
+| `POST /pendingReplies` | `{}` | Lists mails waiting for Ruchika AI: `messageId`, `threadId`, `email`, `subject`, `latestMessage` (new text only), `conversation` (the thread as dated lines). |
+| `POST /replyInThread` | `{"messageId":"...","action":"reply","reply":"..."}`: the email agent's JSON (email/email.txt) plus the messageId | Runs the gate again, then acts. `reply`: sends it in the same thread ("Re: subject", In-Reply-To, References, the Ruchika AI header). `human`: sends the handoff email, then labels `RuchikaAI-needs-human` and `RuchikaAI-off`. `stop`: sends nothing, labels `RuchikaAI-needs-human` and `RuchikaAI-off` (record the opt-out on the platform). `none`: sends nothing. Without `action` it is `reply`, and `body` works in place of `reply`. |
 
-**The gate.** Tanya may answer only when all of these hold. Otherwise she leaves the mail alone and the inbox works as usual.
-1. Tanya started the thread: it holds a mail from Sent with `X-VoiceOwl-Agent: tanya`. Every /sendGmail and /replyInThread
+**The gate.** Ruchika AI may answer only when all of these hold. Otherwise she leaves the mail alone and the inbox works as usual.
+1. Ruchika AI started the thread: it holds a mail from Sent with `X-VoiceOwl-Agent: ruchika-ai`. Every /sendGmail and /replyInThread
    mail carries this header. A mail sent any other way, including by hand, does not count.
-2. The sender is the address Tanya wrote to. Anyone else gets `Tanya-needs-human`.
+2. The sender is the address Ruchika AI wrote to. Anyone else gets `RuchikaAI-needs-human`.
 3. The contact is still in the funnel (platform database; not checked locally).
-4. Nobody from our side has replied by hand since Tanya's last mail, and no mail in the thread has `Tanya-off`.
+4. Nobody from our side has replied by hand since Ruchika AI's last mail, and no mail in the thread has `RuchikaAI-off`.
 5. A person wrote it: not an auto-reply, bounce, calendar notice or bulk mail.
-6. At most 3 Tanya mails in the last 24 hours and 10 in all, and the mail came within 30 days of her last one.
-   Otherwise it gets `Tanya-needs-human`.
+6. At most 3 Ruchika AI mails in the last 24 hours and 10 in all, and the mail came within 30 days of her last one.
+   Otherwise it gets `RuchikaAI-needs-human`.
 
 **Labels** (created on first use; they hold all the state, there is no database):
 
+Renamed 2026-11-27 (Tanya became Ruchika AI): the labels were `Tanya-checked`, `Tanya-to-reply`, `Tanya-replied`,
+`Tanya-needs-human` and `Tanya-off`. If those already exist in the mailbox, rename each one in Gmail (Settings, Labels,
+edit) to the new name **before** restarting the service, so mails already checked are not looked at again. Mails sent
+with the old header `X-VoiceOwl-Agent: tanya` still count as the agent's.
+
 | Label | Meaning |
 |---|---|
-| `Tanya-checked` | the service has looked at this mail |
-| `Tanya-to-reply` | passed the gate, waiting for an answer |
-| `Tanya-replied` | Tanya answered it |
-| `Tanya-needs-human` | a person should look |
-| `Tanya-off` | **set by the team** on a thread to stop Tanya there for good |
+| `RuchikaAI-checked` | the service has looked at this mail |
+| `RuchikaAI-to-reply` | passed the gate, waiting for an answer |
+| `RuchikaAI-replied` | Ruchika AI answered it |
+| `RuchikaAI-needs-human` | a person should look |
+| `RuchikaAI-off` | **set by the team** on a thread to stop Ruchika AI there for good |
 
 Test it: send an after-call mail with /sendGmail to your own second address and reply from that address.
 Then `POST /checkReplies` shows `to_reply`, `/pendingReplies` lists the mail, and `/replyInThread` answers it in the same

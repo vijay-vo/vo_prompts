@@ -12,7 +12,7 @@ service/server.mjs and service/slots.mjs (booking service). Field names below mu
 | Contact | yes | +919876543210 | the number to dial |
 | fname | yes | Priya | agent `{{fname}}`; /bookAppointment; PCA |
 | lname | no | Sharma | /bookAppointment (name on the calendar invite) |
-| company | no | BrightLoans Financial Services Pvt Ltd | agent `{{company}}`; /bookAppointment; PCA. Tanya says only the short name |
+| company | no | BrightLoans Financial Services Pvt Ltd | agent `{{company}}`; /bookAppointment; PCA. Ruchika AI says only the short name |
 | industry | no | lending | agent `{{industry}}` |
 | email | yes | priya@brightloans.com | /bookAppointment (the invite goes here); PCA. Never read out on the call |
 | timezone | yes | Asia/Kolkata | added by the platform to /getAvailableSlots and /bookAppointment |
@@ -22,7 +22,7 @@ service/server.mjs and service/slots.mjs (booking service). Field names below mu
 Rules:
 - Any value you do not have is the text `Not Available`. Never leave a cell empty.
 - `timezone` must be an IANA name (Asia/Kolkata, America/New_York, Europe/London), not "IST" or "EST".
-  A wrong value makes the service answer 400, and Tanya cannot offer times.
+  A wrong value makes the service answer 400, and Ruchika AI cannot offer times.
 - `email` must be a real address, or every booking for that contact fails.
 - `priorContext` is plain English, a few sentences, no instructions, no budget or internal ratings. Examples:
   - First call: `First call to them. Sales head at a lending company, filled the website form about delivery-update calls.`
@@ -50,10 +50,10 @@ Contact,fname,lname,company,industry,email,timezone,defaultLanguage,priorContext
 
 No date variables in the agent. `{{system.current_date}}` and `{{system.current_day_of_week}}` are the platform's
 own clock, which can be a different day from the prospect's (a call to New York at 1 AM IST Tuesday is still
-Monday there). So Tanya passes a day as a word ("tomorrow", "wednesday") and the service works out the date in the
+Monday there). So Ruchika AI passes a day as a word ("tomorrow", "wednesday") and the service works out the date in the
 prospect's own timezone.
 
-Greeting (first message): `Hi {{fname}}, it's Tanya from VoiceOwl.`, played after the prospect says hello, in
+Greeting (first message): `Hi {{fname}}, this is Ruchika AI from VoiceOwl, on a recorded line.`, played after the prospect says hello, in
 `{{defaultLanguage}}`.
 
 ---
@@ -77,7 +77,7 @@ No preToolMessage (2026-11-24): the turn is the call alone, as with bookAppointm
 Examples the service receives:
 - On the prospect's yes, no preference yet: `{"timezone":"Asia/Kolkata"}`
 - "Tomorrow at 4 PM?": `{"timezone":"Asia/Kolkata","preferredDay":"tomorrow","preferredTime":"16:00"}`
-  When 4:00 PM is free, the reply offers that one time and Tanya asks "Shall I book it?". When it is not
+  When 4:00 PM is free, the reply offers that one time and Ruchika AI asks "Shall I book it?". When it is not
   available for any reason (taken, outside hours, passed), the reply says so and offers the two nearest free times.
 - "On the 27th, afternoon": `{"timezone":"America/New_York","preferredDay":"27","preferredTime":"afternoon"}`
 - "In three days": `{"timezone":"Asia/Tokyo","preferredDay":"in 3 days"}`
@@ -207,9 +207,9 @@ Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{booke
  "noAICalls": "no",
  "doNotCall": "no",
  "summary": "Priya answered ... (40 to 80 words)",
- "whatsappMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Ruchika is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nTanya, VoiceOwl",
+ "whatsappMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Ruchika is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nRuchika AI, VoiceOwl",
  "emailSubject": "Your VoiceOwl call is booked for Monday, 23 November, 3:00 PM",
- "emailMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Ruchika is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nTanya, VoiceOwl"
+ "emailMessage": "Hi Priya,\n\nThanks for your time. Your 15-minute call with Ruchika is booked for Monday, 23 November 2026, 3:00 PM, where you'll see how VoiceOwl helps your customers speak in their own language.\n\nJoin here: https://meet.google.com/abc-defg-hij\nA calendar invite has also been sent to you; please accept it whenever it suits you.\n\nRuchika AI, VoiceOwl"
 }
 ```
 
@@ -240,14 +240,14 @@ fixed missed-call template. notInterested and doNotCall get the platform's fixed
 | Booking link | `https://calendar.app.google/StCvpJnSaJrRTqCw7` | bookingFailed and callbackLater messages (PCA), missed-call template (platform) | Google Calendar appointment schedule, fixed. Test page, still titled "15-minute call with Ruchika, VoiceOwl": rename it, or replace the link with Ruchika's page in pca/pca.txt and here |
 
 A message never carries both. A booked message without a Meet link says the link is in the invite; it never falls
-back to the booking link. Tanya never says a link on the call. To change the booking link: THE LINKS in pca/pca.txt
+back to the booking link. Ruchika AI never says a link on the call. To change the booking link: THE LINKS in pca/pca.txt
 and the platform's missed-call template.
 
 ### Platform missed-call template (gatekeeper, voicemail, disconnected, no answer, busy)
 
 WhatsApp body and email body:
 ```
-Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. I tried to reach you by phone but we couldn't connect.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If you'd like to see it working, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
+Hi {{contact.fname}},\n\nThis is Ruchika AI from VoiceOwl. I tried to reach you by phone but we couldn't connect.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If you'd like to see it working, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nRuchika AI, VoiceOwl
 ```
 Email subject: `Sorry we missed you - VoiceOwl`
 
@@ -255,7 +255,7 @@ Email subject: `Sorry we missed you - VoiceOwl`
 
 WhatsApp body and email body:
 ```
-Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. Thanks for taking my call today.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If it's ever useful, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
+Hi {{contact.fname}},\n\nThis is Ruchika AI from VoiceOwl. Thanks for taking my call today.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If it's ever useful, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nRuchika AI, VoiceOwl
 ```
 Email subject: `Thanks for your time - VoiceOwl`
 

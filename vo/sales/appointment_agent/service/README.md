@@ -7,8 +7,8 @@ never by the model. Plain Node 20, no packages to install.
 |---|---|---|
 | getAvailableSlots | `POST /getAvailableSlots` | injected by the platform: `timezone`; from the model: `preferredDay` (one of: today, tomorrow, day after tomorrow, monday...sunday, `in N days`, or a date `1`-`31`), `preferredTime` (morning/afternoon/evening or `HH:MM` 24-hour) |
 | bookAppointment | `POST /bookAppointment` | from the model: `startTime` (copied from the chosen option), `appointmentNotes`; injected by the platform: `email`, `timezone`, `fname`, `lname`, `company` |
-| sendGmail (after the PCA) | `POST /sendGmail` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. Every mail carries the header `X-VoiceOwl-Agent: tanya`; the reply has `messageId` and `threadId`. See docs/GMAIL_SETUP.md |
-| email replies | `POST /checkReplies`, `POST /pendingReplies`, `POST /replyInThread` | `{}`, `{}`, `{messageId, body}`. New mail is checked against the gate; mails Tanya may answer wait in `/pendingReplies`; her answer goes out in the same thread. See docs/GMAIL_SETUP.md section 8 |
+| sendGmail (after the PCA) | `POST /sendGmail` | `to` (contact email), `subject` (PCA emailSubject), `body` (PCA emailMessage); "none" sends nothing. Every mail carries the header `X-VoiceOwl-Agent: ruchika-ai` (older mails with `tanya` still count as the agent's); the reply has `messageId` and `threadId`. See docs/GMAIL_SETUP.md |
+| email replies | `POST /checkReplies`, `POST /pendingReplies`, `POST /replyInThread` | `{}`, `{}`, `{messageId, body}`. New mail is checked against the gate; mails Ruchika AI may answer wait in `/pendingReplies`; her answer goes out in the same thread. See docs/GMAIL_SETUP.md section 8 |
 | emailContext (before a call) | `POST /emailContext` | `email`, optional `threadId`; returns the last 5 emails with that address as dated lines, for priorContext. See docs/GMAIL_SETUP.md section 7 |
 
 Every reply carries a `toolResponse` for the model. All times are the prospect's own local time. A booked reply
@@ -59,7 +59,7 @@ Responses:
 ## Running locally: limits
 - The platform runs in the cloud, so it reaches this laptop only through ngrok.
 - The laptop must be on, awake and online, with both `node server.mjs` and `ngrok` running,
-  for every call. If it sleeps, Tanya's calendar check fails mid-call.
+  for every call. If it sleeps, Ruchika AI's calendar check fails mid-call.
 - A free ngrok URL can change when ngrok restarts. Use the one free static domain in the ngrok
   dashboard, or update both platform tools each time.
 - Good for building and test calls. For live calls, move the same code to an always-on host

@@ -40,13 +40,13 @@ Expect `reason: "found"` with dated lines, or `no_emails` when you have never wr
 With a thread ID (from A2 or the reply above): `api emailContext "{\"email\":\"$TEST_EMAIL\",\"threadId\":\"<threadId>\"}"`.
 `source` is `thread`, or `search` when the thread ID is wrong.
 
-### A2. Tanya's after-call email (starts a thread she owns)
+### A2. Ruchika AI's after-call email (starts a thread she owns)
 
 ```bash
-api sendGmail "{\"to\":\"$TEST_EMAIL\",\"subject\":\"Book your VoiceOwl call with Ruchika\",\"body\":\"Hi Priya,\\n\\nThis is Tanya from VoiceOwl. Thanks for your time today.\\n\\nYou can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\\n\\nTanya, VoiceOwl\"}"
+api sendGmail "{\"to\":\"$TEST_EMAIL\",\"subject\":\"Book your VoiceOwl call with Ruchika\",\"body\":\"Hi Priya,\\n\\nThis is Ruchika AI from VoiceOwl. Thanks for your time today.\\n\\nYou can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\\n\\nRuchika AI, VoiceOwl\"}"
 ```
 Expect `sent: true`, a `messageId` and a `threadId`. In your sending mailbox: Sent, open the mail, ⋮ → **Show original**.
-It must contain the header `X-VoiceOwl-Agent: tanya`.
+It must contain the header `X-VoiceOwl-Agent: ruchika-ai`.
 
 ### A3. Reply as the prospect, then run the gate
 
@@ -55,10 +55,10 @@ From the test inbox, **reply** to that mail (for example "Can we do Thursday aft
 ```bash
 api checkReplies
 ```
-Expect `result: "to_reply"` for that mail. In Gmail the mail now has the labels `Tanya-checked` and `Tanya-to-reply`.
+Expect `result: "to_reply"` for that mail. In Gmail the mail now has the labels `RuchikaAI-checked` and `RuchikaAI-to-reply`.
 Calling `checkReplies` again gives `checked: 0`: each mail is looked at once.
 
-### A4. See what is waiting for Tanya
+### A4. See what is waiting for Ruchika AI
 
 ```bash
 api pendingReplies
@@ -68,12 +68,12 @@ Each item has `messageId`, `email`, `subject`, `latestMessage` and `conversation
 ### A5. Run the email prompt on it
 
 ```bash
-api pendingReplies | node fill.mjs ../email/email.txt fname=Priya company=BrightLoans "priorContext=Tanya called on 25 November; the booking did not go through and we sent the booking link." > /tmp/email_prompt.txt
+api pendingReplies | node fill.mjs ../email/email.txt fname=Priya company=BrightLoans "priorContext=Ruchika AI called on 25 November; the booking did not go through and we sent the booking link." > /tmp/email_prompt.txt
 ```
 Paste the contents of `/tmp/email_prompt.txt` into any LLM chat (claude.ai or the platform playground) as one message.
 It answers with `{"action": "...", "reply": "..."}`. fill.mjs prints the `messageId` on the terminal.
 
-### A6. Send Tanya's answer
+### A6. Send Ruchika AI's answer
 
 Put the model's JSON into a file, `/tmp/answer.json`, and add the messageId:
 
@@ -82,29 +82,29 @@ jq --arg id "<messageId>" '. + {messageId: $id}' /tmp/answer.json > /tmp/send.js
 api replyInThread "$(cat /tmp/send.json)"
 ```
 Expect `sent: true`. In the test inbox the answer arrives **in the same conversation**, with the subject "Re: ...".
-The prospect's mail gets `Tanya-replied`.
+The prospect's mail gets `RuchikaAI-replied`.
 
 ### A7. Cases the gate must refuse (run `api checkReplies` after each)
 
 | Do this | Expected `result` | Label |
 |---|---|---|
-| Send a new mail (not a reply) from the test inbox to your mailbox | `not_tanya_thread` | Tanya-checked only |
-| Write to the test inbox by hand from Gmail, then reply to that | `not_tanya_thread` | Tanya-checked only |
-| Forward Tanya's mail to a third address and reply from there | `other_sender` | Tanya-needs-human |
-| In a Tanya thread, reply yourself from Gmail, then reply again as the prospect | `human_took_over` | Tanya-checked only |
-| Add the label `Tanya-off` to a Tanya thread in Gmail, then reply as the prospect | `tanya_off` | Tanya-checked only |
-| Turn on an out-of-office reply on the test inbox, then send Tanya's mail again | `not_a_person` | Tanya-checked only |
+| Send a new mail (not a reply) from the test inbox to your mailbox | `not_agent_thread` | RuchikaAI-checked only |
+| Write to the test inbox by hand from Gmail, then reply to that | `not_agent_thread` | RuchikaAI-checked only |
+| Forward Ruchika AI's mail to a third address and reply from there | `other_sender` | RuchikaAI-needs-human |
+| In a Ruchika AI thread, reply yourself from Gmail, then reply again as the prospect | `human_took_over` | RuchikaAI-checked only |
+| Add the label `RuchikaAI-off` to a Ruchika AI thread in Gmail, then reply as the prospect | `agent_off` | RuchikaAI-checked only |
+| Turn on an out-of-office reply on the test inbox, then send Ruchika AI's mail again | `not_a_person` | RuchikaAI-checked only |
 
 ### A8. The email agent's other actions
 
 Reply as the prospect, run `api checkReplies`, then try each one (one pending mail per try):
 
 ```bash
-api replyInThread '{"messageId":"<id>","action":"human","reply":"Hi Priya,\n\nThanks for your email. I'\''ve passed it to our team, and someone will reply to you personally.\n\nTanya, VoiceOwl"}'
+api replyInThread '{"messageId":"<id>","action":"human","reply":"Hi Priya,\n\nThanks for your email. I'\''ve passed it to our team, and someone will reply to you personally.\n\nRuchika AI, VoiceOwl"}'
 api replyInThread '{"messageId":"<id>","action":"stop","reply":"none"}'
 api replyInThread '{"messageId":"<id>","action":"none","reply":"none"}'
 ```
-`human`: the handoff email is sent, and the thread gets `Tanya-needs-human` and `Tanya-off`. `stop`: nothing is sent, and the thread
+`human`: the handoff email is sent, and the thread gets `RuchikaAI-needs-human` and `RuchikaAI-off`. `stop`: nothing is sent, and the thread
 gets the same two labels. `none`: nothing is sent, and the mail leaves the queue.
 Good prospect messages to try the prompt with: "Please remove me from your list" (stop), "Can a real person call me?" (human),
 "Thanks!" (none), "How much does it cost?" (reply with the price line and the link), "Are you a bot?" (reply, yes it is AI).
@@ -125,13 +125,13 @@ Also try it with every history `Not Available`: the answer must start "First cal
 ### A10. The call with that priorContext
 
 Put the priorContext from A9 in the contact's `priorContext` column (or the agent variable) and make a test call.
-Tanya should open with "I'm following up on your email about ..." and pick up what is open, such as Thursday, then check the
+Ruchika AI should open with "I'm following up on your email about ..." and pick up what is open, such as Thursday, then check the
 calendar only after you confirm it. Then check the PCA summary: it should say the call followed up an email.
 
 ### A11. WhatsApp prompt and post-chat analysis
 
 ```bash
-node fill.mjs ../whatsapp/whatsapp.txt fname=Priya company=BrightLoans "priorContext=Tanya called on 25 November and could not reach them; we sent the missed-call message." < /dev/null > /tmp/wa_prompt.txt
+node fill.mjs ../whatsapp/whatsapp.txt fname=Priya company=BrightLoans "priorContext=Ruchika AI called on 25 November and could not reach them; we sent the missed-call message." < /dev/null > /tmp/wa_prompt.txt
 ```
 Paste it as the system prompt of an LLM chat, then type as the prospect: "Hi, who is this?", "What do you do?",
 "Ok send me the link", "stop messaging me". Then copy the chat as `agent:` / `customer:` lines and run:
@@ -161,4 +161,4 @@ Platform test, end to end:
 2. Call: agree to a demo but let the booking fail (or say "call me later"). The PCA email and WhatsApp arrive.
 3. Reply to the email from `TEST_EMAIL`. Within a minute (the timer), `/pendingReplies` lists it. Run the reply flow and check the answer lands in the thread.
 4. Reply to the WhatsApp message from your phone. The WhatsApp agent answers; try "send me the link" and "stop".
-5. Start the next call from the journey. The priorContext step must mention the call, the email and the WhatsApp chat, and Tanya follows up on the latest of them.
+5. Start the next call from the journey. The priorContext step must mention the call, the email and the WhatsApp chat, and Ruchika AI follows up on the latest of them.

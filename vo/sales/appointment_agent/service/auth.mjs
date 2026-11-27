@@ -11,7 +11,7 @@ for (const line of fs.readFileSync(new URL('./.env', import.meta.url), 'utf8').s
   const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/); if (m) env[m[1]] = m[2].replace(/^["']|["']$/g, '');
 }
 const PORT = 53682, redirect = `http://127.0.0.1:${PORT}`;
-// One token for the booking service (Calendar) and for email: send, read, and label (gmail.modify, for Tanya's replies).
+// One token for the booking service (Calendar) and for email: send, read, and label (gmail.modify, for Ruchika AI's replies).
 const scope = ['https://www.googleapis.com/auth/calendar.freebusy', 'https://www.googleapis.com/auth/calendar.events.owned',
   'https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
   'https://www.googleapis.com/auth/gmail.modify'].join(' ');
