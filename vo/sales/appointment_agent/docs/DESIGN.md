@@ -487,3 +487,16 @@ adapted to sales:
 
 Next: the same rules in email/ and whatsapp/, a tanyaQA review prompt for every call, and a list of
 hard test calls.
+
+## 13. Tool gating and toolResponse only (2026-11-27)
+
+Test call 2026-11-27: getAvailableSlots ran while Tanya was still asking about the prospect's languages (before THE
+ASK), ran again after the yes, then bookAppointment went out about seven times in a row with startTime and
+appointmentNotes empty (no_start_time every time). User's decisions:
+- getAvailableSlots runs only after the prospect clearly says yes to fifteen minutes with Ruchika. Times it gives are
+  spoken, the prospect picks; a pick that matches an offered time is booked with that startTime, any other time goes
+  back to getAvailableSlots with the prospect's day/time.
+- bookAppointment always carries startTime (copied from the chosen option) and appointmentNotes (one line on the
+  prospect's pain point for their use case). After any Failure the next turn is speech; never repeated in a row.
+- Both tools: the agent reads only the field `toolResponse` and ignores every other field (Agent Message, Booked,
+  Reason, Event Id, ...). The old names availableSlotstoolResponse / bookAppointmenttoolResponse are gone.

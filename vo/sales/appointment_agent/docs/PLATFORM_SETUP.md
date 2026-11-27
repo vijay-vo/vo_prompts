@@ -89,7 +89,7 @@ bookAppointment, never spoken), the prospect's local time:
 {"returnCode":200,"toolResponse":"Success: Two times are free. Option 1: tomorrow, four in the evening, startTime 2026-11-25T16:00. Option 2: tomorrow, five in the evening, startTime 2026-11-25T17:00. Offer both in words, never the startTime, and ask which works better. To book, pass the startTime of the option they choose."}
 ```
 
-Platform variable for this reply's `toolResponse`: **availableSlotstoolResponse** (the prompt calls it by this name).
+Platform field for this reply: **toolResponse** (changed 2026-11-27: the prompt reads only this field for both tools and ignores every other field, including Agent Message).
 
 `returnCode` comes first in every reply of both tools and is only ever `200` or `500`: `200` when the API worked and returned data (any `Success:` or `Failure:` answer, booked or not), `500` when the calendar could not be checked, the booking did not go through, or the request was rejected. The calendar-down reply is `{"returnCode":500,"toolResponse":"Failure: The calendar could not be checked. …"}`.
 
@@ -157,7 +157,7 @@ Every reply, booked or not, has the same eight fields in the same order: `return
 `slot_taken`, `not_offered`, `no_start_time` or `error`), `toolResponse`, `prospectTime`, `salesTime`, `meetLink`, `eventId`. When
 nothing was booked the last four are `Not Available`, so the call variables can be mapped once for every case.
 
-Platform variable for this reply's `toolResponse`: **bookAppointmenttoolResponse** (the prompt calls it by this name).
+Platform field for this reply: **toolResponse** (changed 2026-11-27: the prompt reads only this field for both tools and ignores every other field, including Agent Message).
 
 **Save from this reply as call variables:** `prospectTime` → `bookedTime` (used by the PCA), `salesTime` →
 `salesTime` (for the CRM), and `meetLink` → `meetLink`. When nothing was booked, they stay `Not Available`.
