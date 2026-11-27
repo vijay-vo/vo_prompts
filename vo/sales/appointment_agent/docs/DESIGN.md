@@ -504,3 +504,13 @@ appointmentNotes empty (no_start_time every time). User's decisions:
   never a calendar check; getAvailableSlots runs only once they name one. "Book it" with no clear pick gets "which
   of the offered times?". startTime and appointmentNotes are never guessed: startTime only from a toolResponse on
   this call, notes only from what the prospect said or priorContext.
+
+## 14. Language switching from the prompt only (2026-11-27)
+
+Stack: Sarvam ASR (auto mode), Gemini 3.1 Flash Lite, ElevenLabs v4 Turbo. The platform cannot pass a per-turn
+language code for now, so the prompt carries it. Test call: Hindi questions after ten English turns got English
+replies, the KB line "She likes to meet every new customer herself" was copied in English, and the goodbye stayed
+English. Added: the script of the prospect's words decides the language (Devanagari Hinglish = Hindi); an explicit
+"speak X" request holds until they ask for another; quoted lines and KB facts are never copied in English; the
+preToolMessage goodbye follows the same rule; and a LAST CHECK — LANGUAGE line at the very end of the prompt, closest
+to generation. Not faults (user, same day): "five legs" heard as five lakh; an ask after an off-topic answer.
