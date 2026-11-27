@@ -500,3 +500,7 @@ appointmentNotes empty (no_start_time every time). User's decisions:
   prospect's pain point for their use case). After any Failure the next turn is speech; never repeated in a row.
 - Both tools: the agent reads only the field `toolResponse` and ignores every other field (Agent Message, Booked,
   Reason, Event Id, ...). The old names availableSlotstoolResponse / bookAppointmenttoolResponse are gone.
+- Added the same day: "another day/time" with no day or time named gets a question (which day and time suit them),
+  never a calendar check; getAvailableSlots runs only once they name one. "Book it" with no clear pick gets "which
+  of the offered times?". startTime and appointmentNotes are never guessed: startTime only from a toolResponse on
+  this call, notes only from what the prospect said or priorContext.
