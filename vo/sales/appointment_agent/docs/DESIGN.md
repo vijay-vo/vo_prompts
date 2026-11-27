@@ -526,3 +526,14 @@ and no message. Call screening ("say your name and why you're calling") is not v
 VoiceOwl, calling for [first name]." and waits; voicemail after it means hang up. Unsure = a person. The old
 voicemail line in WHO PICKED UP THE PHONE now points to the block. Not taken, per the user: silent waits or
 skip_turn (current behaviour stays), phone menu navigation (Tanya still hangs up on menus), the two-agent design.
+
+## 16. One universal language rule (2026-11-27)
+
+A test call showed Marathi answered in Hindi (the section 14 script rule named Hindi first) and a garbled line
+answered with the AI disclosure. The user shared a multilingual reference prompt that works on the same kind of
+calls (not kept in the repo): its whole language handling is "reply in the language the person is speaking; example
+lines are illustrations, said in the caller's language, never copied; this includes the goodbye". Section 14's rules
+(script decides, Hindi/Marathi wording, Hindi-script sample, the exceptions list, the duplicate LANGUAGE paragraph in
+HOW YOU SPEAK and the LAST CHECK at the end) are removed and replaced by one LANGUAGE block at the top in that spirit.
+The ASR decides the language; no per-language rules ever. AI disclosure now only on a clear question; an unclear or
+garbled line is UNCLEAR.
