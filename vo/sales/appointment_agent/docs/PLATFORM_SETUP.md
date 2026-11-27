@@ -229,8 +229,8 @@ Inputs: the transcript, `{{fname}}`, `{{company}}`, `{{priorContext}}`, `{{booke
 
 The PCA writes messages for three callResult values only: booked, bookingFailed and callbackLater (the last two
 carry the booking link). gatekeeper, voicemail and disconnected (and platform no-answer or busy) get the platform's own
-fixed missed-call template. notInterested, doNotCall and wrongNumber get nothing. Anyone with doNotCall or noAICalls
-"yes" gets nothing, whatever callResult says.
+fixed missed-call template. notInterested and doNotCall get the platform's fixed thank-you template (decided
+2026-11-27). wrongNumber gets nothing: the journey ends.
 
 ### The two links
 
@@ -250,6 +250,16 @@ WhatsApp body and email body:
 Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. I tried to reach you by phone but we couldn't connect.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If you'd like to see it working, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
 ```
 Email subject: `Sorry we missed you - VoiceOwl`
+
+### Platform thank-you template (notInterested, doNotCall)
+
+WhatsApp body and email body:
+```
+Hi {{contact.fname}},\n\nThis is Tanya from VoiceOwl. Thanks for taking my call today.\n\nVoiceOwl builds voice AI agents that talk to your customers in their own language. If it's ever useful, you can book a 15-minute call with Ruchika (Co-founder) here: https://calendar.app.google/StCvpJnSaJrRTqCw7\n\nTanya, VoiceOwl
+```
+Email subject: `Thanks for your time - VoiceOwl`
+
+wrongNumber: no message; the journey ends.
 
 ---
 
