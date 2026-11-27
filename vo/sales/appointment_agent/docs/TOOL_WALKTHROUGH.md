@@ -7,7 +7,7 @@ and the event id are made up.
 The example:
 - Today: Tuesday 24 November 2026. The call is at 10:00 AM in New York, 8:30 PM in India.
 - Prospect: Daniel, Harbor Lending, New York (`America/New_York`).
-- Ruchika's calendar: busy today until 11 PM IST. Her hours, 9 AM to 11 PM IST, are 9:00 AM to
+- Ruchika's calendar: busy today until 11 PM IST. Her hours, 10 AM to 11 PM IST, are 9:00 AM to
   12:30 PM in New York.
 - Settings from `.env.example`: 15-minute demos every quarter hour, the prospect's own 9 AM to 7 PM,
   Monday to Friday, at least 10 minutes' notice, up to 15 days ahead, the second offer about an hour
@@ -44,7 +44,7 @@ POST /getAvailableSlots
 
 Inside the service (the model never sees this):
 1. One Google freeBusy call reads Ruchika's busy times for the next 15 days.
-2. It cuts 15-minute slots that fit both Daniel's 9 AM to 7 PM and Ruchika's 9 AM to 11 PM IST.
+2. It cuts 15-minute slots that fit both Daniel's 9 AM to 7 PM and Ruchika's 10 AM to 11 PM IST.
 3. Today has nothing left: Ruchika is busy until 12:30 PM New York, her day ends then.
 4. The earliest is tomorrow 9:00 AM; the second, an hour later, 10:00 AM.
 
@@ -179,13 +179,13 @@ and WhatsApp, never retries the booking, and closes.
 
 ## What each country can be offered
 
-The prospect only ever hears their own time, but every slot must also fall in Ruchika's 9 AM to 11 PM IST.
+The prospect only ever hears their own time, but every slot must also fall in Ruchika's 10 AM to 11 PM IST.
 
 | Prospect | Times offered (their time, weekdays) |
 |---|---|
-| India | 9:00 AM to 7:00 PM |
+| India | 10:00 AM to 7:00 PM |
 | Dubai | 9:00 AM to 7:00 PM |
-| Japan | 12:30 PM to 7:00 PM |
+| Japan | 1:30 PM to 7:00 PM |
 | UK | 9:00 AM to 5:30 PM |
 | New York | 9:00 AM to 12:30 PM |
 | California | 9:00 AM to 9:30 AM |

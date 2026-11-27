@@ -321,13 +321,13 @@ assert.match(await ask({ preferredDay: 'saturday' }), /^Failure: Calls are Monda
 assert.match(await ask({ preferredDay: '28' }), /^Failure: Calls are Monday to Friday/, 'the 28th is a Saturday');
 assert.equal(await ask({ preferredDay: '31' }), 'Failure: That day is more than 15 days away. Ask for a day in the next 15 days.');
 assert.match(await ask({ preferredDay: '27' }), /Option 1: Friday the twenty-seventh of November, .+startTime 2026-11-27T/);
-assert.match(await ask({ preferredDay: '4' }), /Option 1: Friday the fourth of December, nine in the morning, startTime 2026-12-04T09:00\./, 'beyond a week the label names the date');
+assert.match(await ask({ preferredDay: '4' }), /Option 1: Friday the fourth of December, ten in the morning, startTime 2026-12-04T10:00\./, 'beyond a week the label names the date');
 assert.equal(SAY.none, 'Failure: No time is free for that request. Ask which other day suits them.');
 
-// Japan: Ruchika's 9 AM IST is 12:30 PM in Tokyo, so the earliest Tokyo slot is 12:30 PM.
+// Japan: Ruchika's 10 AM IST is 1:30 PM in Tokyo, so the earliest Tokyo slot is 1:30 PM.
 const tokyo = await getAvailableSlots({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Tokyo', preferredDay: 'tomorrow' }, now: mon3 });
-assert.match(tokyo.toolResponse, /Option 1: tomorrow, twelve thirty in the afternoon, startTime 2026-11-24T12:30\./);
-const bt = await bookAppointment({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Tokyo', email: 'k@jp.co', startTime: '2026-11-24T12:30' }, now: mon3 });
-assert.equal(bt.out.prospectTime, 'Tuesday, 24 November 2026, 12:30 PM (Asia/Tokyo)');
-assert.equal(bt.out.salesTime, 'Tuesday, 24 November 2026, 9:00 AM (Asia/Kolkata)');
+assert.match(tokyo.toolResponse, /Option 1: tomorrow, one thirty in the afternoon, startTime 2026-11-24T13:30\./);
+const bt = await bookAppointment({ google: g2, cfg: cfgT, body: { timezone: 'Asia/Tokyo', email: 'k@jp.co', startTime: '2026-11-24T13:30' }, now: mon3 });
+assert.equal(bt.out.prospectTime, 'Tuesday, 24 November 2026, 1:30 PM (Asia/Tokyo)');
+assert.equal(bt.out.salesTime, 'Tuesday, 24 November 2026, 10:00 AM (Asia/Kolkata)');
 console.log('day and time tests passed');

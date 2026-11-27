@@ -121,7 +121,7 @@ PLATFORM_SETUP.md (preferredDay, preferredTime, appointmentNotes, fname, lname; 
 
 Settled 2026-11-20: the platform can add request parameters, so it injects `timezone`,
 `firstName`, `lastName` and `company` into bookAppointment, and `timezone` into getAvailableSlots. No
-prompt change. Sales hours: IST 9 AM to 11 PM.
+prompt change. Sales hours: IST 10 AM to 11 PM (was 9 AM until 2026-11-27).
 
 
 - **Lead fields on booking.** The prompt's bookAppointment passes only `slotId`, `email`, `notes`. The

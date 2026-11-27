@@ -24,7 +24,7 @@ Responses:
   when not booked the last four are "Not Available" (slot_taken and not_offered offer new times)
 
 ## Rules built in
-- Slots are 15 minutes, every quarter hour (:00, :15, :30, :45), back to back, inside the sales team's hours (IST 9 AM to
+- Slots are 15 minutes, every quarter hour (:00, :15, :30, :45), back to back, inside the sales team's hours (IST 10 AM to
   11 PM, Monday to Friday) AND the prospect's own 9 AM to 7 PM, Monday to Friday.
 - At least 10 minutes' notice (a call at 3:00 PM can book 3:15 PM), up to 15 days ahead, earliest
   first. The second offer is the first free slot at least 60 minutes after the first, else at

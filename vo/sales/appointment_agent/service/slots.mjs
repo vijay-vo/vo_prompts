@@ -7,7 +7,7 @@ export function config(env) {
   const n = (k, d) => (env[k] !== undefined && env[k] !== '' ? Number(env[k]) : d);
   return {
     salesTz: env.SALES_TZ || 'Asia/Kolkata',
-    workStart: n('WORK_START_HOUR', 9) * 60, workEnd: n('WORK_END_HOUR', 23) * 60,
+    workStart: n('WORK_START_HOUR', 10) * 60, workEnd: n('WORK_END_HOUR', 23) * 60,
     workDays: (env.WORK_DAYS || '1,2,3,4,5').split(',').map(Number),
     prospectStart: n('PROSPECT_START_HOUR', 9) * 60, prospectEnd: n('PROSPECT_END_HOUR', 19) * 60,
     slotMin: n('SLOT_MINUTES', 15), gridMin: n('GRID_MINUTES', 15), bufferMin: n('BUFFER_MINUTES', 0),
